@@ -50,9 +50,11 @@ function main() {
         if (pointer.selectedObject) {
             transformControls.attach(pointer.selectedObject);
             updateGUI(pointer.selectedObject);
+            sceneGraph.update();
         } else {
             transformControls.detach();
             updateGUI(null);
+            sceneGraph.update();
         }
     });
 
