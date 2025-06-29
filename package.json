@@ -20,7 +20,8 @@
   "dependencies": {
     "express": "^4.19.2",
     
-    "three": "^0.164.1"
+    "three": "^0.164.1",
+    "dat.gui": "^0.7.9"
   },
   "devDependencies": {
     "jest": "^29.7.0",

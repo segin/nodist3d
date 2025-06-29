@@ -8,6 +8,7 @@
 - Refactored frontend into `SceneManager.js` and `ObjectManager.js`.
 - Updated `README.md` with comprehensive checklist and roadmap.
 - Initial Git repository setup and continuous pushing to GitHub.
+- Temporarily removed `sqlite3` from `package.json` to resolve `npm install` issues.
 
 ### Next Steps:
 - Implement interactive controls for object manipulation (translate, rotate, scale).
@@ -20,3 +21,4 @@
 - Consider using dat.GUI or similar library for easier UI control generation.
 - Explore WebGL performance optimizations for mobile devices.
 - Research best practices for 3D model persistence in web applications.
+- Investigate `sqlite3` build issue on Termux and re-integrate if possible.
