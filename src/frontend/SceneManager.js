@@ -14,6 +14,7 @@ export class SceneManager {
         this.controls.enableDamping = true; // an animation loop is required when damping is enabled
         this.controls.dampingFactor = 0.25;
         this.controls.screenSpacePanning = true;
+        this.controls.enableZoom = true;
         this.controls.minDistance = 1;
         this.controls.maxDistance = 500;
         this.controls.maxPolarAngle = Math.PI / 2;
