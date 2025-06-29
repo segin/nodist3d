@@ -1,16 +1,17 @@
-
 import { SceneManager } from './SceneManager.js';
 import { ObjectManager } from './ObjectManager.js';
 import { Pointer } from './Pointer.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { GUI } from 'dat.gui';
 import { SceneGraph } from './SceneGraph.js';
+import { SceneStorage } from './SceneStorage.js';
 
 function main() {
     const canvas = document.querySelector('#c');
     const sceneManager = new SceneManager(canvas);
     const objectManager = new ObjectManager(sceneManager.scene);
     const pointer = new Pointer(sceneManager.camera, sceneManager.scene, sceneManager.renderer);
+    const sceneStorage = new SceneStorage(sceneManager.scene);
 
     const gui = new GUI();
     let currentObjectFolder = null;
@@ -78,7 +79,7 @@ function main() {
     // Add UI for adding objects
     const ui = document.getElementById('ui');
     const sceneGraphElement = document.getElementById('scene-graph');
-    const sceneGraph = new SceneGraph(sceneManager.scene, sceneGraphElement);
+    const sceneGraph = new SceneGraph(sceneManager.scene, sceneGraphElement, transformControls, updateGUI);
 
     function createAddButton(text, addMethod) {
         const button = document.createElement('button');
@@ -127,6 +128,39 @@ function main() {
         transformControls.setMode('scale');
     });
     ui.appendChild(scaleButton);
+
+    // Add Save/Load buttons
+    const saveButton = document.createElement('button');
+    saveButton.textContent = 'Save Scene';
+    saveButton.addEventListener('click', () => {
+        sceneStorage.saveScene();
+    });
+    ui.appendChild(saveButton);
+
+    const loadInput = document.createElement('input');
+    loadInput.type = 'file';
+    loadInput.accept = '.nodist3d';
+    loadInput.style.display = 'none'; // Hide the input
+    loadInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const loadedData = await sceneStorage.loadScene(file);
+            // Recreate objects in the scene based on loadedData
+            // This part needs more sophisticated logic to recreate specific primitive types
+            // For now, it will just clear the scene and add a default cube.
+            transformControls.detach();
+            updateGUI(null);
+            sceneGraph.update();
+        }
+    });
+    ui.appendChild(loadInput);
+
+    const loadButton = document.createElement('button');
+    loadButton.textContent = 'Load Scene';
+    loadButton.addEventListener('click', () => {
+        loadInput.click(); // Trigger the hidden file input
+    });
+    ui.appendChild(loadButton);
 }
 
 main();
