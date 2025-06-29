@@ -15,9 +15,11 @@
 - Implemented basic scene graph/outliner to list objects, including object renaming and deletion.
 - Implemented unit tests and a full test harness, including Jest configuration for ES Modules and fixing the `TeapotGeometry` test.
 - Implemented scene saving and loading using a custom zip file format with JSON data.
+- Implemented undo functionality.
+- Implemented redo functionality.
 
 ### Next Steps:
-- Implement undo/redo functionality.
+- Implement camera controls.
 
 ### Ideas & Notes:
 - Consider using dat.GUI or similar library for easier UI control generation.
