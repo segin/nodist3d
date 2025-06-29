@@ -23,11 +23,11 @@ The name "nodist3d" is a combination of:
 ## Core Features
 
 -   **Comprehensive Set of 3D Primitives:**
-    -   [ ] Box (Cube)
-    -   [ ] Sphere
-    -   [ ] Cylinder
-    -   [ ] Cone
-    -   [ ] Torus
+    -   [x] Box (Cube)
+    -   [x] Sphere
+    -   [x] Cylinder
+    -   [x] Cone
+    -   [x] Torus
     -   [ ] Torus Knot
     -   [ ] Tetrahedron (Triangle)
     -   [ ] Icosahedron
@@ -38,12 +38,12 @@ The name "nodist3d" is a combination of:
     -   [ ] Teapot
 -   **Mobile-First Design:** The user interface is fully responsive and optimized for touch-based interactions on mobile devices.
 -   **Fullscreen Mode:** A dedicated button allows you to easily enter and exit fullscreen mode for an immersive modeling experience.
--   **Persistent Local Storage:** Your 3D scenes are automatically saved to your local device using SQLite, so you can pick up where you left off.
+-   **File-based Storage:** Your 3D scenes are saved in a custom `.nodist3d` zip file, which contains the scene data in a `scene.json` file.
 -   **Intuitive User Interface:** A clean and user-friendly interface makes it easy to add, manipulate, and combine 3D objects.
 
 ## Tech Stack
 
--   **Backend:** Node.js, Express.js, SQLite
+-   **Backend:** Node.js, Express.js
 -   **Frontend:** HTML5, CSS3, JavaScript, three.js
 -   **Testing:** Jest, Supertest
 

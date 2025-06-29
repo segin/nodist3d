@@ -19,10 +19,11 @@
   "type": "module",
   "dependencies": {
     "express": "^4.19.2",
-    "sqlite3": "^5.1.7",
+    
     "three": "^0.164.1"
   },
   "devDependencies": {
     "jest": "^29.7.0",
     "supertest": "^7.0.0"
   }
+}

@@ -1,59 +1,29 @@
-import * as THREE from 'three';
+
+import { SceneManager } from './SceneManager.js';
+import { ObjectManager } from './ObjectManager.js';
 
 function main() {
     const canvas = document.querySelector('#c');
-    const renderer = new THREE.WebGLRenderer({canvas});
+    const sceneManager = new SceneManager(canvas);
+    const objectManager = new ObjectManager(sceneManager.scene);
 
-    const fov = 75;
-    const aspect = 2;  // the canvas default
-    const near = 0.1;
-    const far = 5;
-    const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.z = 2;
+    // Add a default cube for now
+    const cube = objectManager.addCube();
 
-    const scene = new THREE.Scene();
+    function animate(time) {
+        time *= 0.001; // convert to seconds
 
-    {
-        const color = 0xFFFFFF;
-        const intensity = 1;
-        const light = new THREE.DirectionalLight(color, intensity);
-        light.position.set(-1, 2, 4);
-        scene.add(light);
-    }
-
-    const boxWidth = 1;
-    const boxHeight = 1;
-    const boxDepth = 1;
-    const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
-
-    const material = new THREE.MeshPhongMaterial({color: 0x44aa88});  // greenish blue
-
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-
-    function render(time) {
-        time *= 0.001;  // convert time to seconds
-
-        const canvas = renderer.domElement;
-        const width = canvas.clientWidth;
-        const height = canvas.clientHeight;
-        const needResize = canvas.width !== width || canvas.height !== height;
-        if (needResize) {
-            renderer.setSize(width, height, false);
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
+        // Animate the cube (for demonstration)
+        if (cube) {
+            cube.rotation.x = time;
+            cube.rotation.y = time;
         }
 
-
-        cube.rotation.x = time;
-        cube.rotation.y = time;
-
-        renderer.render(scene, camera);
-
-        requestAnimationFrame(render);
+        sceneManager.render();
+        requestAnimationFrame(animate);
     }
 
-    requestAnimationFrame(render);
+    requestAnimationFrame(animate);
 
     const fullscreenButton = document.getElementById('fullscreen');
     fullscreenButton.addEventListener('click', () => {
@@ -63,6 +33,43 @@ function main() {
             document.documentElement.requestFullscreen();
         }
     });
+
+    // Add UI for adding objects
+    const ui = document.getElementById('ui');
+    const addCubeButton = document.createElement('button');
+    addCubeButton.textContent = 'Add Cube';
+    addCubeButton.addEventListener('click', () => {
+        objectManager.addCube();
+    });
+    ui.appendChild(addCubeButton);
+
+    const addSphereButton = document.createElement('button');
+    addSphereButton.textContent = 'Add Sphere';
+    addSphereButton.addEventListener('click', () => {
+        objectManager.addSphere();
+    });
+    ui.appendChild(addSphereButton);
+
+    const addCylinderButton = document.createElement('button');
+    addCylinderButton.textContent = 'Add Cylinder';
+    addCylinderButton.addEventListener('click', () => {
+        objectManager.addCylinder();
+    });
+    ui.appendChild(addCylinderButton);
+
+    const addConeButton = document.createElement('button');
+    addConeButton.textContent = 'Add Cone';
+    addConeButton.addEventListener('click', () => {
+        objectManager.addCone();
+    });
+    ui.appendChild(addConeButton);
+
+    const addTorusButton = document.createElement('button');
+    addTorusButton.textContent = 'Add Torus';
+    addTorusButton.addEventListener('click', () => {
+        objectManager.addTorus();
+    });
+    ui.appendChild(addTorusButton);
 }
 
 main();
