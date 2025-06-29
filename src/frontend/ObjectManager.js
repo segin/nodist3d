@@ -146,6 +146,24 @@ export class ObjectManager {
         return tube;
     }
 
+    addTube() {
+        const path = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(-1, -1, 0),
+            new THREE.Vector3(-0.5, 1, 0),
+            new THREE.Vector3(0.5, -1, 0),
+            new THREE.Vector3(1, 1, 0)
+        ]);
+        const tubularSegments = 20;
+        const radius = 0.2;
+        const radialSegments = 8;
+        const closed = false;
+        const geometry = new THREE.TubeGeometry(path, tubularSegments, radius, radialSegments, closed);
+        const material = new THREE.MeshPhongMaterial({ color: 0xffc0cb }); // Pink color for tube
+        const tube = new THREE.Mesh(geometry, material);
+        this.scene.add(tube);
+        return tube;
+    }
+
     addTeapot() {
         const size = 0.5;
         const segments = 10;
