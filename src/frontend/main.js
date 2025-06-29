@@ -1,4 +1,3 @@
-
 import { SceneManager } from './SceneManager.js';
 import { ObjectManager } from './ObjectManager.js';
 
@@ -75,8 +74,7 @@ function main() {
     addTorusKnotButton.textContent = 'Add Torus Knot';
     addTorusKnotButton.addEventListener('click', () => {
         objectManager.addTorusKnot();
-    }
-    );
+    });
     ui.appendChild(addTorusKnotButton);
 
     const addTetrahedronButton = document.createElement('button');
