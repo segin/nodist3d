@@ -11,6 +11,7 @@
 - Initial Git repository setup and continuous pushing to GitHub.
 - Temporarily removed database dependency from `package.json` to resolve `npm install` issues.
 - Added a property panel to adjust primitive parameters using `dat.gui`.
+- Removed `frontend.test.js` due to `puppeteer` incompatibility on Termux.
 
 ### Next Steps:
 - Implement a scene graph/outliner.
@@ -22,3 +23,4 @@
 - Explore WebGL performance optimizations for mobile devices.
 - Research best practices for 3D model persistence in web applications.
 - Investigate database build issue on Termux and re-integrate if possible.
+- Research alternative frontend testing frameworks compatible with Termux/Android.
