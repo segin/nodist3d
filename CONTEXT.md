@@ -1,7 +1,7 @@
 ## Working Context, Ideas, and Progress for nodist3d
 
 ### Current Focus:
-- Implementing material editing.
+- Implementing light source manipulation.
 
 ### Completed Tasks:
 - Implemented Box (Cube), Sphere, Cylinder, Cone, Torus, Torus Knot, Tetrahedron, Icosahedron, Dodecahedron, Octahedron, Plane, Tube, and Teapot primitives.
@@ -11,7 +11,7 @@
 - Initial Git repository setup and continuous pushing to GitHub.
 - Temporarily removed database dependency from `package.json` to resolve `npm install` issues.
 - Added a property panel to adjust primitive parameters using `dat.gui`.
-- Removed `frontend.test.js` due0to `puppeteer` incompatibility on Termux.
+- Removed `frontend.test.js` due to `puppeteer` incompatibility on Termux.
 - Implemented basic scene graph/outliner to list objects, including object renaming and deletion.
 - Implemented unit tests and a full test harness, including Jest configuration for ES Modules and fixing the `TeapotGeometry` test.
 - Implemented scene saving and loading using a custom zip file format with JSON data.
@@ -22,9 +22,10 @@
 - Implemented zoom camera control.
 - Implemented grid helper.
 - Implemented axis helper.
+- Implemented material editing (color, roughness, metallicness).
 
 ### Next Steps:
-- Implement material editing.
+- Implement light source manipulation.
 
 ### Ideas & Notes:
 - Consider using dat.GUI or similar library for easier UI control generation.

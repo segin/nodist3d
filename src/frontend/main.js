@@ -35,8 +35,18 @@ function main() {
             currentObjectFolder.add(object.scale, 'x', 0.1, 5).name('Scale X');
             currentObjectFolder.add(object.scale, 'y', 0.1, 5).name('Scale Y');
             currentObjectFolder.add(object.scale, 'z', 0.1, 5).name('Scale Z');
-            if (object.material && object.material.color) {
-                currentObjectFolder.addColor(object.material, 'color').name('Color');
+            if (object.material) {
+                const materialFolder = currentObjectFolder.addFolder('Material');
+                if (object.material.color) {
+                    materialFolder.addColor(object.material, 'color').name('Color');
+                }
+                if (object.material.roughness !== undefined) {
+                    materialFolder.add(object.material, 'roughness', 0, 1).name('Roughness');
+                }
+                if (object.material.metalness !== undefined) {
+                    materialFolder.add(object.material, 'metalness', 0, 1).name('Metalness');
+                }
+                materialFolder.open();
             }
             currentObjectFolder.open();
         }

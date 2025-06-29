@@ -160,4 +160,19 @@ export class ObjectManager {
         this.scene.add(teapot);
         return teapot;
     }
+
+    updateMaterial(object, newMaterialProperties) {
+        if (object && object.material) {
+            for (const prop in newMaterialProperties) {
+                if (object.material[prop] !== undefined) {
+                    if (prop === 'color') {
+                        object.material.color.set(newMaterialProperties[prop]);
+                    } else {
+                        object.material[prop] = newMaterialProperties[prop];
+                    }
+                }
+            }
+            object.material.needsUpdate = true;
+        }
+    }
 }

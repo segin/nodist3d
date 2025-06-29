@@ -175,9 +175,9 @@ This section outlines potential future enhancements and features for nodist3d.
 -   [x] Add a grid helper for better scene orientation.
 -   [x] Add an axis helper for better scene orientation.
 -   [ ] Implement material editing:
-    -   [ ] Change object color.
-    -   [ ] Adjust material roughness.
-    -   [ ] Adjust material metallicness.
+    -   [x] Change object color.
+    -   [x] Adjust material roughness.
+    -   [x] Adjust material metallicness.
     -   [ ] Add texture mapping.
 -   [ ] Add light source manipulation:
     -   [ ] Change light type (e.g., PointLight, DirectionalLight, AmbientLight).
