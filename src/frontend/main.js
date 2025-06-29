@@ -37,6 +37,13 @@ function main() {
                 currentLightFolder = gui.addFolder(object.name || object.uuid);
                 currentLightFolder.addColor(object, 'color').name('Color').onChange(() => history.saveState());
                 currentLightFolder.add(object, 'intensity', 0, 2).name('Intensity').onChange(() => history.saveState());
+                currentLightFolder.add({ type: object.type }, 'type', ['PointLight', 'DirectionalLight', 'AmbientLight']).name('Light Type').onChange((value) => {
+                    const newLight = lightManager.changeLightType(object, value);
+                    transformControls.attach(newLight);
+                    updateGUI(newLight);
+                    sceneGraph.update();
+                    history.saveState();
+                });
                 if (object.position) {
                     currentLightFolder.add(object.position, 'x', -10, 10).name('Position X').onChange(() => history.saveState());
                     currentLightFolder.add(object.position, 'y', -10, 10).name('Position Y').onChange(() => history.saveState());

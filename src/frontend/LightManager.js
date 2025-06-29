@@ -61,4 +61,15 @@ export class LightManager {
             }
         }
     }
+
+    changeLightType(oldLight, newType) {
+        const oldPosition = oldLight.position.clone();
+        const oldColor = oldLight.color.getHex();
+        const oldIntensity = oldLight.intensity;
+        const oldName = oldLight.name;
+
+        this.removeLight(oldLight);
+        const newLight = this.addLight(newType, oldColor, oldIntensity, oldPosition, oldName);
+        return newLight;
+    }
 }
