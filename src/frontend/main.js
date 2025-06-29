@@ -46,6 +46,12 @@ function main() {
                 if (object.material.metalness !== undefined) {
                     materialFolder.add(object.material, 'metalness', 0, 1).name('Metalness').onChange(() => history.saveState());
                 }
+                materialFolder.add({
+                    addTexture: () => {
+                        objectManager.addTexture(object, 'assets/placeholder_texture.png');
+                        history.saveState();
+                    }
+                }, 'addTexture').name('Add Texture');
                 materialFolder.open();
             }
             currentObjectFolder.open();
