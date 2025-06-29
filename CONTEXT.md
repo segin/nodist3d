@@ -13,10 +13,10 @@
 - Added a property panel to adjust primitive parameters using `dat.gui`.
 - Removed `frontend.test.js` due to `puppeteer` incompatibility on Termux.
 - Implemented basic scene graph/outliner to list objects.
+- Implemented unit tests and a full test harness, including Jest configuration for ES Modules and fixing the `TeapotGeometry` test.
 
 ### Next Steps:
 - Implement object renaming and deletion in the scene graph.
-- Implement unit tests and a full test harness.
 - Implement custom zip file format with JSON data inside for persistent local storage.
 
 ### Ideas & Notes:
