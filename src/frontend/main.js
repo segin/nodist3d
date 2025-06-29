@@ -1,25 +1,32 @@
-
 import { SceneManager } from './SceneManager.js';
 import { ObjectManager } from './ObjectManager.js';
+import { Pointer } from './Pointer.js';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 
 function main() {
     const canvas = document.querySelector('#c');
     const sceneManager = new SceneManager(canvas);
     const objectManager = new ObjectManager(sceneManager.scene);
+    const pointer = new Pointer(sceneManager.camera, sceneManager.scene, sceneManager.renderer);
 
-    const objects = [];
+    const transformControls = new TransformControls(sceneManager.camera, sceneManager.renderer.domElement);
+    sceneManager.scene.add(transformControls);
 
-    // Add a default cube for now
-    objects.push(objectManager.addCube());
+    transformControls.addEventListener('dragging-changed', function (event) {
+        sceneManager.controls.enabled = !event.value;
+    });
 
-    function animate(time) {
-        time *= 0.001; // convert to seconds
+    pointer.renderer.domElement.addEventListener('pointerdown', (event) => {
+        pointer.onPointerDown(event);
+        if (pointer.selectedObject) {
+            transformControls.attach(pointer.selectedObject);
+        } else {
+            transformControls.detach();
+        }
+    });
 
-        objects.forEach(obj => {
-            obj.rotation.x = time;
-            obj.rotation.y = time;
-        });
-
+    function animate() {
+        transformControls.update();
         sceneManager.render();
         requestAnimationFrame(animate);
     }
@@ -38,96 +45,51 @@ function main() {
     // Add UI for adding objects
     const ui = document.getElementById('ui');
 
-    const addCubeButton = document.createElement('button');
-    addCubeButton.textContent = 'Add Cube';
-    addCubeButton.addEventListener('click', () => {
-        objects.push(objectManager.addCube());
-    });
-    ui.appendChild(addCubeButton);
+    function createAddButton(text, addMethod) {
+        const button = document.createElement('button');
+        button.textContent = text;
+        button.addEventListener('click', () => {
+            const newObject = addMethod();
+            transformControls.attach(newObject);
+        });
+        ui.appendChild(button);
+    }
 
-    const addSphereButton = document.createElement('button');
-    addSphereButton.textContent = 'Add Sphere';
-    addSphereButton.addEventListener('click', () => {
-        objects.push(objectManager.addSphere());
-    });
-    ui.appendChild(addSphereButton);
+    createAddButton('Add Cube', () => objectManager.addCube());
+    createAddButton('Add Sphere', () => objectManager.addSphere());
+    createAddButton('Add Cylinder', () => objectManager.addCylinder());
+    createAddButton('Add Cone', () => objectManager.addCone());
+    createAddButton('Add Torus', () => objectManager.addTorus());
+    createAddButton('Add Torus Knot', () => objectManager.addTorusKnot());
+    createAddButton('Add Tetrahedron', () => objectManager.addTetrahedron());
+    createAddButton('Add Icosahedron', () => objectManager.addIcosahedron());
+    createAddButton('Add Dodecahedron', () => objectManager.addDodecahedron());
+    createAddButton('Add Octahedron', () => objectManager.addOctahedron());
+    createAddButton('Add Plane', () => objectManager.addPlane());
+    createAddButton('Add Tube', () => objectManager.addTube());
+    createAddButton('Add Teapot', () => objectManager.addTeapot());
 
-    const addCylinderButton = document.createElement('button');
-    addCylinderButton.textContent = 'Add Cylinder';
-    addCylinderButton.addEventListener('click', () => {
-        objects.push(objectManager.addCylinder());
+    // Add transform controls buttons
+    const translateButton = document.createElement('button');
+    translateButton.textContent = 'Translate';
+    translateButton.addEventListener('click', () => {
+        transformControls.setMode('translate');
     });
-    ui.appendChild(addCylinderButton);
+    ui.appendChild(translateButton);
 
-    const addConeButton = document.createElement('button');
-    addConeButton.textContent = 'Add Cone';
-    addConeButton.addEventListener('click', () => {
-        objects.push(objectManager.addCone());
+    const rotateButton = document.createElement('button');
+    rotateButton.textContent = 'Rotate';
+    rotateButton.addEventListener('click', () => {
+        transformControls.setMode('rotate');
     });
-    ui.appendChild(addConeButton);
+    ui.appendChild(rotateButton);
 
-    const addTorusButton = document.createElement('button');
-    addTorusButton.textContent = 'Add Torus';
-    addTorusButton.addEventListener('click', () => {
-        objects.push(objectManager.addTorus());
+    const scaleButton = document.createElement('button');
+    scaleButton.textContent = 'Scale';
+    scaleButton.addEventListener('click', () => {
+        transformControls.setMode('scale');
     });
-    ui.appendChild(addTorusButton);
-
-    const addTorusKnotButton = document.createElement('button');
-    addTorusKnotButton.textContent = 'Add Torus Knot';
-    addTorusKnotButton.addEventListener('click', () => {
-        objects.push(objectManager.addTorusKnot());
-    });
-    ui.appendChild(addTorusKnotButton);
-
-    const addTetrahedronButton = document.createElement('button');
-    addTetrahedronButton.textContent = 'Add Tetrahedron';
-    addTetrahedronButton.addEventListener('click', () => {
-        objects.push(objectManager.addTetrahedron());
-    });
-    ui.appendChild(addTetrahedronButton);
-
-    const addIcosahedronButton = document.createElement('button');
-    addIcosahedronButton.textContent = 'Add Icosahedron';
-    addIcosahedronButton.addEventListener('click', () => {
-        objects.push(objectManager.addIcosahedron());
-    });
-    ui.appendChild(addIcosahedronButton);
-
-    const addDodecahedronButton = document.createElement('button');
-    addDodecahedronButton.textContent = 'Add Dodecahedron';
-    addDodecahedronButton.addEventListener('click', () => {
-        objects.push(objectManager.addDodecahedron());
-    });
-    ui.appendChild(addDodecahedronButton);
-
-    const addOctahedronButton = document.createElement('button');
-    addOctahedronButton.textContent = 'Add Octahedron';
-    addOctahedronButton.addEventListener('click', () => {
-        objects.push(objectManager.addOctahedron());
-    });
-    ui.appendChild(addOctahedronButton);
-
-    const addPlaneButton = document.createElement('button');
-    addPlaneButton.textContent = 'Add Plane';
-    addPlaneButton.addEventListener('click', () => {
-        objects.push(objectManager.addPlane());
-    });
-    ui.appendChild(addPlaneButton);
-
-    const addTubeButton = document.createElement('button');
-    addTubeButton.textContent = 'Add Tube';
-    addTubeButton.addEventListener('click', () => {
-        objects.push(objectManager.addTube());
-    });
-    ui.appendChild(addTubeButton);
-
-    const addTeapotButton = document.createElement('button');
-    addTeapotButton.textContent = 'Add Teapot';
-    addTeapotButton.addEventListener('click', () => {
-        objects.push(objectManager.addTeapot());
-    });
-    ui.appendChild(addTeapotButton);
+    ui.appendChild(scaleButton);
 }
 
 main();
