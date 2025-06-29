@@ -9,12 +9,12 @@ The name "nodist3d" is a combination of:
 
 ---
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/segin2005/nodist3d)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/segin/nodist3d)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
-[![GitHub issues](https://img.shields.io/github/issues/segin2005/nodist3d)](https://github.com/segin2005/nodist3d/issues)
-[![GitHub stars](https://img.shields.io/github/stars/segin2005/nodist3d)](https://github.com/segin2005/nodist3d/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/segin/nodist3d)](https://github.com/segin/nodist3d/issues)
+[![GitHub stars](https://img.shields.io/github/stars/segin/nodist3d)](https://github.com/segin/nodist3d/stargazers)
 
-**[Live Demo](https://segin2005.github.io/nodist3d/)** (coming soon)
+**[Live Demo](https://segin.github.io/nodist3d/)** (coming soon)
 
 ## Screenshots
 
@@ -58,7 +58,7 @@ The name "nodist3d" is a combination of:
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/segin2005/nodist3d.git
+    git clone https://github.com/segin/nodist3d.git
     ```
 2.  Navigate to the project directory:
     ```bash
@@ -99,4 +99,4 @@ This project is licensed under the ISC License. See the [LICENSE](LICENSE) file 
 
 ## Author
 
-*   **Kirn Gill II** - *Initial work* - [segin2005](https://github.com/segin2005)
+*   **Kirn Gill II** - *Initial work* - [segin](https://github.com/segin)
