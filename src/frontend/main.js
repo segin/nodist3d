@@ -1,3 +1,4 @@
+
 import { SceneManager } from './SceneManager.js';
 import { ObjectManager } from './ObjectManager.js';
 import { Pointer } from './Pointer.js';
@@ -5,6 +6,7 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import { GUI } from 'dat.gui';
 import { SceneGraph } from './SceneGraph.js';
 import { SceneStorage } from './SceneStorage.js';
+import { History } from './History.js';
 
 function main() {
     const canvas = document.querySelector('#c');
@@ -12,6 +14,7 @@ function main() {
     const objectManager = new ObjectManager(sceneManager.scene);
     const pointer = new Pointer(sceneManager.camera, sceneManager.scene, sceneManager.renderer);
     const sceneStorage = new SceneStorage(sceneManager.scene);
+    const history = new History(sceneManager.scene);
 
     const gui = new GUI();
     let currentObjectFolder = null;
@@ -44,6 +47,9 @@ function main() {
 
     transformControls.addEventListener('dragging-changed', function (event) {
         // sceneManager.controls.enabled = !event.value; // Assuming sceneManager.controls exists for camera movement
+        if (!event.value) {
+            history.saveState();
+        }
     });
 
     pointer.renderer.domElement.addEventListener('pointerdown', (event) => {
@@ -61,6 +67,7 @@ function main() {
 
     function animate() {
         transformControls.update();
+        sceneManager.controls.update(); // Update OrbitControls
         sceneManager.render();
         requestAnimationFrame(animate);
     }
@@ -89,6 +96,7 @@ function main() {
             transformControls.attach(newObject);
             updateGUI(newObject);
             sceneGraph.update();
+            history.saveState();
         });
         ui.appendChild(button);
     }
@@ -151,6 +159,7 @@ function main() {
             transformControls.detach();
             updateGUI(null);
             sceneGraph.update();
+            history.saveState(); // Save state after loading
         }
     });
     ui.appendChild(loadInput);
@@ -161,6 +170,30 @@ function main() {
         loadInput.click(); // Trigger the hidden file input
     });
     ui.appendChild(loadButton);
+
+    // Add Undo/Redo buttons
+    const undoButton = document.createElement('button');
+    undoButton.textContent = 'Undo';
+    undoButton.addEventListener('click', () => {
+        history.undo();
+        sceneGraph.update();
+        transformControls.detach();
+        updateGUI(null);
+    });
+    ui.appendChild(undoButton);
+
+    const redoButton = document.createElement('button');
+    redoButton.textContent = 'Redo';
+    redoButton.addEventListener('click', () => {
+        history.redo();
+        sceneGraph.update();
+        transformControls.detach();
+        updateGUI(null);
+    });
+    ui.appendChild(redoButton);
+
+    // Initial save state
+    history.saveState();
 }
 
 main();

@@ -1,5 +1,6 @@
 
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export class SceneManager {
     constructor(canvas) {
@@ -8,6 +9,14 @@ export class SceneManager {
         this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
         this.camera = new THREE.PerspectiveCamera(75, 2, 0.1, 5);
         this.camera.position.z = 2;
+
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true; // an animation loop is required when damping is enabled
+        this.controls.dampingFactor = 0.25;
+        this.controls.screenSpacePanning = false;
+        this.controls.minDistance = 1;
+        this.controls.maxDistance = 500;
+        this.controls.maxPolarAngle = Math.PI / 2;
 
         const light = new THREE.DirectionalLight(0xFFFFFF, 1);
         light.position.set(-1, 2, 4);
