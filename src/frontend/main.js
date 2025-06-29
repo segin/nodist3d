@@ -1,8 +1,8 @@
-
 import { SceneManager } from './SceneManager.js';
 import { ObjectManager } from './ObjectManager.js';
 import { Pointer } from './Pointer.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
+import { GUI } from 'dat.gui';
 
 function main() {
     const canvas = document.querySelector('#c');
@@ -10,19 +10,47 @@ function main() {
     const objectManager = new ObjectManager(sceneManager.scene);
     const pointer = new Pointer(sceneManager.camera, sceneManager.scene, sceneManager.renderer);
 
+    const gui = new GUI();
+    let currentObjectFolder = null;
+
+    function updateGUI(object) {
+        if (currentObjectFolder) {
+            gui.removeFolder(currentObjectFolder);
+        }
+
+        if (object) {
+            currentObjectFolder = gui.addFolder(object.uuid);
+            currentObjectFolder.add(object.position, 'x', -5, 5).name('Position X');
+            currentObjectFolder.add(object.position, 'y', -5, 5).name('Position Y');
+            currentObjectFolder.add(object.position, 'z', -5, 5).name('Position Z');
+            currentObjectFolder.add(object.rotation, 'x', -Math.PI, Math.PI).name('Rotation X');
+            currentObjectFolder.add(object.rotation, 'y', -Math.PI, Math.PI).name('Rotation Y');
+            currentObjectFolder.add(object.rotation, 'z', -Math.PI, Math.PI).name('Rotation Z');
+            currentObjectFolder.add(object.scale, 'x', 0.1, 5).name('Scale X');
+            currentObjectFolder.add(object.scale, 'y', 0.1, 5).name('Scale Y');
+            currentObjectFolder.add(object.scale, 'z', 0.1, 5).name('Scale Z');
+            if (object.material && object.material.color) {
+                currentObjectFolder.addColor(object.material, 'color').name('Color');
+            }
+            currentObjectFolder.open();
+        }
+    }
+
     const transformControls = new TransformControls(sceneManager.camera, sceneManager.renderer.domElement);
     sceneManager.scene.add(transformControls);
 
     transformControls.addEventListener('dragging-changed', function (event) {
-        sceneManager.controls.enabled = !event.value;
+        // sceneManager.controls.enabled = !event.value; // Assuming sceneManager.controls exists for camera movement
     });
 
     pointer.renderer.domElement.addEventListener('pointerdown', (event) => {
         pointer.onPointerDown(event);
         if (pointer.selectedObject) {
             transformControls.attach(pointer.selectedObject);
+            updateGUI(pointer.selectedObject);
         } else {
             transformControls.detach();
+            updateGUI(null);
         }
     });
 
@@ -52,6 +80,7 @@ function main() {
         button.addEventListener('click', () => {
             const newObject = addMethod();
             transformControls.attach(newObject);
+            updateGUI(newObject);
         });
         ui.appendChild(button);
     }
