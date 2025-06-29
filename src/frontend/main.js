@@ -105,6 +105,90 @@ function main() {
         objectManager.addOctahedron();
     });
     ui.appendChild(addOctahedronButton);
+
+    const addPlaneButton = document.createElement('button');
+    addPlaneButton.textContent = 'Add Plane';
+    addPlaneButton.addEventListener('click', () => {
+        objectManager.addPlane();
+    });
+    ui.appendChild(addPlaneButton);
+
+    const addPlaneButton = document.createElement('button');
+    addPlaneButton.textContent = 'Add Plane';
+    addPlaneButton.addEventListener('click', () => {
+        objectManager.addPlane();
+    });
+    ui.appendChild(addPlaneButton);
+
+    const addPlaneButton = document.createElement('button');
+    addPlaneButton.textContent = 'Add Plane';
+    addPlaneButton.addEventListener('click', () => {
+        objectManager.addPlane();
+    });
+    ui.appendChild(addPlaneButton);
+
+    const addPlaneButton = document.createElement('button');
+    addPlaneButton.textContent = 'Add Plane';
+    addPlaneButton.addEventListener('click', () => {
+        objectManager.addPlane();
+    });
+    ui.appendChild(addPlaneButton);
+
+    const addPlaneButton = document.createElement('button');
+    addPlaneButton.textContent = 'Add Plane';
+    addPlaneButton.addEventListener('click', () => {
+        objectManager.addPlane();
+    });
+    ui.appendChild(addPlaneButton);
+
+    const addPlaneButton = document.createElement('button');
+    addPlaneButton.textContent = 'Add Plane';
+    addPlaneButton.addEventListener('click', () => {
+        objectManager.addPlane();
+    });
+    ui.appendChild(addPlaneButton);
+
+    const addPlaneButton = document.createElement('button');
+    addPlaneButton.textContent = 'Add Plane';
+    addPlaneButton.addEventListener('click', () => {
+        objectManager.addPlane();
+    });
+    ui.appendChild(addPlaneButton);
+
+    const addPlaneButton = document.createElement('button');
+    addPlaneButton.textContent = 'Add Plane';
+    addPlaneButton.addEventListener('click', () => {
+        objectManager.addPlane();
+    });
+    ui.appendChild(addPlaneButton);
+
+    const addPlaneButton = document.createElement('button');
+    addPlaneButton.textContent = 'Add Plane';
+    addPlaneButton.addEventListener('click', () => {
+        objectManager.addPlane();
+    });
+    ui.appendChild(addPlaneButton);
+
+    const addPlaneButton = document.createElement('button');
+    addPlaneButton.textContent = 'Add Plane';
+    addPlaneButton.addEventListener('click', () => {
+        objectManager.addPlane();
+    });
+    ui.appendChild(addPlaneButton);
+
+    const addPlaneButton = document.createElement('button');
+    addPlaneButton.textContent = 'Add Plane';
+    addPlaneButton.addEventListener('click', () => {
+        objectManager.addPlane();
+    });
+    ui.appendChild(addPlaneButton);
+
+    const addPlaneButton = document.createElement('button');
+    addPlaneButton.textContent = 'Add Plane';
+    addPlaneButton.addEventListener('click', () => {
+        objectManager.addPlane();
+    });
+    ui.appendChild(addPlaneButton);
 }
 
 main();

@@ -32,8 +32,8 @@ The name "nodist3d" is a combination of:
     -   [x] Tetrahedron (Triangle)
     -   [x] Icosahedron
     -   [x] Dodecahedron
-    -   [ ] Octahedron
-    -   [ ] Plane
+    -   [x] Octahedron
+    -   [x] Plane
     -   [ ] Tube
     -   [ ] Teapot
 -   **Mobile-First Design:** The user interface is fully responsive and optimized for touch-based interactions on mobile devices.
@@ -141,8 +141,8 @@ This checklist meticulously tracks all requirements and tasks derived from the i
     -   [x] Tetrahedron (Triangle)
     -   [x] Icosahedron
     -   [x] Dodecahedron
-    -   [ ] Octahedron
-    -   [ ] Plane
+    -   [x] Octahedron
+    -   [x] Plane
     -   [ ] Tube
     -   [ ] Teapot
 -   [ ] Optimize the application interface for mobile.
