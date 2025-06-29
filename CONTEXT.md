@@ -22,6 +22,8 @@
 - Implemented zoom camera control.
 
 ### Next Steps:
+- Implement a grid helper for better scene orientation.
+- Implement an axis helper for better scene orientation.
 - Implement material editing.
 
 ### Ideas & Notes:
