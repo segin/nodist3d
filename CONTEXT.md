@@ -23,9 +23,10 @@
 - Implemented grid helper.
 - Implemented axis helper.
 - Implemented material editing (color, roughness, metallicness, texture mapping).
+- Implemented light source manipulation (adding ambient, directional, and point lights).
 
 ### Next Steps:
-- Implement light source manipulation.
+- Implement light source manipulation (adjusting intensity and position).
 
 ### Ideas & Notes:
 - Consider using dat.GUI or similar library for easier UI control generation.

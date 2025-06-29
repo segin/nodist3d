@@ -7,6 +7,7 @@ import { GUI } from 'dat.gui';
 import { SceneGraph } from './SceneGraph.js';
 import { SceneStorage } from './SceneStorage.js';
 import { History } from './History.js';
+import { LightManager } from './LightManager.js';
 
 function main() {
     const canvas = document.querySelector('#c');
@@ -15,6 +16,7 @@ function main() {
     const pointer = new Pointer(sceneManager.camera, sceneManager.scene, sceneManager.renderer);
     const sceneStorage = new SceneStorage(sceneManager.scene);
     const history = new History(sceneManager.scene);
+    const lightManager = new LightManager(sceneManager.scene);
 
     const gui = new GUI();
     let currentObjectFolder = null;
@@ -57,6 +59,27 @@ function main() {
             currentObjectFolder.open();
         }
     }
+
+    const lightFolder = gui.addFolder('Lights');
+    lightFolder.add({
+        addAmbientLight: () => {
+            const light = lightManager.addLight('AmbientLight', 0x404040, 1);
+            history.saveState();
+        }
+    }, 'addAmbientLight').name('Add Ambient Light');
+    lightFolder.add({
+        addDirectionalLight: () => {
+            const light = lightManager.addLight('DirectionalLight', 0xffffff, 1, { x: 1, y: 1, z: 1 });
+            history.saveState();
+        }
+    }, 'addDirectionalLight').name('Add Directional Light');
+    lightFolder.add({
+        addPointLight: () => {
+            const light = lightManager.addLight('PointLight', 0xffffff, 1, { x: 0, y: 0, z: 0 });
+            history.saveState();
+        }
+    }, 'addPointLight').name('Add Point Light');
+    lightFolder.open();
 
     const transformControls = new TransformControls(sceneManager.camera, sceneManager.renderer.domElement);
     sceneManager.scene.add(transformControls);
