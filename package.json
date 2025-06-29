@@ -1,0 +1,28 @@
+{
+  "name": "nodist3d",
+  "version": "1.0.0",
+  "description": "A web-based 3D modeling program.",
+  "main": "src/backend/server.js",
+  "scripts": {
+    "start": "node src/backend/server.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "3d",
+    "modeling",
+    "webgl",
+    "three.js",
+    "nodejs"
+  ],
+  "author": "Kirn Gill II <segin2005@gmail.com>",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "express": "^4.19.2",
+    "sqlite3": "^5.1.7",
+    "three": "^0.164.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  }
