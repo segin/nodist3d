@@ -29,9 +29,9 @@ The name "nodist3d" is a combination of:
     -   [x] Cone
     -   [x] Torus
     -   [x] Torus Knot
-    -   [ ] Tetrahedron (Triangle)
-    -   [ ] Icosahedron
-    -   [ ] Dodecahedron
+    -   [x] Tetrahedron (Triangle)
+    -   [x] Icosahedron
+    -   [x] Dodecahedron
     -   [ ] Octahedron
     -   [ ] Plane
     -   [ ] Tube
@@ -100,3 +100,109 @@ This project is licensed under the ISC License. See the [LICENSE](LICENSE) file 
 ## Author
 
 *   **Kirn Gill II** - *Initial work* - [segin](https://github.com/segin)
+
+## Project Checklist
+
+This checklist meticulously tracks all requirements and tasks derived from the initial `PROMPT.md`.
+
+### Project Setup & Management
+
+-   [ ] Create a web-based 3D modeling program.
+-   [ ] Use Node.js to host the backend.
+-   [ ] Use WebGL to render everything in the browser.
+-   [ ] Create a Git repository in this directory if one does not exist (checked using `find` command).
+-   [ ] Meticulously add each item to a central `README.md` document.
+-   [ ] First create a blank `README.md`.
+-   [ ] Commit the blank `README.md`.
+-   [ ] Commit `README.md` after adding all checkboxes.
+-   [ ] Each primitive object shall be a new checkbox in the list.
+-   [ ] Create a `CONTEXT.md` file for working context, ideas, and progress.
+-   [ ] Treat `CONTEXT.md` as a cache; clear it out once done with something.
+-   [ ] Commit changes to `CONTEXT.md` to the Git repository.
+-   [ ] Check for the existence of `gh` using Termux `pkg` commands.
+-   [ ] Take note of all installed `pkg` and `npm` packages before getting started.
+-   [x] Create a GitHub repository `nodist3d`.
+-   [x] Push each commit to GitHub as it happens.
+-   [ ] Explain that the name is Node.js + -ist + 3D.
+-   [ ] Save this original prompt as `PROMPT.md`.
+-   [ ] Commit `PROMPT.md`.
+-   [ ] Never change `PROMPT.md`.
+
+### Core Functionality
+
+-   [ ] Include support for all basic 3D primitives.
+-   [ ] Come up with a list of 3D primitives to include in the default set (and ensure the list is not too short).
+    -   [x] Box (Cube)
+    -   [x] Sphere
+    -   [x] Cylinder
+    -   [x] Cone
+    -   [x] Torus
+    -   [x] Torus Knot
+    -   [x] Tetrahedron (Triangle)
+    -   [x] Icosahedron
+    -   [x] Dodecahedron
+    -   [ ] Octahedron
+    -   [ ] Plane
+    -   [ ] Tube
+    -   [ ] Teapot
+-   [ ] Optimize the application interface for mobile.
+-   [ ] Node.js webserver listens on localhost for a browser to connect to.
+-   [ ] Optimize the code.
+-   [ ] Use a custom zip file format with JSON data inside for persistent local storage.
+-   [ ] Make sure there is an interface button on the user controls of the web frontend to easily enter and leave full screen mode.
+
+### Testing
+
+-   [ ] Create a suite of unit tests.
+-   [ ] Create a full test harness.
+-   [ ] Test the full codebase.
+
+## Roadmap
+
+This section outlines potential future enhancements and features for nodist3d.
+
+### User Interface & Experience
+
+-   [ ] Implement interactive controls for object manipulation (translate, rotate, scale).
+-   [ ] Add a property panel to adjust primitive parameters (e.g., cube dimensions, sphere radius).
+-   [ ] Implement a scene graph/outliner to manage multiple objects.
+-   [ ] Add undo/redo functionality.
+-   [ ] Implement a camera control system (orbit, pan, zoom).
+-   [ ] Add a grid helper and axis helper for better scene orientation.
+-   [ ] Implement material editing (color, roughness, metallic, etc.).
+-   [ ] Add light source manipulation (type, intensity, position).
+-   [ ] Implement a "snap to grid" feature.
+-   [ ] Add a selection mechanism for objects.
+-   [ ] Implement object grouping/ungrouping.
+-   [ ] Add a "duplicate object" feature.
+-   [ ] Implement a "delete object" feature.
+-   [ ] Add a "reset view" button.
+-   [ ] Implement a "save as image" feature for rendering the scene.
+
+### Core Functionality & Primitives
+
+-   [ ] Implement remaining primitives: Octahedron, Plane, Tube, Teapot.
+-   [ ] Add more complex primitives (e.g., LatheGeometry, ExtrudeGeometry, TextGeometry).
+-   [ ] Implement boolean operations (CSG - Constructive Solid Geometry) for combining/subtracting objects.
+-   [ ] Add support for importing/exporting common 3D formats (e.g., OBJ, GLTF).
+-   [ ] Implement a custom shader editor for advanced material customization.
+-   [ ] Add support for textures.
+-   [ ] Implement a physics engine for basic simulations.
+
+### Backend & Storage
+
+-   [ ] Implement the custom zip file format for local storage.
+-   [ ] Add cloud storage integration (e.g., Google Drive, Dropbox) for scene persistence.
+-   [ ] Implement real-time collaboration features (multi-user editing).
+
+### Performance & Optimization
+
+-   [ ] Implement level of detail (LOD) for complex scenes.
+-   [ ] Optimize rendering performance for mobile devices.
+-   [ ] Implement Web Workers for offloading heavy computations.
+
+### Testing & CI/CD
+
+-   [ ] Expand unit test coverage for all new features.
+-   [ ] Implement end-to-end (E2E) tests for UI interactions.
+-   [ ] Set up a Continuous Integration/Continuous Deployment (CI/CD) pipeline for automated testing and deployment.

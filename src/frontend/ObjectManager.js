@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 
 export class ObjectManager {
@@ -75,5 +74,65 @@ export class ObjectManager {
         const torusKnot = new THREE.Mesh(geometry, material);
         this.scene.add(torusKnot);
         return torusKnot;
+    }
+
+    addTetrahedron() {
+        const radius = 0.7;
+        const detail = 0; // 0 for tetrahedron
+        const geometry = new THREE.IcosahedronGeometry(radius, detail);
+        const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 }); // Green color for tetrahedron
+        const tetrahedron = new THREE.Mesh(geometry, material);
+        this.scene.add(tetrahedron);
+        return tetrahedron;
+    }
+
+    addIcosahedron() {
+        const radius = 0.7;
+        const detail = 0;
+        const geometry = new THREE.IcosahedronGeometry(radius, detail);
+        const material = new THREE.MeshPhongMaterial({ color: 0x00ffff }); // Cyan color for icosahedron
+        const icosahedron = new THREE.Mesh(geometry, material);
+        this.scene.add(icosahedron);
+        return icosahedron;
+    }
+
+    addDodecahedron() {
+        const radius = 0.7;
+        const detail = 0;
+        const geometry = new THREE.DodecahedronGeometry(radius, detail);
+        const material = new THREE.MeshPhongMaterial({ color: 0xff00ff }); // Magenta color for dodecahedron
+        const dodecahedron = new THREE.Mesh(geometry, material);
+        this.scene.add(dodecahedron);
+        return dodecahedron;
+    }
+
+    addOctahedron() {
+        const radius = 0.7;
+        const detail = 0;
+        const geometry = new THREE.OctahedronGeometry(radius, detail);
+        const material = new THREE.MeshPhongMaterial({ color: 0x008080 }); // Teal color for octahedron
+        const octahedron = new THREE.Mesh(geometry, material);
+        this.scene.add(octahedron);
+        return octahedron;
+    }
+
+    addOctahedron() {
+        const radius = 0.7;
+        const detail = 0;
+        const geometry = new THREE.OctahedronGeometry(radius, detail);
+        const material = new THREE.MeshPhongMaterial({ color: 0x008080 }); // Teal color for octahedron
+        const octahedron = new THREE.Mesh(geometry, material);
+        this.scene.add(octahedron);
+        return octahedron;
+    }
+
+    addOctahedron() {
+        const radius = 0.7;
+        const detail = 0;
+        const geometry = new THREE.OctahedronGeometry(radius, detail);
+        const material = new THREE.MeshPhongMaterial({ color: 0x008080 }); // Teal color for octahedron
+        const octahedron = new THREE.Mesh(geometry, material);
+        this.scene.add(octahedron);
+        return octahedron;
     }
 }

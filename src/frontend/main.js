@@ -77,6 +77,34 @@ function main() {
         objectManager.addTorusKnot();
     });
     ui.appendChild(addTorusKnotButton);
+
+    const addTetrahedronButton = document.createElement('button');
+    addTetrahedronButton.textContent = 'Add Tetrahedron';
+    addTetrahedronButton.addEventListener('click', () => {
+        objectManager.addTetrahedron();
+    });
+    ui.appendChild(addTetrahedronButton);
+
+    const addIcosahedronButton = document.createElement('button');
+    addIcosahedronButton.textContent = 'Add Icosahedron';
+    addIcosahedronButton.addEventListener('click', () => {
+        objectManager.addIcosahedron();
+    });
+    ui.appendChild(addIcosahedronButton);
+
+    const addDodecahedronButton = document.createElement('button');
+    addDodecahedronButton.textContent = 'Add Dodecahedron';
+    addDodecahedronButton.addEventListener('click', () => {
+        objectManager.addDodecahedron();
+    });
+    ui.appendChild(addDodecahedronButton);
+
+    const addOctahedronButton = document.createElement('button');
+    addOctahedronButton.textContent = 'Add Octahedron';
+    addOctahedronButton.addEventListener('click', () => {
+        objectManager.addOctahedron();
+    });
+    ui.appendChild(addOctahedronButton);
 }
 
 main();
