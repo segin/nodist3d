@@ -20,43 +20,61 @@ function main() {
 
     const gui = new GUI();
     let currentObjectFolder = null;
+    let currentLightFolder = null;
 
     function updateGUI(object) {
         if (currentObjectFolder) {
             gui.removeFolder(currentObjectFolder);
+            currentObjectFolder = null;
+        }
+        if (currentLightFolder) {
+            gui.removeFolder(currentLightFolder);
+            currentLightFolder = null;
         }
 
         if (object) {
-            currentObjectFolder = gui.addFolder(object.uuid);
-            currentObjectFolder.add(object.position, 'x', -5, 5).name('Position X');
-            currentObjectFolder.add(object.position, 'y', -5, 5).name('Position Y');
-            currentObjectFolder.add(object.position, 'z', -5, 5).name('Position Z');
-            currentObjectFolder.add(object.rotation, 'x', -Math.PI, Math.PI).name('Rotation X');
-            currentObjectFolder.add(object.rotation, 'y', -Math.PI, Math.PI).name('Rotation Y');
-            currentObjectFolder.add(object.rotation, 'z', -Math.PI, Math.PI).name('Rotation Z');
-            currentObjectFolder.add(object.scale, 'x', 0.1, 5).name('Scale X');
-            currentObjectFolder.add(object.scale, 'y', 0.1, 5).name('Scale Y');
-            currentObjectFolder.add(object.scale, 'z', 0.1, 5).name('Scale Z');
-            if (object.material) {
-                const materialFolder = currentObjectFolder.addFolder('Material');
-                if (object.material.color) {
-                    materialFolder.addColor(object.material, 'color').name('Color').onChange(() => history.saveState());
+            if (object.isLight) {
+                currentLightFolder = gui.addFolder(object.name || object.uuid);
+                currentLightFolder.addColor(object, 'color').name('Color').onChange(() => history.saveState());
+                currentLightFolder.add(object, 'intensity', 0, 2).name('Intensity').onChange(() => history.saveState());
+                if (object.position) {
+                    currentLightFolder.add(object.position, 'x', -10, 10).name('Position X').onChange(() => history.saveState());
+                    currentLightFolder.add(object.position, 'y', -10, 10).name('Position Y').onChange(() => history.saveState());
+                    currentLightFolder.add(object.position, 'z', -10, 10).name('Position Z').onChange(() => history.saveState());
                 }
-                if (object.material.roughness !== undefined) {
-                    materialFolder.add(object.material, 'roughness', 0, 1).name('Roughness').onChange(() => history.saveState());
-                }
-                if (object.material.metalness !== undefined) {
-                    materialFolder.add(object.material, 'metalness', 0, 1).name('Metalness').onChange(() => history.saveState());
-                }
-                materialFolder.add({
-                    addTexture: () => {
-                        objectManager.addTexture(object, 'assets/placeholder_texture.png');
-                        history.saveState();
+                currentLightFolder.open();
+            } else {
+                currentObjectFolder = gui.addFolder(object.name || object.uuid);
+                currentObjectFolder.add(object.position, 'x', -5, 5).name('Position X').onChange(() => history.saveState());
+                currentObjectFolder.add(object.position, 'y', -5, 5).name('Position Y').onChange(() => history.saveState());
+                currentObjectFolder.add(object.position, 'z', -5, 5).name('Position Z').onChange(() => history.saveState());
+                currentObjectFolder.add(object.rotation, 'x', -Math.PI, Math.PI).name('Rotation X').onChange(() => history.saveState());
+                currentObjectFolder.add(object.rotation, 'y', -Math.PI, Math.PI).name('Rotation Y').onChange(() => history.saveState());
+                currentObjectFolder.add(object.rotation, 'z', -Math.PI, Math.PI).name('Rotation Z').onChange(() => history.saveState());
+                currentObjectFolder.add(object.scale, 'x', 0.1, 5).name('Scale X').onChange(() => history.saveState());
+                currentObjectFolder.add(object.scale, 'y', 0.1, 5).name('Scale Y').onChange(() => history.saveState());
+                currentObjectFolder.add(object.scale, 'z', 0.1, 5).name('Scale Z').onChange(() => history.saveState());
+                if (object.material) {
+                    const materialFolder = currentObjectFolder.addFolder('Material');
+                    if (object.material.color) {
+                        materialFolder.addColor(object.material, 'color').name('Color').onChange(() => history.saveState());
                     }
-                }, 'addTexture').name('Add Texture');
-                materialFolder.open();
+                    if (object.material.roughness !== undefined) {
+                        materialFolder.add(object.material, 'roughness', 0, 1).name('Roughness').onChange(() => history.saveState());
+                    }
+                    if (object.material.metalness !== undefined) {
+                        materialFolder.add(object.material, 'metalness', 0, 1).name('Metalness').onChange(() => history.saveState());
+                    }
+                    materialFolder.add({
+                        addTexture: () => {
+                            objectManager.addTexture(object, 'assets/placeholder_texture.png');
+                            history.saveState();
+                        }
+                    }, 'addTexture').name('Add Texture');
+                    materialFolder.open();
+                }
+                currentObjectFolder.open();
             }
-            currentObjectFolder.open();
         }
     }
 
@@ -64,19 +82,25 @@ function main() {
     lightFolder.add({
         addAmbientLight: () => {
             const light = lightManager.addLight('AmbientLight', 0x404040, 1);
+            light.name = 'AmbientLight';
             history.saveState();
+            sceneGraph.update();
         }
     }, 'addAmbientLight').name('Add Ambient Light');
     lightFolder.add({
         addDirectionalLight: () => {
             const light = lightManager.addLight('DirectionalLight', 0xffffff, 1, { x: 1, y: 1, z: 1 });
+            light.name = 'DirectionalLight';
             history.saveState();
+            sceneGraph.update();
         }
     }, 'addDirectionalLight').name('Add Directional Light');
     lightFolder.add({
         addPointLight: () => {
             const light = lightManager.addLight('PointLight', 0xffffff, 1, { x: 0, y: 0, z: 0 });
+            light.name = 'PointLight';
             history.saveState();
+            sceneGraph.update();
         }
     }, 'addPointLight').name('Add Point Light');
     lightFolder.open();

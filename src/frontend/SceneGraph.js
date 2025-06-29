@@ -19,7 +19,10 @@ export class SceneGraph {
         const ul = document.createElement('ul');
 
         this.scene.children.forEach(object => {
-            if (object instanceof THREE.Mesh) { // Only show Mesh objects in the scene graph
+            const isLight = object.isLight; // Check if the object is a light
+            const isMesh = object instanceof THREE.Mesh; // Check if the object is a mesh
+
+            if (isLight || isMesh) { // Only show Mesh objects and Lights in the scene graph
                 const li = document.createElement('li');
 
                 const nameSpan = document.createElement('span');

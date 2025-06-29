@@ -18,7 +18,7 @@ export class LightManager {
         this.lights.push(directionalLight);
     }
 
-    addLight(type, color, intensity, position) {
+    addLight(type, color, intensity, position, name) {
         let light;
         switch (type) {
             case 'PointLight':
@@ -37,6 +37,7 @@ export class LightManager {
         if (position) {
             light.position.set(position.x, position.y, position.z);
         }
+        light.name = name || type;
         this.scene.add(light);
         this.lights.push(light);
         return light;
