@@ -38,13 +38,13 @@ function main() {
             if (object.material) {
                 const materialFolder = currentObjectFolder.addFolder('Material');
                 if (object.material.color) {
-                    materialFolder.addColor(object.material, 'color').name('Color');
+                    materialFolder.addColor(object.material, 'color').name('Color').onChange(() => history.saveState());
                 }
                 if (object.material.roughness !== undefined) {
-                    materialFolder.add(object.material, 'roughness', 0, 1).name('Roughness');
+                    materialFolder.add(object.material, 'roughness', 0, 1).name('Roughness').onChange(() => history.saveState());
                 }
                 if (object.material.metalness !== undefined) {
-                    materialFolder.add(object.material, 'metalness', 0, 1).name('Metalness');
+                    materialFolder.add(object.material, 'metalness', 0, 1).name('Metalness').onChange(() => history.saveState());
                 }
                 materialFolder.open();
             }

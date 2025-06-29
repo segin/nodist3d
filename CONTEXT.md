@@ -1,7 +1,7 @@
 ## Working Context, Ideas, and Progress for nodist3d
 
 ### Current Focus:
-- Implementing light source manipulation.
+- Implementing material editing: texture mapping.
 
 ### Completed Tasks:
 - Implemented Box (Cube), Sphere, Cylinder, Cone, Torus, Torus Knot, Tetrahedron, Icosahedron, Dodecahedron, Octahedron, Plane, Tube, and Teapot primitives.
@@ -25,7 +25,7 @@
 - Implemented material editing (color, roughness, metallicness).
 
 ### Next Steps:
-- Implement light source manipulation.
+- Implement texture mapping.
 
 ### Ideas & Notes:
 - Consider using dat.GUI or similar library for easier UI control generation.

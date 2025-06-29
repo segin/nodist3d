@@ -175,4 +175,12 @@ export class ObjectManager {
             object.material.needsUpdate = true;
         }
     }
+
+    addTexture(object, texturePath) {
+        const loader = new THREE.TextureLoader();
+        loader.load(texturePath, (texture) => {
+            object.material.map = texture;
+            object.material.needsUpdate = true;
+        });
+    }
 }
