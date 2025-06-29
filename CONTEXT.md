@@ -1,7 +1,7 @@
 ## Working Context, Ideas, and Progress for nodist3d
 
 ### Current Focus:
-- Enhancing scene graph/outliner with object renaming and deletion.
+- Implementing custom zip file format with JSON data inside for persistent local storage.
 
 ### Completed Tasks:
 - Implemented Box (Cube), Sphere, Cylinder, Cone, Torus, Torus Knot, Tetrahedron, Icosahedron, Dodecahedron, Octahedron, Plane, Tube, and Teapot primitives.
@@ -14,6 +14,7 @@
 - Removed `frontend.test.js` due to `puppeteer` incompatibility on Termux.
 - Implemented basic scene graph/outliner to list objects.
 - Implemented unit tests and a full test harness, including Jest configuration for ES Modules and fixing the `TeapotGeometry` test.
+- Implemented scene saving and loading using a custom zip file format with JSON data.
 
 ### Next Steps:
 - Implement object renaming and deletion in the scene graph.
