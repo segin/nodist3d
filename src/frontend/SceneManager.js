@@ -23,6 +23,12 @@ export class SceneManager {
         light.position.set(-1, 2, 4);
         this.scene.add(light);
 
+        const gridHelper = new THREE.GridHelper(10, 10);
+        this.scene.add(gridHelper);
+
+        const axesHelper = new THREE.AxesHelper(5);
+        this.scene.add(axesHelper);
+
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
         this.onWindowResize();
     }

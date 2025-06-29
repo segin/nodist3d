@@ -20,10 +20,10 @@
 - Implemented orbit camera control.
 - Implemented pan camera control.
 - Implemented zoom camera control.
+- Implemented grid helper.
+- Implemented axis helper.
 
 ### Next Steps:
-- Implement a grid helper for better scene orientation.
-- Implement an axis helper for better scene orientation.
 - Implement material editing.
 
 ### Ideas & Notes:
