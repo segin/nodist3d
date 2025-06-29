@@ -1,7 +1,7 @@
 ## Working Context, Ideas, and Progress for nodist3d
 
 ### Current Focus:
-- Implementing camera controls.
+- Implementing pan camera control.
 
 ### Completed Tasks:
 - Implemented Box (Cube), Sphere, Cylinder, Cone, Torus, Torus Knot, Tetrahedron, Icosahedron, Dodecahedron, Octahedron, Plane, Tube, and Teapot primitives.
@@ -17,9 +17,11 @@
 - Implemented scene saving and loading using a custom zip file format with JSON data.
 - Implemented undo functionality.
 - Implemented redo functionality.
+- Implemented orbit camera control.
 
 ### Next Steps:
-- Implement camera controls.
+- Implement pan camera control.
+- Implement zoom camera control.
 
 ### Ideas & Notes:
 - Consider using dat.GUI or similar library for easier UI control generation.
