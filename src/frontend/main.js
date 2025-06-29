@@ -70,6 +70,13 @@ function main() {
         objectManager.addTorus();
     });
     ui.appendChild(addTorusButton);
+
+    const addTorusKnotButton = document.createElement('button');
+    addTorusKnotButton.textContent = 'Add Torus Knot';
+    addTorusKnotButton.addEventListener('click', () => {
+        objectManager.addTorusKnot();
+    });
+    ui.appendChild(addTorusKnotButton);
 }
 
 main();

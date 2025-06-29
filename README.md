@@ -28,7 +28,7 @@ The name "nodist3d" is a combination of:
     -   [x] Cylinder
     -   [x] Cone
     -   [x] Torus
-    -   [ ] Torus Knot
+    -   [x] Torus Knot
     -   [ ] Tetrahedron (Triangle)
     -   [ ] Icosahedron
     -   [ ] Dodecahedron
