@@ -75,7 +75,8 @@ function main() {
     addTorusKnotButton.textContent = 'Add Torus Knot';
     addTorusKnotButton.addEventListener('click', () => {
         objectManager.addTorusKnot();
-    });
+    }
+    );
     ui.appendChild(addTorusKnotButton);
 
     const addTetrahedronButton = document.createElement('button');
@@ -113,82 +114,19 @@ function main() {
     });
     ui.appendChild(addPlaneButton);
 
-    const addPlaneButton = document.createElement('button');
-    addPlaneButton.textContent = 'Add Plane';
-    addPlaneButton.addEventListener('click', () => {
-        objectManager.addPlane();
+    const addTubeButton = document.createElement('button');
+    addTubeButton.textContent = 'Add Tube';
+    addTubeButton.addEventListener('click', () => {
+        objectManager.addTube();
     });
-    ui.appendChild(addPlaneButton);
+    ui.appendChild(addTubeButton);
 
-    const addPlaneButton = document.createElement('button');
-    addPlaneButton.textContent = 'Add Plane';
-    addPlaneButton.addEventListener('click', () => {
-        objectManager.addPlane();
+    const addTeapotButton = document.createElement('button');
+    addTeapotButton.textContent = 'Add Teapot';
+    addTeapotButton.addEventListener('click', () => {
+        objectManager.addTeapot();
     });
-    ui.appendChild(addPlaneButton);
-
-    const addPlaneButton = document.createElement('button');
-    addPlaneButton.textContent = 'Add Plane';
-    addPlaneButton.addEventListener('click', () => {
-        objectManager.addPlane();
-    });
-    ui.appendChild(addPlaneButton);
-
-    const addPlaneButton = document.createElement('button');
-    addPlaneButton.textContent = 'Add Plane';
-    addPlaneButton.addEventListener('click', () => {
-        objectManager.addPlane();
-    });
-    ui.appendChild(addPlaneButton);
-
-    const addPlaneButton = document.createElement('button');
-    addPlaneButton.textContent = 'Add Plane';
-    addPlaneButton.addEventListener('click', () => {
-        objectManager.addPlane();
-    });
-    ui.appendChild(addPlaneButton);
-
-    const addPlaneButton = document.createElement('button');
-    addPlaneButton.textContent = 'Add Plane';
-    addPlaneButton.addEventListener('click', () => {
-        objectManager.addPlane();
-    });
-    ui.appendChild(addPlaneButton);
-
-    const addPlaneButton = document.createElement('button');
-    addPlaneButton.textContent = 'Add Plane';
-    addPlaneButton.addEventListener('click', () => {
-        objectManager.addPlane();
-    });
-    ui.appendChild(addPlaneButton);
-
-    const addPlaneButton = document.createElement('button');
-    addPlaneButton.textContent = 'Add Plane';
-    addPlaneButton.addEventListener('click', () => {
-        objectManager.addPlane();
-    });
-    ui.appendChild(addPlaneButton);
-
-    const addPlaneButton = document.createElement('button');
-    addPlaneButton.textContent = 'Add Plane';
-    addPlaneButton.addEventListener('click', () => {
-        objectManager.addPlane();
-    });
-    ui.appendChild(addPlaneButton);
-
-    const addPlaneButton = document.createElement('button');
-    addPlaneButton.textContent = 'Add Plane';
-    addPlaneButton.addEventListener('click', () => {
-        objectManager.addPlane();
-    });
-    ui.appendChild(addPlaneButton);
-
-    const addPlaneButton = document.createElement('button');
-    addPlaneButton.textContent = 'Add Plane';
-    addPlaneButton.addEventListener('click', () => {
-        objectManager.addPlane();
-    });
-    ui.appendChild(addPlaneButton);
+    ui.appendChild(addTeapotButton);
 }
 
 main();

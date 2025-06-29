@@ -1,4 +1,6 @@
+
 import * as THREE from 'three';
+import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry.js';
 
 export class ObjectManager {
     constructor(scene) {
@@ -126,93 +128,36 @@ export class ObjectManager {
         return plane;
     }
 
-    addPlane() {
-        const width = 1;
-        const height = 1;
-        const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshPhongMaterial({ color: 0x808080, side: THREE.DoubleSide }); // Gray color for plane, DoubleSide to see from both sides
-        const plane = new THREE.Mesh(geometry, material);
-        this.scene.add(plane);
-        return plane;
+    addTube() {
+        const path = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(-1, -1, 0),
+            new THREE.Vector3(-0.5, 1, 0),
+            new THREE.Vector3(0.5, -1, 0),
+            new THREE.Vector3(1, 1, 0)
+        ]);
+        const tubularSegments = 20;
+        const radius = 0.2;
+        const radialSegments = 8;
+        const closed = false;
+        const geometry = new THREE.TubeGeometry(path, tubularSegments, radius, radialSegments, closed);
+        const material = new THREE.MeshPhongMaterial({ color: 0xffc0cb }); // Pink color for tube
+        const tube = new THREE.Mesh(geometry, material);
+        this.scene.add(tube);
+        return tube;
     }
 
-    addPlane() {
-        const width = 1;
-        const height = 1;
-        const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshPhongMaterial({ color: 0x808080, side: THREE.DoubleSide }); // Gray color for plane, DoubleSide to see from both sides
-        const plane = new THREE.Mesh(geometry, material);
-        this.scene.add(plane);
-        return plane;
-    }
-
-    addPlane() {
-        const width = 1;
-        const height = 1;
-        const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshPhongMaterial({ color: 0x808080, side: THREE.DoubleSide }); // Gray color for plane, DoubleSide to see from both sides
-        const plane = new THREE.Mesh(geometry, material);
-        this.scene.add(plane);
-        return plane;
-    }
-
-    addPlane() {
-        const width = 1;
-        const height = 1;
-        const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshPhongMaterial({ color: 0x808080, side: THREE.DoubleSide }); // Gray color for plane, DoubleSide to see from both sides
-        const plane = new THREE.Mesh(geometry, material);
-        this.scene.add(plane);
-        return plane;
-    }
-
-    addPlane() {
-        const width = 1;
-        const height = 1;
-        const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshPhongMaterial({ color: 0x808080, side: THREE.DoubleSide }); // Gray color for plane, DoubleSide to see from both sides
-        const plane = new THREE.Mesh(geometry, material);
-        this.scene.add(plane);
-        return plane;
-    }
-
-    addPlane() {
-        const width = 1;
-        const height = 1;
-        const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshPhongMaterial({ color: 0x808080, side: THREE.DoubleSide }); // Gray color for plane, DoubleSide to see from both sides
-        const plane = new THREE.Mesh(geometry, material);
-        this.scene.add(plane);
-        return plane;
-    }
-
-    addPlane() {
-        const width = 1;
-        const height = 1;
-        const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshPhongMaterial({ color: 0x808080, side: THREE.DoubleSide }); // Gray color for plane, DoubleSide to see from both sides
-        const plane = new THREE.Mesh(geometry, material);
-        this.scene.add(plane);
-        return plane;
-    }
-
-    addPlane() {
-        const width = 1;
-        const height = 1;
-        const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshPhongMaterial({ color: 0x808080, side: THREE.DoubleSide }); // Gray color for plane, DoubleSide to see from both sides
-        const plane = new THREE.Mesh(geometry, material);
-        this.scene.add(plane);
-        return plane;
-    }
-
-    addPlane() {
-        const width = 1;
-        const height = 1;
-        const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshPhongMaterial({ color: 0x808080, side: THREE.DoubleSide }); // Gray color for plane, DoubleSide to see from both sides
-        const plane = new THREE.Mesh(geometry, material);
-        this.scene.add(plane);
-        return plane;
+    addTeapot() {
+        const size = 0.5;
+        const segments = 10;
+        const bottom = true;
+        const lid = true;
+        const body = true;
+        const fitLid = false;
+        const blinn = true;
+        const geometry = new TeapotGeometry(size, segments, bottom, lid, body, fitLid, blinn);
+        const material = new THREE.MeshPhongMaterial({ color: 0x800000 }); // Maroon color for teapot
+        const teapot = new THREE.Mesh(geometry, material);
+        this.scene.add(teapot);
+        return teapot;
     }
 }

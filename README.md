@@ -34,8 +34,8 @@ The name "nodist3d" is a combination of:
     -   [x] Dodecahedron
     -   [x] Octahedron
     -   [x] Plane
-    -   [ ] Tube
-    -   [ ] Teapot
+    -   [x] Tube
+    -   [x] Teapot
 -   **Mobile-First Design:** The user interface is fully responsive and optimized for touch-based interactions on mobile devices.
 -   **Fullscreen Mode:** A dedicated button allows you to easily enter and exit fullscreen mode for an immersive modeling experience.
 -   **File-based Storage:** Your 3D scenes are saved in a custom `.nodist3d` zip file, which contains the scene data in a `scene.json` file.
@@ -143,8 +143,8 @@ This checklist meticulously tracks all requirements and tasks derived from the i
     -   [x] Dodecahedron
     -   [x] Octahedron
     -   [x] Plane
-    -   [ ] Tube
-    -   [ ] Teapot
+    -   [x] Tube
+    -   [x] Teapot
 -   [ ] Optimize the application interface for mobile.
 -   [ ] Node.js webserver listens on localhost for a browser to connect to.
 -   [ ] Optimize the code.
