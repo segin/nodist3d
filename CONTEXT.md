@@ -1,7 +1,7 @@
 ## Working Context, Ideas, and Progress for nodist3d
 
 ### Current Focus:
-- Implementing a scene graph/outliner.
+- Enhancing scene graph/outliner with object renaming and deletion.
 
 ### Completed Tasks:
 - Implemented Box (Cube), Sphere, Cylinder, Cone, Torus, Torus Knot, Tetrahedron, Icosahedron, Dodecahedron, Octahedron, Plane, Tube, and Teapot primitives.
@@ -12,9 +12,10 @@
 - Temporarily removed database dependency from `package.json` to resolve `npm install` issues.
 - Added a property panel to adjust primitive parameters using `dat.gui`.
 - Removed `frontend.test.js` due to `puppeteer` incompatibility on Termux.
+- Implemented basic scene graph/outliner to list objects.
 
 ### Next Steps:
-- Implement a scene graph/outliner.
+- Implement object renaming and deletion in the scene graph.
 - Implement unit tests and a full test harness.
 - Implement custom zip file format with JSON data inside for persistent local storage.
 
