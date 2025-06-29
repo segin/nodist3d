@@ -107,31 +107,31 @@ This checklist meticulously tracks all requirements and tasks derived from the i
 
 ### Project Setup & Management
 
--   [ ] Create a web-based 3D modeling program.
--   [ ] Use Node.js to host the backend.
--   [ ] Use WebGL to render everything in the browser.
--   [ ] Create a Git repository in this directory if one does not exist (checked using `find` command).
--   [ ] Meticulously add each item to a central `README.md` document.
--   [ ] First create a blank `README.md`.
--   [ ] Commit the blank `README.md`.
--   [ ] Commit `README.md` after adding all checkboxes.
--   [ ] Each primitive object shall be a new checkbox in the list.
--   [ ] Create a `CONTEXT.md` file for working context, ideas, and progress.
+-   [x] Create a web-based 3D modeling program.
+-   [x] Use Node.js to host the backend.
+-   [x] Use WebGL to render everything in the browser.
+-   [x] Create a Git repository in this directory if one does not exist (checked using `find` command).
+-   [x] Meticulously add each item to a central `README.md` document.
+-   [x] First create a blank `README.md`.
+-   [x] Commit the blank `README.md`.
+-   [x] Commit `README.md` after adding all checkboxes.
+-   [x] Each primitive object shall be a new checkbox in the list.
+-   [x] Create a `CONTEXT.md` file for working context, ideas, and progress.
 -   [ ] Treat `CONTEXT.md` as a cache; clear it out once done with something.
--   [ ] Commit changes to `CONTEXT.md` to the Git repository.
--   [ ] Check for the existence of `gh` using Termux `pkg` commands.
--   [ ] Take note of all installed `pkg` and `npm` packages before getting started.
+-   [x] Commit changes to `CONTEXT.md` to the Git repository.
+-   [x] Check for the existence of `gh` using Termux `pkg` commands.
+-   [x] Take note of all installed `pkg` and `npm` packages before getting started.
 -   [x] Create a GitHub repository `nodist3d`.
 -   [x] Push each commit to GitHub as it happens.
--   [ ] Explain that the name is Node.js + -ist + 3D.
--   [ ] Save this original prompt as `PROMPT.md`.
--   [ ] Commit `PROMPT.md`.
--   [ ] Never change `PROMPT.md`.
+-   [x] Explain that the name is Node.js + -ist + 3D.
+-   [x] Save this original prompt as `PROMPT.md`.
+-   [x] Commit `PROMPT.md`.
+-   [x] Never change `PROMPT.md`.
 
 ### Core Functionality
 
--   [ ] Include support for all basic 3D primitives.
--   [ ] Come up with a list of 3D primitives to include in the default set (and ensure the list is not too short).
+-   [x] Include support for all basic 3D primitives.
+-   [x] Come up with a list of 3D primitives to include in the default set (and ensure the list is not too short).
     -   [x] Box (Cube)
     -   [x] Sphere
     -   [x] Cylinder
@@ -146,7 +146,7 @@ This checklist meticulously tracks all requirements and tasks derived from the i
     -   [x] Tube
     -   [x] Teapot
 -   [x] Optimize the application interface for mobile.
--   [ ] Node.js webserver listens on localhost for a browser to connect to.
+-   [x] Node.js webserver listens on localhost for a browser to connect to.
 -   [ ] Optimize the code.
 -   [ ] Use a custom zip file format with JSON data inside for persistent local storage.
 -   [x] Make sure there is an interface button on the user controls of the web frontend to easily enter and leave full screen mode.
@@ -181,7 +181,6 @@ This section outlines potential future enhancements and features for nodist3d.
 
 ### Core Functionality & Primitives
 
--   [ ] Implement remaining primitives: Octahedron, Plane, Tube, Teapot.
 -   [ ] Add more complex primitives (e.g., LatheGeometry, ExtrudeGeometry, TextGeometry).
 -   [ ] Implement boolean operations (CSG - Constructive Solid Geometry) for combining/subtracting objects.
 -   [ ] Add support for importing/exporting common 3D formats (e.g., OBJ, GLTF).
