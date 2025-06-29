@@ -1,7 +1,7 @@
 ## Working Context, Ideas, and Progress for nodist3d
 
 ### Current Focus:
-- Implementing interactive controls for object manipulation.
+- Implementing a scene graph/outliner.
 
 ### Completed Tasks:
 - Implemented Box (Cube), Sphere, Cylinder, Cone, Torus, Torus Knot, Tetrahedron, Icosahedron, Dodecahedron, Octahedron, Plane, Tube, and Teapot primitives.
@@ -10,9 +10,9 @@
 - Updated `README.md` with comprehensive checklist and roadmap.
 - Initial Git repository setup and continuous pushing to GitHub.
 - Temporarily removed database dependency from `package.json` to resolve `npm install` issues.
+- Added a property panel to adjust primitive parameters using `dat.gui`.
 
 ### Next Steps:
-- Add a property panel to adjust primitive parameters.
 - Implement a scene graph/outliner.
 - Implement unit tests and a full test harness.
 - Implement custom zip file format with JSON data inside for persistent local storage.

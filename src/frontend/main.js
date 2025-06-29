@@ -1,8 +1,10 @@
+
 import { SceneManager } from './SceneManager.js';
 import { ObjectManager } from './ObjectManager.js';
 import { Pointer } from './Pointer.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { GUI } from 'dat.gui';
+import { SceneGraph } from './SceneGraph.js';
 
 function main() {
     const canvas = document.querySelector('#c');
@@ -73,6 +75,8 @@ function main() {
 
     // Add UI for adding objects
     const ui = document.getElementById('ui');
+    const sceneGraphElement = document.getElementById('scene-graph');
+    const sceneGraph = new SceneGraph(sceneManager.scene, sceneGraphElement);
 
     function createAddButton(text, addMethod) {
         const button = document.createElement('button');
@@ -81,6 +85,7 @@ function main() {
             const newObject = addMethod();
             transformControls.attach(newObject);
             updateGUI(newObject);
+            sceneGraph.update();
         });
         ui.appendChild(button);
     }

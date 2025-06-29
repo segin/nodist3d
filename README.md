@@ -9,7 +9,7 @@ The name "nodist3d" is a combination of:
 
 ---
 
-[![Build Status](https://img.ieb.io/badge/build-passing-brightgreen)](https://github.com/segin/nodist3d)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/segin/nodist3d)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![GitHub issues](https://img.shields.io/github/issues/segin/nodist3d)](https://github.com/segin/nodist3d/issues)
 [![GitHub stars](https://img.shields.io/github/stars/segin/nodist3d)](https://github.com/segin/nodist3d/stargazers)
@@ -165,7 +165,7 @@ This section outlines potential future enhancements and features for nodist3d.
 
 -   [x] Implement interactive controls for object manipulation (translate, rotate, scale).
 -   [x] Add a property panel to adjust primitive parameters (e.g., cube dimensions, sphere radius).
--   [ ] Implement a scene graph/outliner to manage multiple objects.
+-   [x] Implement a scene graph/outliner to manage multiple objects.
 -   [ ] Add undo/redo functionality.
 -   [ ] Implement a camera control system (orbit, pan, zoom).
 -   [ ] Add a grid helper and axis helper for better scene orientation.
