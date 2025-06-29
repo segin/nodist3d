@@ -5,7 +5,7 @@
   "main": "src/backend/server.js",
   "scripts": {
     "start": "node src/backend/server.js",
-    "test": "jest"
+    "test": "jest --transformIgnorePatterns \"node_modules/(?!three/examples/jsm/)\""
   },
   "keywords": [
     "3d",
@@ -18,12 +18,14 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "dat.gui": "^0.7.9",
     "express": "^4.19.2",
-    
-    "three": "^0.164.1",
-    "dat.gui": "^0.7.9"
+    "jszip": "^3.10.1",
+    "three": "^0.164.1"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.27.2",
+    "babel-jest": "^30.0.2",
     "jest": "^29.7.0",
     "supertest": "^7.0.0"
   }
