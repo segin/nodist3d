@@ -182,10 +182,10 @@ This section outlines potential future enhancements and features for nodist3d.
         -   [ ] Implement basic texture loading and application.
         -   [ ] Add UI controls for texture selection.
         -   [ ] Support different texture types (e.g., diffuse, normal, roughness).
--   [ ] Add light source manipulation:
-    -   [ ] Change light type (e.g., PointLight, DirectionalLight, AmbientLight).
-    -   [ ] Adjust light intensity.
-    -   [ ] Adjust light position.
+-   [x] Add light source manipulation:
+    -   [x] Change light type (e.g., PointLight, DirectionalLight, AmbientLight).
+    -   [x] Adjust light intensity.
+    -   [x] Adjust light position.
 -   [ ] Implement a "snap to grid" feature.
 -   [ ] Add a selection mechanism for objects.
 -   [ ] Implement object grouping/ungrouping.
