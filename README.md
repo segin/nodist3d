@@ -148,7 +148,7 @@ This checklist meticulously tracks all requirements and tasks derived from the i
 -   [x] Optimize the application interface for mobile.
 -   [x] Node.js webserver listens on localhost for a browser to connect to.
 -   [ ] Optimize the code.
--   [ ] Use a custom zip file format with JSON data inside for persistent local storage.
+-   [x] Use a custom zip file format with JSON data inside for persistent local storage.
 -   [x] Make sure there is an interface button on the user controls of the web frontend to easily enter and leave full screen mode.
 
 ### Testing
@@ -190,7 +190,7 @@ This section outlines potential future enhancements and features for nodist3d.
 
 ### Backend & Storage
 
--   [ ] Implement the custom zip file format for local storage.
+-   [x] Implement the custom zip file format for local storage.
 -   [ ] Add cloud storage integration (e.g., Google Drive, Dropbox) for scene persistence.
 -   [ ] Implement real-time collaboration features (multi-user editing).
 

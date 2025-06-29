@@ -1,7 +1,7 @@
 ## Working Context, Ideas, and Progress for nodist3d
 
 ### Current Focus:
-- Implementing object renaming and deletion in the scene graph.
+- Implementing undo/redo functionality.
 
 ### Completed Tasks:
 - Implemented Box (Cube), Sphere, Cylinder, Cone, Torus, Torus Knot, Tetrahedron, Icosahedron, Dodecahedron, Octahedron, Plane, Tube, and Teapot primitives.
@@ -12,13 +12,12 @@
 - Temporarily removed database dependency from `package.json` to resolve `npm install` issues.
 - Added a property panel to adjust primitive parameters using `dat.gui`.
 - Removed `frontend.test.js` due to `puppeteer` incompatibility on Termux.
-- Implemented basic scene graph/outliner to list objects.
+- Implemented basic scene graph/outliner to list objects, including object renaming and deletion.
 - Implemented unit tests and a full test harness, including Jest configuration for ES Modules and fixing the `TeapotGeometry` test.
 - Implemented scene saving and loading using a custom zip file format with JSON data.
 
 ### Next Steps:
-- Implement unit tests and a full test harness.
-- Implement custom zip file format with JSON data inside for persistent local storage.
+- Implement undo/redo functionality.
 
 ### Ideas & Notes:
 - Consider using dat.GUI or similar library for easier UI control generation.
