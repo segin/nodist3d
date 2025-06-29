@@ -166,11 +166,23 @@ This section outlines potential future enhancements and features for nodist3d.
 -   [x] Implement interactive controls for object manipulation (translate, rotate, scale).
 -   [x] Add a property panel to adjust primitive parameters (e.g., cube dimensions, sphere radius).
 -   [x] Implement a scene graph/outliner to manage multiple objects.
--   [ ] Add undo/redo functionality.
--   [ ] Implement a camera control system (orbit, pan, zoom).
--   [ ] Add a grid helper and axis helper for better scene orientation.
--   [ ] Implement material editing (color, roughness, metallic, etc.).
--   [ ] Add light source manipulation (type, intensity, position).
+-   [ ] Implement undo functionality.
+-   [ ] Implement redo functionality.
+-   [ ] Implement camera controls:
+    -   [ ] Orbit camera control.
+    -   [ ] Pan camera control.
+    -   [ ] Zoom camera control.
+-   [ ] Add a grid helper for better scene orientation.
+-   [ ] Add an axis helper for better scene orientation.
+-   [ ] Implement material editing:
+    -   [ ] Change object color.
+    -   [ ] Adjust material roughness.
+    -   [ ] Adjust material metallicness.
+    -   [ ] Add texture mapping.
+-   [ ] Add light source manipulation:
+    -   [ ] Change light type (e.g., PointLight, DirectionalLight, AmbientLight).
+    -   [ ] Adjust light intensity.
+    -   [ ] Adjust light position.
 -   [ ] Implement a "snap to grid" feature.
 -   [ ] Add a selection mechanism for objects.
 -   [ ] Implement object grouping/ungrouping.
