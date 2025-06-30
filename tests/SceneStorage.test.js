@@ -2,6 +2,7 @@ import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, PointLight, DirectionalLig
 import { SceneStorage } from '../src/frontend/SceneStorage.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
+import JSZip from 'jszip';
 
 // Mock the worker for testing purposes
 class MockWorker {
@@ -467,5 +468,49 @@ describe('SceneStorage', () => {
         jest.spyOn(JSZip.prototype, 'loadAsync').mockRejectedValue(new Error('Invalid or unsupported zip file'));
 
         await expect(sceneStorage.loadScene(invalidFile)).rejects.toThrow('Invalid or unsupported zip file');
+    });
+
+    it('should handle loading a zip file that is missing \'scene.json\'', async () => {
+        const emptyZip = await new JSZip().generateAsync({ type: 'blob' });
+
+        jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
+            file: jest.fn().mockReturnValue(null) // Simulate missing file
+        });
+
+        await expect(sceneStorage.loadScene(emptyZip)).rejects.toThrow("Cannot read properties of null (reading 'async')");
+    });
+
+    it('should correctly save and load material properties like roughness and metalness', async () => {
+        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial({ roughness: 0.5, metalness: 0.8 }));
+        mesh.name = 'TestMesh';
+        scene.add(mesh);
+
+        const savePromise = sceneStorage.saveScene();
+        const sceneJson = JSON.stringify(scene.toJSON());
+        sceneStorage.worker.onmessage({ data: { type: 'serialize_complete', data: sceneJson } });
+        await savePromise;
+
+        // Clear the scene before loading
+        while(scene.children.length > 0) {
+            scene.remove(scene.children[0]);
+        }
+
+        const mockFileContent = sceneJson;
+        const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
+
+        jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+            })
+        });
+
+        await sceneStorage.loadScene(mockFile);
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(scene.children.length).toBe(1);
+        const loadedMesh = scene.children[0];
+        expect(loadedMesh.name).toBe('TestMesh');
+        expect(loadedMesh.material.roughness).toBeCloseTo(0.5);
+        expect(loadedMesh.material.metalness).toBeCloseTo(0.8);
     });
 });

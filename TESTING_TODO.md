@@ -123,7 +123,7 @@
 - [X] 92. should correctly save and load a scene containing nested groups.
 - [X] 93. should handle loading a file that is not a valid zip archive.
 - [ ] 94. should handle loading a zip file that is missing 'scene.json'.
-- [ ] 95. should correctly save and load material properties like roughness and metalness.
+- [X] 95. should correctly save and load material properties like roughness and metalness.
 - [ ] 96. should successfully save and load a scene with no objects (an empty scene).
 - [ ] 97. should handle JSON parsing errors from a corrupted 'scene.json'.
 - [ ] 98. should restore object names correctly from a loaded scene.
