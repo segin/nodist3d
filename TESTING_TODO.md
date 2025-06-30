@@ -144,7 +144,7 @@
 
 ### Pointer.js Tests
 - [X] 111. should dispatch a `selectionChange` event when an object is selected.
-- [ ] 112. should dispatch `selectionChange` with a `null` payload on deselection.
+- [X] 112. should dispatch `selectionChange` with a `null` payload on deselection.
 - [ ] 113. should correctly apply an outline to a selected object.
 - [ ] 114. should correctly remove the outline from a deselected object.
 - [ ] 115. should remove the outline from a previous selection when a new object is selected.

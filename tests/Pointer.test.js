@@ -43,4 +43,22 @@ describe('Pointer', () => {
         expect(eventSpy).toHaveBeenCalledWith('selectionChange', mesh);
         expect(pointerInstance.selectedObject).toBe(mesh);
     });
+
+    it('should dispatch `selectionChange` with a null payload on deselection', () => {
+        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        scene.add(mesh);
+
+        // Select an object first
+        jest.spyOn(pointerInstance.raycaster, 'intersectObjects').mockReturnValue([{ object: mesh }]);
+        pointerInstance.onPointerDown({ clientX: 50, clientY: 50 });
+
+        const eventSpy = jest.spyOn(eventBus, 'emit');
+
+        // Simulate a click that does not intersect any object (deselection)
+        jest.spyOn(pointerInstance.raycaster, 'intersectObjects').mockReturnValue([]);
+        pointerInstance.onPointerDown({ clientX: 100, clientY: 100 });
+
+        expect(eventSpy).toHaveBeenCalledWith('selectionChange', null);
+        expect(pointerInstance.selectedObject).toBeNull();
+    });
 });
