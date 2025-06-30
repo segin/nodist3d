@@ -166,7 +166,7 @@
 - [X] 127. `initGUI` should create a "Shader Editor" folder in the GUI.
 - [X] 128. Updating a uniform value should set `needsUpdate` on the material to true.
 - [X] 129. Editing GLSL code in the GUI should update the material's `vertexShader` or `fragmentShader`.
-- [ ] 130. Creating a new shader should dispose of the previous shader material if it exists.
+- [X] 130. Creating a new shader should dispose of the previous shader material if it exists.
 
 ### Integration Tests (main.js)
 - [ ] 131. Clicking the "Translate" button should set `transformControls` mode to "translate".

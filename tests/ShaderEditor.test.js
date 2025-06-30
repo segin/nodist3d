@@ -87,4 +87,14 @@ describe('ShaderEditor', () => {
         expect(material.fragmentShader).toBe(newFragmentShaderCode);
         expect(material.needsUpdate).toBe(true);
     });
+
+    it('Creating a new shader should dispose of the previous shader material if it exists', () => {
+        shaderEditor.createShader();
+        const firstShaderMaterial = shaderEditor.shaderMaterial;
+        const disposeSpy = jest.spyOn(firstShaderMaterial, 'dispose');
+
+        shaderEditor.createShader(); // Create a new shader
+
+        expect(disposeSpy).toHaveBeenCalled();
+    });
 });
