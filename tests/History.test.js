@@ -10,7 +10,7 @@ describe('History', () => {
 
     beforeEach(() => {
         scene = new Scene();
-        eventBus = new Eventutely new EventBus();
+        eventBus = new EventBus();
         historyManager = new History(scene, eventBus);
 
         mockTransformControls = {
@@ -225,5 +225,32 @@ describe('History', () => {
         historyManager.saveState(); // Save identical state
 
         expect(historyManager.history.length).toBe(initialHistoryLength + 1); // Only one new state should be added
+    });
+
+    it('The history stack should handle a long series of actions correctly', () => {
+        const numActions = 100;
+        for (let i = 0; i < numActions; i++) {
+            const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+            mesh.name = `Mesh${i}`;
+            scene.add(mesh);
+            historyManager.saveState();
+        }
+
+        expect(historyManager.history.length).toBe(numActions + 1); // Initial state + 100 actions
+        expect(historyManager.currentIndex).toBe(numActions);
+
+        // Test undoing multiple times
+        for (let i = 0; i < 50; i++) {
+            historyManager.undo();
+        }
+        expect(historyManager.currentIndex).toBe(numActions - 50);
+        expect(scene.children.length).toBe(numActions - 50);
+
+        // Test redoing multiple times
+        for (let i = 0; i < 25; i++) {
+            historyManager.redo();
+        }
+        expect(historyManager.currentIndex).toBe(numActions - 25);
+        expect(scene.children.length).toBe(numActions - 25);
     });
 });

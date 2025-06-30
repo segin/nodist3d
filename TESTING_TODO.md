@@ -138,7 +138,7 @@
 - [X] 105. Restoring a state should correctly re-render the scene.
 - [X] 106. Undo should detach transform controls from any selected object.
 - [X] 107. `saveState` should not add a new state if it's identical to the current one.
-- [ ] 108. The history stack should handle a long series of actions correctly.
+- [X] 108. The history stack should handle a long series of actions correctly.
 - [ ] 109. Undo/redo should correctly restore object visibility states.
 - [ ] 110. Restoring a state should also restore the camera position and rotation if saved.
 
