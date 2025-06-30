@@ -144,11 +144,13 @@ export class ObjectManager {
         }
     }
 
-    addTexture(object, texturePath) {
+    addTexture(object, file) {
         const loader = new THREE.TextureLoader();
-        loader.load(texturePath, (texture) => {
+        const url = URL.createObjectURL(file);
+        loader.load(url, (texture) => {
             object.material.map = texture;
             object.material.needsUpdate = true;
+            URL.revokeObjectURL(url); // Clean up the object URL
         });
     }
 }

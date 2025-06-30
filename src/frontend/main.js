@@ -72,10 +72,21 @@ function main() {
                     if (object.material.metalness !== undefined) {
                         materialFolder.add(object.material, 'metalness', 0, 1).name('Metalness').onChange(() => history.saveState());
                     }
+                    const textureInput = document.createElement('input');
+                    textureInput.type = 'file';
+                    textureInput.accept = 'image/*';
+                    textureInput.style.display = 'none';
+                    textureInput.addEventListener('change', (event) => {
+                        const file = event.target.files[0];
+                        if (file) {
+                            objectManager.addTexture(object, file);
+                            history.saveState();
+                        }
+                    });
+
                     materialFolder.add({
                         addTexture: () => {
-                            objectManager.addTexture(object, 'assets/placeholder_texture.png');
-                            history.saveState();
+                            textureInput.click();
                         }
                     }, 'addTexture').name('Add Texture');
                     materialFolder.open();
