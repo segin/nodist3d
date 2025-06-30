@@ -253,4 +253,20 @@ describe('History', () => {
         expect(historyManager.currentIndex).toBe(numActions - 25);
         expect(scene.children.length).toBe(numActions - 25);
     });
+
+    it('Undo/redo should correctly restore object visibility states', () => {
+        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        mesh1.name = 'Mesh1';
+        scene.add(mesh1);
+        historyManager.saveState(); // State 1: mesh1 visible
+
+        mesh1.visible = false;
+        historyManager.saveState(); // State 2: mesh1 invisible
+
+        historyManager.undo(); // Go back to State 1
+        expect(mesh1.visible).toBe(true);
+
+        historyManager.redo(); // Go forward to State 2
+        expect(mesh1.visible).toBe(false);
+    });
 });
