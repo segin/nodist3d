@@ -1,13 +1,15 @@
 import * as THREE from 'three';
 
-export class Pointer {
+export class Pointer extends THREE.EventDispatcher {
     constructor(camera, scene, renderer) {
+        super();
         this.raycaster = new THREE.Raycaster();
         this.pointer = new THREE.Vector2();
         this.camera = camera;
         this.scene = scene;
         this.renderer = renderer;
         this.selectedObject = null;
+        this.outline = null; // To store the outline mesh
         this.isDragging = false;
 
         this.renderer.domElement.addEventListener('pointerdown', this.onPointerDown.bind(this));
@@ -22,10 +24,20 @@ export class Pointer {
         const intersects = this.raycaster.intersectObjects(this.scene.children);
 
         if (intersects.length > 0) {
-            this.selectedObject = intersects[0].object;
-            console.log('Selected object:', this.selectedObject);
+            const newSelectedObject = intersects[0].object;
+
+            if (this.selectedObject !== newSelectedObject) {
+                this.selectedObject = newSelectedObject;
+                this.addOutline(this.selectedObject);
+                this.dispatchEvent({ type: 'selectionChange' });
+                console.log('Selected object:', this.selectedObject);
+            }
         } else {
-            this.selectedObject = null;
+            if (this.selectedObject !== null) {
+                this.selectedObject = null;
+                this.removeOutline();
+                this.dispatchEvent({ type: 'selectionChange' });
+            }
         }
     }
 
@@ -45,5 +57,24 @@ export class Pointer {
         this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
         this.raycaster.setFromCamera(this.pointer, this.camera);
+    }
+
+    addOutline(object) {
+        this.removeOutline(); // Remove any existing outline
+
+        const geometry = new THREE.EdgesGeometry(object.geometry);
+        const material = new THREE.LineBasicMaterial({ color: 0xffff00, linewidth: 2 });
+        this.outline = new THREE.LineSegments(geometry, material);
+        this.outline.renderOrder = 1; // Render outline on top
+        object.add(this.outline);
+    }
+
+    removeOutline() {
+        if (this.outline) {
+            this.outline.parent.remove(this.outline);
+            this.outline.geometry.dispose();
+            this.outline.material.dispose();
+            this.outline = null;
+        }
     }
 }
