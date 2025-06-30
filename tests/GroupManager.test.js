@@ -202,4 +202,13 @@ describe('GroupManager', () => {
         expect(scene.children).not.toContain(mesh2);
         expect(scene.children).toContain(group);
     });
+
+    it('An empty group should be removable from the scene', () => {
+        const emptyGroup = new Group();
+        scene.add(emptyGroup);
+        expect(scene.children).toContain(emptyGroup);
+
+        groupManager.ungroupObjects(emptyGroup);
+        expect(scene.children).not.toContain(emptyGroup);
+    });
 });
