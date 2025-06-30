@@ -188,4 +188,4 @@
 - [X] 147. Clicking the physics button should add a physics body to the selected object.
 - [X] 148. The "Reset View" button should correctly reset the camera controls.
 - [X] 149. Loading a scene file should correctly populate the Scene Graph UI.
-- [ ] 150. After an undo operation, the UI panels should be cleared or updated to reflect no selection.
+- [X] 150. After an undo operation, the UI panels should be cleared or updated to reflect no selection.

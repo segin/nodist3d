@@ -492,4 +492,22 @@ describe('App Integration Tests', () => {
 
         document.body.removeChild(loadInput);
     });
+
+    it('After an undo operation, the UI panels should be cleared or updated to reflect no selection', () => {
+        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        mesh.name = 'TestMesh';
+        app.sceneManager.scene.add(mesh);
+        app.pointer.selectedObject = mesh;
+        app.updateGUI(mesh);
+
+        const undoButton = Array.from(document.querySelectorAll('#ui button')).find(button => button.textContent === 'Undo');
+
+        jest.spyOn(app.transformControls, 'detach');
+        jest.spyOn(app, 'updateGUI');
+
+        undoButton.click();
+
+        expect(app.transformControls.detach).toHaveBeenCalled();
+        expect(app.updateGUI).toHaveBeenCalledWith(null);
+    });
 });
