@@ -109,4 +109,34 @@ describe('History', () => {
         expect(scene.children).not.toContain(mesh1);
         expect(scene.children).not.toContain(mesh2);
     });
+
+    it('should correctly undo/redo an ungrouping operation', () => {
+        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const group = new Group();
+        group.add(mesh1);
+        group.add(mesh2);
+        scene.add(group);
+        historyManager.saveState(); // State 1: group exists
+
+        // Simulate ungrouping
+        scene.remove(group);
+        scene.add(mesh1);
+        scene.add(mesh2);
+        historyManager.saveState(); // State 2: objects ungrouped
+
+        // Undo: Should go back to group being in the scene
+        historyManager.undo();
+        expect(scene.children.length).toBe(1);
+        expect(scene.children).toContain(group);
+        expect(scene.children).not.toContain(mesh1);
+        expect(scene.children).not.toContain(mesh2);
+
+        // Redo: Should go back to objects being ungrouped
+        historyManager.redo();
+        expect(scene.children.length).toBe(2);
+        expect(scene.children).not.toContain(group);
+        expect(scene.children).toContain(mesh1);
+        expect(scene.children).toContain(mesh2);
+    });
 });

@@ -132,7 +132,7 @@
 
 ### History.js Extended Tests
 - [X] 101. should correctly undo/redo the creation of a group.
-- [ ] 102. should correctly undo/redo an ungrouping operation.
+- [X] 102. should correctly undo/redo an ungrouping operation.
 - [ ] 103. `restoreState` should correctly dispose of old geometries and materials to prevent memory leaks.
 - [ ] 104. Saving a new state should clear the "redo" history.
 - [ ] 105. Restoring a state should correctly re-render the scene.
