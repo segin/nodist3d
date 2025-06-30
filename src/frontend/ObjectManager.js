@@ -144,11 +144,17 @@ export class ObjectManager {
         }
     }
 
-    addTexture(object, file) {
+    addTexture(object, file, type = 'map') {
         const loader = new THREE.TextureLoader();
         const url = URL.createObjectURL(file);
         loader.load(url, (texture) => {
-            object.material.map = texture;
+            if (type === 'map') {
+                object.material.map = texture;
+            } else if (type === 'normalMap') {
+                object.material.normalMap = texture;
+            } else if (type === 'roughnessMap') {
+                object.material.roughnessMap = texture;
+            }
             object.material.needsUpdate = true;
             URL.revokeObjectURL(url); // Clean up the object URL
         });

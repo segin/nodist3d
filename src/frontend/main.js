@@ -76,10 +76,13 @@ function main() {
                     textureInput.type = 'file';
                     textureInput.accept = 'image/*';
                     textureInput.style.display = 'none';
+
+                    const textureTypeController = materialFolder.add({ type: 'map' }, 'type', ['map', 'normalMap', 'roughnessMap']).name('Texture Type');
+
                     textureInput.addEventListener('change', (event) => {
                         const file = event.target.files[0];
                         if (file) {
-                            objectManager.addTexture(object, file);
+                            objectManager.addTexture(object, file, textureTypeController.getValue());
                             history.saveState();
                         }
                     });
