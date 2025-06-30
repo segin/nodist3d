@@ -203,4 +203,16 @@ describe('App Integration Tests', () => {
         snapTranslationController.onChange.mock.calls[0][0](false);
         expect(app.transformControls.translationSnap).toBeNull();
     });
+
+    it('The "Snap Rotation" checkbox should toggle `transformControls.rotationSnap`', () => {
+        const snapRotationController = mockGUI.addFolder.mock.results[0].value.add.mock.results[2].value; // Assuming it's the third add call in snapFolder
+
+        // Simulate checking the checkbox (value = true)
+        snapRotationController.onChange.mock.calls[0][0](true);
+        expect(app.transformControls.rotationSnap).toBe(Math.PI / 8); // Default snap value
+
+        // Simulate unchecking the checkbox (value = false)
+        snapRotationController.onChange.mock.calls[0][0](false);
+        expect(app.transformControls.rotationSnap).toBeNull();
+    });
 });
