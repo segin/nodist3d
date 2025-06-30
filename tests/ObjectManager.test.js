@@ -202,4 +202,15 @@ describe('ObjectManager', () => {
             objectManager.addTexture(cube, file, 'map');
         }).not.toThrow();
     });
+
+    it('should properly dispose of an object\'s geometry and material on deletion', () => {
+        const cube = objectManager.addPrimitive('Box');
+        const geometryDisposeSpy = jest.spyOn(cube.geometry, 'dispose');
+        const materialDisposeSpy = jest.spyOn(cube.material, 'dispose');
+
+        objectManager.deleteObject(cube);
+
+        expect(geometryDisposeSpy).toHaveBeenCalled();
+        expect(materialDisposeSpy).toHaveBeenCalled();
+    });
 });
