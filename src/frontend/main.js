@@ -13,6 +13,7 @@ import { SceneStorage } from './SceneStorage.js';
 import { History } from './History.js';
 import { LightManager } from './LightManager.js';
 import { GroupManager } from './GroupManager.js';
+import { ShaderEditor } from './ShaderEditor.js';
 
 function main() {
     const canvas = document.querySelector('#c');
@@ -23,6 +24,7 @@ function main() {
     const history = new History(sceneManager.scene);
     const lightManager = new LightManager(sceneManager.scene);
     const groupManager = new GroupManager(sceneManager.scene);
+    const shaderEditor = new ShaderEditor(gui, sceneManager.renderer, sceneManager.scene, sceneManager.camera);
 
     const gui = new GUI();
     let currentObjectFolder = null;
