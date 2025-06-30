@@ -399,6 +399,102 @@ function main() {
     });
     ui.appendChild(loadButton);
 
+    // Add Import/Export buttons
+    const importObjInput = document.createElement('input');
+    importObjInput.type = 'file';
+    importObjInput.accept = '.obj';
+    importObjInput.style.display = 'none';
+    importObjInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const objLoader = new OBJLoader();
+                const object = objLoader.parse(e.target.result);
+                sceneManager.scene.add(object);
+                transformControls.attach(object);
+                pointer.selectedObject = object;
+                pointer.addOutline(object);
+                updateGUI(object);
+                sceneGraph.update();
+                history.saveState();
+            };
+            reader.readAsText(file);
+        }
+    });
+    ui.appendChild(importObjInput);
+
+    const importObjButton = document.createElement('button');
+    importObjButton.textContent = 'Import OBJ';
+    importObjButton.addEventListener('click', () => {
+        importObjInput.click();
+    });
+    ui.appendChild(importObjButton);
+
+    const importGltfInput = document.createElement('input');
+    importGltfInput.type = 'file';
+    importGltfInput.accept = '.gltf,.glb';
+    importGltfInput.style.display = 'none';
+    importGltfInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const gltfLoader = new GLTFLoader();
+                gltfLoader.parse(e.target.result, '', (gltf) => {
+                    sceneManager.scene.add(gltf.scene);
+                    transformControls.attach(gltf.scene);
+                    pointer.selectedObject = gltf.scene;
+                    pointer.addOutline(gltf.scene);
+                    updateGUI(gltf.scene);
+                    sceneGraph.update();
+                    history.saveState();
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    });
+    ui.appendChild(importGltfInput);
+
+    const importGltfButton = document.createElement('button');
+    importGltfButton.textContent = 'Import GLTF';
+    importGltfButton.addEventListener('click', () => {
+        importGltfInput.click();
+    });
+    ui.appendChild(importGltfButton);
+
+    const exportObjButton = document.createElement('button');
+    exportObjButton.textContent = 'Export OBJ';
+    exportObjButton.addEventListener('click', () => {
+        const exporter = new OBJExporter();
+        const result = exporter.parse(sceneManager.scene);
+        const blob = new Blob([result], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'scene.obj';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    });
+    ui.appendChild(exportObjButton);
+
+    const exportGltfButton = document.createElement('button');
+    exportGltfButton.textContent = 'Export GLTF';
+    exportGltfButton.addEventListener('click', () => {
+        const exporter = new GLTFExporter();
+        exporter.parse(sceneManager.scene, (result) => {
+            const output = JSON.stringify(result, null, 2);
+            const blob = new Blob([output], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'scene.gltf';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }, (error) => {
+            console.error('An error occurred during GLTF export:', error);
+        }, { binary: false }); // Set to true for GLB, false for GLTF
+    });
+    ui.appendChild(exportGltfButton);
+
     // Add Undo/Redo buttons
     const undoButton = document.createElement('button');
     undoButton.textContent = 'Undo';
