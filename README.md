@@ -201,7 +201,7 @@ This section outlines potential future enhancements and features for nodist3d.
 -   [x] Add support for importing/exporting common 3D formats (e.g., OBJ, GLTF).
 -   [x] Implement a custom shader editor for advanced material customization.
 -   [x] Add support for textures.
--   [ ] Implement a physics engine for basic simulations.
+-   [x] Implement a physics engine for basic simulations.
 
 ### Backend & Storage
 

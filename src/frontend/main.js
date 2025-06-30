@@ -14,6 +14,7 @@ import { History } from './History.js';
 import { LightManager } from './LightManager.js';
 import { GroupManager } from './GroupManager.js';
 import { ShaderEditor } from './ShaderEditor.js';
+import { PhysicsManager } from './PhysicsManager.js';
 
 function main() {
     const canvas = document.querySelector('#c');
@@ -25,6 +26,7 @@ function main() {
     const lightManager = new LightManager(sceneManager.scene);
     const groupManager = new GroupManager(sceneManager.scene);
     const shaderEditor = new ShaderEditor(gui, sceneManager.renderer, sceneManager.scene, sceneManager.camera);
+    const physicsManager = new PhysicsManager(sceneManager.scene);
 
     const gui = new GUI();
     let currentObjectFolder = null;
@@ -164,12 +166,15 @@ function main() {
     });
 
     function animate() {
+        const deltaTime = clock.getDelta();
+        physicsManager.update(deltaTime);
         transformControls.update();
         sceneManager.controls.update(); // Update OrbitControls
         sceneManager.render();
         requestAnimationFrame(animate);
     }
 
+    const clock = new THREE.Clock();
     requestAnimationFrame(animate);
 
     const fullscreenButton = document.getElementById('fullscreen');
@@ -496,6 +501,18 @@ function main() {
         }, { binary: false }); // Set to true for GLB, false for GLTF
     });
     ui.appendChild(exportGltfButton);
+
+    // Add Physics controls
+    const physicsButton = document.createElement('button');
+    physicsButton.textContent = 'Add Physics Body';
+    physicsButton.addEventListener('click', () => {
+        if (pointer.selectedObject) {
+            // Assuming a simple box shape for now, need to expand this based on object geometry
+            physicsManager.addBody(pointer.selectedObject, 1, 'box');
+            history.saveState();
+        }
+    });
+    ui.appendChild(physicsButton);
 
     // Add Undo/Redo buttons
     const undoButton = document.createElement('button');
