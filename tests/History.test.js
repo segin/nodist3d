@@ -6,11 +6,19 @@ describe('History', () => {
     let scene;
     let historyManager;
     let eventBus;
+    let mockTransformControls;
 
     beforeEach(() => {
         scene = new Scene();
         eventBus = new EventBus();
         historyManager = new History(scene, eventBus);
+
+        mockTransformControls = {
+            attach: jest.fn(),
+            detach: jest.fn(),
+            object: undefined
+        };
+        historyManager.setTransformControls(mockTransformControls);
     });
 
     it('should save the initial state of the scene', () => {
@@ -194,5 +202,20 @@ describe('History', () => {
 
         expect(scene.children.length).toBe(1);
         expect(scene.children[0].name).toBe('Mesh1');
+    });
+
+    it('Undo should detach transform controls from any selected object', () => {
+        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        scene.add(mesh);
+        historyManager.saveState();
+
+        mockTransformControls.attach(mesh);
+        expect(mockTransformControls.attach).toHaveBeenCalledWith(mesh);
+        mockTransformControls.object = mesh; // Manually set the object property
+
+        historyManager.undo();
+
+        expect(mockTransformControls.detach).toHaveBeenCalled();
+        expect(mockTransformControls.object).toBeUndefined();
     });
 });

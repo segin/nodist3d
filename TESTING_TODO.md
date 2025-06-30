@@ -136,7 +136,7 @@
 - [X] 103. `restoreState` should correctly dispose of old geometries and materials to prevent memory leaks.
 - [X] 104. Saving a new state should clear the "redo" history.
 - [X] 105. Restoring a state should correctly re-render the scene.
-- [ ] 106. Undo should detach transform controls from any selected object.
+- [X] 106. Undo should detach transform controls from any selected object.
 - [ ] 107. `saveState` should not add a new state if it's identical to the current one.
 - [ ] 108. The history stack should handle a long series of actions correctly.
 - [ ] 109. Undo/redo should correctly restore object visibility states.
