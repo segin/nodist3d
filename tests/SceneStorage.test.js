@@ -1,4 +1,4 @@
-import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, PointLight, DirectionalLight } from 'three';
+import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, PointLight, DirectionalLight, Group } from 'three';
 import { SceneStorage } from '../src/frontend/SceneStorage.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
@@ -29,6 +29,32 @@ class MockWorker {
                         mockObject = new PointLight(childData.color, childData.intensity);
                     } else if (childData.type === 'DirectionalLight') {
                         mockObject = new DirectionalLight(childData.color, childData.intensity);
+                    } else if (childData.type === 'Group') {
+                        mockObject = new Group();
+                        // Recursively deserialize children for groups
+                        if (childData.children) {
+                            childData.children.forEach(grandChildData => {
+                                let grandChildObject;
+                                if (grandChildData.type === 'Mesh') {
+                                    grandChildObject = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+                                }
+                                if (grandChildObject) {
+                                    grandChildObject.uuid = grandChildData.uuid;
+                                    grandChildObject.name = grandChildData.name;
+                                    grandChildObject.position.set(grandChildData.position[0], grandChildData.position[1], grandChildData.position[2]);
+                                    if (grandChildData.rotation) {
+                                        grandChildObject.rotation.set(grandChildData.rotation[0], grandChildData.rotation[1], grandChildData.rotation[2]);
+                                    }
+                                    if (grandChildData.scale) {
+                                        grandChildObject.scale.set(grandChildData.scale[0], grandChildData.scale[1], grandChildData.scale[2]);
+                                    }
+                                    if (grandChildData.material && grandChildData.material.color) {
+                                        grandChildObject.material.color.setHex(grandChildData.material.color);
+                                    }
+                                    mockObject.add(grandChildObject);
+                                }
+                            });
+                        }
                     }
 
                     if (mockObject) {
@@ -362,5 +388,75 @@ describe('SceneStorage', () => {
         expect(loadedDirectionalLight.position.x).toBe(4);
         expect(loadedDirectionalLight.position.y).toBe(5);
         expect(loadedDirectionalLight.position.z).toBe(6);
+    });
+
+    it('should correctly save and load a scene containing nested groups', async () => {
+        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial({ color: 0xff0000 }));
+        mesh1.name = 'Mesh1';
+        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial({ color: 0x00ff00 }));
+        mesh2.name = 'Mesh2';
+        const mesh3 = new Mesh(new BoxGeometry(), new MeshBasicMaterial({ color: 0x0000ff }));
+        mesh3.name = 'Mesh3';
+
+        const group1 = new Group();
+        group1.name = 'Group1';
+        group1.add(mesh1);
+        group1.add(mesh2);
+
+        const group2 = new Group();
+        group2.name = 'Group2';
+        group2.add(group1);
+        group2.add(mesh3);
+
+        scene.add(group2);
+
+        const savePromise = sceneStorage.saveScene();
+        const sceneJson = JSON.stringify(scene.toJSON());
+        sceneStorage.worker.onmessage({ data: { type: 'serialize_complete', data: sceneJson } });
+        await savePromise;
+
+        // Clear the scene before loading
+        while(scene.children.length > 0) {
+            scene.remove(scene.children[0]);
+        }
+
+        const mockFileContent = sceneJson;
+        const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
+
+        jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+            })
+        });
+
+        await sceneStorage.loadScene(mockFile);
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(scene.children.length).toBe(1);
+        const loadedGroup2 = scene.children[0];
+        expect(loadedGroup2.name).toBe('Group2');
+        expect(loadedGroup2.isGroup).toBe(true);
+
+        expect(loadedGroup2.children.length).toBe(2);
+        const loadedGroup1 = loadedGroup2.children.find(obj => obj.name === 'Group1');
+        const loadedMesh3 = loadedGroup2.children.find(obj => obj.name === 'Mesh3');
+
+        expect(loadedGroup1).toBeDefined();
+        expect(loadedGroup1.isGroup).toBe(true);
+        expect(loadedMesh3).toBeDefined();
+        expect(loadedMesh3.isMesh).toBe(true);
+
+        expect(loadedGroup1.children.length).toBe(2);
+        const loadedMesh1 = loadedGroup1.children.find(obj => obj.name === 'Mesh1');
+        const loadedMesh2 = loadedGroup1.children.find(obj => obj.name === 'Mesh2');
+
+        expect(loadedMesh1).toBeDefined();
+        expect(loadedMesh1.isMesh).toBe(true);
+        expect(loadedMesh2).toBeDefined();
+        expect(loadedMesh2.isMesh).toBe(true);
+
+        expect(loadedMesh1.material.color.getHex()).toBe(0xff0000);
+        expect(loadedMesh2.material.color.getHex()).toBe(0x00ff00);
+        expect(loadedMesh3.material.color.getHex()).toBe(0x0000ff);
     });
 });
