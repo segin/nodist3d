@@ -89,4 +89,30 @@ describe('Pointer', () => {
         expect(pointerInstance.outline).toBeNull();
         expect(mesh.children).not.toContain(pointerInstance.outline);
     });
+
+    it('should remove the outline from a previous selection when a new object is selected', () => {
+        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        mesh1.name = 'Mesh1';
+        scene.add(mesh1);
+
+        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        mesh2.name = 'Mesh2';
+        scene.add(mesh2);
+
+        // Select mesh1
+        jest.spyOn(pointerInstance.raycaster, 'intersectObjects').mockReturnValue([{ object: mesh1 }]);
+        pointerInstance.onPointerDown({ clientX: 50, clientY: 50 });
+        expect(pointerInstance.selectedObject).toBe(mesh1);
+        expect(mesh1.children).toContain(pointerInstance.outline);
+
+        const oldOutline = pointerInstance.outline; // Store reference to old outline
+
+        // Select mesh2
+        jest.spyOn(pointerInstance.raycaster, 'intersectObjects').mockReturnValue([{ object: mesh2 }]);
+        pointerInstance.onPointerDown({ clientX: 60, clientY: 60 });
+
+        expect(pointerInstance.selectedObject).toBe(mesh2);
+        expect(mesh2.children).toContain(pointerInstance.outline);
+        expect(mesh1.children).not.toContain(oldOutline); // Old outline should be removed
+    });
 });
