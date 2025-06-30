@@ -1,4 +1,4 @@
-import { Scene, Mesh, BoxGeometry, MeshBasicMaterial } from 'three';
+import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, PointLight, DirectionalLight } from 'three';
 import { SceneStorage } from '../src/frontend/SceneStorage.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
@@ -22,17 +22,30 @@ class MockWorker {
             const mockScene = { children: [] };
             if (parsedData.children) {
                 parsedData.children.forEach(childData => {
-                    // Create a simple mock mesh for testing
-                    const mockMesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
-                    mockMesh.uuid = childData.uuid;
-                    mockMesh.name = childData.name;
-                    mockMesh.position.set(childData.position[0], childData.position[1], childData.position[2]);
-                    mockMesh.rotation.set(childData.rotation[0], childData.rotation[1], childData.rotation[2]);
-                    mockMesh.scale.set(childData.scale[0], childData.scale[1], childData.scale[2]);
-                    if (childData.material && childData.material.color) {
-                        mockMesh.material.color.setHex(childData.material.color);
+                    let mockObject;
+                    if (childData.type === 'Mesh') {
+                        mockObject = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+                    } else if (childData.type === 'PointLight') {
+                        mockObject = new PointLight(childData.color, childData.intensity);
+                    } else if (childData.type === 'DirectionalLight') {
+                        mockObject = new DirectionalLight(childData.color, childData.intensity);
                     }
-                    mockScene.children.push(mockMesh);
+
+                    if (mockObject) {
+                        mockObject.uuid = childData.uuid;
+                        mockObject.name = childData.name;
+                        mockObject.position.set(childData.position[0], childData.position[1], childData.position[2]);
+                        if (childData.rotation) {
+                            mockObject.rotation.set(childData.rotation[0], childData.rotation[1], childData.rotation[2]);
+                        }
+                        if (childData.scale) {
+                            mockObject.scale.set(childData.scale[0], childData.scale[1], childData.scale[2]);
+                        }
+                        if (childData.material && childData.material.color) {
+                            mockObject.material.color.setHex(childData.material.color);
+                        }
+                        mockScene.children.push(mockObject);
+                    }
                 });
             }
             if (this.onmessage) {
@@ -296,5 +309,58 @@ describe('SceneStorage', () => {
         expect(scene.children.length).toBe(1);
         const loadedObject = scene.children[0];
         expect(loadedObject.uuid).toBe(mockUUID);
+    });
+
+    it('should correctly save and load a scene containing lights with their properties', async () => {
+        const pointLight = new THREE.PointLight(0xff0000, 1.5, 100);
+        pointLight.position.set(1, 2, 3);
+        pointLight.name = 'TestPointLight';
+        scene.add(pointLight);
+
+        const directionalLight = new THREE.DirectionalLight(0x00ff00, 0.8);
+        directionalLight.position.set(4, 5, 6);
+        directionalLight.name = 'TestDirectionalLight';
+        scene.add(directionalLight);
+
+        const savePromise = sceneStorage.saveScene();
+
+        // Simulate the worker message for serialization completion
+        const sceneJson = JSON.stringify(scene.toJSON());
+        sceneStorage.worker.onmessage({ data: { type: 'serialize_complete', data: sceneJson } });
+
+        await savePromise; // Wait for the save operation to complete
+
+        // Now load the scene and verify
+        const mockFileContent = sceneJson;
+        const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
+
+        jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+            })
+        });
+
+        await sceneStorage.loadScene(mockFile);
+        await new Promise(resolve => setTimeout(resolve, 0)); // Allow event loop to process worker message
+
+        expect(scene.children.length).toBe(2); // Should contain both lights
+
+        const loadedPointLight = scene.children.find(obj => obj.name === 'TestPointLight');
+        expect(loadedPointLight).toBeDefined();
+        expect(loadedPointLight.isPointLight).toBe(true);
+        expect(loadedPointLight.color.getHex()).toBe(0xff0000);
+        expect(loadedPointLight.intensity).toBe(1.5);
+        expect(loadedPointLight.position.x).toBe(1);
+        expect(loadedPointLight.position.y).toBe(2);
+        expect(loadedPointLight.position.z).toBe(3);
+
+        const loadedDirectionalLight = scene.children.find(obj => obj.name === 'TestDirectionalLight');
+        expect(loadedDirectionalLight).toBeDefined();
+        expect(loadedDirectionalLight.isDirectionalLight).toBe(true);
+        expect(loadedDirectionalLight.color.getHex()).toBe(0x00ff00);
+        expect(loadedDirectionalLight.intensity).toBe(0.8);
+        expect(loadedDirectionalLight.position.x).toBe(4);
+        expect(loadedDirectionalLight.position.y).toBe(5);
+        expect(loadedDirectionalLight.position.z).toBe(6);
     });
 });

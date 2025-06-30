@@ -119,7 +119,7 @@
 - [X] 90. A group's name should be settable and reflected in the Scene Graph.
 
 ### SceneStorage.js Extended Tests
-- [ ] 91. should correctly save and load a scene containing lights with their properties.
+- [X] 91. should correctly save and load a scene containing lights with their properties.
 - [ ] 92. should correctly save and load a scene containing nested groups.
 - [ ] 93. should handle loading a file that is not a valid zip archive.
 - [ ] 94. should handle loading a zip file that is missing 'scene.json'.
