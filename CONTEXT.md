@@ -28,6 +28,8 @@
 - Implemented duplicate object feature.
 - Implemented reset view feature.
 - Implemented object grouping/ungrouping feature.
+- Implemented Lathe, Extrude, and Text geometries.
+- Implemented boolean operations (CSG - Constructive Solid Geometry) for combining/subtracting objects.
 
 ### Next Steps:
 - Prioritize next roadmap features.
