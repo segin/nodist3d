@@ -186,4 +186,20 @@ describe('GroupManager', () => {
         expect(ungrouped).toContain(object3);
         expect(ungrouped.length).toBe(3);
     });
+
+    it('Grouping should remove the original objects from the scene and add the new group', () => {
+        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        scene.add(mesh1);
+        scene.add(mesh2);
+
+        expect(scene.children).toContain(mesh1);
+        expect(scene.children).toContain(mesh2);
+
+        const group = groupManager.groupObjects([mesh1, mesh2]);
+
+        expect(scene.children).not.toContain(mesh1);
+        expect(scene.children).not.toContain(mesh2);
+        expect(scene.children).toContain(group);
+    });
 });
