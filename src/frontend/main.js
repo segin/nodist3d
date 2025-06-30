@@ -288,6 +288,33 @@ function main() {
     });
     ui.appendChild(ungroupButton);
 
+    // Add CSG operation buttons
+    function createCSGButton(text, operation) {
+        const button = document.createElement('button');
+        button.textContent = text;
+        button.addEventListener('click', () => {
+            const selectedObjects = sceneManager.scene.children.filter(obj => obj.userData.selected);
+            if (selectedObjects.length === 2) {
+                const resultObject = objectManager.performCSG(selectedObjects[0], selectedObjects[1], operation);
+                if (resultObject) {
+                    transformControls.attach(resultObject);
+                    pointer.selectedObject = resultObject;
+                    pointer.addOutline(resultObject);
+                    updateGUI(resultObject);
+                    sceneGraph.update();
+                    history.saveState();
+                }
+            } else {
+                console.warn("Select exactly two objects for CSG operation.");
+            }
+        });
+        ui.appendChild(button);
+    }
+
+    createCSGButton('Union', 'union');
+    createCSGButton('Subtract', 'subtract');
+    createCSGButton('Intersect', 'intersect');
+
     // Add Reset View button
     const resetButton = document.createElement('button');
     resetButton.textContent = 'Reset View';

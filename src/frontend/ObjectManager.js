@@ -4,6 +4,7 @@ import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry.js'
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 import { ExtrudeGeometry, LatheGeometry } from 'three';
+import { CSG } from 'three-csg-ts';
 
 export class ObjectManager {
     constructor(scene) {
@@ -317,5 +318,44 @@ export class ObjectManager {
         this.scene.add(newObject);
 
         return newObject;
+    }
+
+    performCSG(objectA, objectB, operation) {
+        if (!objectA || !objectB || !objectA.geometry || !objectB.geometry) {
+            console.error("Both objects must have geometry for CSG operations.");
+            return null;
+        }
+
+        // Ensure objects are in world space for CSG operations
+        objectA.updateMatrixWorld(true);
+        objectB.updateMatrixWorld(true);
+
+        const csgObjectA = CSG.fromMesh(objectA);
+        const csgObjectB = CSG.fromMesh(objectB);
+
+        let resultCsg;
+        if (operation === 'union') {
+            resultCsg = csgObjectA.union(csgObjectB);
+        } else if (operation === 'subtract') {
+            resultCsg = csgObjectA.subtract(csgObjectB);
+        } else if (operation === 'intersect') {
+            resultCsg = csgObjectA.intersect(csgObjectB);
+        } else {
+            console.error("Invalid CSG operation:", operation);
+            return null;
+        }
+
+        const resultMesh = CSG.toMesh(resultCsg, objectA.matrixWorld);
+        resultMesh.material = objectA.material.clone(); // Keep material of the first object
+        resultMesh.name = `CSG_Result_${operation}`;
+
+        // Remove original objects from the scene
+        this.scene.remove(objectA);
+        this.scene.remove(objectB);
+
+        // Add the result mesh to the scene
+        this.scene.add(resultMesh);
+
+        return resultMesh;
     }
 }
