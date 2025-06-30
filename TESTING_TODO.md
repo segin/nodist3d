@@ -88,11 +88,11 @@
 - [X] 65. should handle adding a texture of an unsupported type gracefully.
 
 ### LightManager.js Extended Tests
-- [ ] 66. should assign a default name to a new light if no name is provided.
-- [ ] 67. should not throw an error when attempting to remove a light that is not in the scene.
-- [ ] 68. should preserve light properties (color, intensity) when changing light type.
-- [ ] 69. should handle updating a light with an invalid or non-existent property.
-- [ ] 70. should ensure ambient lights do not have a position property that can be updated.
+- [X] 66. should assign a default name to a new light if no name is provided.
+- [X] 67. should not throw an error when attempting to remove a light that is not in the scene.
+- [X] 68. should preserve light properties (color, intensity) when changing light type.
+- [X] 69. should handle updating a light with an invalid or non-existent property.
+- [X] 70. should ensure ambient lights do not have a position property that can be updated.
 
 ### PhysicsManager.js Extended Tests
 - [ ] 71. should create a static body when mass is set to 0.

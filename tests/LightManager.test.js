@@ -1,4 +1,4 @@
-import { Scene } from 'three';
+import { Scene, AmbientLight } from 'three';
 import { LightManager } from '../src/frontend/LightManager.js';
 import { EventBus } from '../src/frontend/EventBus.js';
 
@@ -38,21 +38,21 @@ describe('LightManager', () => {
         expect(scene.children).not.toContain(light);
     });
 
-    it('should update a light's color property', () => {
+    it('should update a light\'s color property', () => {
         const light = lightManager.addLight('PointLight', 0xffffff, 1);
         const newColor = 0x123456;
         lightManager.updateLight(light, { color: newColor });
         expect(light.color.getHex()).toBe(newColor);
     });
 
-    it('should update a light's intensity property', () => {
+    it('should update a light\'s intensity property', () => {
         const light = lightManager.addLight('PointLight', 0xffffff, 1);
         const newIntensity = 0.75;
         lightManager.updateLight(light, { intensity: newIntensity });
         expect(light.intensity).toBe(newIntensity);
     });
 
-    it('should update a light's position property', () => {
+    it('should update a light\'s position property', () => {
         const light = lightManager.addLight('PointLight', 0xffffff, 1);
         const newPosition = { x: 10, y: 20, z: 30 };
         lightManager.updateLight(light, { position: newPosition });
@@ -73,5 +73,42 @@ describe('LightManager', () => {
         expect(newLight.position.x).toBe(oldLight.position.x);
         expect(newLight.position.y).toBe(oldLight.position.y);
         expect(newLight.position.z).toBe(oldLight.position.z);
+    });
+
+    it('should assign a default name to a new light if no name is provided', () => {
+        const light = lightManager.addLight('PointLight', 0xffffff, 1);
+        expect(light.name).toBe('PointLight');
+    });
+
+    it('should not throw an error when attempting to remove a light that is not in the scene', () => {
+        const nonExistentLight = { uuid: 'non-existent-light' };
+        expect(() => {
+            lightManager.removeLight(nonExistentLight);
+        }).not.toThrow();
+    });
+
+    it('should preserve light properties (color, intensity) when changing light type', () => {
+        const oldLight = lightManager.addLight('PointLight', 0xabcdef, 0.7, { x: 5, y: 6, z: 7 });
+        const newLight = lightManager.changeLightType(oldLight, 'DirectionalLight');
+
+        expect(newLight.color.getHex()).toBe(0xabcdef);
+        expect(newLight.intensity).toBe(0.7);
+        expect(newLight.position.x).toBe(5);
+        expect(newLight.position.y).toBe(6);
+        expect(newLight.position.z).toBe(7);
+    });
+
+    it('should handle updating a light with an invalid or non-existent property', () => {
+        const light = lightManager.addLight('PointLight', 0xffffff, 1);
+        expect(() => {
+            lightManager.updateLight(light, { nonExistentProperty: 'someValue' });
+        }).not.toThrow();
+    });
+
+    it('should ensure ambient lights do not have a position property that can be updated', () => {
+        const ambientLight = lightManager.addLight('AmbientLight', 0xffffff, 1);
+        const initialPosition = ambientLight.position.clone();
+        lightManager.updateLight(ambientLight, { position: { x: 10, y: 10, z: 10 } });
+        expect(ambientLight.position.equals(initialPosition)).toBe(true);
     });
 });
