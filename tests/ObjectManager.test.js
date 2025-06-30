@@ -237,4 +237,11 @@ describe('ObjectManager', () => {
         objectManager.updateMaterial(cube, { color: newColor });
         expect(cube.material.color.getHex()).toBe(newColor);
     });
+
+    it('should handle updating a material property that does not exist', () => {
+        const cube = objectManager.addPrimitive('Box');
+        expect(() => {
+            objectManager.updateMaterial(cube, { nonExistentProperty: 'someValue' });
+        }).not.toThrow();
+    });
 });
