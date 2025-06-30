@@ -2,6 +2,7 @@ import { App } from '../src/frontend/main.js';
 import { Scene, WebGLRenderer, PerspectiveCamera, Mesh, BoxGeometry, MeshBasicMaterial } from 'three';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 
 // Mock necessary DOM elements and their methods
 document.body.innerHTML = `
@@ -98,7 +99,13 @@ jest.mock('three/examples/jsm/loaders/GLTFLoader.js', () => ({
     }))
 }));
 jest.mock('three/examples/jsm/exporters/OBJExporter.js');
-jest.mock('three/examples/jsm/exporters/GLTFExporter.js');
+jest.mock('three/examples/jsm/exporters/GLTFExporter.js', () => ({
+    GLTFExporter: jest.fn().mockImplementation(() => ({
+        parse: jest.fn((scene, onCompleted, onError, options) => {
+            onCompleted({ /* mock GLTF JSON data */ });
+        })
+    }))
+}));
 
 // Mock dat.gui constructor
 jest.mock('dat.gui', () => ({
@@ -327,5 +334,35 @@ describe('App Integration Tests', () => {
         expect(app.history.saveState).toHaveBeenCalled();
 
         document.body.removeChild(importGltfInput);
+    });
+
+    it('Exporting to GLTF should trigger a download with valid GLTF JSON content', () => {
+        const exportGltfButton = Array.from(document.querySelectorAll('#ui button')).find(button => button.textContent === 'Export GLTF');
+
+        // Mock document.createElement('a') and its click method
+        const mockAnchor = {
+            href: '',
+            download: '',
+            click: jest.fn(),
+        };
+        jest.spyOn(document, 'createElement').mockReturnValue(mockAnchor);
+
+        // Mock GLTFExporter.parse
+        const mockGltfData = { scenes: [{ nodes: [] }] };
+        jest.spyOn(GLTFExporter.prototype, 'parse').mockImplementation((scene, onCompleted, onError, options) => {
+            onCompleted(mockGltfData);
+        });
+
+        exportGltfButton.click();
+
+        expect(GLTFExporter.prototype.parse).toHaveBeenCalledWith(
+            app.sceneManager.scene,
+            expect.any(Function),
+            expect.any(Function),
+            { binary: false }
+        );
+        expect(mockAnchor.download).toBe('scene.gltf');
+        expect(mockAnchor.click).toHaveBeenCalled();
+        expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mockurl');
     });
 });
