@@ -30,8 +30,11 @@
 - Implemented object grouping/ungrouping feature.
 - Implemented Lathe, Extrude, and Text geometries.
 - Implemented boolean operations (CSG - Constructive Solid Geometry) for combining/subtracting objects.
+- Implemented boolean operations (CSG - Constructive Solid Geometry) for combining/subtracting objects.
 - Implemented OBJ/GLTF import/export.
 - Implemented a custom shader editor for advanced material customization.
+- Implemented a custom shader editor for advanced material customization.
+- Implemented a physics engine for basic simulations.
 
 ### Next Steps:
 - Prioritize next roadmap features.
