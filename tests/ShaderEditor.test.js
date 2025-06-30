@@ -1,14 +1,26 @@
-import { Scene, WebGLRenderer, PerspectiveCamera, Mesh, BoxGeometry, ShaderMaterial } from 'three';
+import { Scene, WebGLRenderer, PerspectiveCamera, Mesh, BoxGeometry, ShaderMaterial, Color } from 'three';
 import { ShaderEditor } from '../src/frontend/ShaderEditor.js';
 
 // Mock dat.gui
 const mockGUI = {
     addFolder: jest.fn(() => ({
-        add: jest.fn(),
+        add: jest.fn(() => ({
+            name: jest.fn(),
+            onChange: jest.fn()
+        })),
+        addColor: jest.fn(() => ({
+            name: jest.fn(),
+            onChange: jest.fn()
+        })),
         open: jest.fn(),
         removeFolder: jest.fn()
     })),
-    add: jest.fn()
+    add: jest.fn(() => ({
+        name: jest.fn(),
+        listen: jest.fn(() => ({
+            onChange: jest.fn()
+        }))
+    }))
 };
 
 describe('ShaderEditor', () => {
@@ -34,5 +46,23 @@ describe('ShaderEditor', () => {
 
     it('`initGUI` should create a "Shader Editor" folder in the GUI', () => {
         expect(mockGUI.addFolder).toHaveBeenCalledWith('Shader Editor');
+    });
+
+    it('Updating a uniform value should set `needsUpdate` on the material to true', () => {
+        shaderEditor.createShader();
+        const material = shaderEditor.shaderMaterial;
+        material.needsUpdate = false; // Reset to false for testing
+
+        // Simulate changing a color uniform
+        const colorUniformController = mockGUI.addFolder.mock.results[0].value.addColor.mock.results[0].value;
+        colorUniformController.onChange.mock.calls[0][0](); // Call the onChange handler
+        expect(material.needsUpdate).toBe(true);
+
+        material.needsUpdate = false; // Reset for next test
+
+        // Simulate changing a float uniform
+        const floatUniformController = mockGUI.addFolder.mock.results[0].value.add.mock.results[0].value;
+        floatUniformController.listen.mock.results[0].value.onChange.mock.calls[0][0](); // Call the onChange handler
+        expect(material.needsUpdate).toBe(true);
     });
 });
