@@ -2,35 +2,10 @@ import { Scene, TextureLoader } from 'three';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
 
-// Mock TextureLoader
-jest.mock('three', () => {
-    const originalThree = jest.requireActual('three');
-    return {
-        ...originalThree,
-        TextureLoader: jest.fn().mockImplementation(() => {
-            return {
-                load: jest.fn((url, onLoad) => {
-                    const texture = { url };
-                    onLoad(texture);
-                }),
-            };
-        }),
-    };
-});
+
 
 // Mock FontLoader to prevent file loading errors in test environment
-jest.mock('three/examples/jsm/loaders/FontLoader.js', () => {
-    return {
-        FontLoader: jest.fn().mockImplementation(() => {
-            return {
-                load: jest.fn((url, onLoad) => {
-                    // Simulate immediate loading with a dummy font object
-                    onLoad({}); 
-                }),
-            };
-        }),
-    };
-});
+
 
 describe('ObjectManager', () => {
     let scene;
@@ -243,5 +218,11 @@ describe('ObjectManager', () => {
         expect(() => {
             objectManager.updateMaterial(cube, { nonExistentProperty: 'someValue' });
         }).not.toThrow();
+    });
+
+    it('should successfully create a text object when the font is loaded', async () => {
+        const textObject = await objectManager.addPrimitive('Text', { text: 'Hello' });
+        expect(textObject).not.toBeNull();
+        expect(textObject.type).toBe('Mesh');
     });
 });

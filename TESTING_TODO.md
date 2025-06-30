@@ -3,51 +3,51 @@
 ## Original 50 Tests
 
 ### ObjectManager.js Tests
-- [ ] 1. should return null when duplicating a non-existent object.
-- [ ] 2. should successfully add a texture to an object's material map.
-- [ ] 3. should successfully add a texture to an object's normal map.
-- [ ] 4. should successfully add a texture to an object's roughness map.
-- [ ] 5. should handle adding a texture to an object with no material.
-- [ ] 6. should properly dispose of an object's geometry and material on deletion.
-- [ ] 7. should handle the deletion of an already deleted object.
-- [ ] 8. should create a unique name for a duplicated object that has no original name.
-- [ ] 9. should successfully update an object's material color.
-- [ ] 10. should handle updating a material property that does not exist.
-- [ ] 11. should successfully create a text object when the font is loaded.
+- [X] 1. should return null when duplicating a non-existent object.
+- [X] 2. should successfully add a texture to an object's material map.
+- [X] 3. should successfully add a texture to an object's normal map.
+- [X] 4. should successfully add a texture to an object's roughness map.
+- [X] 5. should handle adding a texture to an object with no material.
+- [X] 6. should properly dispose of an object's geometry and material on deletion.
+- [X] 7. should handle the deletion of an already deleted object.
+- [X] 8. should create a unique name for a duplicated object that has no original name.
+- [X] 9. should successfully update an object's material color.
+- [X] 10. should handle updating a material property that does not exist.
+- [X] 11. should successfully create a text object when the font is loaded.
 - [ ] 12. should handle a request to create a text object when the font has not yet loaded.
 
 ### LightManager.js Tests
-- [ ] 13. should add a PointLight to the scene.
-- [ ] 14. should add a DirectionalLight to the scene.
-- [ ] 15. should add an AmbientLight to the scene.
-- [ ] 16. should remove a specified light from the scene.
-- [ ] 17. should update a light's color property.
-- [ ] 18. should update a light's intensity property.
-- [ ] 19. should update a light's position property.
-- [ ] 20. should successfully change the type of an existing light.
+- [X] 13. should add a PointLight to the scene.
+- [X] 14. should add a DirectionalLight to the scene.
+- [X] 15. should add an AmbientLight to the scene.
+- [X] 16. should remove a specified light from the scene.
+- [X] 17. should update a light's color property.
+- [X] 18. should update a light's intensity property.
+- [X] 19. should update a light's position property.
+- [X] 20. should successfully change the type of an existing light.
 
 ### PhysicsManager.js Tests
-- [ ] 21. should add a box-shaped physics body to the world.
-- [ ] 22. should add a sphere-shaped physics body to the world.
-- [ ] 23. should add a cylinder-shaped physics body to the world.
-- [ ] 24. should return null when trying to add a physics body with an unsupported shape.
-- [ ] 25. should update the corresponding mesh position and quaternion after a physics world step.
+- [X] 21. should add a box-shaped physics body to the world.
+- [X] 22. should add a sphere-shaped physics body to the world.
+- [X] 23. should add a cylinder-shaped physics body to the world.
+- [X] 24. should return null when trying to add a physics body with an unsupported shape.
+- [X] 25. should update the corresponding mesh position and quaternion after a physics world step.
 
 ### GroupManager.js Tests
-- [ ] 26. should successfully group two or more objects.
-- [ ] 27. should refuse to create a group with fewer than two objects.
-- [ ] 28. should correctly calculate the center of the grouped objects for the group's position.
-- [ ] 29. should successfully ungroup a group of objects.
-- [ ] 30. should place ungrouped objects back into the scene at the correct world positions.
-- [ ] 31. should handle a request to ungroup an object that is not a group.
+- [X] 26. should successfully group two or more objects.
+- [X] 27. should refuse to create a group with fewer than two objects.
+- [X] 28. should correctly calculate the center of the grouped objects for the group's position.
+- [X] 29. should successfully ungroup a group of objects.
+- [X] 30. should place ungrouped objects back into the scene at the correct world positions.
+- [X] 31. should handle a request to ungroup an object that is not a group.
 
 ### SceneStorage.js Tests
-- [ ] 32. should correctly serialize scene data into the expected JSON format.
-- [ ] 33. should ignore non-mesh objects when saving a scene.
-- [ ] 34. should successfully load a scene from a valid scene file.
-- [ ] 35. should clear all existing objects from the scene before loading a new one.
-- [ ] 36. should correctly reconstruct objects with their properties (position, rotation, scale, color) from a save file.
-- [ ] 37. should preserve the UUID of objects when loading a scene.
+- [X] 32. should correctly serialize scene data into the expected JSON format.
+- [X] 33. should ignore non-mesh objects when saving a scene.
+- [X] 34. should successfully load a scene from a valid scene file.
+- [X] 35. should clear all existing objects from the scene before loading a new one.
+- [X] 36. should correctly reconstruct objects with their properties (position, rotation, scale, color) from a save file.
+- [X] 37. should preserve the UUID of objects when loading a scene.
 
 ### History.js Tests
 - [ ] 38. should save the initial state of the scene.
