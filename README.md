@@ -174,7 +174,7 @@ This section outlines potential future enhancements and features for nodist3d.
     -   [x] Implement zoom camera control.
 -   [x] Add a grid helper for better scene orientation.
 -   [x] Add an axis helper for better scene orientation.
--   [ ] Implement material editing:
+-   [x] Implement material editing:
     -   [x] Change object color.
     -   [x] Adjust material roughness.
     -   [x] Adjust material metallicness.
