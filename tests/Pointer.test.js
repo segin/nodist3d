@@ -125,4 +125,63 @@ describe('Pointer', () => {
         pointerInstance.onPointerUp();
         expect(pointerInstance.isDragging).toBe(false);
     });
+
+    it('Raycaster should be correctly updated with camera and pointer coordinates on move', () => {
+        const initialPointerX = pointerInstance.pointer.x;
+        const initialPointerY = pointerInstance.pointer.y;
+
+        const newClientX = 150;
+        const newClientY = 75;
+
+        // Mock the renderer.domElement.getBoundingClientRect to simulate a canvas position
+        jest.spyOn(renderer.domElement, 'getBoundingClientRect').mockReturnValue({
+            left: 0,
+            top: 0,
+            width: 200,
+            height: 100,
+            x: 0,
+            y: 0,
+            right: 200,
+            bottom: 100,
+            toJSON: () => ({})
+        });
+
+        // Mock the raycaster.setFromCamera method
+        const setFromCameraSpy = jest.spyOn(pointerInstance.raycaster, 'setFromCamera');
+
+        pointerInstance.onPointerMove({ clientX: newClientX, clientY: newClientY });
+
+        // Calculate expected normalized device coordinates (NDC)
+        const expectedNDC_X = (newClientX / renderer.domElement.width) * 2 - 1;
+        const expectedNDC_Y = - (newClientY / renderer.domElement.height) * 2 + 1;
+
+        expect(pointerInstance.pointer.x).toBeCloseTo(expectedNDC_X);
+        expect(pointerInstance.pointer.y).toBeCloseTo(expectedNDC_Y);
+        expect(setFromCameraSpy).toHaveBeenCalledWith(pointerInstance.pointer, camera);
+    });
+
+    it('Should not select an object if the pointer event started on a UI element', () => {
+        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        scene.add(mesh);
+
+        const eventSpy = jest.spyOn(eventBus, 'emit');
+
+        // Simulate a pointerdown event with a UI element as the target
+        const uiElement = document.createElement('div');
+        uiElement.id = 'ui-element';
+        document.body.appendChild(uiElement);
+
+        const mockEvent = {
+            clientX: 50,
+            clientY: 50,
+            target: uiElement // Set the target to a UI element
+        };
+
+        pointerInstance.onPointerDown(mockEvent);
+
+        expect(eventSpy).not.toHaveBeenCalledWith('selectionChange', expect.any(Object));
+        expect(pointerInstance.selectedObject).toBeNull();
+
+        document.body.removeChild(uiElement);
+    });
 });
