@@ -155,7 +155,7 @@
 - [X] 120. Raycasting should correctly identify the front-most object if multiple are overlapping.
 
 ### SceneManager.js Tests
-- [ ] 121. `onWindowResize` should update the renderer size and camera aspect ratio.
+- [X] 121. `onWindowResize` should update the renderer size and camera aspect ratio.
 - [ ] 122. `resetCamera` should restore the camera's initial position and target.
 - [ ] 123. OrbitControls `damping` should be enabled.
 - [ ] 124. The scene should contain a GridHelper and an AxesHelper on initialization.
