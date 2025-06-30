@@ -31,4 +31,8 @@ describe('ShaderEditor', () => {
         expect(addedMesh).toBeInstanceOf(Mesh);
         expect(addedMesh.material).toBeInstanceOf(ShaderMaterial);
     });
+
+    it('`initGUI` should create a "Shader Editor" folder in the GUI', () => {
+        expect(mockGUI.addFolder).toHaveBeenCalledWith('Shader Editor');
+    });
 });
