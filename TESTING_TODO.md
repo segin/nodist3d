@@ -71,17 +71,17 @@
 ## Additional 100 Tests
 
 ### ObjectManager.js Extended Tests
-- [ ] 51. should resolve the promise when `addText` is called and font is available.
-- [ ] 52. should correctly set the material `side` property for planes (`THREE.DoubleSide`).
-- [ ] 53. should call `URL.revokeObjectURL` after a texture has been loaded to free memory.
-- [ ] 54. should handle `updateMaterial` for an object with an array of materials.
-- [ ] 55. should correctly clone an object's material properties when duplicating.
-- [ ] 56. should handle duplication of an object with no geometry or material.
-- [ ] 57. should update `metalness` property correctly via `updateMaterial`.
-- [ ] 58. should update `roughness` property correctly via `updateMaterial`.
-- [ ] 59. should correctly add a TeapotGeometry object.
-- [ ] 60. should correctly add an ExtrudeGeometry object.
-- [ ] 61. should correctly add a LatheGeometry object.
+- [X] 51. should resolve the promise when `addText` is called and font is available.
+- [X] 52. should correctly set the material `side` property for planes (`THREE.DoubleSide`).
+- [X] 53. should call `URL.revokeObjectURL` after a texture has been loaded to free memory.
+- [X] 54. should handle `updateMaterial` for an object with an array of materials.
+- [X] 55. should correctly clone an object's material properties when duplicating.
+- [X] 56. should handle duplication of an object with no geometry or material.
+- [X] 57. should update `metalness` property correctly via `updateMaterial`.
+- [X] 58. should update `roughness` property correctly via `updateMaterial`.
+- [X] 59. should correctly add a TeapotGeometry object.
+- [X] 60. should correctly add an ExtrudeGeometry object.
+- [X] 61. should correctly add a LatheGeometry object.
 - [ ] 62. should not add a deleted object back to the scene if it's part of an undo operation.
 - [ ] 63. should correctly dispose of textures when an object with textures is deleted.
 - [ ] 64. should return a new object with a position offset when duplicating.

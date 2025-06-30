@@ -1,4 +1,4 @@
-import { Scene, TextureLoader, Mesh, BoxGeometry, MeshBasicMaterial, Group } from 'three';
+import { Scene, TextureLoader, Mesh, BoxGeometry, MeshBasicMaterial, Group, DoubleSide, MeshLambertMaterial } from 'three';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
 
@@ -233,7 +233,7 @@ describe('ObjectManager', () => {
 
         const duplicatedCube = objectManager.duplicateObject(originalCube);
 
-        // Ensure it's a new object, not the same reference
+        // Ensure it\'s a new object, not the same reference
         expect(duplicatedCube).not.toBe(originalCube);
         expect(duplicatedCube.uuid).not.toBe(originalCube.uuid);
 
@@ -279,5 +279,120 @@ describe('ObjectManager', () => {
         expect(scene.children).not.toContain(mesh2);
         expect(mesh1.parent).toBeNull();
         expect(mesh2.parent).toBeNull();
+    });
+
+    it('should resolve the promise when `addText` is called and font is available', async () => {
+        // Mock the FontLoader to immediately resolve the load promise
+        jest.spyOn(primitiveFactory.fontLoader, 'load').mockImplementation((url, onLoad) => {
+            onLoad(); // Call the onLoad callback immediately
+        });
+
+        const textObjectPromise = objectManager.addPrimitive('Text', { text: 'Test Text' });
+        await expect(textObjectPromise).resolves.not.toBeNull();
+    });
+
+    it('should correctly set the material `side` property for planes (`THREE.DoubleSide`)', () => {
+        const plane = objectManager.addPrimitive('Plane');
+        expect(plane.material.side).toBe(DoubleSide);
+    });
+
+    it('should call `URL.revokeObjectURL` after a texture has been loaded to free memory', (done) => {
+        const cube = objectManager.addPrimitive('Box');
+        const file = new Blob();
+
+        const createObjectURLSpy = jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url');
+        const revokeObjectURLSpy = jest.spyOn(URL, 'revokeObjectURL');
+
+        // Mock TextureLoader.load to immediately call the onLoad callback
+        jest.spyOn(TextureLoader.prototype, 'load').mockImplementation((url, onLoad) => {
+            onLoad(new THREE.Texture()); // Pass a dummy texture
+        });
+
+        objectManager.addTexture(cube, file, 'map');
+
+        // Use process.nextTick or a small timeout to allow the async part of addTexture to run
+        process.nextTick(() => {
+            expect(createObjectURLSpy).toHaveBeenCalledWith(file);
+            expect(revokeObjectURLSpy).toHaveBeenCalledWith('mock-url');
+            done();
+        });
+    });
+
+    it('should handle `updateMaterial` for an object with an array of materials', () => {
+        const mesh = new Mesh(new BoxGeometry(), [
+            new MeshBasicMaterial({ color: 0xff0000 }),
+            new MeshBasicMaterial({ color: 0x00ff00 })
+        ]);
+        scene.add(mesh);
+
+        objectManager.updateMaterial(mesh, { color: 0x0000ff });
+
+        // Expect both materials in the array to be updated
+        expect(mesh.material[0].color.getHex()).toBe(0x0000ff);
+        expect(mesh.material[1].color.getHex()).toBe(0x0000ff);
+    });
+
+    it('should correctly clone an object\'s material properties when duplicating', () => {
+        const originalMesh = objectManager.addPrimitive('Box');
+        originalMesh.material.color.setHex(0x123456);
+        originalMesh.material.roughness = 0.5;
+        originalMesh.material.metalness = 0.8;
+
+        const duplicatedMesh = objectManager.duplicateObject(originalMesh);
+
+        expect(duplicatedMesh.material.color.getHex()).toBe(originalMesh.material.color.getHex());
+        expect(duplicatedMesh.material.roughness).toBe(originalMesh.material.roughness);
+        expect(duplicatedMesh.material.metalness).toBe(originalMesh.material.metalness);
+
+        // Ensure it\'s a clone, not a reference
+        expect(duplicatedMesh.material).not.toBe(originalMesh.material);
+    });
+
+    it('should handle duplication of an object with no geometry or material', () => {
+        const objectWithoutGeometryOrMaterial = new THREE.Object3D();
+        objectWithoutGeometryOrMaterial.name = 'EmptyObject';
+        scene.add(objectWithoutGeometryOrMaterial);
+
+        const duplicatedObject = objectManager.duplicateObject(objectWithoutGeometryOrMaterial);
+
+        expect(duplicatedObject).not.toBeNull();
+        expect(scene.children).toContain(duplicatedObject);
+        expect(duplicatedObject.name).toContain('EmptyObject_copy');
+        expect(duplicatedObject.geometry).toBeUndefined();
+        expect(duplicatedObject.material).toBeUndefined();
+    });
+
+    it('should update `metalness` property correctly via `updateMaterial`', () => {
+        const mesh = objectManager.addPrimitive('Box');
+        mesh.material = new MeshLambertMaterial(); // Ensure it has a metalness property
+        const newMetalness = 0.75;
+        objectManager.updateMaterial(mesh, { metalness: newMetalness });
+        expect(mesh.material.metalness).toBe(newMetalness);
+    });
+
+    it('should update `roughness` property correctly via `updateMaterial`', () => {
+        const mesh = objectManager.addPrimitive('Box');
+        mesh.material = new MeshLambertMaterial(); // Ensure it has a roughness property
+        const newRoughness = 0.25;
+        objectManager.updateMaterial(mesh, { roughness: newRoughness });
+        expect(mesh.material.roughness).toBe(newRoughness);
+    });
+
+    it('should correctly add a TeapotGeometry object', () => {
+        const teapot = objectManager.addPrimitive('Teapot');
+        expect(scene.children).toContain(teapot);
+        expect(teapot.geometry.type).toBe('BufferGeometry'); // TeapotGeometry is a BufferGeometry
+    });
+
+    it('should correctly add an ExtrudeGeometry object', () => {
+        const extrude = objectManager.addPrimitive('Extrude');
+        expect(scene.children).toContain(extrude);
+        expect(extrude.geometry.type).toBe('ExtrudeGeometry');
+    });
+
+    it('should correctly add a LatheGeometry object', () => {
+        const lathe = objectManager.addPrimitive('Lathe');
+        expect(scene.children).toContain(lathe);
+        expect(lathe.geometry.type).toBe('LatheGeometry');
     });
 });
