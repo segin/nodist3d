@@ -192,4 +192,14 @@ describe('ObjectManager', () => {
             expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('mock-url');
         }, 0);
     });
+
+    it('should handle adding a texture to an object with no material', () => {
+        const cube = objectManager.addPrimitive('Box');
+        cube.material = undefined;
+        const file = new Blob();
+
+        expect(() => {
+            objectManager.addTexture(cube, file, 'map');
+        }).not.toThrow();
+    });
 });

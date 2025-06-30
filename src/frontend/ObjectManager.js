@@ -32,6 +32,8 @@ export class ObjectManager {
     }
 
     addTexture(object, file, type = 'map') {
+        if (!object.material) return;
+
         const loader = new THREE.TextureLoader();
         const url = URL.createObjectURL(file);
         loader.load(url, (texture) => {
