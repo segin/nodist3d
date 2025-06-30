@@ -162,7 +162,7 @@
 - [X] 125. The renderer's DOM element should be the same as the canvas provided in the constructor.
 
 ### ShaderEditor.js Tests
-- [ ] 126. `createShader` should add a mesh with a `ShaderMaterial` to the scene.
+- [X] 126. `createShader` should add a mesh with a `ShaderMaterial` to the scene.
 - [ ] 127. `initGUI` should create a "Shader Editor" folder in the GUI.
 - [ ] 128. Updating a uniform value should set `needsUpdate` on the material to true.
 - [ ] 129. Editing GLSL code in the GUI should update the material's `vertexShader` or `fragmentShader`.
