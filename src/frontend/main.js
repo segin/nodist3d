@@ -143,6 +143,18 @@ function main() {
         }
     });
 
+    // Update GUI and outline when object selection changes
+    pointer.addEventListener('selectionChange', () => {
+        if (pointer.selectedObject) {
+            transformControls.attach(pointer.selectedObject);
+            updateGUI(pointer.selectedObject);
+        } else {
+            transformControls.detach();
+            updateGUI(null);
+        }
+        sceneGraph.update();
+    });
+
     function animate() {
         transformControls.update();
         sceneManager.controls.update(); // Update OrbitControls
@@ -191,6 +203,23 @@ function main() {
     createAddButton('Add Plane', () => objectManager.addPlane());
     createAddButton('Add Tube', () => objectManager.addTube());
     createAddButton('Add Teapot', () => objectManager.addTeapot());
+
+    // Add Delete button
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete Selected';
+    deleteButton.addEventListener('click', () => {
+        if (pointer.selectedObject) {
+            const objectToDelete = pointer.selectedObject;
+            transformControls.detach();
+            pointer.removeOutline();
+            pointer.selectedObject = null;
+            objectManager.deleteObject(objectToDelete);
+            updateGUI(null);
+            sceneGraph.update();
+            history.saveState();
+        }
+    });
+    ui.appendChild(deleteButton);
 
     sceneGraph.update();
 

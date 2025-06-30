@@ -159,4 +159,23 @@ export class ObjectManager {
             URL.revokeObjectURL(url); // Clean up the object URL
         });
     }
+
+    deleteObject(object) {
+        if (object) {
+            // Dispose of geometry and material to free up memory
+            if (object.geometry) {
+                object.geometry.dispose();
+            }
+            if (object.material) {
+                // If it's an array of materials, dispose each one
+                if (Array.isArray(object.material)) {
+                    object.material.forEach(material => material.dispose());
+                } else {
+                    object.material.dispose();
+                }
+            }
+            // Remove the object from the scene
+            this.scene.remove(object);
+        }
+    }
 }
