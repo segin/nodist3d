@@ -1,4 +1,4 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, Vector3 } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, Vector3, GridHelper, AxesHelper } from 'three';
 import { SceneManager } from '../src/frontend/SceneManager.js';
 
 describe('SceneManager', () => {
@@ -50,5 +50,22 @@ describe('SceneManager', () => {
 
     it('OrbitControls `damping` should be enabled', () => {
         expect(sceneManager.controls.enableDamping).toBe(true);
+    });
+
+    it('The scene should contain a GridHelper and an AxesHelper on initialization', () => {
+        let hasGridHelper = false;
+        let hasAxesHelper = false;
+
+        sceneManager.scene.children.forEach(child => {
+            if (child instanceof GridHelper) {
+                hasGridHelper = true;
+            }
+            if (child instanceof AxesHelper) {
+                hasAxesHelper = true;
+            }
+        });
+
+        expect(hasGridHelper).toBe(true);
+        expect(hasAxesHelper).toBe(true);
     });
 });
