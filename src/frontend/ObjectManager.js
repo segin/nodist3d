@@ -1,6 +1,9 @@
 
 import * as THREE from 'three';
 import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry.js';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+import { ExtrudeGeometry, LatheGeometry } from 'three';
 
 export class ObjectManager {
     constructor(scene) {
@@ -127,6 +130,114 @@ export class ObjectManager {
         const blinn = true;
         const geometry = new TeapotGeometry(size, segments, bottom, lid, body, fitLid, blinn);
         return this._createMesh(geometry, 0x800000); // Maroon color for teapot
+    }
+
+    addLathe() {
+        const points = [];
+        for (let i = 0; i < 10; i++) {
+            points.push(new THREE.Vector2(Math.sin(i * 0.2) * 0.5 + 0.5, (i - 5) * 0.2));
+        }
+        const geometry = new THREE.LatheGeometry(points);
+        return this._createMesh(geometry, 0x00ff80); // Spring Green for Lathe
+    }
+
+    addExtrude() {
+        const shape = new THREE.Shape();
+        const x = 0, y = 0;
+        shape.moveTo(x + 0.5, y + 0.5);
+        shape.bezierCurveTo(x + 0.5, y + 0.5, x + 0.4, y, x, y);
+        shape.bezierCurveTo(x - 0.6, y, x - 0.6, y + 0.7, x - 0.6, y + 0.7);
+        shape.bezierCurveTo(x - 0.6, y + 1.1, x - 0.3, y + 1.5, x + 0.5, y + 1.9);
+        shape.bezierCurveTo(x + 1.3, y + 1.5, x + 1.6, y + 1.1, x + 1.6, y + 0.7);
+        shape.bezierCurveTo(x + 1.6, y + 0.7, x + 1.6, y, x + 1, y);
+        shape.bezierCurveTo(x + 0.85, y, x + 0.5, y + 0.5, x + 0.5, y + 0.5);
+
+        const extrudeSettings = {
+            steps: 2,
+            depth: 0.2,
+            bevelEnabled: true,
+            bevelThickness: 0.1,
+            bevelSize: 0.1,
+            bevelOffset: 0,
+            bevelSegments: 1
+        };
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        return this._createMesh(geometry, 0xff6347); // Tomato for Extrude
+    }
+
+    addText(text = "nodist3d") {
+        const loader = new FontLoader();
+        return new Promise((resolve) => {
+            loader.load('./node_modules/three/examples/fonts/helvetiker_regular.typeface.json', (font) => {
+                const geometry = new TextGeometry(text, {
+                    font: font,
+                    size: 0.5,
+                    height: 0.2,
+                    curveSegments: 12,
+                    bevelEnabled: true,
+                    bevelThickness: 0.03,
+                    bevelSize: 0.02,
+                    bevelOffset: 0,
+                    bevelSegments: 5
+                });
+                geometry.center();
+                resolve(this._createMesh(geometry, 0x00bfff)); // Deep Sky Blue for Text
+            });
+        });
+    }
+
+    addLathe() {
+        const points = [];
+        for (let i = 0; i < 10; i++) {
+            points.push(new THREE.Vector2(Math.sin(i * 0.2) * 0.5 + 0.5, (i - 5) * 0.2));
+        }
+        const geometry = new THREE.LatheGeometry(points);
+        return this._createMesh(geometry, 0x00ff80); // Spring Green for Lathe
+    }
+
+    addExtrude() {
+        const shape = new THREE.Shape();
+        const x = 0, y = 0;
+        shape.moveTo(x + 0.5, y + 0.5);
+        shape.bezierCurveTo(x + 0.5, y + 0.5, x + 0.4, y, x, y);
+        shape.bezierCurveTo(x - 0.6, y, x - 0.6, y + 0.7, x - 0.6, y + 0.7);
+        shape.bezierCurveTo(x - 0.6, y + 1.1, x - 0.3, y + 1.5, x + 0.5, y + 1.9);
+        shape.bezierCurveTo(x + 1.3, y + 1.5, x + 1.6, y + 1.1, x + 1.6, y + 0.7);
+        shape.bezierCurveTo(x + 1.6, y + 0.7, x + 1.6, y, x + 1, y);
+        shape.bezierCurveTo(x + 0.85, y, x + 0.5, y + 0.5, x + 0.5, y + 0.5);
+
+        const extrudeSettings = {
+            steps: 2,
+            depth: 0.2,
+            bevelEnabled: true,
+            bevelThickness: 0.1,
+            bevelSize: 0.1,
+            bevelOffset: 0,
+            bevelSegments: 1
+        };
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        return this._createMesh(geometry, 0xff6347); // Tomato for Extrude
+    }
+
+    addText(text = "nodist3d") {
+        const loader = new FontLoader();
+        return new Promise((resolve) => {
+            loader.load('./node_modules/three/examples/fonts/helvetiker_regular.typeface.json', (font) => {
+                const geometry = new TextGeometry(text, {
+                    font: font,
+                    size: 0.5,
+                    height: 0.2,
+                    curveSegments: 12,
+                    bevelEnabled: true,
+                    bevelThickness: 0.03,
+                    bevelSize: 0.02,
+                    bevelOffset: 0,
+                    bevelSegments: 5
+                });
+                geometry.center();
+                resolve(this._createMesh(geometry, 0x00bfff)); // Deep Sky Blue for Text
+            });
+        });
     }
 
     updateMaterial(object, newMaterialProperties) {

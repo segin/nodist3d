@@ -205,6 +205,16 @@ function main() {
     createAddButton('Add Plane', () => objectManager.addPlane());
     createAddButton('Add Tube', () => objectManager.addTube());
     createAddButton('Add Teapot', () => objectManager.addTeapot());
+    createAddButton('Add Lathe', () => objectManager.addLathe());
+    createAddButton('Add Extrude', () => objectManager.addExtrude());
+    createAddButton('Add Text', async () => {
+        const textObject = await objectManager.addText();
+        transformControls.attach(textObject);
+        updateGUI(textObject);
+        sceneGraph.update();
+        history.saveState();
+        return textObject;
+    });
 
     // Add Delete button
     const deleteButton = document.createElement('button');
