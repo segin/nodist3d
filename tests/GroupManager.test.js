@@ -82,4 +82,55 @@ describe('GroupManager', () => {
         expect(ungrouped).toEqual([]);
         expect(scene.children).toContain(object1);
     });
+
+    it('should allow grouping a group with another object', () => {
+        const group1 = groupManager.groupObjects([object1, object2]);
+        const object4 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        object4.name = 'Object4';
+        scene.add(object4);
+
+        const group2 = groupManager.groupObjects([group1, object4]);
+
+        expect(group2).toBeInstanceOf(Group);
+        expect(scene.children).toContain(group2);
+        expect(group2.children).toContain(group1);
+        expect(group2.children).toContain(object4);
+        expect(scene.children).not.toContain(group1);
+        expect(scene.children).not.toContain(object4);
+    });
+
+    it('should correctly handle ungrouping a nested group, restoring all objects to the scene', () => {
+        const meshA = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        meshA.name = 'MeshA';
+        const meshB = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        meshB.name = 'MeshB';
+        const meshC = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        meshC.name = 'MeshC';
+
+        scene.add(meshA, meshB, meshC);
+
+        const innerGroup = groupManager.groupObjects([meshA, meshB]);
+        innerGroup.name = 'InnerGroup';
+
+        const outerGroup = groupManager.groupObjects([innerGroup, meshC]);
+        outerGroup.name = 'OuterGroup';
+
+        expect(scene.children).toContain(outerGroup);
+        expect(scene.children).not.toContain(innerGroup);
+        expect(scene.children).not.toContain(meshA);
+        expect(scene.children).not.toContain(meshB);
+        expect(scene.children).not.toContain(meshC);
+
+        groupManager.ungroupObjects(outerGroup);
+
+        expect(scene.children).not.toContain(outerGroup);
+        expect(scene.children).not.toContain(innerGroup);
+        expect(scene.children).toContain(meshA);
+        expect(scene.children).toContain(meshB);
+        expect(scene.children).toContain(meshC);
+
+        expect(meshA.parent).toBe(scene);
+        expect(meshB.parent).toBe(scene);
+        expect(meshC.parent).toBe(scene);
+    });
 });

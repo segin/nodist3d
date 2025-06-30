@@ -107,8 +107,8 @@
 - [X] 80. should ensure `update` method correctly steps the physics world with the provided `deltaTime`.
 
 ### GroupManager.js Extended Tests
-- [ ] 81. should allow grouping a group with another object.
-- [ ] 82. should correctly handle ungrouping a nested group, restoring all objects to the scene.
+- [X] 81. should allow grouping a group with another object.
+- [X] 82. should correctly handle ungrouping a nested group, restoring all objects to the scene.
 - [ ] 83. should maintain the world-space transforms of objects when they are grouped.
 - [ ] 84. should return an empty array when trying to ungroup a non-group object.
 - [ ] 85. should correctly group objects that have different parents.
