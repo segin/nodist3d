@@ -1,4 +1,4 @@
-import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, Group } from 'three';
+import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, Group, PerspectiveCamera } from 'three';
 import { History } from '../src/frontend/History.js';
 import { EventBus } from '../src/frontend/EventBus.js';
 
@@ -7,11 +7,16 @@ describe('History', () => {
     let historyManager;
     let eventBus;
     let mockTransformControls;
+    let camera;
 
     beforeEach(() => {
         scene = new Scene();
         eventBus = new EventBus();
+        camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         historyManager = new History(scene, eventBus);
+
+        // Mock the scene's camera for testing camera state saving/restoring
+        scene.camera = camera;
 
         mockTransformControls = {
             attach: jest.fn(),
@@ -268,5 +273,30 @@ describe('History', () => {
 
         historyManager.redo(); // Go forward to State 2
         expect(mesh1.visible).toBe(false);
+    });
+
+    it('Restoring a state should also restore the camera position and rotation if saved', () => {
+        const initialCameraPosition = camera.position.clone();
+        const initialCameraQuaternion = camera.quaternion.clone();
+
+        // Change camera position and rotation
+        camera.position.set(10, 10, 10);
+        camera.rotation.set(0.5, 0.5, 0.5);
+
+        historyManager.saveState(); // Save state with new camera position
+
+        // Change camera again
+        camera.position.set(0, 0, 0);
+        camera.rotation.set(0, 0, 0);
+
+        historyManager.undo(); // Undo to the previous state
+
+        expect(camera.position.x).toBeCloseTo(initialCameraPosition.x);
+        expect(camera.position.y).toBeCloseTo(initialCameraPosition.y);
+        expect(camera.position.z).toBeCloseTo(initialCameraPosition.z);
+        expect(camera.quaternion.x).toBeCloseTo(initialCameraQuaternion.x);
+        expect(camera.quaternion.y).toBeCloseTo(initialCameraQuaternion.y);
+        expect(camera.quaternion.z).toBeCloseTo(initialCameraQuaternion.z);
+        expect(camera.quaternion.w).toBeCloseTo(initialCameraQuaternion.w);
     });
 });
