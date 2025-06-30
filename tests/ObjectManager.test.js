@@ -1,6 +1,20 @@
 import { Scene } from 'three';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 
+// Mock FontLoader to prevent file loading errors in test environment
+jest.mock('three/examples/jsm/loaders/FontLoader.js', () => {
+    return {
+        FontLoader: jest.fn().mockImplementation(() => {
+            return {
+                load: jest.fn((url, onLoad) => {
+                    // Simulate immediate loading with a dummy font object
+                    onLoad({}); 
+                }),
+            };
+        }),
+    };
+});
+
 describe('ObjectManager', () => {
     let scene;
     let objectManager;

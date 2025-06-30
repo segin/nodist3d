@@ -1,18 +1,11 @@
-
 import * as THREE from 'three';
 import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry.js';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
-import { ExtrudeGeometry, LatheGeometry } from 'three';
 
-export class ObjectManager {
+export class PrimitiveManager {
     constructor(scene) {
         this.scene = scene;
-        this.font = null;
-        const loader = new FontLoader();
-        loader.load('./node_modules/three/examples/fonts/helvetiker_regular.typeface.json', (font) => {
-            this.font = font;
-        });
     }
 
     _createMesh(geometry, color, side = THREE.FrontSide) {
@@ -171,10 +164,11 @@ export class ObjectManager {
     }
 
     addText(text = "nodist3d") {
+        const loader = new FontLoader();
         return new Promise((resolve) => {
-            if (this.font) {
+            loader.load('./node_modules/three/examples/fonts/helvetiker_regular.typeface.json', (font) => {
                 const geometry = new TextGeometry(text, {
-                    font: this.font,
+                    font: font,
                     size: 0.5,
                     height: 0.2,
                     curveSegments: 12,
@@ -186,89 +180,7 @@ export class ObjectManager {
                 });
                 geometry.center();
                 resolve(this._createMesh(geometry, 0x00bfff)); // Deep Sky Blue for Text
-            } else {
-                console.error("Font not loaded. Cannot create text.");
-                resolve(null);
-            }
+            });
         });
-    }
-
-    updateMaterial(object, newMaterialProperties) {
-        if (object && object.material) {
-            for (const prop in newMaterialProperties) {
-                if (object.material[prop] !== undefined) {
-                    if (prop === 'color') {
-                        object.material.color.set(newMaterialProperties[prop]);
-                    } else {
-                        object.material[prop] = newMaterialProperties[prop];
-                    }
-                }
-            }
-            object.material.needsUpdate = true;
-        }
-    }
-
-    addTexture(object, file, type = 'map') {
-        const loader = new THREE.TextureLoader();
-        const url = URL.createObjectURL(file);
-        loader.load(url, (texture) => {
-            if (type === 'map') {
-                object.material.map = texture;
-            } else if (type === 'normalMap') {
-                object.material.normalMap = texture;
-            } else if (type === 'roughnessMap') {
-                object.material.roughnessMap = texture;
-            }
-            object.material.needsUpdate = true;
-            URL.revokeObjectURL(url); // Clean up the object URL
-        });
-    }
-
-    deleteObject(object) {
-        if (object) {
-            // Dispose of geometry and material to free up memory
-            if (object.geometry) {
-                object.geometry.dispose();
-            }
-            if (object.material) {
-                // If it's an array of materials, dispose each one
-                if (Array.isArray(object.material)) {
-                    object.material.forEach(material => material.dispose());
-                } else {
-                    object.material.dispose();
-                }
-            }
-            // Remove the object from the scene
-            this.scene.remove(object);
-        }
-    }
-
-    duplicateObject(object) {
-        if (!object) return null;
-
-        // Clone the object
-        const newObject = object.clone();
-
-        // If the object has a geometry, clone it
-        if (object.geometry) {
-            newObject.geometry = object.geometry.clone();
-        }
-
-        // If the object has a material, clone it
-        if (object.material) {
-            if (Array.isArray(object.material)) {
-                newObject.material = object.material.map(material => material.clone());
-            } else {
-                newObject.material = object.material.clone();
-            }
-        }
-
-        // Set a new name for the duplicated object
-        newObject.name = object.name ? `${object.name}_copy` : `${object.uuid}_copy`;
-
-        // Add the new object to the scene
-        this.scene.add(newObject);
-
-        return newObject;
     }
 }
