@@ -174,4 +174,22 @@ describe('ObjectManager', () => {
             expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('mock-url');
         }, 0);
     });
+
+    it('should successfully add a texture to an object\'s roughness map', () => {
+        const cube = objectManager.addPrimitive('Box');
+        const file = new Blob(); // Mock file
+
+        // Mock URL.createObjectURL
+        global.URL.createObjectURL = jest.fn(() => 'mock-url');
+        global.URL.revokeObjectURL = jest.fn();
+
+        objectManager.addTexture(cube, file, 'roughnessMap');
+
+        // Texture loading is asynchronous, so we need to wait for the next tick
+        setTimeout(() => {
+            expect(cube.material.roughnessMap).toEqual({ url: 'mock-url' });
+            expect(global.URL.createObjectURL).toHaveBeenCalledWith(file);
+            expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('mock-url');
+        }, 0);
+    });
 });
