@@ -230,4 +230,11 @@ describe('ObjectManager', () => {
 
         expect(duplicatedObject.name).toBe(`${cube.uuid}_copy`);
     });
+
+    it('should successfully update an object\'s material color', () => {
+        const cube = objectManager.addPrimitive('Box');
+        const newColor = 0x123456;
+        objectManager.updateMaterial(cube, { color: newColor });
+        expect(cube.material.color.getHex()).toBe(newColor);
+    });
 });
