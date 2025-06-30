@@ -459,4 +459,13 @@ describe('SceneStorage', () => {
         expect(loadedMesh2.material.color.getHex()).toBe(0x00ff00);
         expect(loadedMesh3.material.color.getHex()).toBe(0x0000ff);
     });
+
+    it('should handle loading a file that is not a valid zip archive', async () => {
+        const invalidFile = new Blob(['this is not a zip file'], { type: 'text/plain' });
+
+        // Mock JSZip.loadAsync to throw an error for invalid zip files
+        jest.spyOn(JSZip.prototype, 'loadAsync').mockRejectedValue(new Error('Invalid or unsupported zip file'));
+
+        await expect(sceneStorage.loadScene(invalidFile)).rejects.toThrow('Invalid or unsupported zip file');
+    });
 });
