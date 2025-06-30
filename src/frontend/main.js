@@ -8,6 +8,7 @@ import { SceneGraph } from './SceneGraph.js';
 import { SceneStorage } from './SceneStorage.js';
 import { History } from './History.js';
 import { LightManager } from './LightManager.js';
+import { GroupManager } from './GroupManager.js';
 
 function main() {
     const canvas = document.querySelector('#c');
@@ -17,6 +18,7 @@ function main() {
     const sceneStorage = new SceneStorage(sceneManager.scene);
     const history = new History(sceneManager.scene);
     const lightManager = new LightManager(sceneManager.scene);
+    const groupManager = new GroupManager(sceneManager.scene);
 
     const gui = new GUI();
     let currentObjectFolder = null;
@@ -236,6 +238,45 @@ function main() {
         }
     });
     ui.appendChild(duplicateButton);
+
+    // Add Group button
+    const groupButton = document.createElement('button');
+    groupButton.textContent = 'Group Selected';
+    groupButton.addEventListener('click', () => {
+        const selectedObjects = sceneManager.scene.children.filter(obj => obj.userData.selected);
+        if (selectedObjects.length > 1) {
+            const newGroup = groupManager.groupObjects(selectedObjects);
+            if (newGroup) {
+                transformControls.attach(newGroup);
+                pointer.selectedObject = newGroup;
+                pointer.addOutline(newGroup);
+                updateGUI(newGroup);
+                sceneGraph.update();
+                history.saveState();
+            }
+        } else {
+            console.warn("Select at least two objects to group.");
+        }
+    });
+    ui.appendChild(groupButton);
+
+    // Add Ungroup button
+    const ungroupButton = document.createElement('button');
+    ungroupButton.textContent = 'Ungroup Selected';
+    ungroupButton.addEventListener('click', () => {
+        if (pointer.selectedObject && pointer.selectedObject instanceof THREE.Group) {
+            const ungrouped = groupManager.ungroupObjects(pointer.selectedObject);
+            transformControls.detach();
+            pointer.removeOutline();
+            pointer.selectedObject = null;
+            updateGUI(null);
+            sceneGraph.update();
+            history.saveState();
+        } else {
+            console.warn("No group selected for ungrouping.");
+        }
+    });
+    ui.appendChild(ungroupButton);
 
     // Add Reset View button
     const resetButton = document.createElement('button');

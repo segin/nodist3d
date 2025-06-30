@@ -188,7 +188,7 @@ This section outlines potential future enhancements and features for nodist3d.
     -   [x] Adjust light position.
 -   [x] Implement a "snap to grid" feature.
 -   [x] Add a selection mechanism for objects.
--   [ ] Implement object grouping/ungrouping.
+-   [x] Implement object grouping/ungrouping.
 -   [x] Add a "duplicate object" feature.
 -   [x] Implement a "delete object" feature.
 -   [x] Add a "reset view" button.
