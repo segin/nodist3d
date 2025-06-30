@@ -28,9 +28,3 @@
 ### Next Steps:
 - Prioritize next roadmap features.
 
-### Ideas & Notes:
-- Consider using dat.GUI or similar library for easier UI control generation.
-- Explore WebGL performance optimizations for mobile devices.
-- Research best practices for 3D model persistence in web applications.
-- Investigate database build issue on Termux and re-integrate if possible.
-- Research alternative frontend testing frameworks compatible with Termux/Android.
