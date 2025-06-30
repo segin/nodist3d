@@ -451,4 +451,45 @@ describe('App Integration Tests', () => {
         expect(app.sceneManager.resetCamera).toHaveBeenCalled();
         expect(app.history.saveState).toHaveBeenCalled();
     });
+
+    it('Loading a scene file should correctly populate the Scene Graph UI', async () => {
+        const loadInput = document.createElement('input');
+        loadInput.type = 'file';
+        loadInput.accept = '.nodist3d';
+        loadInput.style.display = 'none';
+        document.body.appendChild(loadInput);
+
+        const loadButton = Array.from(document.querySelectorAll('#ui button')).find(button => button.textContent === 'Load Scene');
+
+        // Mock SceneStorage.loadScene to return a mock loaded scene
+        const mockLoadedScene = { children: [new Mesh(new BoxGeometry(), new MeshBasicMaterial())] };
+        mockLoadedScene.children[0].name = 'LoadedMesh';
+        jest.spyOn(app.sceneStorage, 'loadScene').mockResolvedValue(mockLoadedScene);
+
+        jest.spyOn(app.transformControls, 'detach');
+        jest.spyOn(app, 'updateGUI');
+        jest.spyOn(app.sceneGraph, 'update');
+        jest.spyOn(app.history, 'saveState');
+
+        loadButton.click();
+
+        // Simulate file selection (this will trigger the loadInput change event)
+        const mockFile = new Blob(['mock scene data'], { type: 'application/zip' });
+        Object.defineProperty(loadInput, 'files', {
+            value: [mockFile],
+            writable: false,
+        });
+        loadInput.dispatchEvent(new Event('change'));
+
+        // Wait for async operations to complete
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(app.sceneStorage.loadScene).toHaveBeenCalled();
+        expect(app.transformControls.detach).toHaveBeenCalled();
+        expect(app.updateGUI).toHaveBeenCalledWith(null);
+        expect(app.sceneGraph.update).toHaveBeenCalled();
+        expect(app.history.saveState).toHaveBeenCalled();
+
+        document.body.removeChild(loadInput);
+    });
 });
