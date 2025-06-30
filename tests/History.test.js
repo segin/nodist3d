@@ -177,4 +177,22 @@ describe('History', () => {
 
         expect(historyManager.history.length).toBe(historyManager.currentIndex + 1); // Redo history should be cleared
     });
+
+    it('Restoring a state should correctly re-render the scene', () => {
+        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        mesh1.name = 'Mesh1';
+        scene.add(mesh1);
+        historyManager.saveState(); // State 1: mesh1
+
+        scene.remove(mesh1);
+        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        mesh2.name = 'Mesh2';
+        scene.add(mesh2);
+        historyManager.saveState(); // State 2: mesh2
+
+        historyManager.undo(); // Go back to State 1
+
+        expect(scene.children.length).toBe(1);
+        expect(scene.children[0].name).toBe('Mesh1');
+    });
 });
