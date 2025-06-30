@@ -227,4 +227,21 @@ describe('App Integration Tests', () => {
         snapScaleController.onChange.mock.calls[0][0](false);
         expect(app.transformControls.scaleSnap).toBeNull();
     });
+
+    it('Clicking the "Duplicate Selected" should create a new object and select it', () => {
+        const initialObjectCount = app.sceneManager.scene.children.length;
+        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        mesh.name = 'OriginalMesh';
+        app.sceneManager.scene.add(mesh);
+        app.pointer.selectedObject = mesh;
+
+        const duplicateButton = Array.from(document.querySelectorAll('#ui button')).find(button => button.textContent === 'Duplicate Selected');
+        duplicateButton.click();
+
+        expect(app.sceneManager.scene.children.length).toBe(initialObjectCount + 2); // Original + duplicated
+        expect(app.transformControls.attach).toHaveBeenCalledWith(expect.any(Mesh));
+        expect(app.pointer.selectedObject.name).toContain('OriginalMesh_copy');
+        expect(app.pointer.outline).toBeDefined();
+        expect(app.history.saveState).toHaveBeenCalled();
+    });
 });
