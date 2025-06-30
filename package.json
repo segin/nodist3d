@@ -21,7 +21,8 @@
     "dat.gui": "^0.7.9",
     "express": "^4.19.2",
     "jszip": "^3.10.1",
-    "three": "^0.164.1"
+    "three": "^0.164.1",
+    "three-csg-ts": "^3.2.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.27.2",
