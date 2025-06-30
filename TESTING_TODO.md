@@ -169,7 +169,7 @@
 - [X] 130. Creating a new shader should dispose of the previous shader material if it exists.
 
 ### Integration Tests (main.js)
-- [ ] 131. Clicking the "Translate" button should set `transformControls` mode to "translate".
+- [X] 131. Clicking the "Translate" button should set `transformControls` mode to "translate".
 - [ ] 132. Clicking the "Rotate" button should set `transformControls` mode to "rotate".
 - [ ] 133. Clicking the "Scale" button should set `transformControls` mode to "scale".
 - [ ] 134. Clicking the "Save as Image" button should trigger a PNG download.
