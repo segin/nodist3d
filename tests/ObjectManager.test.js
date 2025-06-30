@@ -395,4 +395,74 @@ describe('ObjectManager', () => {
         expect(scene.children).toContain(lathe);
         expect(lathe.geometry.type).toBe('LatheGeometry');
     });
+
+    it('should not add a deleted object back to the scene if it\'s part of an undo operation', () => {
+        const cube = objectManager.addPrimitive('Box');
+        objectManager.deleteObject(cube);
+        // Simulate an undo operation that tries to re-add the object
+        scene.add(cube);
+        expect(scene.children).not.toContain(cube); // ObjectManager should prevent re-adding deleted objects
+    });
+
+    it('should correctly dispose of textures when an object with textures is deleted', (done) => {
+        const cube = objectManager.addPrimitive('Box');
+        const file = new Blob();
+
+        const textureDisposeSpy = jest.spyOn(THREE.Texture.prototype, 'dispose');
+
+        // Mock TextureLoader.load to immediately call the onLoad callback with a texture
+        jest.spyOn(TextureLoader.prototype, 'load').mockImplementation((url, onLoad) => {
+            const mockTexture = new THREE.Texture();
+            onLoad(mockTexture);
+            // Manually assign the texture to the material for the test
+            cube.material.map = mockTexture;
+        });
+
+        objectManager.addTexture(cube, file, 'map');
+
+        // Use process.nextTick or a small timeout to allow the async part of addTexture to run
+        process.nextTick(() => {
+            objectManager.deleteObject(cube);
+            expect(textureDisposeSpy).toHaveBeenCalled();
+            done();
+        });
+    });
+
+    it('should return a new object with a position offset when duplicating', () => {
+        const originalObject = objectManager.addPrimitive('Box');
+        originalObject.position.set(1, 2, 3);
+
+        const duplicatedObject = objectManager.duplicateObject(originalObject);
+
+        // Expect the duplicated object to have a position offset from the original
+        expect(duplicatedObject.position.x).toBe(originalObject.position.x + 0.5);
+        expect(duplicatedObject.position.y).toBe(originalObject.position.y + 0.5);
+        expect(duplicatedObject.position.z).toBe(originalObject.position.z + 0.5);
+    });
+
+    it('should handle adding a texture of an unsupported type gracefully', (done) => {
+        const cube = objectManager.addPrimitive('Box');
+        const file = new Blob(['unsupported content'], { type: 'image/unsupported' });
+
+        const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+        const createObjectURLSpy = jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-unsupported-url');
+        const revokeObjectURLSpy = jest.spyOn(URL, 'revokeObjectURL');
+
+        // Mock TextureLoader.load to simulate an error (e.g., by calling onError)
+        jest.spyOn(TextureLoader.prototype, 'load').mockImplementation((url, onLoad, onProgress, onError) => {
+            onError(new Error('Unsupported texture format'));
+        });
+
+        objectManager.addTexture(cube, file, 'map');
+
+        // Use process.nextTick or a small timeout to allow the async part of addTexture to run
+        process.nextTick(() => {
+            expect(createObjectURLSpy).toHaveBeenCalledWith(file);
+            expect(revokeObjectURLSpy).toHaveBeenCalledWith('mock-unsupported-url');
+            expect(consoleWarnSpy).toHaveBeenCalledWith('Error loading texture:', expect.any(Error));
+            expect(cube.material.map).toBeNull(); // Ensure map is not set
+            consoleWarnSpy.mockRestore();
+            done();
+        });
+    });
 });

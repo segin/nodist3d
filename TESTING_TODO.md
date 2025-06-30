@@ -82,10 +82,10 @@
 - [X] 59. should correctly add a TeapotGeometry object.
 - [X] 60. should correctly add an ExtrudeGeometry object.
 - [X] 61. should correctly add a LatheGeometry object.
-- [ ] 62. should not add a deleted object back to the scene if it's part of an undo operation.
-- [ ] 63. should correctly dispose of textures when an object with textures is deleted.
-- [ ] 64. should return a new object with a position offset when duplicating.
-- [ ] 65. should handle adding a texture of an unsupported type gracefully.
+- [X] 62. should not add a deleted object back to the scene if it's part of an undo operation.
+- [X] 63. should correctly dispose of textures when an object with textures is deleted.
+- [X] 64. should return a new object with a position offset when duplicating.
+- [X] 65. should handle adding a texture of an unsupported type gracefully.
 
 ### LightManager.js Extended Tests
 - [ ] 66. should assign a default name to a new light if no name is provided.
