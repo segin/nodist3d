@@ -539,4 +539,26 @@ describe('SceneStorage', () => {
 
         expect(scene.children.length).toBe(0); // Expect an empty scene
     });
+
+    it('should handle JSON parsing errors from a corrupted \'scene.json\'', async () => {
+        const corruptedJson = 'this is not valid json';
+        const mockFile = new Blob([corruptedJson], { type: 'application/zip' });
+
+        jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(corruptedJson)
+            })
+        });
+
+        // Mock console.error to prevent test output pollution
+        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+        await sceneStorage.loadScene(mockFile);
+        await new Promise(resolve => setTimeout(resolve, 0)); // Allow worker to process
+
+        expect(consoleErrorSpy).toHaveBeenCalledWith('Worker error:', 'SyntaxError: Unexpected token \'h\', "this is not valid json" is not valid JSON', expect.any(String));
+        expect(scene.children.length).toBe(0); // Scene should remain empty or cleared
+
+        consoleErrorSpy.mockRestore();
+    });
 });
