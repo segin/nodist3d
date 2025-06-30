@@ -192,4 +192,29 @@ describe('Pointer', () => {
             pointerInstance.removeOutline();
         }).not.toThrow();
     });
+
+    it('Raycasting should correctly identify the front-most object if multiple are overlapping', () => {
+        const meshFront = new Mesh(new BoxGeometry(1, 1, 1), new MeshBasicMaterial({ color: 0xff0000 }));
+        meshFront.position.set(0, 0, 0);
+        meshFront.name = 'MeshFront';
+        scene.add(meshFront);
+
+        const meshBack = new Mesh(new BoxGeometry(1, 1, 1), new MeshBasicMaterial({ color: 0x0000ff }));
+        meshBack.position.set(0, 0, -2);
+        meshBack.name = 'MeshBack';
+        scene.add(meshBack);
+
+        // Mock raycaster to return both objects, with the front one first
+        jest.spyOn(pointerInstance.raycaster, 'intersectObjects').mockReturnValue([
+            { object: meshFront, distance: 1 },
+            { object: meshBack, distance: 3 }
+        ]);
+
+        const eventSpy = jest.spyOn(eventBus, 'emit');
+
+        pointerInstance.onPointerDown({ clientX: 50, clientY: 50 });
+
+        expect(eventSpy).toHaveBeenCalledWith('selectionChange', meshFront);
+        expect(pointerInstance.selectedObject).toBe(meshFront);
+    });
 });
