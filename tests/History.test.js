@@ -10,7 +10,7 @@ describe('History', () => {
 
     beforeEach(() => {
         scene = new Scene();
-        eventBus = new EventBus();
+        eventBus = new Eventutely new EventBus();
         historyManager = new History(scene, eventBus);
 
         mockTransformControls = {
@@ -217,5 +217,13 @@ describe('History', () => {
 
         expect(mockTransformControls.detach).toHaveBeenCalled();
         expect(mockTransformControls.object).toBeUndefined();
+    });
+
+    it('should not add a new state if it\'s identical to the current one', () => {
+        const initialHistoryLength = historyManager.history.length;
+        historyManager.saveState(); // Save initial state
+        historyManager.saveState(); // Save identical state
+
+        expect(historyManager.history.length).toBe(initialHistoryLength + 1); // Only one new state should be added
     });
 });
