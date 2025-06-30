@@ -439,4 +439,16 @@ describe('App Integration Tests', () => {
         expect(app.physicsManager.addBody).toHaveBeenCalledWith(mesh, 1, 'box');
         expect(app.history.saveState).toHaveBeenCalled();
     });
+
+    it('The "Reset View" button should correctly reset the camera controls', () => {
+        const resetButton = Array.from(document.querySelectorAll('#ui button')).find(button => button.textContent === 'Reset View');
+
+        jest.spyOn(app.sceneManager, 'resetCamera');
+        jest.spyOn(app.history, 'saveState');
+
+        resetButton.click();
+
+        expect(app.sceneManager.resetCamera).toHaveBeenCalled();
+        expect(app.history.saveState).toHaveBeenCalled();
+    });
 });

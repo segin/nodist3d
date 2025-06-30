@@ -14,7 +14,7 @@
 - [X] 9. should successfully update an object's material color.
 - [X] 10. should handle updating a material property that does not exist.
 - [X] 11. should successfully create a text object when the font is loaded.
-- [ ] 12. should handle a request to create a text object when the font has not yet loaded.
+- [X] 12. should handle a request to create a text object when the font has not yet loaded.
 
 ### LightManager.js Tests
 - [X] 13. should add a PointLight to the scene.
@@ -186,6 +186,6 @@
 - [X] 145. Deleting an object from the Scene Graph UI should remove it from the 3D scene.
 - [X] 146. Selecting an object in the Scene Graph should also select it in the 3D viewport.
 - [X] 147. Clicking the physics button should add a physics body to the selected object.
-- [ ] 148. The "Reset View" button should correctly reset the camera controls.
+- [X] 148. The "Reset View" button should correctly reset the camera controls.
 - [ ] 149. Loading a scene file should correctly populate the Scene Graph UI.
 - [ ] 150. After an undo operation, the UI panels should be cleared or updated to reflect no selection.
