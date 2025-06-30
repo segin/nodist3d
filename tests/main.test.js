@@ -96,6 +96,12 @@ jest.mock('dat.gui', () => ({
     GUI: jest.fn().mockImplementation(() => mockGUI)
 }));
 
+// Mock URL.createObjectURL and URL.revokeObjectURL
+global.URL = {
+    createObjectURL: jest.fn(() => 'blob:mockurl'),
+    revokeObjectURL: jest.fn(),
+};
+
 describe('App Integration Tests', () => {
     let app;
 
@@ -124,5 +130,25 @@ describe('App Integration Tests', () => {
         const scaleButton = document.querySelector('#ui button:nth-child(3)'); // Assuming it's the third button
         scaleButton.click();
         expect(app.transformControls.setMode).toHaveBeenCalledWith('scale');
+    });
+
+    it('Clicking the "Save as Image" button should trigger a PNG download', () => {
+        const saveImageButton = Array.from(document.querySelectorAll('#ui button')).find(button => button.textContent === 'Save as Image');
+        
+        // Mock document.createElement('a') and its click method
+        const mockAnchor = {
+            href: '',
+            download: '',
+            click: jest.fn(),
+        };
+        jest.spyOn(document, 'createElement').mockReturnValue(mockAnchor);
+
+        saveImageButton.click();
+
+        expect(app.sceneManager.renderer.render).toHaveBeenCalledWith(app.sceneManager.scene, app.sceneManager.camera);
+        expect(app.sceneManager.renderer.domElement.toDataURL).toHaveBeenCalledWith('image/png');
+        expect(mockAnchor.download).toBe('nodist3d-scene.png');
+        expect(mockAnchor.click).toHaveBeenCalled();
+        expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mockurl');
     });
 });
