@@ -126,7 +126,7 @@
 - [X] 95. should correctly save and load material properties like roughness and metalness.
 - [X] 96. should successfully save and load a scene with no objects (an empty scene).
 - [X] 97. should handle JSON parsing errors from a corrupted 'scene.json'.
-- [ ] 98. should restore object names correctly from a loaded scene.
+- [X] 98. should restore object names correctly from a loaded scene.
 - [ ] 99. should restore lights to their correct types and positions.
 - [ ] 100. The load process should trigger an update in the SceneGraph.
 
