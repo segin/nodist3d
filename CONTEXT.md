@@ -24,6 +24,10 @@
 - Implemented axis helper.
 - Implemented material editing (color, roughness, metallicness, texture mapping).
 - Implemented light source manipulation (adding ambient, directional, and point lights, adjusting intensity and position, and changing light types).
+- Implemented delete object feature.
+- Implemented duplicate object feature.
+- Implemented reset view feature.
+- Implemented object grouping/ungrouping feature.
 
 ### Next Steps:
 - Prioritize next roadmap features.
