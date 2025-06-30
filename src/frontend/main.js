@@ -271,6 +271,45 @@ function main() {
     });
     ui.appendChild(redoButton);
 
+    // Snap controls
+    const snapFolder = gui.addFolder('Snap Settings');
+    const snapSettings = {
+        snapTranslation: false,
+        snapRotation: false,
+        snapScale: false,
+        translationSnapValue: 0.1,
+        rotationSnapValue: Math.PI / 8,
+        scaleSnapValue: 0.1
+    };
+
+    snapFolder.add(snapSettings, 'snapTranslation').name('Snap Translation').onChange((value) => {
+        transformControls.translationSnap = value ? snapSettings.translationSnapValue : null;
+    });
+    snapFolder.add(snapSettings, 'translationSnapValue', 0.01, 1).name('Translation Snap').onChange((value) => {
+        if (snapSettings.snapTranslation) {
+            transformControls.translationSnap = value;
+        }
+    });
+
+    snapFolder.add(snapSettings, 'snapRotation').name('Snap Rotation').onChange((value) => {
+        transformControls.rotationSnap = value ? snapSettings.rotationSnapValue : null;
+    });
+    snapFolder.add(snapSettings, 'rotationSnapValue', 0.01, Math.PI / 2).name('Rotation Snap').onChange((value) => {
+        if (snapSettings.snapRotation) {
+            transformControls.rotationSnap = value;
+        }
+    });
+
+    snapFolder.add(snapSettings, 'snapScale').name('Snap Scale').onChange((value) => {
+        transformControls.scaleSnap = value ? snapSettings.scaleSnapValue : null;
+    });
+    snapFolder.add(snapSettings, 'scaleSnapValue', 0.01, 1).name('Scale Snap').onChange((value) => {
+        if (snapSettings.snapScale) {
+            transformControls.scaleSnap = value;
+        }
+    });
+    snapFolder.open();
+
     // Initial save state
     history.saveState();
 }
