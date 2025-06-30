@@ -1,6 +1,22 @@
-import { Scene } from 'three';
+import { Scene, TextureLoader } from 'three';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
+
+// Mock TextureLoader
+jest.mock('three', () => {
+    const originalThree = jest.requireActual('three');
+    return {
+        ...originalThree,
+        TextureLoader: jest.fn().mockImplementation(() => {
+            return {
+                load: jest.fn((url, onLoad) => {
+                    const texture = { url };
+                    onLoad(texture);
+                }),
+            };
+        }),
+    };
+});
 
 // Mock FontLoader to prevent file loading errors in test environment
 jest.mock('three/examples/jsm/loaders/FontLoader.js', () => {
@@ -121,5 +137,23 @@ describe('ObjectManager', () => {
     it('should return null when duplicating a non-existent object', () => {
         const duplicatedObject = objectManager.duplicateObject(null);
         expect(duplicatedObject).toBeNull();
+    });
+
+    it('should successfully add a texture to an object\'s material map', () => {
+        const cube = objectManager.addPrimitive('Box');
+        const file = new Blob(); // Mock file
+
+        // Mock URL.createObjectURL
+        global.URL.createObjectURL = jest.fn(() => 'mock-url');
+        global.URL.revokeObjectURL = jest.fn();
+
+        objectManager.addTexture(cube, file, 'map');
+
+        // Texture loading is asynchronous, so we need to wait for the next tick
+        setTimeout(() => {
+            expect(cube.material.map).toEqual({ url: 'mock-url' });
+            expect(global.URL.createObjectURL).toHaveBeenCalledWith(file);
+            expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('mock-url');
+        }, 0);
     });
 });
