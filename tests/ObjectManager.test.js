@@ -1,4 +1,4 @@
-import { Scene, TextureLoader } from 'three';
+import { Scene, TextureLoader, Mesh, BoxGeometry, MeshBasicMaterial, Group } from 'three';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
 
@@ -224,5 +224,60 @@ describe('ObjectManager', () => {
         const textObject = await objectManager.addPrimitive('Text', { text: 'Hello' });
         expect(textObject).not.toBeNull();
         expect(textObject.type).toBe('Mesh');
+    });
+
+    it('should ensure a duplicated object is a deep clone, not a reference', () => {
+        const originalCube = objectManager.addPrimitive('Box');
+        originalCube.position.set(1, 2, 3);
+        originalCube.material.color.setHex(0xff0000);
+
+        const duplicatedCube = objectManager.duplicateObject(originalCube);
+
+        // Ensure it's a new object, not the same reference
+        expect(duplicatedCube).not.toBe(originalCube);
+        expect(duplicatedCube.uuid).not.toBe(originalCube.uuid);
+
+        // Ensure geometry is cloned
+        expect(duplicatedCube.geometry).not.toBe(originalCube.geometry);
+        expect(duplicatedCube.geometry.uuid).not.toBe(originalCube.geometry.uuid);
+        expect(duplicatedCube.geometry.type).toBe(originalCube.geometry.type);
+
+        // Ensure material is cloned
+        expect(duplicatedCube.material).not.toBe(originalCube.material);
+        expect(duplicatedCube.material.uuid).not.toBe(originalCube.material.uuid);
+        expect(duplicatedCube.material.color.getHex()).toBe(originalCube.material.color.getHex());
+
+        // Ensure properties are copied
+        expect(duplicatedCube.position.equals(originalCube.position)).toBe(true);
+        expect(duplicatedCube.rotation.equals(originalCube.rotation)).toBe(true);
+        expect(duplicatedCube.scale.equals(originalCube.scale)).toBe(true);
+
+        // Modify the duplicated object and ensure original is not affected
+        duplicatedCube.position.set(4, 5, 6);
+        duplicatedCube.material.color.setHex(0x0000ff);
+
+        expect(originalCube.position.x).toBe(1);
+        expect(originalCube.material.color.getHex()).toBe(0xff0000);
+    });
+
+    it('should ensure that deleting a group also removes all its children from the scene', () => {
+        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const group = new Group();
+        group.add(mesh1);
+        group.add(mesh2);
+        scene.add(group);
+
+        expect(scene.children).toContain(group);
+        expect(group.children).toContain(mesh1);
+        expect(group.children).toContain(mesh2);
+
+        objectManager.deleteObject(group);
+
+        expect(scene.children).not.toContain(group);
+        expect(scene.children).not.toContain(mesh1);
+        expect(scene.children).not.toContain(mesh2);
+        expect(mesh1.parent).toBeNull();
+        expect(mesh2.parent).toBeNull();
     });
 });

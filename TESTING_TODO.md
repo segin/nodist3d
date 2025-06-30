@@ -50,23 +50,23 @@
 - [X] 37. should preserve the UUID of objects when loading a scene.
 
 ### History.js Tests
-- [ ] 38. should save the initial state of the scene.
-- [ ] 39. should successfully undo the last action.
-- [ ] 40. should successfully redo a previously undone action.
-- [ ] 41. should not allow redo if a new action has been performed after an undo.
-- [ ] 42. should handle an undo request when there is no history.
-- [ ] 43. should handle a redo request when at the most recent state.
+- [X] 38. should save the initial state of the scene.
+- [X] 39. should successfully undo the last action.
+- [X] 40. should successfully redo a previously undone action.
+- [X] 41. should not allow redo if a new action has been performed after an undo.
+- [X] 42. should handle an undo request when there is no history.
+- [X] 43. should handle a redo request when at the most recent state.
 
 ### SceneGraph.js Tests
-- [ ] 44. should display all mesh and light objects from the scene in the UI.
-- [ ] 45. should not display objects other than meshes and lights.
-- [ ] 46. should correctly rename an object in the scene.
-- [ ] 47. should attach the transform controls when an object is clicked in the scene graph.
-- [ ] 48. should delete an object from the scene when the delete button is clicked.
+- [X] 44. should display all mesh and light objects from the scene in the UI.
+- [X] 45. should not display objects other than meshes and lights.
+- [X] 46. should correctly rename an object in the scene.
+- [X] 47. should attach the transform controls when an object is clicked in the scene graph.
+- [X] 48. should delete an object from the scene when the delete button is clicked.
 
 ### General/Integration Tests
-- [ ] 49. should ensure a duplicated object is a deep clone, not a reference.
-- [ ] 50. should ensure that deleting a group also removes all its children from the scene.
+- [X] 49. should ensure a duplicated object is a deep clone, not a reference.
+- [X] 50. should ensure that deleting a group also removes all its children from the scene.
 
 ## Additional 100 Tests
 
