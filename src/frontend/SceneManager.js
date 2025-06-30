@@ -19,9 +19,7 @@ export class SceneManager {
         this.controls.maxDistance = 500;
         this.controls.maxPolarAngle = Math.PI / 2;
 
-        const light = new THREE.DirectionalLight(0xFFFFFF, 1);
-        light.position.set(-1, 2, 4);
-        this.scene.add(light);
+        
 
         const gridHelper = new THREE.GridHelper(10, 10);
         this.scene.add(gridHelper);
