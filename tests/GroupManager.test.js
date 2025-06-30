@@ -211,4 +211,43 @@ describe('GroupManager', () => {
         groupManager.ungroupObjects(emptyGroup);
         expect(scene.children).not.toContain(emptyGroup);
     });
+
+    it('Grouping objects with existing animations should continue to work', () => {
+        const animatedMesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        animatedMesh1.name = 'AnimatedMesh1';
+        animatedMesh1.rotation.x = 0; // Initial rotation
+        scene.add(animatedMesh1);
+
+        const animatedMesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        animatedMesh2.name = 'AnimatedMesh2';
+        animatedMesh2.rotation.y = 0; // Initial rotation
+        scene.add(animatedMesh2);
+
+        // Simulate animation by manually updating rotation
+        const animate = (mesh) => {
+            mesh.rotation.x += 0.1;
+            mesh.rotation.y += 0.05;
+        };
+
+        // Apply animation before grouping
+        animate(animatedMesh1);
+        animate(animatedMesh2);
+
+        const initialRotationX1 = animatedMesh1.rotation.x;
+        const initialRotationY2 = animatedMesh2.rotation.y;
+
+        const group = groupManager.groupObjects([animatedMesh1, animatedMesh2]);
+
+        // Apply animation after grouping
+        animate(animatedMesh1);
+        animate(animatedMesh2);
+
+        // Check if rotations have changed, indicating animation is still working
+        expect(animatedMesh1.rotation.x).toBeGreaterThan(initialRotationX1);
+        expect(animatedMesh2.rotation.y).toBeGreaterThan(initialRotationY2);
+
+        // Ensure the meshes are now children of the group
+        expect(group.children).toContain(animatedMesh1);
+        expect(group.children).toContain(animatedMesh2);
+    });
 });
