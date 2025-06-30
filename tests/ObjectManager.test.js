@@ -213,4 +213,13 @@ describe('ObjectManager', () => {
         expect(geometryDisposeSpy).toHaveBeenCalled();
         expect(materialDisposeSpy).toHaveBeenCalled();
     });
+
+    it('should handle the deletion of an already deleted object', () => {
+        const cube = objectManager.addPrimitive('Box');
+        objectManager.deleteObject(cube);
+
+        expect(() => {
+            objectManager.deleteObject(cube);
+        }).not.toThrow();
+    });
 });
