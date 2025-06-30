@@ -176,7 +176,7 @@
 - [X] 135. Using the transform gizmo and releasing the mouse should create one new history state.
 - [X] 136. The dat.gui properties panel should be cleared when no object is selected.
 - [X] 137. Changing a property in the dat.gui panel should update the object in real-time.
-- [ ] 138. The "Snap Translation" checkbox should toggle `transformControls.translationSnap`.
+- [X] 138. The "Snap Translation" checkbox should toggle `transformControls.translationSnap`.
 - [ ] 139. The "Snap Rotation" checkbox should toggle `transformControls.rotationSnap`.
 - [ ] 140. The "Snap Scale" checkbox should toggle `transformControls.scaleSnap`.
 - [ ] 141. Clicking the "Duplicate Selected" should create a new object and select it.

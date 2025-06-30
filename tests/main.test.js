@@ -191,4 +191,16 @@ describe('App Integration Tests', () => {
 
         expect(mesh.position.x).toBe(newXValue);
     });
+
+    it('The "Snap Translation" checkbox should toggle `transformControls.translationSnap`', () => {
+        const snapTranslationController = mockGUI.addFolder.mock.results[0].value.add.mock.results[0].value; // Assuming it's the first add call in snapFolder
+
+        // Simulate checking the checkbox (value = true)
+        snapTranslationController.onChange.mock.calls[0][0](true);
+        expect(app.transformControls.translationSnap).toBe(0.1); // Default snap value
+
+        // Simulate unchecking the checkbox (value = false)
+        snapTranslationController.onChange.mock.calls[0][0](false);
+        expect(app.transformControls.translationSnap).toBeNull();
+    });
 });
