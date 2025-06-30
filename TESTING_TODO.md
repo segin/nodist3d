@@ -124,7 +124,7 @@
 - [X] 93. should handle loading a file that is not a valid zip archive.
 - [ ] 94. should handle loading a zip file that is missing 'scene.json'.
 - [X] 95. should correctly save and load material properties like roughness and metalness.
-- [ ] 96. should successfully save and load a scene with no objects (an empty scene).
+- [X] 96. should successfully save and load a scene with no objects (an empty scene).
 - [ ] 97. should handle JSON parsing errors from a corrupted 'scene.json'.
 - [ ] 98. should restore object names correctly from a loaded scene.
 - [ ] 99. should restore lights to their correct types and positions.

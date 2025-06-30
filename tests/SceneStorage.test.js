@@ -513,4 +513,30 @@ describe('SceneStorage', () => {
         expect(loadedMesh.material.roughness).toBeCloseTo(0.5);
         expect(loadedMesh.material.metalness).toBeCloseTo(0.8);
     });
+
+    it('should successfully save and load a scene with no objects (an empty scene)', async () => {
+        const savePromise = sceneStorage.saveScene();
+        const sceneJson = JSON.stringify(scene.toJSON());
+        sceneStorage.worker.onmessage({ data: { type: 'serialize_complete', data: sceneJson } });
+        await savePromise;
+
+        // Clear the scene before loading
+        while(scene.children.length > 0) {
+            scene.remove(scene.children[0]);
+        }
+
+        const mockFileContent = sceneJson;
+        const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
+
+        jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+            })
+        });
+
+        await sceneStorage.loadScene(mockFile);
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(scene.children.length).toBe(0); // Expect an empty scene
+    });
 });
