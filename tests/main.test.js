@@ -397,4 +397,29 @@ describe('App Integration Tests', () => {
         expect(app.sceneGraph.update).toHaveBeenCalled();
         expect(app.history.saveState).toHaveBeenCalled();
     });
+
+    it('Selecting an object in the Scene Graph should also select it in the 3D viewport', () => {
+        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        mesh.name = 'SelectableMesh';
+        app.sceneManager.scene.add(mesh);
+
+        // Simulate scene graph update to include the mesh
+        app.sceneGraph.update();
+
+        // Find the name span for the mesh in the scene graph UI
+        const sceneGraphElement = document.getElementById('scene-graph');
+        const nameSpan = sceneGraphElement.querySelector('li span');
+
+        // Mock necessary methods before clicking
+        jest.spyOn(app.transformControls, 'attach');
+        jest.spyOn(app.pointer, 'addOutline');
+        jest.spyOn(app, 'updateGUI');
+
+        nameSpan.click();
+
+        expect(app.transformControls.attach).toHaveBeenCalledWith(mesh);
+        expect(app.pointer.selectedObject).toBe(mesh);
+        expect(app.pointer.addOutline).toHaveBeenCalledWith(mesh);
+        expect(app.updateGUI).toHaveBeenCalledWith(mesh);
+    });
 });
