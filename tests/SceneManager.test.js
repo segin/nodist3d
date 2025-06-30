@@ -68,4 +68,8 @@ describe('SceneManager', () => {
         expect(hasGridHelper).toBe(true);
         expect(hasAxesHelper).toBe(true);
     });
+
+    it('The renderer\'s DOM element should be the same as the canvas provided in the constructor', () => {
+        expect(sceneManager.renderer.domElement).toBe(mockCanvas);
+    });
 });

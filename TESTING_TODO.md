@@ -159,7 +159,7 @@
 - [X] 122. `resetCamera` should restore the camera's initial position and target.
 - [X] 123. OrbitControls `damping` should be enabled.
 - [X] 124. The scene should contain a GridHelper and an AxesHelper on initialization.
-- [ ] 125. The renderer's DOM element should be the same as the canvas provided in the constructor.
+- [X] 125. The renderer's DOM element should be the same as the canvas provided in the constructor.
 
 ### ShaderEditor.js Tests
 - [ ] 126. `createShader` should add a mesh with a `ShaderMaterial` to the scene.
