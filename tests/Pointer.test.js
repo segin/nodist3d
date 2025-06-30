@@ -184,4 +184,12 @@ describe('Pointer', () => {
 
         document.body.removeChild(uiElement);
     });
+
+    it('`removeOutline` should not throw an error if called when no outline exists', () => {
+        // Ensure no outline exists initially
+        pointerInstance.outline = null;
+        expect(() => {
+            pointerInstance.removeOutline();
+        }).not.toThrow();
+    });
 });

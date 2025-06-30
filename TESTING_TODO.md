@@ -151,7 +151,7 @@
 - [X] 116. `isDragging` flag should be true on `pointerdown` and false on `pointerup`.
 - [X] 117. Raycaster should be correctly updated with camera and pointer coordinates on move.
 - [X] 118. Should not select an object if the pointer event started on a UI element.
-- [ ] 119. `removeOutline` should not throw an error if called when no outline exists.
+- [X] 119. `removeOutline` should not throw an error if called when no outline exists.
 - [ ] 120. Raycasting should correctly identify the front-most object if multiple are overlapping.
 
 ### SceneManager.js Tests
