@@ -237,6 +237,15 @@ function main() {
     });
     ui.appendChild(duplicateButton);
 
+    // Add Reset View button
+    const resetButton = document.createElement('button');
+    resetButton.textContent = 'Reset View';
+    resetButton.addEventListener('click', () => {
+        sceneManager.resetCamera();
+        history.saveState();
+    });
+    ui.appendChild(resetButton);
+
     sceneGraph.update();
 
     // Add transform controls buttons
