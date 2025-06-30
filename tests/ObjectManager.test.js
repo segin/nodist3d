@@ -222,4 +222,12 @@ describe('ObjectManager', () => {
             objectManager.deleteObject(cube);
         }).not.toThrow();
     });
+
+    it('should create a unique name for a duplicated object that has no original name', () => {
+        const cube = objectManager.addPrimitive('Box');
+        cube.name = '';
+        const duplicatedObject = objectManager.duplicateObject(cube);
+
+        expect(duplicatedObject.name).toBe(`${cube.uuid}_copy`);
+    });
 });
