@@ -1,5 +1,5 @@
 import { App } from '../src/frontend/main.js';
-import { Scene, WebGLRenderer, PerspectiveCamera } from 'three';
+import { Scene, WebGLRenderer, PerspectiveCamera, Mesh, BoxGeometry, MeshBasicMaterial } from 'three';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 
 // Mock necessary DOM elements and their methods
@@ -173,5 +173,22 @@ describe('App Integration Tests', () => {
         app.eventBus.emit('selectionChange', null);
 
         expect(updateGUISpy).toHaveBeenCalledWith(null);
+    });
+
+    it('Changing a property in the dat.gui panel should update the object in real-time', () => {
+        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        mesh.name = 'TestMesh';
+        app.sceneManager.scene.add(mesh);
+
+        // Simulate selecting the object to populate the GUI
+        app.pointer.selectedObject = mesh;
+        app.updateGUI(mesh);
+
+        // Simulate changing the position.x property in the GUI
+        const positionXController = mockGUI.addFolder.mock.results[0].value.add.mock.results[0].value; // Assuming position.x is the first 'add' call
+        const newXValue = 5;
+        positionXController.onChange.mock.calls[0][0](newXValue); // Call the onChange handler with a new value
+
+        expect(mesh.position.x).toBe(newXValue);
     });
 });
