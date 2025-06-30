@@ -73,4 +73,20 @@ describe('Pointer', () => {
         expect(pointerInstance.outline).toBeInstanceOf(LineSegments);
         expect(mesh.children).toContain(pointerInstance.outline);
     });
+
+    it('should correctly remove the outline from a deselected object', () => {
+        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        scene.add(mesh);
+
+        // Select the object first
+        jest.spyOn(pointerInstance.raycaster, 'intersectObjects').mockReturnValue([{ object: mesh }]);
+        pointerInstance.onPointerDown({ clientX: 50, clientY: 50 });
+
+        // Deselect the object
+        jest.spyOn(pointerInstance.raycaster, 'intersectObjects').mockReturnValue([]);
+        pointerInstance.onPointerDown({ clientX: 100, clientY: 100 });
+
+        expect(pointerInstance.outline).toBeNull();
+        expect(mesh.children).not.toContain(pointerInstance.outline);
+    });
 });
