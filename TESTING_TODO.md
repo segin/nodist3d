@@ -143,7 +143,7 @@
 - [X] 110. Restoring a state should also restore the camera position and rotation if saved.
 
 ### Pointer.js Tests
-- [ ] 111. should dispatch a `selectionChange` event when an object is selected.
+- [X] 111. should dispatch a `selectionChange` event when an object is selected.
 - [ ] 112. should dispatch `selectionChange` with a `null` payload on deselection.
 - [ ] 113. should correctly apply an outline to a selected object.
 - [ ] 114. should correctly remove the outline from a deselected object.
