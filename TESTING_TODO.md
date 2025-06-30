@@ -95,16 +95,16 @@
 - [X] 70. should ensure ambient lights do not have a position property that can be updated.
 
 ### PhysicsManager.js Extended Tests
-- [ ] 71. should create a static body when mass is set to 0.
-- [ ] 72. should correctly scale the physics shape when the associated mesh is scaled.
-- [ ] 73. should correctly orient the physics shape when the associated mesh is rotated.
-- [ ] 74. should correctly remove a physics body from the world.
-- [ ] 75. should not affect other bodies when one is removed.
-- [ ] 76. should synchronize the physics body's position with its mesh's position upon creation.
-- [ ] 77. should handle meshes with geometries that have no size parameters (e.g., a custom BufferGeometry).
-- [ ] 78. should apply world gravity to dynamic bodies correctly over time.
-- [ ] 79. should allow adding the same mesh to the physics world multiple times without error.
-- [ ] 80. should ensure `update` method correctly steps the physics world with the provided `deltaTime`.
+- [X] 71. should create a static body when mass is set to 0.
+- [X] 72. should correctly scale the physics shape when the associated mesh is scaled.
+- [X] 73. should correctly orient the physics shape when the associated mesh is rotated.
+- [X] 74. should correctly remove a physics body from the world.
+- [X] 75. should not affect other bodies when one is removed.
+- [X] 76. should synchronize the physics body's position with its mesh's position upon creation.
+- [X] 77. should handle meshes with geometries that have no size parameters (e.g., a custom BufferGeometry).
+- [X] 78. should apply world gravity to dynamic bodies correctly over time.
+- [X] 79. should allow adding the same mesh to the physics world multiple times without error.
+- [X] 80. should ensure `update` method correctly steps the physics world with the provided `deltaTime`.
 
 ### GroupManager.js Extended Tests
 - [ ] 81. should allow grouping a group with another object.
