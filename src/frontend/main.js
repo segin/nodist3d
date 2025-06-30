@@ -246,6 +246,19 @@ function main() {
     });
     ui.appendChild(resetButton);
 
+    // Add Save as Image button
+    const saveImageButton = document.createElement('button');
+    saveImageButton.textContent = 'Save as Image';
+    saveImageButton.addEventListener('click', () => {
+        sceneManager.renderer.render(sceneManager.scene, sceneManager.camera);
+        const dataURL = sceneManager.renderer.domElement.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = dataURL;
+        a.download = 'nodist3d-scene.png';
+        a.click();
+    });
+    ui.appendChild(saveImageButton);
+
     sceneGraph.update();
 
     // Add transform controls buttons
