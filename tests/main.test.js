@@ -119,4 +119,10 @@ describe('App Integration Tests', () => {
         rotateButton.click();
         expect(app.transformControls.setMode).toHaveBeenCalledWith('rotate');
     });
+
+    it('Clicking the "Scale" button should set `transformControls` mode to "scale" ', () => {
+        const scaleButton = document.querySelector('#ui button:nth-child(3)'); // Assuming it's the third button
+        scaleButton.click();
+        expect(app.transformControls.setMode).toHaveBeenCalledWith('scale');
+    });
 });
