@@ -1,6 +1,7 @@
 import { App } from '../src/frontend/main.js';
 import { Scene, WebGLRenderer, PerspectiveCamera, Mesh, BoxGeometry, MeshBasicMaterial } from 'three';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 // Mock necessary DOM elements and their methods
 document.body.innerHTML = `
@@ -87,7 +88,15 @@ jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
 
 // Mock OBJLoader and GLTFLoader
 jest.mock('three/examples/jsm/loaders/OBJLoader.js');
-jest.mock('three/examples/jsm/loaders/GLTFLoader.js');
+jest.mock('three/examples/jsm/loaders/GLTFLoader.js', () => ({
+    GLTFLoader: jest.fn().mockImplementation(() => ({
+        parse: jest.fn((data, path, onLoad) => {
+            const mockGltf = { scene: new Mesh(new BoxGeometry(), new MeshBasicMaterial()) };
+            mockGltf.scene.name = 'MockGLTFScene';
+            onLoad(mockGltf);
+        })
+    }))
+}));
 jest.mock('three/examples/jsm/exporters/OBJExporter.js');
 jest.mock('three/examples/jsm/exporters/GLTFExporter.js');
 
@@ -264,5 +273,59 @@ describe('App Integration Tests', () => {
         expect(app.pointer.outline).toBeDefined();
         expect(app.sceneGraph.update).toHaveBeenCalled();
         expect(app.history.saveState).toHaveBeenCalled();
+    });
+
+    it('Importing a GLTF file should correctly add its contents to the scene', async () => {
+        const initialObjectCount = app.sceneManager.scene.children.length;
+        const importGltfInput = document.createElement('input');
+        importGltfInput.type = 'file';
+        importGltfInput.accept = '.gltf,.glb';
+        importGltfInput.style.display = 'none';
+        document.body.appendChild(importGltfInput);
+
+        const importGltfButton = Array.from(document.querySelectorAll('#ui button')).find(button => button.textContent === 'Import GLTF');
+
+        // Mock FileReader
+        const mockFileReader = {
+            readAsArrayBuffer: jest.fn(),
+            onload: null,
+        };
+        jest.spyOn(window, 'FileReader').mockImplementation(() => mockFileReader);
+
+        // Simulate file selection
+        const mockFile = new Blob(['mock gltf data'], { type: 'model/gltf+json' });
+        Object.defineProperty(importGltfInput, 'files', {
+            value: [mockFile],
+            writable: false,
+        });
+
+        // Mock GLTFLoader.parse to immediately call the onLoad callback
+        const mockGltfScene = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        mockGltfScene.name = 'LoadedGLTFScene';
+        jest.spyOn(GLTFLoader.prototype, 'parse').mockImplementation((data, path, onLoad) => {
+            onLoad({ scene: mockGltfScene });
+        });
+
+        jest.spyOn(app.sceneManager.scene, 'add');
+        jest.spyOn(app.transformControls, 'attach');
+        jest.spyOn(app.pointer, 'addOutline');
+        jest.spyOn(app, 'updateGUI');
+        jest.spyOn(app.sceneGraph, 'update');
+        jest.spyOn(app.history, 'saveState');
+
+        importGltfButton.click();
+
+        // Manually trigger FileReader onload
+        mockFileReader.onload({ target: { result: 'mock gltf data' } });
+
+        expect(app.sceneManager.scene.add).toHaveBeenCalledWith(mockGltfScene);
+        expect(app.transformControls.attach).toHaveBeenCalledWith(mockGltfScene);
+        expect(app.pointer.selectedObject).toBe(mockGltfScene);
+        expect(app.pointer.addOutline).toHaveBeenCalledWith(mockGltfScene);
+        expect(app.updateGUI).toHaveBeenCalledWith(mockGltfScene);
+        expect(app.sceneGraph.update).toHaveBeenCalled();
+        expect(app.history.saveState).toHaveBeenCalled();
+
+        document.body.removeChild(importGltfInput);
     });
 });
