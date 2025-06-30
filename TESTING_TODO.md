@@ -127,8 +127,8 @@
 - [X] 96. should successfully save and load a scene with no objects (an empty scene).
 - [X] 97. should handle JSON parsing errors from a corrupted 'scene.json'.
 - [X] 98. should restore object names correctly from a loaded scene.
-- [ ] 99. should restore lights to their correct types and positions.
-- [ ] 100. The load process should trigger an update in the SceneGraph.
+- [X] 99. should restore lights to their correct types and positions.
+- [X] 100. The load process should trigger an update in the SceneGraph.
 
 ### History.js Extended Tests
 - [ ] 101. should correctly undo/redo the creation of a group.
