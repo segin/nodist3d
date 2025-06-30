@@ -116,7 +116,7 @@
 - [X] 87. Grouping should remove the original objects from the scene and add the new group.
 - [X] 88. An empty group should be removable from the scene.
 - [X] 89. Grouping objects with existing animations should continue to work.
-- [ ] 90. A group's name should be settable and reflected in the Scene Graph.
+- [X] 90. A group's name should be settable and reflected in the Scene Graph.
 
 ### SceneStorage.js Extended Tests
 - [ ] 91. should correctly save and load a scene containing lights with their properties.

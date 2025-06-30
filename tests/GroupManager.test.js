@@ -250,4 +250,11 @@ describe('GroupManager', () => {
         expect(group.children).toContain(animatedMesh1);
         expect(group.children).toContain(animatedMesh2);
     });
+
+    it('A group\'s name should be settable and reflected in the Scene Graph', () => {
+        const group = groupManager.groupObjects([object1, object2]);
+        const newName = 'MyCustomGroup';
+        group.name = newName;
+        expect(group.name).toBe(newName);
+    });
 });
