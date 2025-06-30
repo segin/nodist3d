@@ -151,4 +151,18 @@ describe('App Integration Tests', () => {
         expect(mockAnchor.click).toHaveBeenCalled();
         expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mockurl');
     });
+
+    it('Using the transform gizmo and releasing the mouse should create one new history state', () => {
+        const historySpy = jest.spyOn(app.history, 'saveState');
+
+        // Simulate the 'dragging-changed' event with value: false
+        const draggingChangedEvent = { value: false };
+        app.transformControls.addEventListener.mock.calls.forEach(call => {
+            if (call[0] === 'dragging-changed') {
+                call[1](draggingChangedEvent);
+            }
+        });
+
+        expect(historySpy).toHaveBeenCalled();
+    });
 });

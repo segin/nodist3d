@@ -173,7 +173,7 @@
 - [X] 132. Clicking the "Rotate" button should set `transformControls` mode to "rotate".
 - [X] 133. Clicking the "Scale" button should set `transformControls` mode to "scale".
 - [X] 134. Clicking the "Save as Image" button should trigger a PNG download.
-- [ ] 135. Using the transform gizmo and releasing the mouse should create one new history state.
+- [X] 135. Using the transform gizmo and releasing the mouse should create one new history state.
 - [ ] 136. The dat.gui properties panel should be cleared when no object is selected.
 - [ ] 137. Changing a property in the dat.gui panel should update the object in real-time.
 - [ ] 138. The "Snap Translation" checkbox should toggle `transformControls.translationSnap`.
