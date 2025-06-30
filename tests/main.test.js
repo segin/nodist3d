@@ -109,8 +109,14 @@ describe('App Integration Tests', () => {
     });
 
     it('Clicking the "Translate" button should set `transformControls` mode to "translate" ', () => {
-        const translateButton = document.querySelector('button'); // Assuming it's the first button
+        const translateButton = document.querySelector('#ui button:nth-child(1)'); // Assuming it's the first button
         translateButton.click();
         expect(app.transformControls.setMode).toHaveBeenCalledWith('translate');
+    });
+
+    it('Clicking the "Rotate" button should set `transformControls` mode to "rotate" ', () => {
+        const rotateButton = document.querySelector('#ui button:nth-child(2)'); // Assuming it's the second button
+        rotateButton.click();
+        expect(app.transformControls.setMode).toHaveBeenCalledWith('rotate');
     });
 });

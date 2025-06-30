@@ -170,7 +170,7 @@
 
 ### Integration Tests (main.js)
 - [X] 131. Clicking the "Translate" button should set `transformControls` mode to "translate".
-- [ ] 132. Clicking the "Rotate" button should set `transformControls` mode to "rotate".
+- [X] 132. Clicking the "Rotate" button should set `transformControls` mode to "rotate".
 - [ ] 133. Clicking the "Scale" button should set `transformControls` mode to "scale".
 - [ ] 134. Clicking the "Save as Image" button should trigger a PNG download.
 - [ ] 135. Using the transform gizmo and releasing the mouse should create one new history state.
