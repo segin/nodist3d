@@ -29,9 +29,6 @@ export class SceneManager {
         const axesHelper = new THREE.AxesHelper(5);
         this.scene.add(axesHelper);
 
-        const axesHelper = new THREE.AxesHelper(5);
-        this.scene.add(axesHelper);
-
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
         this.onWindowResize();
     }
