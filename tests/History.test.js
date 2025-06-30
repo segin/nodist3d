@@ -159,4 +159,22 @@ describe('History', () => {
         expect(scene.children).toContain(mesh1);
         expect(scene.children).not.toContain(mesh2);
     });
+
+    it('Saving a new state should clear the "redo" history', () => {
+        const cube1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        scene.add(cube1);
+        historyManager.saveState(); // State 1
+
+        const cube2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        scene.add(cube2);
+        historyManager.saveState(); // State 2
+
+        historyManager.undo(); // Go back to State 1
+
+        const cube3 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        scene.add(cube3);
+        historyManager.saveState(); // State 3 (new action after undo)
+
+        expect(historyManager.history.length).toBe(historyManager.currentIndex + 1); // Redo history should be cleared
+    });
 });
