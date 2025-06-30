@@ -1,13 +1,14 @@
 import * as THREE from 'three';
 
 export class Pointer extends THREE.EventDispatcher {
-    constructor(camera, scene, renderer) {
+    constructor(camera, scene, renderer, eventBus) {
         super();
         this.raycaster = new THREE.Raycaster();
         this.pointer = new THREE.Vector2();
         this.camera = camera;
         this.scene = scene;
         this.renderer = renderer;
+        this.eventBus = eventBus; // Inject EventBus
         this.selectedObject = null;
         this.outline = null; // To store the outline mesh
         this.isDragging = false;
@@ -29,14 +30,14 @@ export class Pointer extends THREE.EventDispatcher {
             if (this.selectedObject !== newSelectedObject) {
                 this.selectedObject = newSelectedObject;
                 this.addOutline(this.selectedObject);
-                this.dispatchEvent({ type: 'selectionChange' });
+                this.eventBus.emit('selectionChange', this.selectedObject); // Emit event via EventBus
                 console.log('Selected object:', this.selectedObject);
             }
         } else {
             if (this.selectedObject !== null) {
                 this.selectedObject = null;
                 this.removeOutline();
-                this.dispatchEvent({ type: 'selectionChange' });
+                this.eventBus.emit('selectionChange', null); // Emit event via EventBus
             }
         }
     }

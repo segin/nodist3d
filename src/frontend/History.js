@@ -1,9 +1,13 @@
+import * as THREE from 'three';
 
 export class History {
-    constructor(scene) {
+    constructor(scene, eventBus) {
         this.scene = scene;
+        this.eventBus = eventBus;
         this.history = [];
         this.currentIndex = -1;
+
+        this.eventBus.on('historyChange', () => this.saveState());
     }
 
     // Save the current state of the scene
@@ -38,7 +42,16 @@ export class History {
 
         // Clear current scene
         while (this.scene.children.length > 0) {
-            this.scene.remove(this.scene.children[0]);
+            const object = this.scene.children[0];
+            this.scene.remove(object);
+            if (object.geometry) object.geometry.dispose();
+            if (object.material) {
+                if (Array.isArray(object.material)) {
+                    object.material.forEach(material => material.dispose());
+                } else {
+                    object.material.dispose();
+                }
+            }
         }
 
         // Add objects from the restored scene

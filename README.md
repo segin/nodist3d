@@ -147,7 +147,7 @@ This checklist meticulously tracks all requirements and tasks derived from the i
     -   [x] Teapot
 -   [x] Optimize the application interface for mobile.
 -   [x] Node.js webserver listens on localhost for a browser to connect to.
--   [ ] Optimize the code.
+-   [x] Optimize the code.
 -   [x] Use a custom zip file format with JSON data inside for persistent local storage.
 -   [x] Make sure there is an interface button on the user controls of the web frontend to easily enter and leave full screen mode.
 
@@ -211,9 +211,9 @@ This section outlines potential future enhancements and features for nodist3d.
 
 ### Performance & Optimization
 
--   [ ] Implement level of detail (LOD) for complex scenes.
--   [ ] Optimize rendering performance for mobile devices.
--   [ ] Implement Web Workers for offloading heavy computations.
+-   [x] Implement level of detail (LOD) for complex scenes.
+-   [x] Optimize rendering performance for mobile devices.
+-   [x] Implement Web Workers for offloading heavy computations.
 
 ### Testing & CI/CD
 
