@@ -139,4 +139,24 @@ describe('History', () => {
         expect(scene.children).toContain(mesh1);
         expect(scene.children).toContain(mesh2);
     });
+
+    it('`restoreState` should correctly dispose of old geometries and materials to prevent memory leaks', () => {
+        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        scene.add(mesh1);
+        historyManager.saveState(); // State 1: mesh1
+
+        scene.add(mesh2);
+        historyManager.saveState(); // State 2: mesh1, mesh2
+
+        const disposeSpy1 = jest.spyOn(mesh1.geometry, 'dispose');
+        const disposeSpy2 = jest.spyOn(mesh1.material, 'dispose');
+
+        historyManager.undo(); // Go back to State 1
+
+        expect(disposeSpy1).toHaveBeenCalled();
+        expect(disposeSpy2).toHaveBeenCalled();
+        expect(scene.children).toContain(mesh1);
+        expect(scene.children).not.toContain(mesh2);
+    });
 });
