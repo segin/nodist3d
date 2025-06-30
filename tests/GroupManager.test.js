@@ -133,4 +133,57 @@ describe('GroupManager', () => {
         expect(meshB.parent).toBe(scene);
         expect(meshC.parent).toBe(scene);
     });
+
+    it('should maintain the world-space transforms of objects when they are grouped', () => {
+        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        mesh1.position.set(10, 0, 0);
+        mesh1.rotation.set(0, Math.PI / 2, 0);
+        mesh1.scale.set(2, 2, 2);
+        scene.add(mesh1);
+
+        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        mesh2.position.set(20, 0, 0);
+        mesh2.rotation.set(0, 0, Math.PI / 4);
+        mesh2.scale.set(0.5, 0.5, 0.5);
+        scene.add(mesh2);
+
+        // Get world positions before grouping
+        const mesh1WorldPosition = new THREE.Vector3();
+        mesh1.getWorldPosition(mesh1WorldPosition);
+        const mesh2WorldPosition = new THREE.Vector3();
+        mesh2.getWorldPosition(mesh2WorldPosition);
+
+        const group = groupManager.groupObjects([mesh1, mesh2]);
+
+        // After grouping, the objects' world positions should remain the same
+        const newMesh1WorldPosition = new THREE.Vector3();
+        mesh1.getWorldPosition(newMesh1WorldPosition);
+        const newMesh2WorldPosition = new THREE.Vector3();
+        mesh2.getWorldPosition(newMesh2WorldPosition);
+
+        expect(newMesh1WorldPosition.x).toBeCloseTo(mesh1WorldPosition.x);
+        expect(newMesh1WorldPosition.y).toBeCloseTo(mesh1WorldPosition.y);
+        expect(newMesh1WorldPosition.z).toBeCloseTo(mesh1WorldPosition.z);
+
+        expect(newMesh2WorldPosition.x).toBeCloseTo(mesh2WorldPosition.x);
+        expect(newMesh2WorldPosition.y).toBeCloseTo(mesh2WorldPosition.y);
+        expect(newMesh2WorldPosition.z).toBeCloseTo(mesh2WorldPosition.z);
+    });
+
+    it('should return an empty array when trying to ungroup a non-group object', () => {
+        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        scene.add(mesh);
+        const ungroupedObjects = groupManager.ungroupObjects(mesh);
+        expect(ungroupedObjects).toEqual([]);
+        expect(scene.children).toContain(mesh);
+    });
+
+    it('`ungroupObjects` should return an array containing all the former children', () => {
+        const group = groupManager.groupObjects([object1, object2, object3]);
+        const ungrouped = groupManager.ungroupObjects(group);
+        expect(ungrouped).toContain(object1);
+        expect(ungrouped).toContain(object2);
+        expect(ungrouped).toContain(object3);
+        expect(ungrouped.length).toBe(3);
+    });
 });

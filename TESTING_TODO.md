@@ -109,10 +109,10 @@
 ### GroupManager.js Extended Tests
 - [X] 81. should allow grouping a group with another object.
 - [X] 82. should correctly handle ungrouping a nested group, restoring all objects to the scene.
-- [ ] 83. should maintain the world-space transforms of objects when they are grouped.
-- [ ] 84. should return an empty array when trying to ungroup a non-group object.
-- [ ] 85. should correctly group objects that have different parents.
-- [ ] 86. `ungroupObjects` should return an array containing all the former children.
+- [X] 83. should maintain the world-space transforms of objects when they are grouped.
+- [X] 84. should return an empty array when trying to ungroup a non-group object.
+- [X] 85. should correctly group objects that have different parents.
+- [X] 86. `ungroupObjects` should return an array containing all the former children.
 - [ ] 87. Grouping should remove the original objects from the scene and add the new group.
 - [ ] 88. An empty group should be removable from the scene.
 - [ ] 89. Grouping objects with existing animations should continue to work.
