@@ -7,15 +7,19 @@ export class ObjectManager {
         this.scene = scene;
     }
 
+    _createMesh(geometry, color, side = THREE.FrontSide) {
+        const material = new THREE.MeshPhongMaterial({ color, side });
+        const mesh = new THREE.Mesh(geometry, material);
+        this.scene.add(mesh);
+        return mesh;
+    }
+
     addCube() {
         const boxWidth = 1;
         const boxHeight = 1;
         const boxDepth = 1;
         const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
-        const material = new THREE.MeshPhongMaterial({ color: 0x44aa88 });
-        const cube = new THREE.Mesh(geometry, material);
-        this.scene.add(cube);
-        return cube;
+        return this._createMesh(geometry, 0x44aa88);
     }
 
     addSphere() {
@@ -23,10 +27,7 @@ export class ObjectManager {
         const widthSegments = 32;
         const heightSegments = 16;
         const geometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
-        const material = new THREE.MeshPhongMaterial({ color: 0xff0000 }); // Red color for sphere
-        const sphere = new THREE.Mesh(geometry, material);
-        this.scene.add(sphere);
-        return sphere;
+        return this._createMesh(geometry, 0xff0000); // Red color for sphere
     }
 
     addCylinder() {
@@ -35,10 +36,7 @@ export class ObjectManager {
         const height = 1;
         const radialSegments = 32;
         const geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
-        const material = new THREE.MeshPhongMaterial({ color: 0x0000ff }); // Blue color for cylinder
-        const cylinder = new THREE.Mesh(geometry, material);
-        this.scene.add(cylinder);
-        return cylinder;
+        return this._createMesh(geometry, 0x0000ff); // Blue color for cylinder
     }
 
     addCone() {
@@ -46,10 +44,7 @@ export class ObjectManager {
         const height = 1;
         const radialSegments = 32;
         const geometry = new THREE.ConeGeometry(radius, height, radialSegments);
-        const material = new THREE.MeshPhongMaterial({ color: 0xffff00 }); // Yellow color for cone
-        const cone = new THREE.Mesh(geometry, material);
-        this.scene.add(cone);
-        return cone;
+        return this._createMesh(geometry, 0xffff00); // Yellow color for cone
     }
 
     addTorus() {
@@ -58,10 +53,7 @@ export class ObjectManager {
         const radialSegments = 16;
         const tubularSegments = 100;
         const geometry = new THREE.TorusGeometry(radius, tube, radialSegments, tubularSegments);
-        const material = new THREE.MeshPhongMaterial({ color: 0x800080 }); // Purple color for torus
-        const torus = new THREE.Mesh(geometry, material);
-        this.scene.add(torus);
-        return torus;
+        return this._createMesh(geometry, 0x800080); // Purple color for torus
     }
 
     addTorusKnot() {
@@ -72,60 +64,42 @@ export class ObjectManager {
         const p = 2;
         const q = 3;
         const geometry = new THREE.TorusKnotGeometry(radius, tube, tubularSegments, radialSegments, p, q);
-        const material = new THREE.MeshPhongMaterial({ color: 0xffa500 }); // Orange color for torus knot
-        const torusKnot = new THREE.Mesh(geometry, material);
-        this.scene.add(torusKnot);
-        return torusKnot;
+        return this._createMesh(geometry, 0xffa500); // Orange color for torus knot
     }
 
     addTetrahedron() {
         const radius = 0.7;
         const detail = 0; // 0 for tetrahedron
         const geometry = new THREE.IcosahedronGeometry(radius, detail);
-        const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 }); // Green color for tetrahedron
-        const tetrahedron = new THREE.Mesh(geometry, material);
-        this.scene.add(tetrahedron);
-        return tetrahedron;
+        return this._createMesh(geometry, 0x00ff00); // Green color for tetrahedron
     }
 
     addIcosahedron() {
         const radius = 0.7;
         const detail = 0;
         const geometry = new THREE.IcosahedronGeometry(radius, detail);
-        const material = new THREE.MeshPhongMaterial({ color: 0x00ffff }); // Cyan color for icosahedron
-        const icosahedron = new THREE.Mesh(geometry, material);
-        this.scene.add(icosahedron);
-        return icosahedron;
+        return this._createMesh(geometry, 0x00ffff); // Cyan color for icosahedron
     }
 
     addDodecahedron() {
         const radius = 0.7;
         const detail = 0;
         const geometry = new THREE.DodecahedronGeometry(radius, detail);
-        const material = new THREE.MeshPhongMaterial({ color: 0xff00ff }); // Magenta color for dodecahedron
-        const dodecahedron = new THREE.Mesh(geometry, material);
-        this.scene.add(dodecahedron);
-        return dodecahedron;
+        return this._createMesh(geometry, 0xff00ff); // Magenta color for dodecahedron
     }
 
     addOctahedron() {
         const radius = 0.7;
         const detail = 0;
         const geometry = new THREE.OctahedronGeometry(radius, detail);
-        const material = new THREE.MeshPhongMaterial({ color: 0x008080 }); // Teal color for octahedron
-        const octahedron = new THREE.Mesh(geometry, material);
-        this.scene.add(octahedron);
-        return octahedron;
+        return this._createMesh(geometry, 0x008080); // Teal color for octahedron
     }
 
     addPlane() {
         const width = 1;
         const height = 1;
         const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshPhongMaterial({ color: 0x808080, side: THREE.DoubleSide }); // Gray color for plane, DoubleSide to see from both sides
-        const plane = new THREE.Mesh(geometry, material);
-        this.scene.add(plane);
-        return plane;
+        return this._createMesh(geometry, 0x808080, THREE.DoubleSide); // Gray color for plane, DoubleSide to see from both sides
     }
 
     addTube() {
@@ -140,10 +114,7 @@ export class ObjectManager {
         const radialSegments = 8;
         const closed = false;
         const geometry = new THREE.TubeGeometry(path, tubularSegments, radius, radialSegments, closed);
-        const material = new THREE.MeshPhongMaterial({ color: 0xffc0cb }); // Pink color for tube
-        const tube = new THREE.Mesh(geometry, material);
-        this.scene.add(tube);
-        return tube;
+        return this._createMesh(geometry, 0xffc0cb); // Pink color for tube
     }
 
     addTeapot() {
@@ -155,10 +126,7 @@ export class ObjectManager {
         const fitLid = false;
         const blinn = true;
         const geometry = new TeapotGeometry(size, segments, bottom, lid, body, fitLid, blinn);
-        const material = new THREE.MeshPhongMaterial({ color: 0x800000 }); // Maroon color for teapot
-        const teapot = new THREE.Mesh(geometry, material);
-        this.scene.add(teapot);
-        return teapot;
+        return this._createMesh(geometry, 0x800000); // Maroon color for teapot
     }
 
     updateMaterial(object, newMaterialProperties) {
