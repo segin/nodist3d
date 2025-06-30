@@ -181,7 +181,7 @@ This section outlines potential future enhancements and features for nodist3d.
     -   [x] Add texture mapping:
         -   [x] Implement basic texture loading and application.
         -   [x] Add UI controls for texture selection.
-        -   [ ] Support different texture types (e.g., diffuse, normal, roughness).
+        -   [x] Support different texture types (e.g., diffuse, normal, roughness).
 -   [x] Add light source manipulation:
     -   [x] Change light type (e.g., PointLight, DirectionalLight, AmbientLight).
     -   [x] Adjust light intensity.
