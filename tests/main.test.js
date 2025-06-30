@@ -244,4 +244,25 @@ describe('App Integration Tests', () => {
         expect(app.pointer.outline).toBeDefined();
         expect(app.history.saveState).toHaveBeenCalled();
     });
+
+    it('The "Add Point Light" button should add a new point light and update the scene graph', () => {
+        const initialLightCount = app.sceneManager.scene.children.filter(child => child.isLight).length;
+        const addPointLightButton = Array.from(document.querySelectorAll('#ui button')).find(button => button.textContent === 'Add Point Light');
+        
+        // Mock the addLight method to return a mock light
+        const mockPointLight = { isLight: true, name: 'PointLight', uuid: 'mock-uuid' };
+        jest.spyOn(app.lightManager, 'addLight').mockReturnValue(mockPointLight);
+        jest.spyOn(app.sceneGraph, 'update');
+        jest.spyOn(app.history, 'saveState');
+
+        addPointLightButton.click();
+
+        expect(app.lightManager.addLight).toHaveBeenCalledWith('PointLight', 0xffffff, 1, { x: 0, y: 0, z: 0 }, 'PointLight');
+        expect(app.sceneManager.scene.children.filter(child => child.isLight).length).toBe(initialLightCount + 1);
+        expect(app.transformControls.attach).toHaveBeenCalledWith(mockPointLight);
+        expect(app.pointer.selectedObject).toBe(mockPointLight);
+        expect(app.pointer.outline).toBeDefined();
+        expect(app.sceneGraph.update).toHaveBeenCalled();
+        expect(app.history.saveState).toHaveBeenCalled();
+    });
 });

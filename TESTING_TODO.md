@@ -180,7 +180,7 @@
 - [X] 139. The "Snap Rotation" checkbox should toggle `transformControls.rotationSnap`.
 - [X] 140. The "Snap Scale" checkbox should toggle `transformControls.scaleSnap`.
 - [X] 141. Clicking the "Duplicate Selected" should create a new object and select it.
-- [ ] 142. The "Add Point Light" button should add a new point light and update the scene graph.
+- [X] 142. The "Add Point Light" button should add a new point light and update the scene graph.
 - [ ] 143. Importing a GLTF file should correctly add its contents to the scene.
 - [ ] 144. Exporting to GLTF should trigger a download with valid GLTF JSON content.
 - [ ] 145. Deleting an object from the Scene Graph UI should remove it from the 3D scene.
