@@ -31,6 +31,7 @@
 - Implemented Lathe, Extrude, and Text geometries.
 - Implemented boolean operations (CSG - Constructive Solid Geometry) for combining/subtracting objects.
 - Implemented OBJ/GLTF import/export.
+- Implemented a custom shader editor for advanced material customization.
 
 ### Next Steps:
 - Prioritize next roadmap features.
