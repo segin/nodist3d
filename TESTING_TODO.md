@@ -183,7 +183,7 @@
 - [X] 142. The "Add Point Light" button should add a new point light and update the scene graph.
 - [X] 143. Importing a GLTF file should correctly add its contents to the scene.
 - [X] 144. Exporting to GLTF should trigger a download with valid GLTF JSON content.
-- [ ] 145. Deleting an object from the Scene Graph UI should remove it from the 3D scene.
+- [X] 145. Deleting an object from the Scene Graph UI should remove it from the 3D scene.
 - [ ] 146. Selecting an object in the Scene Graph should also select it in the 3D viewport.
 - [ ] 147. Clicking the physics button should add a physics body to the selected object.
 - [ ] 148. The "Reset View" button should correctly reset the camera controls.

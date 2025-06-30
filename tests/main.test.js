@@ -365,4 +365,36 @@ describe('App Integration Tests', () => {
         expect(mockAnchor.click).toHaveBeenCalled();
         expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mockurl');
     });
+
+    it('Deleting an object from the Scene Graph UI should remove it from the 3D scene', () => {
+        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        mesh.name = 'DeletableMesh';
+        app.sceneManager.scene.add(mesh);
+
+        // Simulate scene graph update to include the mesh
+        app.sceneGraph.update();
+
+        // Find the delete button for the mesh in the scene graph UI
+        const sceneGraphElement = document.getElementById('scene-graph');
+        const deleteButton = sceneGraphElement.querySelector('li button');
+
+        // Mock necessary methods before clicking
+        jest.spyOn(app.transformControls, 'detach');
+        jest.spyOn(app.pointer, 'removeOutline');
+        jest.spyOn(app.objectManager, 'deleteObject');
+        jest.spyOn(app, 'updateGUI');
+        jest.spyOn(app.sceneGraph, 'update');
+        jest.spyOn(app.history, 'saveState');
+
+        deleteButton.click();
+
+        expect(app.objectManager.deleteObject).toHaveBeenCalledWith(mesh);
+        expect(app.sceneManager.scene.children).not.toContain(mesh);
+        expect(app.transformControls.detach).toHaveBeenCalled();
+        expect(app.pointer.removeOutline).toHaveBeenCalled();
+        expect(app.pointer.selectedObject).toBeNull();
+        expect(app.updateGUI).toHaveBeenCalledWith(null);
+        expect(app.sceneGraph.update).toHaveBeenCalled();
+        expect(app.history.saveState).toHaveBeenCalled();
+    });
 });
