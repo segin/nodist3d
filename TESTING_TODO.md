@@ -157,7 +157,7 @@
 ### SceneManager.js Tests
 - [X] 121. `onWindowResize` should update the renderer size and camera aspect ratio.
 - [X] 122. `resetCamera` should restore the camera's initial position and target.
-- [ ] 123. OrbitControls `damping` should be enabled.
+- [X] 123. OrbitControls `damping` should be enabled.
 - [ ] 124. The scene should contain a GridHelper and an AxesHelper on initialization.
 - [ ] 125. The renderer's DOM element should be the same as the canvas provided in the constructor.
 

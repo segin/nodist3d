@@ -47,4 +47,8 @@ describe('SceneManager', () => {
         expect(sceneManager.controls.target.y).toBeCloseTo(initialControlsTarget.y);
         expect(sceneManager.controls.target.z).toBeCloseTo(initialControlsTarget.z);
     });
+
+    it('OrbitControls `damping` should be enabled', () => {
+        expect(sceneManager.controls.enableDamping).toBe(true);
+    });
 });
