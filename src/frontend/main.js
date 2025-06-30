@@ -88,26 +88,20 @@ function main() {
     const lightFolder = gui.addFolder('Lights');
     lightFolder.add({
         addAmbientLight: () => {
-            const light = lightManager.addLight('AmbientLight', 0x404040, 1);
-            light.name = 'AmbientLight';
+            const light = lightManager.addLight('AmbientLight', 0x404040, 1, undefined, 'AmbientLight');
             history.saveState();
-            sceneGraph.update();
         }
     }, 'addAmbientLight').name('Add Ambient Light');
     lightFolder.add({
         addDirectionalLight: () => {
-            const light = lightManager.addLight('DirectionalLight', 0xffffff, 1, { x: 1, y: 1, z: 1 });
-            light.name = 'DirectionalLight';
+            const light = lightManager.addLight('DirectionalLight', 0xffffff, 1, { x: 1, y: 1, z: 1 }, 'DirectionalLight');
             history.saveState();
-            sceneGraph.update();
         }
     }, 'addDirectionalLight').name('Add Directional Light');
     lightFolder.add({
         addPointLight: () => {
-            const light = lightManager.addLight('PointLight', 0xffffff, 1, { x: 0, y: 0, z: 0 });
-            light.name = 'PointLight';
+            const light = lightManager.addLight('PointLight', 0xffffff, 1, { x: 0, y: 0, z: 0 }, 'PointLight');
             history.saveState();
-            sceneGraph.update();
         }
     }, 'addPointLight').name('Add Point Light');
     lightFolder.open();
@@ -166,7 +160,6 @@ function main() {
             transformControls.attach(newObject);
             updateGUI(newObject);
             sceneGraph.update();
-            history.saveState();
         });
         ui.appendChild(button);
     }
@@ -184,6 +177,8 @@ function main() {
     createAddButton('Add Plane', () => objectManager.addPlane());
     createAddButton('Add Tube', () => objectManager.addTube());
     createAddButton('Add Teapot', () => objectManager.addTeapot());
+
+    sceneGraph.update();
 
     // Add transform controls buttons
     const translateButton = document.createElement('button');
