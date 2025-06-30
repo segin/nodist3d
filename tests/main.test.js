@@ -165,4 +165,13 @@ describe('App Integration Tests', () => {
 
         expect(historySpy).toHaveBeenCalled();
     });
+
+    it('The dat.gui properties panel should be cleared when no object is selected', () => {
+        const updateGUISpy = jest.spyOn(app, 'updateGUI');
+
+        // Simulate selection change to null (deselection)
+        app.eventBus.emit('selectionChange', null);
+
+        expect(updateGUISpy).toHaveBeenCalledWith(null);
+    });
 });
