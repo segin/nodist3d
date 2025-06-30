@@ -131,7 +131,7 @@
 - [X] 100. The load process should trigger an update in the SceneGraph.
 
 ### History.js Extended Tests
-- [ ] 101. should correctly undo/redo the creation of a group.
+- [X] 101. should correctly undo/redo the creation of a group.
 - [ ] 102. should correctly undo/redo an ungrouping operation.
 - [ ] 103. `restoreState` should correctly dispose of old geometries and materials to prevent memory leaks.
 - [ ] 104. Saving a new state should clear the "redo" history.

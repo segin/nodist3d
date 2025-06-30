@@ -1,4 +1,4 @@
-import { Scene, Mesh, BoxGeometry, MeshBasicMaterial } from 'three';
+import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, Group } from 'three';
 import { History } from '../src/frontend/History.js';
 import { EventBus } from '../src/frontend/EventBus.js';
 
@@ -79,5 +79,34 @@ describe('History', () => {
         historyManager.redo(); // Should do nothing
         expect(historyManager.history.length).toBe(1);
         expect(historyManager.currentIndex).toBe(0);
+    });
+
+    it('should correctly undo/redo the creation of a group', () => {
+        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        scene.add(mesh1, mesh2);
+        historyManager.saveState(); // State 1: meshes added
+
+        const group = new Group();
+        group.add(mesh1);
+        group.add(mesh2);
+        scene.add(group);
+        scene.remove(mesh1);
+        scene.remove(mesh2);
+        historyManager.saveState(); // State 2: group created
+
+        // Undo: Should go back to meshes being in the scene, no group
+        historyManager.undo();
+        expect(scene.children.length).toBe(2);
+        expect(scene.children).toContain(mesh1);
+        expect(scene.children).toContain(mesh2);
+        expect(scene.children).not.toContain(group);
+
+        // Redo: Should go back to group being in the scene, no individual meshes
+        historyManager.redo();
+        expect(scene.children.length).toBe(1);
+        expect(scene.children).toContain(group);
+        expect(scene.children).not.toContain(mesh1);
+        expect(scene.children).not.toContain(mesh2);
     });
 });
