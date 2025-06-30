@@ -61,4 +61,16 @@ describe('Pointer', () => {
         expect(eventSpy).toHaveBeenCalledWith('selectionChange', null);
         expect(pointerInstance.selectedObject).toBeNull();
     });
+
+    it('should correctly apply an outline to a selected object', () => {
+        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        scene.add(mesh);
+
+        jest.spyOn(pointerInstance.raycaster, 'intersectObjects').mockReturnValue([{ object: mesh }]);
+        pointerInstance.onPointerDown({ clientX: 50, clientY: 50 });
+
+        expect(pointerInstance.outline).toBeDefined();
+        expect(pointerInstance.outline).toBeInstanceOf(LineSegments);
+        expect(mesh.children).toContain(pointerInstance.outline);
+    });
 });
