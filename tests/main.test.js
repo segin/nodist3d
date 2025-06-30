@@ -422,4 +422,21 @@ describe('App Integration Tests', () => {
         expect(app.pointer.addOutline).toHaveBeenCalledWith(mesh);
         expect(app.updateGUI).toHaveBeenCalledWith(mesh);
     });
+
+    it('Clicking the physics button should add a physics body to the selected object', () => {
+        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        mesh.name = 'PhysicsMesh';
+        app.sceneManager.scene.add(mesh);
+        app.pointer.selectedObject = mesh;
+
+        const physicsButton = Array.from(document.querySelectorAll('#ui button')).find(button => button.textContent === 'Add Physics Body');
+
+        jest.spyOn(app.physicsManager, 'addBody');
+        jest.spyOn(app.history, 'saveState');
+
+        physicsButton.click();
+
+        expect(app.physicsManager.addBody).toHaveBeenCalledWith(mesh, 1, 'box');
+        expect(app.history.saveState).toHaveBeenCalled();
+    });
 });

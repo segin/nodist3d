@@ -185,7 +185,7 @@
 - [X] 144. Exporting to GLTF should trigger a download with valid GLTF JSON content.
 - [X] 145. Deleting an object from the Scene Graph UI should remove it from the 3D scene.
 - [X] 146. Selecting an object in the Scene Graph should also select it in the 3D viewport.
-- [ ] 147. Clicking the physics button should add a physics body to the selected object.
+- [X] 147. Clicking the physics button should add a physics body to the selected object.
 - [ ] 148. The "Reset View" button should correctly reset the camera controls.
 - [ ] 149. Loading a scene file should correctly populate the Scene Graph UI.
 - [ ] 150. After an undo operation, the UI panels should be cleared or updated to reflect no selection.
