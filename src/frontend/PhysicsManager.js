@@ -32,6 +32,11 @@ export class PhysicsManager {
         return body;
     }
 
+    removeBody(bodyToRemove) {
+        this.world.removeBody(bodyToRemove);
+        this.bodies = this.bodies.filter(item => item.body !== bodyToRemove);
+    }
+
     update(deltaTime) {
         this.world.step(1 / 60, deltaTime); // Update physics world
 

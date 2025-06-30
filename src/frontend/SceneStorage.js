@@ -2,7 +2,8 @@ import JSZip from 'jszip';
 import * as THREE from 'three'; // Import THREE to use ObjectLoader and other Three.js components
 
 export class SceneStorage {
-    constructor(scene) {
+    constructor(scene, eventBus) {
+        this.eventBus = eventBus;
         this.scene = scene;
         this.worker = new Worker('./src/frontend/worker.js');
         this.worker.onmessage = this.handleWorkerMessage.bind(this);

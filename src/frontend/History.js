@@ -6,8 +6,13 @@ export class History {
         this.eventBus = eventBus;
         this.history = [];
         this.currentIndex = -1;
+        this.transformControls = null;
 
         this.eventBus.on('historyChange', () => this.saveState());
+    }
+
+    setTransformControls(controls) {
+        this.transformControls = controls;
     }
 
     // Save the current state of the scene
