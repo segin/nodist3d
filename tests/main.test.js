@@ -215,4 +215,16 @@ describe('App Integration Tests', () => {
         snapRotationController.onChange.mock.calls[0][0](false);
         expect(app.transformControls.rotationSnap).toBeNull();
     });
+
+    it('The "Snap Scale" checkbox should toggle `transformControls.scaleSnap`', () => {
+        const snapScaleController = mockGUI.addFolder.mock.results[0].value.add.mock.results[4].value; // Assuming it's the fifth add call in snapFolder
+
+        // Simulate checking the checkbox (value = true)
+        snapScaleController.onChange.mock.calls[0][0](true);
+        expect(app.transformControls.scaleSnap).toBe(0.1); // Default snap value
+
+        // Simulate unchecking the checkbox (value = false)
+        snapScaleController.onChange.mock.calls[0][0](false);
+        expect(app.transformControls.scaleSnap).toBeNull();
+    });
 });
