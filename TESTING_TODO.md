@@ -148,7 +148,7 @@
 - [X] 113. should correctly apply an outline to a selected object.
 - [X] 114. should correctly remove the outline from a deselected object.
 - [X] 115. should remove the outline from a previous selection when a new object is selected.
-- [ ] 116. `isDragging` flag should be true on `pointerdown` and false on `pointerup`.
+- [X] 116. `isDragging` flag should be true on `pointerdown` and false on `pointerup`.
 - [ ] 117. Raycaster should be correctly updated with camera and pointer coordinates on move.
 - [ ] 118. Should not select an object if the pointer event started on a UI element.
 - [ ] 119. `removeOutline` should not throw an error if called when no outline exists.

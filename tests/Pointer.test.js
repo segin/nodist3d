@@ -115,4 +115,14 @@ describe('Pointer', () => {
         expect(mesh2.children).toContain(pointerInstance.outline);
         expect(mesh1.children).not.toContain(oldOutline); // Old outline should be removed
     });
+
+    it('`isDragging` flag should be true on `pointerdown` and false on `pointerup`', () => {
+        expect(pointerInstance.isDragging).toBe(false);
+
+        pointerInstance.onPointerDown({ clientX: 50, clientY: 50 });
+        expect(pointerInstance.isDragging).toBe(true);
+
+        pointerInstance.onPointerUp();
+        expect(pointerInstance.isDragging).toBe(false);
+    });
 });
