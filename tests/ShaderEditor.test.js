@@ -65,4 +65,26 @@ describe('ShaderEditor', () => {
         floatUniformController.listen.mock.results[0].value.onChange.mock.calls[0][0](); // Call the onChange handler
         expect(material.needsUpdate).toBe(true);
     });
+
+    it('Editing GLSL code in the GUI should update the material\'s `vertexShader` or `fragmentShader`', () => {
+        shaderEditor.createShader();
+        const material = shaderEditor.shaderMaterial;
+
+        const newVertexShaderCode = 'void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 2.0); }';
+        const newFragmentShaderCode = 'void main() { gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); }';
+
+        // Simulate editing vertex shader
+        const vertexShaderController = mockGUI.add.mock.results[0].value;
+        vertexShaderController.listen.mock.results[0].value.onChange.mock.calls[0][0](newVertexShaderCode);
+        expect(material.vertexShader).toBe(newVertexShaderCode);
+        expect(material.needsUpdate).toBe(true);
+
+        material.needsUpdate = false; // Reset for next test
+
+        // Simulate editing fragment shader
+        const fragmentShaderController = mockGUI.add.mock.results[1].value;
+        fragmentShaderController.listen.mock.results[0].value.onChange.mock.calls[0][0](newFragmentShaderCode);
+        expect(material.fragmentShader).toBe(newFragmentShaderCode);
+        expect(material.needsUpdate).toBe(true);
+    });
 });

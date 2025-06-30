@@ -165,7 +165,7 @@
 - [X] 126. `createShader` should add a mesh with a `ShaderMaterial` to the scene.
 - [X] 127. `initGUI` should create a "Shader Editor" folder in the GUI.
 - [X] 128. Updating a uniform value should set `needsUpdate` on the material to true.
-- [ ] 129. Editing GLSL code in the GUI should update the material's `vertexShader` or `fragmentShader`.
+- [X] 129. Editing GLSL code in the GUI should update the material's `vertexShader` or `fragmentShader`.
 - [ ] 130. Creating a new shader should dispose of the previous shader material if it exists.
 
 ### Integration Tests (main.js)
