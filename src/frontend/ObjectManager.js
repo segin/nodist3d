@@ -178,4 +178,33 @@ export class ObjectManager {
             this.scene.remove(object);
         }
     }
+
+    duplicateObject(object) {
+        if (!object) return null;
+
+        // Clone the object
+        const newObject = object.clone();
+
+        // If the object has a geometry, clone it
+        if (object.geometry) {
+            newObject.geometry = object.geometry.clone();
+        }
+
+        // If the object has a material, clone it
+        if (object.material) {
+            if (Array.isArray(object.material)) {
+                newObject.material = object.material.map(material => material.clone());
+            } else {
+                newObject.material = object.material.clone();
+            }
+        }
+
+        // Set a new name for the duplicated object
+        newObject.name = object.name ? `${object.name}_copy` : `${object.uuid}_copy`;
+
+        // Add the new object to the scene
+        this.scene.add(newObject);
+
+        return newObject;
+    }
 }

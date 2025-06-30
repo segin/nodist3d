@@ -221,6 +221,22 @@ function main() {
     });
     ui.appendChild(deleteButton);
 
+    // Add Duplicate button
+    const duplicateButton = document.createElement('button');
+    duplicateButton.textContent = 'Duplicate Selected';
+    duplicateButton.addEventListener('click', () => {
+        if (pointer.selectedObject) {
+            const duplicatedObject = objectManager.duplicateObject(pointer.selectedObject);
+            transformControls.attach(duplicatedObject);
+            pointer.selectedObject = duplicatedObject;
+            pointer.addOutline(duplicatedObject);
+            updateGUI(duplicatedObject);
+            sceneGraph.update();
+            history.saveState();
+        }
+    });
+    ui.appendChild(duplicateButton);
+
     sceneGraph.update();
 
     // Add transform controls buttons
