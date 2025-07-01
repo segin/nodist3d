@@ -1,4 +1,4 @@
-import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, Group, PerspectiveCamera } from 'three';
+
 import { History } from '../src/frontend/History.js';
 import { EventBus } from '../src/frontend/EventBus.js';
 
@@ -9,10 +9,15 @@ describe('History', () => {
     let mockTransformControls;
     let camera;
 
+    beforeAll(() => {
+        global.innerWidth = 800;
+        global.innerHeight = 600;
+    });
+
     beforeEach(() => {
-        scene = new Scene();
+        scene = new THREE.Scene();
         eventBus = new EventBus();
-        camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera = new THREE.PerspectiveCamera(75, global.innerWidth / global.innerHeight, 0.1, 1000);
         historyManager = new History(scene, eventBus);
 
         // Mock the scene's camera for testing camera state saving/restoring
@@ -33,7 +38,7 @@ describe('History', () => {
     });
 
     it('should successfully undo the last action', () => {
-        const cube = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const cube = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         scene.add(cube);
         historyManager.saveState(); // State 1: cube added
 
@@ -46,7 +51,7 @@ describe('History', () => {
     });
 
     it('should successfully redo a previously undone action', () => {
-        const cube = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const cube = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         scene.add(cube);
         historyManager.saveState(); // State 1: cube added
 
@@ -60,17 +65,17 @@ describe('History', () => {
     });
 
     it('should not allow redo if a new action has been performed after an undo', () => {
-        const cube1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const cube1 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         scene.add(cube1);
         historyManager.saveState(); // State 1: cube1
 
-        const cube2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const cube2 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         scene.add(cube2);
         historyManager.saveState(); // State 2: cube1, cube2
 
         historyManager.undo(); // Back to State 1: cube1
 
-        const cube3 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const cube3 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         scene.add(cube3);
         historyManager.saveState(); // State 3: cube1, cube3 (redo history should be cleared)
 
@@ -95,12 +100,12 @@ describe('History', () => {
     });
 
     it('should correctly undo/redo the creation of a group', () => {
-        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
-        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const mesh1 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
+        const mesh2 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         scene.add(mesh1, mesh2);
         historyManager.saveState(); // State 1: meshes added
 
-        const group = new Group();
+        const group = new THREE.Group();
         group.add(mesh1);
         group.add(mesh2);
         scene.add(group);
@@ -124,9 +129,9 @@ describe('History', () => {
     });
 
     it('should correctly undo/redo an ungrouping operation', () => {
-        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
-        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
-        const group = new Group();
+        const mesh1 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
+        const mesh2 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
+        const group = new THREE.Group();
         group.add(mesh1);
         group.add(mesh2);
         scene.add(group);
@@ -154,8 +159,8 @@ describe('History', () => {
     });
 
     it('`restoreState` should correctly dispose of old geometries and materials to prevent memory leaks', () => {
-        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
-        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const mesh1 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
+        const mesh2 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         scene.add(mesh1);
         historyManager.saveState(); // State 1: mesh1
 
@@ -174,17 +179,17 @@ describe('History', () => {
     });
 
     it('Saving a new state should clear the "redo" history', () => {
-        const cube1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const cube1 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         scene.add(cube1);
         historyManager.saveState(); // State 1
 
-        const cube2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const cube2 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         scene.add(cube2);
         historyManager.saveState(); // State 2
 
         historyManager.undo(); // Go back to State 1
 
-        const cube3 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const cube3 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         scene.add(cube3);
         historyManager.saveState(); // State 3 (new action after undo)
 
@@ -192,13 +197,13 @@ describe('History', () => {
     });
 
     it('Restoring a state should correctly re-render the scene', () => {
-        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const mesh1 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         mesh1.name = 'Mesh1';
         scene.add(mesh1);
         historyManager.saveState(); // State 1: mesh1
 
         scene.remove(mesh1);
-        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const mesh2 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         mesh2.name = 'Mesh2';
         scene.add(mesh2);
         historyManager.saveState(); // State 2: mesh2
@@ -210,7 +215,7 @@ describe('History', () => {
     });
 
     it('Undo should detach transform controls from any selected object', () => {
-        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         scene.add(mesh);
         historyManager.saveState();
 
@@ -235,7 +240,7 @@ describe('History', () => {
     it('The history stack should handle a long series of actions correctly', () => {
         const numActions = 100;
         for (let i = 0; i < numActions; i++) {
-            const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+            const mesh = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
             mesh.name = `Mesh${i}`;
             scene.add(mesh);
             historyManager.saveState();
@@ -260,7 +265,7 @@ describe('History', () => {
     });
 
     it('Undo/redo should correctly restore object visibility states', () => {
-        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const mesh1 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         mesh1.name = 'Mesh1';
         scene.add(mesh1);
         historyManager.saveState(); // State 1: mesh1 visible

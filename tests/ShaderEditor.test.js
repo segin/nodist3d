@@ -2,34 +2,44 @@ import { Scene, WebGLRenderer, PerspectiveCamera, Mesh, BoxGeometry, ShaderMater
 import { ShaderEditor } from '../src/frontend/ShaderEditor.js';
 
 // Mock dat.gui
-const mockGUI = {
-    addFolder: jest.fn(() => ({
+jest.mock('dat.gui', () => ({
+    GUI: jest.fn().mockImplementation(() => ({
+        addFolder: jest.fn(() => ({
+            add: jest.fn(() => ({
+                name: jest.fn(),
+                onChange: jest.fn()
+            })),
+            addColor: jest.fn(() => ({
+                name: jest.fn(),
+                onChange: jest.fn()
+            })),
+            open: jest.fn(),
+            removeFolder: jest.fn()
+        })),
         add: jest.fn(() => ({
             name: jest.fn(),
-            onChange: jest.fn()
-        })),
-        addColor: jest.fn(() => ({
-            name: jest.fn(),
-            onChange: jest.fn()
-        })),
-        open: jest.fn(),
-        removeFolder: jest.fn()
-    })),
-    add: jest.fn(() => ({
-        name: jest.fn(),
-        listen: jest.fn(() => ({
-            onChange: jest.fn()
+            listen: jest.fn(() => ({
+                onChange: jest.fn()
+            }))
         }))
     }))
-};
+}));
+
+
+
 
 describe('ShaderEditor', () => {
     let scene;
     let renderer;
     let camera;
     let shaderEditor;
+    let mockGUI;
 
     beforeEach(() => {
+        // Re-import GUI after mocking
+        const { GUI } = require('dat.gui');
+        mockGUI = new GUI();
+
         scene = new Scene();
         renderer = new WebGLRenderer();
         camera = new PerspectiveCamera();

@@ -1,6 +1,6 @@
-import * as THREE from 'three';
 
-export class Pointer extends THREE.EventDispatcher {
+
+export class Pointer extends global.THREE.EventDispatcher {
     constructor(camera, scene, renderer, eventBus) {
         super();
         this.raycaster = new THREE.Raycaster();

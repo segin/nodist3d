@@ -1,4 +1,4 @@
-import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, Group } from 'three';
+import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, Group, Vector3, Object3D } from 'three';
 import { GroupManager } from '../src/frontend/GroupManager.js';
 import { EventBus } from '../src/frontend/EventBus.js';
 

@@ -1,94 +1,8 @@
-import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, PointLight, DirectionalLight, Group } from 'three';
+import * as THREE from 'three';
 import { SceneStorage } from '../src/frontend/SceneStorage.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
 import JSZip from 'jszip';
-
-// Mock the worker for testing purposes
-class MockWorker {
-    constructor() {
-        this.onmessage = null;
-        this.onerror = null;
-    }
-
-    postMessage(message) {
-        if (message.type === 'serialize') {
-            // Simulate serialization by returning the data as is
-            if (this.onmessage) {
-                this.onmessage({ data: { type: 'serialize_complete', data: JSON.stringify(message.data) } });
-            }
-        } else if (message.type === 'deserialize') {
-            // Simulate deserialization by parsing the JSON and creating a mock scene
-            const parsedData = JSON.parse(message.data);
-            const mockScene = { children: [] };
-            if (parsedData.children) {
-                parsedData.children.forEach(childData => {
-                    let mockObject;
-                    if (childData.type === 'Mesh') {
-                        mockObject = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
-                    } else if (childData.type === 'PointLight') {
-                        mockObject = new PointLight(childData.color, childData.intensity);
-                    } else if (childData.type === 'DirectionalLight') {
-                        mockObject = new DirectionalLight(childData.color, childData.intensity);
-                    } else if (childData.type === 'AmbientLight') {
-                        mockObject = new AmbientLight(childData.color, childData.intensity);
-                    } else if (childData.type === 'Group') {
-                        mockObject = new Group();
-                        // Recursively deserialize children for groups
-                        if (childData.children) {
-                            childData.children.forEach(grandChildData => {
-                                let grandChildObject;
-                                if (grandChildData.type === 'Mesh') {
-                                    grandChildObject = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
-                                }
-                                if (grandChildObject) {
-                                    grandChildObject.uuid = grandChildData.uuid;
-                                    grandChildObject.name = grandChildData.name;
-                                    grandChildObject.position.set(grandChildData.position[0], grandChildData.position[1], grandChildData.position[2]);
-                                    if (grandChildData.rotation) {
-                                        grandChildObject.rotation.set(grandChildData.rotation[0], grandChildData.rotation[1], grandChildData.rotation[2]);
-                                    }
-                                    if (grandChildData.scale) {
-                                        grandChildObject.scale.set(grandChildData.scale[0], grandChildData.scale[1], grandChildData.scale[2]);
-                                    }
-                                    if (grandChildData.material && grandChildData.material.color) {
-                                        grandChildObject.material.color.setHex(grandChildData.material.color);
-                                    }
-                                    mockObject.add(grandChildObject);
-                                }
-                            });
-                        }
-                    }
-
-                    if (mockObject) {
-                        mockObject.uuid = childData.uuid;
-                        mockObject.name = childData.name;
-                        mockObject.position.set(childData.position[0], childData.position[1], childData.position[2]);
-                        if (childData.rotation) {
-                            mockObject.rotation.set(childData.rotation[0], childData.rotation[1], childData.rotation[2]);
-                        }
-                        if (childData.scale) {
-                            mockObject.scale.set(childData.scale[0], childData.scale[1], childData.scale[2]);
-                        }
-                        if (childData.material && childData.material.color) {
-                            mockObject.material.color.setHex(childData.material.color);
-                        }
-                        mockScene.children.push(mockObject);
-                    }
-                });
-            }
-            if (this.onmessage) {
-                this.onmessage({ data: { type: 'deserialize_complete', data: mockScene } });
-            }
-        }
-    }
-}
-
-// Mock URL.createObjectURL and URL.revokeObjectURL
-global.URL = {
-    createObjectURL: jest.fn(() => 'blob:mockurl'),
-    revokeObjectURL: jest.fn(),
-};
 
 describe('SceneStorage', () => {
     let scene;
@@ -97,10 +11,8 @@ describe('SceneStorage', () => {
     let primitiveFactory;
 
     beforeEach(() => {
-        scene = new Scene();
+        scene = new THREE.Scene();
         sceneStorage = new SceneStorage(scene);
-        // Replace the actual worker with the mock worker
-        sceneStorage.worker = new MockWorker();
         primitiveFactory = new PrimitiveFactory();
         objectManager = new ObjectManager(scene, primitiveFactory);
     });

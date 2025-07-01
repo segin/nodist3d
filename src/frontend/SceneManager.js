@@ -1,13 +1,13 @@
 
-import * as THREE from 'three';
+
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export class SceneManager {
     constructor(canvas) {
         this.canvas = canvas;
-        this.scene = new THREE.Scene();
-        this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
-        this.camera = new THREE.PerspectiveCamera(75, 2, 0.1, 5);
+        this.scene = new global.THREE.Scene();
+        this.renderer = new global.THREE.WebGLRenderer({ canvas: this.canvas });
+        this.camera = new global.THREE.PerspectiveCamera(75, 2, 0.1, 5);
         this.camera.position.z = 2;
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -22,10 +22,10 @@ export class SceneManager {
         this.initialCameraPosition = this.camera.position.clone();
         this.initialControlsTarget = this.controls.target.clone();
 
-        const gridHelper = new THREE.GridHelper(10, 10);
+        const gridHelper = new global.THREE.GridHelper(10, 10);
         this.scene.add(gridHelper);
 
-        const axesHelper = new THREE.AxesHelper(5);
+        const axesHelper = new global.THREE.AxesHelper(5);
         this.scene.add(axesHelper);
 
         window.addEventListener('resize', this.onWindowResize.bind(this), false);

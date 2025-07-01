@@ -4,13 +4,8 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 
-// Mock necessary DOM elements and their methods
-document.body.innerHTML = `
-    <canvas id="c"></canvas>
-    <div id="ui"></div>
-    <div id="scene-graph"></div>
-`;
-
+// Mock dat.gui
+// Mock dat.gui
 // Mock dat.gui
 const mockGUI = {
     addFolder: jest.fn(() => ({
@@ -33,6 +28,27 @@ const mockGUI = {
     }))
 };
 
+describe('App Integration Tests', () => {
+    let app;
+
+    beforeAll(() => {
+        // Mock necessary DOM elements and their methods
+        document.body.innerHTML = `
+            <canvas id="c"></canvas>
+            <div id="ui"></div>
+            <div id="scene-graph"></div>
+        `;
+    });
+
+    beforeEach(() => {
+        // Reset mocks before each test
+        TransformControls.mockClear();
+        mockGUI.addFolder.mockClear();
+        mockGUI.add.mockClear();
+
+        app = new App();
+    });
+
 // Mock TransformControls
 jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
     TransformControls: jest.fn().mockImplementation(() => ({
@@ -45,30 +61,6 @@ jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
         translationSnap: null,
         rotationSnap: null,
         scaleSnap: null
-    }))
-}));
-
-// Mock WebGLRenderer
-jest.mock('three', () => ({
-    ...jest.requireActual('three'),
-    WebGLRenderer: jest.fn().mockImplementation(() => ({
-        domElement: document.createElement('canvas'),
-        setSize: jest.fn(),
-        render: jest.fn(),
-        toDataURL: jest.fn(() => 'data:image/png;base64,mockdata')
-    })),
-    Scene: jest.fn().mockImplementation(() => ({
-        children: [],
-        add: jest.fn(function(obj) { this.children.push(obj); }),
-        remove: jest.fn(function(obj) { this.children = this.children.filter(child => child !== obj); }),
-        toJSON: jest.fn(() => ({})),
-        addEventListener: jest.fn()
-    })),
-    PerspectiveCamera: jest.fn().mockImplementation(() => ({
-        aspect: 1,
-        updateProjectionMatrix: jest.fn(),
-        position: { x: 0, y: 0, z: 0 },
-        quaternion: { x: 0, y: 0, z: 0, w: 1 }
     }))
 }));
 
@@ -117,18 +109,6 @@ global.URL = {
     createObjectURL: jest.fn(() => 'blob:mockurl'),
     revokeObjectURL: jest.fn(),
 };
-
-describe('App Integration Tests', () => {
-    let app;
-
-    beforeEach(() => {
-        // Reset mocks before each test
-        TransformControls.mockClear();
-        mockGUI.addFolder.mockClear();
-        mockGUI.add.mockClear();
-
-        app = new App();
-    });
 
     it('Clicking the "Translate" button should set `transformControls` mode to "translate" ', () => {
         const translateButton = document.querySelector('#ui button:nth-child(1)'); // Assuming it's the first button

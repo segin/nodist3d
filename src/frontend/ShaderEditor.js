@@ -44,14 +44,14 @@ export class ShaderEditor {
 
         this.uniforms = {};
 
-        this.shaderMaterial = new THREE.ShaderMaterial({
+        this.shaderMaterial = new global.THREE.ShaderMaterial({
             vertexShader,
             fragmentShader,
             uniforms: this.uniforms
         });
 
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        this.shaderMesh = new THREE.Mesh(geometry, this.shaderMaterial);
+        const geometry = new global.THREE.BoxGeometry(1, 1, 1);
+        this.shaderMesh = new global.THREE.Mesh(geometry, this.shaderMaterial);
         this.scene.add(this.shaderMesh);
 
         this.addShaderControls();
@@ -64,7 +64,7 @@ export class ShaderEditor {
         this.uniformsFolder = this.editorFolder.addFolder('Uniforms');
 
         // Example: Add a color uniform
-        this.uniforms.myColor = { value: new THREE.Color(0xff0000) };
+        this.uniforms.myColor = { value: new global.THREE.Color(0xff0000) };
         this.uniformsFolder.addColor(this.uniforms.myColor, 'value').name('Color').onChange(() => {
             this.shaderMaterial.needsUpdate = true;
         });

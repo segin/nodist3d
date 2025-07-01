@@ -1,11 +1,7 @@
-import { Scene, TextureLoader, Mesh, BoxGeometry, MeshBasicMaterial, Group, DoubleSide, MeshLambertMaterial } from 'three';
+import * as THREE from 'three';
+import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, Group, DoubleSide, MeshLambertMaterial, MeshStandardMaterial } from 'three';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
-
-
-
-// Mock FontLoader to prevent file loading errors in test environment
-
 
 describe('ObjectManager', () => {
     let scene;

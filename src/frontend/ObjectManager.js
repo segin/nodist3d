@@ -1,5 +1,4 @@
 
-import * as THREE from 'three';
 import { PrimitiveFactory } from './PrimitiveFactory.js';
 
 export class ObjectManager {
@@ -34,7 +33,7 @@ export class ObjectManager {
     addTexture(object, file, type = 'map') {
         if (!object.material) return;
 
-        const loader = new THREE.TextureLoader();
+        const loader = new global.THREE.TextureLoader();
         const url = URL.createObjectURL(file);
         loader.load(url, (texture) => {
             if (type === 'map') {
@@ -45,7 +44,7 @@ export class ObjectManager {
                 object.material.roughnessMap = texture;
             }
             object.material.needsUpdate = true;
-            URL.revokeObjectURL(url); // Clean up the object URL
+            global.URL.revokeObjectURL(url); // Clean up the object URL
         });
     }
 

@@ -1,4 +1,4 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, Vector2, Raycaster, Mesh, BoxGeometry, MeshBasicMaterial, EdgesGeometry, LineBasicMaterial, LineSegments } from 'three';
+import * as THREE from 'three';
 import { Pointer } from '../src/frontend/Pointer.js';
 import { EventBus } from '../src/frontend/EventBus.js';
 
@@ -14,7 +14,7 @@ describe('Pointer', () => {
         camera = new PerspectiveCamera(75, 1, 0.1, 1000);
         scene = new Scene();
         renderer = {
-            domElement: document.createElement('canvas'),
+            domElement: typeof document !== 'undefined' ? document.createElement('canvas') : {},
             get size() { return { width: 100, height: 100 }; } // Mock size property
         };
         eventBus = new EventBus();

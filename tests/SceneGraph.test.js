@@ -11,6 +11,34 @@ describe('SceneGraph', () => {
 
     beforeEach(() => {
         scene = new Scene();
+        // Mock document.createElement
+        const mockDiv = { 
+            innerHTML: '',
+            querySelector: jest.fn(() => ({ 
+                value: '', 
+                dispatchEvent: jest.fn(),
+                addEventListener: jest.fn(),
+            })),
+            querySelectorAll: jest.fn(() => ([{ 
+                value: '', 
+                dispatchEvent: jest.fn(),
+                addEventListener: jest.fn(),
+            }])),
+            appendChild: jest.fn(),
+            removeChild: jest.fn(),
+        };
+        const mockCanvas = { 
+            addEventListener: jest.fn(),
+            removeEventListener: jest.fn(),
+        };
+        jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+            if (tagName === 'div') {
+                return mockDiv;
+            } else if (tagName === 'canvas') {
+                return mockCanvas;
+            }
+            return {};
+        });
         uiElement = document.createElement('div');
         transformControls = new TransformControls(new THREE.Camera(), document.createElement('canvas'));
         updateGUI = jest.fn();

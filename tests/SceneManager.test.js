@@ -6,10 +6,14 @@ describe('SceneManager', () => {
     let mockCanvas;
 
     beforeEach(() => {
-        mockCanvas = document.createElement('canvas');
-        // Mock clientWidth and clientHeight for the canvas
-        Object.defineProperty(mockCanvas, 'clientWidth', { writable: true, value: 800 });
-        Object.defineProperty(mockCanvas, 'clientHeight', { writable: true, value: 600 });
+        mockCanvas = {
+            clientWidth: 800,
+            clientHeight: 600,
+            addEventListener: jest.fn(),
+            removeEventListener: jest.fn(),
+            style: {},
+        };
+        jest.spyOn(document, 'createElement').mockReturnValue(mockCanvas);
 
         sceneManager = new SceneManager(mockCanvas);
 
