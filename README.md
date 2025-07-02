@@ -3,7 +3,7 @@
 *A lightweight, web-based 3D modeling application, optimized for mobile devices.*
 
 The name "nodist3d" is a combination of:
-*   **No**de.js: The backend runtime environment.
+*   **Nod**e.js: The backend runtime environment.
 *   **-ist**: A suffix denoting a person who uses or is an expert in something.
 *   **3D**: For three-dimensional modeling.
 
@@ -202,6 +202,7 @@ This section outlines potential future enhancements and features for nodist3d.
 -   [x] Implement a custom shader editor for advanced material customization.
 -   [x] Add support for textures.
 -   [x] Implement a physics engine for basic simulations.
+-   [x] Implement Observer Pattern (Event Bus).
 
 ### Backend & Storage
 
