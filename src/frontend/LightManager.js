@@ -13,7 +13,9 @@ export class LightManager {
 
         // Add a default directional light
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(1, 1, 1).normalize();
+        if (directionalLight.position) {
+            directionalLight.position.set(1, 1, 1).normalize();
+        }
         this.scene.add(directionalLight);
         this.lights.push(directionalLight);
     }
