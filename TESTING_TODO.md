@@ -122,7 +122,7 @@
 - [X] 91. should correctly save and load a scene containing lights with their properties.
 - [X] 92. should correctly save and load a scene containing nested groups.
 - [X] 93. should handle loading a file that is not a valid zip archive.
-- [ ] 94. should handle loading a zip file that is missing 'scene.json'.
+- [X] 94. should handle loading a zip file that is missing 'scene.json'.
 - [X] 95. should correctly save and load material properties like roughness and metalness.
 - [X] 96. should successfully save and load a scene with no objects (an empty scene).
 - [X] 97. should handle JSON parsing errors from a corrupted 'scene.json'.

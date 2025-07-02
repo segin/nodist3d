@@ -9,6 +9,9 @@ export class History {
         this.transformControls = null;
 
         this.eventBus.on('historyChange', () => this.saveState());
+        this.eventBus.on('objectAdded', () => this.saveState());
+        this.eventBus.on('lightAdded', () => this.saveState());
+        this.eventBus.on('groupAdded', () => this.saveState());
     }
 
     setTransformControls(controls) {

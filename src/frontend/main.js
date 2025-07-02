@@ -20,10 +20,10 @@ import { EventBus } from './EventBus.js';
 class App {
     constructor() {
         this.canvas = document.querySelector('#c');
+        this.eventBus = new EventBus();
         this.sceneManager = new SceneManager(this.canvas);
         this.primitiveFactory = new PrimitiveFactory();
-        this.objectManager = new ObjectManager(this.sceneManager.scene, this.primitiveFactory);
-        this.eventBus = new EventBus();
+        this.objectManager = new ObjectManager(this.sceneManager.scene, this.primitiveFactory, this.eventBus);
         this.pointer = new Pointer(this.sceneManager.camera, this.sceneManager.scene, this.sceneManager.renderer, this.eventBus);
         this.sceneStorage = new SceneStorage(this.sceneManager.scene);
         this.history = new History(this.sceneManager.scene, this.eventBus);

@@ -1,35 +1,28 @@
-
-export class EventBus {
+class EventBus {
     constructor() {
-        this.listeners = {};
+        this.eventListeners = {};
     }
 
-    on(eventName, callback) {
-        if (!this.listeners[eventName]) {
-            this.listeners[eventName] = [];
+    on(eventName, listener) {
+        if (!this.eventListeners[eventName]) {
+            this.eventListeners[eventName] = [];
         }
-        this.listeners[eventName].push(callback);
-    }
-
-    off(eventName, callback) {
-        if (!this.listeners[eventName]) {
-            return;
-        }
-        this.listeners[eventName] = this.listeners[eventName].filter(
-            listener => listener !== callback
-        );
+        this.eventListeners[eventName].push(listener);
     }
 
     emit(eventName, data) {
-        if (!this.listeners[eventName]) {
-            return;
+        if (this.eventListeners[eventName]) {
+            this.eventListeners[eventName].forEach(listener => listener(data));
         }
-        this.listeners[eventName].forEach(listener => {
-            try {
-                listener(data);
-            } catch (error) {
-                console.error(`Error in event listener for ${eventName}:`, error);
-            }
-        });
+    }
+
+    off(eventName, listener) {
+        if (this.eventListeners[eventName]) {
+            this.eventListeners[eventName] = this.eventListeners[eventName].filter(
+                existingListener => existingListener !== listener
+            );
+        }
     }
 }
+
+export default EventBus;

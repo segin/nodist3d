@@ -1,20 +1,31 @@
 import { Scene, BufferGeometry, Mesh, MeshBasicMaterial } from 'three';
+jest.mock('three');
 import { PhysicsManager } from '../src/frontend/PhysicsManager.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
+import { EventBus } from '../src/frontend/EventBus.js';
 import * as CANNON from 'cannon-es';
+
+jest.mock('../src/frontend/EventBus.js', () => ({
+    EventBus: jest.fn().mockImplementation(() => ({
+        emit: jest.fn(),
+        on: jest.fn(),
+    })),
+}));
 
 describe('PhysicsManager', () => {
     let scene;
     let physicsManager;
     let objectManager;
     let primitiveFactory;
+    let eventBus;
 
     beforeEach(() => {
         scene = new Scene();
+        eventBus = new EventBus();
         physicsManager = new PhysicsManager(scene);
         primitiveFactory = new PrimitiveFactory();
-        objectManager = new ObjectManager(scene, primitiveFactory);
+        objectManager = new ObjectManager(scene, primitiveFactory, eventBus);
     });
 
     it('should add a box-shaped physics body to the world', () => {

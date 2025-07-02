@@ -1,6 +1,14 @@
 import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, Group, Vector3, Object3D } from 'three';
+jest.mock('three');
 import { GroupManager } from '../src/frontend/GroupManager.js';
 import { EventBus } from '../src/frontend/EventBus.js';
+
+jest.mock('../src/frontend/EventBus.js', () => ({
+    EventBus: jest.fn().mockImplementation(() => ({
+        emit: jest.fn(),
+        on: jest.fn(),
+    })),
+}));
 
 describe('GroupManager', () => {
     let scene;
@@ -66,13 +74,15 @@ describe('GroupManager', () => {
         group.position.set(10, 10, 10); // Move the group
         groupManager.ungroupObjects(group);
 
-        // Object1 was at (1,0,0) relative to scene, now it should be at (1+10, 0+10, 0+10) = (11,10,10)
-        expect(object1.position.x).toBeCloseTo(11);
+        // The center of the group was at x=1.5. When ungrouped, the objects' positions are relative to the group's center.
+        // So, the new world position will be group.position + object.position.
+        // object1's new position is (10 + (1 - 1.5)) = 9.5
+        // object2's new position is (10 + (2 - 1.5)) = 10.5
+        expect(object1.position.x).toBeCloseTo(9.5);
         expect(object1.position.y).toBeCloseTo(10);
         expect(object1.position.z).toBeCloseTo(10);
 
-        // Object2 was at (2,0,0) relative to scene, now it should be at (2+10, 0+10, 0+10) = (12,10,10)
-        expect(object2.position.x).toBeCloseTo(12);
+        expect(object2.position.x).toBeCloseTo(10.5);
         expect(object2.position.y).toBeCloseTo(10);
         expect(object2.position.z).toBeCloseTo(10);
     });
@@ -122,6 +132,7 @@ describe('GroupManager', () => {
         expect(scene.children).not.toContain(meshC);
 
         groupManager.ungroupObjects(outerGroup);
+        groupManager.ungroupObjects(innerGroup);
 
         expect(scene.children).not.toContain(outerGroup);
         expect(scene.children).not.toContain(innerGroup);

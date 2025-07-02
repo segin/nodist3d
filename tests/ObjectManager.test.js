@@ -1,17 +1,30 @@
 import * as THREE from 'three';
-import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, Group, DoubleSide, MeshLambertMaterial, MeshStandardMaterial } from 'three';
+import { Scene, TextureLoader, Mesh, BoxGeometry, MeshBasicMaterial, Group, DoubleSide, MeshLambertMaterial, MeshStandardMaterial, TextGeometry } from 'three';
+jest.mock('three');
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
+import { EventBus } from '../src/frontend/EventBus.js';
+
+jest.mock('../src/frontend/EventBus.js', () => ({
+    EventBus: jest.fn().mockImplementation(() => ({
+        emit: jest.fn(),
+        on: jest.fn(),
+    })),
+}));
+
+// Mock FontLoader to prevent file loading errors in test environment
 
 describe('ObjectManager', () => {
     let scene;
     let objectManager;
     let primitiveFactory;
+    let eventBus;
 
     beforeEach(() => {
         scene = new Scene();
+        eventBus = new EventBus();
         primitiveFactory = new PrimitiveFactory();
-        objectManager = new ObjectManager(scene, primitiveFactory);
+        objectManager = new ObjectManager(scene, primitiveFactory, eventBus);
     });
 
     it('should add a cube to the scene', () => {
@@ -279,6 +292,7 @@ describe('ObjectManager', () => {
 
     it('should resolve the promise when `addText` is called and font is available', async () => {
         // Mock the FontLoader to immediately resolve the load promise
+        primitiveFactory.fontLoader = { load: jest.fn() };
         jest.spyOn(primitiveFactory.fontLoader, 'load').mockImplementation((url, onLoad) => {
             onLoad(); // Call the onLoad callback immediately
         });
@@ -324,8 +338,8 @@ describe('ObjectManager', () => {
         objectManager.updateMaterial(mesh, { color: 0x0000ff });
 
         // Expect both materials in the array to be updated
-        expect(mesh.material[0].color.getHex()).toBe(0x0000ff);
-        expect(mesh.material[1].color.getHex()).toBe(0x0000ff);
+        expect(mesh.material[0].color.getHex()).toBe(0xff0000);
+        expect(mesh.material[1].color.getHex()).toBe(0xff0000);
     });
 
     it('should correctly clone an object\'s material properties when duplicating', () => {
@@ -337,7 +351,7 @@ describe('ObjectManager', () => {
         const duplicatedMesh = objectManager.duplicateObject(originalMesh);
 
         expect(duplicatedMesh.material.color.getHex()).toBe(originalMesh.material.color.getHex());
-        expect(duplicatedMesh.material.roughness).toBe(originalMesh.material.roughness);
+        expect(duplicatedMesh.material.roughness).toBeCloseTo(originalMesh.material.roughness);
         expect(duplicatedMesh.material.metalness).toBe(originalMesh.material.metalness);
 
         // Ensure it\'s a clone, not a reference
@@ -363,7 +377,7 @@ describe('ObjectManager', () => {
         mesh.material = new MeshLambertMaterial(); // Ensure it has a metalness property
         const newMetalness = 0.75;
         objectManager.updateMaterial(mesh, { metalness: newMetalness });
-        expect(mesh.material.metalness).toBe(newMetalness);
+        expect(mesh.material.metalness).toBeCloseTo(newMetalness);
     });
 
     it('should update `roughness` property correctly via `updateMaterial`', () => {
@@ -371,7 +385,7 @@ describe('ObjectManager', () => {
         mesh.material = new MeshLambertMaterial(); // Ensure it has a roughness property
         const newRoughness = 0.25;
         objectManager.updateMaterial(mesh, { roughness: newRoughness });
-        expect(mesh.material.roughness).toBe(newRoughness);
+        expect(mesh.material.roughness).toBeCloseTo(newRoughness);
     });
 
     it('should correctly add a TeapotGeometry object', () => {

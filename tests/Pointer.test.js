@@ -1,6 +1,16 @@
 import * as THREE from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, Vector2, Raycaster, Mesh, BoxGeometry, MeshBasicMaterial, EdgesGeometry, LineBasicMaterial, LineSegments } from 'three';
+jest.mock('three');
 import { Pointer } from '../src/frontend/Pointer.js';
 import { EventBus } from '../src/frontend/EventBus.js';
+
+jest.mock('../src/frontend/EventBus.js', () => ({
+    EventBus: jest.fn().mockImplementation(() => ({
+        emit: jest.fn(),
+        on: jest.fn(),
+        publish: jest.fn(),
+    })),
+}));
 
 describe('Pointer', () => {
     let camera;
@@ -33,7 +43,7 @@ describe('Pointer', () => {
         const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
         scene.add(mesh);
 
-        const eventSpy = jest.spyOn(eventBus, 'emit');
+        const eventSpy = jest.spyOn(eventBus, 'publish');
 
         // Simulate a click that intersects the mesh
         jest.spyOn(pointerInstance.raycaster, 'intersectObjects').mockReturnValue([{ object: mesh }]);
@@ -52,7 +62,7 @@ describe('Pointer', () => {
         jest.spyOn(pointerInstance.raycaster, 'intersectObjects').mockReturnValue([{ object: mesh }]);
         pointerInstance.onPointerDown({ clientX: 50, clientY: 50 });
 
-        const eventSpy = jest.spyOn(eventBus, 'emit');
+        const eventSpy = jest.spyOn(eventBus, 'publish');
 
         // Simulate a click that does not intersect any object (deselection)
         jest.spyOn(pointerInstance.raycaster, 'intersectObjects').mockReturnValue([]);
@@ -164,7 +174,7 @@ describe('Pointer', () => {
         const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
         scene.add(mesh);
 
-        const eventSpy = jest.spyOn(eventBus, 'emit');
+        const eventSpy = jest.spyOn(eventBus, 'publish');
 
         // Simulate a pointerdown event with a UI element as the target
         const uiElement = document.createElement('div');
@@ -210,7 +220,7 @@ describe('Pointer', () => {
             { object: meshBack, distance: 3 }
         ]);
 
-        const eventSpy = jest.spyOn(eventBus, 'emit');
+        const eventSpy = jest.spyOn(eventBus, 'publish');
 
         pointerInstance.onPointerDown({ clientX: 50, clientY: 50 });
 

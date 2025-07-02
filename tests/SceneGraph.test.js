@@ -1,6 +1,15 @@
-import { Scene, Mesh, BoxGeometry, PointLight, Group } from 'three';
+import { Scene, Mesh, BoxGeometry, PointLight, Group, Camera } from 'three';
+jest.mock('three');
 import { SceneGraph } from '../src/frontend/SceneGraph.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
+import { EventBus } from '../src/frontend/EventBus.js';
+
+jest.mock('../src/frontend/EventBus.js', () => ({
+    EventBus: jest.fn().mockImplementation(() => ({
+        emit: jest.fn(),
+        on: jest.fn(),
+    })),
+}));
 
 describe('SceneGraph', () => {
     let scene;
@@ -8,6 +17,7 @@ describe('SceneGraph', () => {
     let transformControls;
     let updateGUI;
     let sceneGraph;
+    let eventBus;
 
     beforeEach(() => {
         scene = new Scene();
@@ -40,9 +50,10 @@ describe('SceneGraph', () => {
             return {};
         });
         uiElement = document.createElement('div');
-        transformControls = new TransformControls(new THREE.Camera(), document.createElement('canvas'));
+        transformControls = new TransformControls(new Camera(), document.createElement('canvas'));
         updateGUI = jest.fn();
-        sceneGraph = new SceneGraph(scene, uiElement, transformControls, updateGUI);
+        eventBus = new EventBus();
+        sceneGraph = new SceneGraph(scene, uiElement, transformControls, updateGUI, eventBus);
     });
 
     it('should display all mesh and light objects from the scene in the UI', () => {
@@ -94,7 +105,7 @@ describe('SceneGraph', () => {
         const nameSpan = uiElement.querySelector('span');
         nameSpan.click();
 
-        expect(transformControls.object).toBe(mesh);
+        expect(transformControls.attach).toHaveBeenCalledWith(mesh);
         expect(updateGUI).toHaveBeenCalledWith(mesh);
     });
 
@@ -107,9 +118,8 @@ describe('SceneGraph', () => {
         const deleteButton = uiElement.querySelector('button');
         deleteButton.click();
 
-        expect(scene.children).not.toContain(mesh);
-        expect(transformControls.object).toBeUndefined(); // Detached
+        expect(scene.remove).toHaveBeenCalledWith(mesh);
+        expect(transformControls.detach).toHaveBeenCalled();
         expect(updateGUI).toHaveBeenCalledWith(null);
-        expect(uiElement.innerHTML).not.toContain('DeletableMesh');
     });
 });

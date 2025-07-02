@@ -1,6 +1,14 @@
 import { Scene, AmbientLight } from 'three';
+jest.mock('three');
 import { LightManager } from '../src/frontend/LightManager.js';
 import { EventBus } from '../src/frontend/EventBus.js';
+
+jest.mock('../src/frontend/EventBus.js', () => ({
+    EventBus: jest.fn().mockImplementation(() => ({
+        emit: jest.fn(),
+        on: jest.fn(),
+    })),
+}));
 
 describe('LightManager', () => {
     let scene;

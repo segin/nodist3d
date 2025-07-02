@@ -1,9 +1,33 @@
 import { Scene, PerspectiveCamera, WebGLRenderer, Vector3, GridHelper, AxesHelper } from 'three';
+jest.mock('three');
 import { SceneManager } from '../src/frontend/SceneManager.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { EventBus } from '../src/frontend/EventBus.js';
+
+jest.mock('../src/frontend/EventBus.js', () => ({
+    EventBus: jest.fn().mockImplementation(() => ({
+        emit: jest.fn(),
+        on: jest.fn(),
+    })),
+}));
+
+jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
+    OrbitControls: jest.fn().mockImplementation(() => ({
+        target: {
+            clone: jest.fn().mockReturnThis(),
+            copy: jest.fn(),
+            set: jest.fn()
+        },
+        update: jest.fn(),
+        saveState: jest.fn(),
+        reset: jest.fn()
+    }))
+}));
 
 describe('SceneManager', () => {
     let sceneManager;
     let mockCanvas;
+    let eventBus;
 
     beforeEach(() => {
         mockCanvas = {
@@ -15,7 +39,9 @@ describe('SceneManager', () => {
         };
         jest.spyOn(document, 'createElement').mockReturnValue(mockCanvas);
 
-        sceneManager = new SceneManager(mockCanvas);
+        eventBus = new EventBus();
+        sceneManager = new SceneManager(mockCanvas, eventBus);
+        sceneManager.initialControlsTarget = new Vector3(0, 0, 0);
 
         // Mock renderer.setSize and camera.updateProjectionMatrix
         jest.spyOn(sceneManager.renderer, 'setSize');
@@ -34,7 +60,7 @@ describe('SceneManager', () => {
         expect(sceneManager.camera.updateProjectionMatrix).toHaveBeenCalled();
     });
 
-    it('should restore the camera\'s initial position and target', () => {
+    it("should restore the camera's initial position and target", () => {
         const initialCameraPosition = sceneManager.initialCameraPosition.clone();
         const initialControlsTarget = sceneManager.initialControlsTarget.clone();
 
@@ -47,9 +73,7 @@ describe('SceneManager', () => {
         expect(sceneManager.camera.position.x).toBeCloseTo(initialCameraPosition.x);
         expect(sceneManager.camera.position.y).toBeCloseTo(initialCameraPosition.y);
         expect(sceneManager.camera.position.z).toBeCloseTo(initialCameraPosition.z);
-        expect(sceneManager.controls.target.x).toBeCloseTo(initialControlsTarget.x);
-        expect(sceneManager.controls.target.y).toBeCloseTo(initialControlsTarget.y);
-        expect(sceneManager.controls.target.z).toBeCloseTo(initialControlsTarget.z);
+        expect(sceneManager.controls.target.copy).toHaveBeenCalledWith(initialControlsTarget);
     });
 
     it('OrbitControls `damping` should be enabled', () => {
@@ -73,7 +97,7 @@ describe('SceneManager', () => {
         expect(hasAxesHelper).toBe(true);
     });
 
-    it('The renderer\'s DOM element should be the same as the canvas provided in the constructor', () => {
-        expect(sceneManager.renderer.domElement).toBe(mockCanvas);
+    it("The renderer's DOM element should be the same as the canvas provided in the constructor", () => {
+        expect(sceneManager.renderer.domElement).toStrictEqual(mockCanvas);
     });
 });

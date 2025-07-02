@@ -2,15 +2,17 @@
 import { PrimitiveFactory } from './PrimitiveFactory.js';
 
 export class ObjectManager {
-    constructor(scene, primitiveFactory) {
+    constructor(scene, primitiveFactory, eventBus) {
         this.scene = scene;
         this.primitiveFactory = primitiveFactory;
+        this.eventBus = eventBus;
     }
 
     addPrimitive(type, options = {}) {
         const mesh = this.primitiveFactory.createPrimitive(type, options);
         if (mesh) {
             this.scene.add(mesh);
+            this.eventBus.emit('objectAdded', mesh);
         }
         return mesh;
     }

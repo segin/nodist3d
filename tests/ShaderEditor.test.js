@@ -1,29 +1,29 @@
-import { Scene, WebGLRenderer, PerspectiveCamera, Mesh, BoxGeometry, ShaderMaterial, Color } from 'three';
 import { ShaderEditor } from '../src/frontend/ShaderEditor.js';
+import { Scene, WebGLRenderer, PerspectiveCamera, ShaderMaterial } from 'three';
+import { EventBus } from '../src/frontend/EventBus.js';
 
-// Mock dat.gui
-jest.mock('dat.gui', () => ({
-    GUI: jest.fn().mockImplementation(() => ({
-        addFolder: jest.fn(() => ({
-            add: jest.fn(() => ({
-                name: jest.fn(),
-                onChange: jest.fn()
-            })),
-            addColor: jest.fn(() => ({
-                name: jest.fn(),
-                onChange: jest.fn()
-            })),
-            open: jest.fn(),
-            removeFolder: jest.fn()
-        })),
-        add: jest.fn(() => ({
-            name: jest.fn(),
-            listen: jest.fn(() => ({
-                onChange: jest.fn()
-            }))
-        }))
-    }))
-}));
+<<<<<<< Updated upstream
+// Mock 'dat.gui'
+jest.mock('dat.gui', () => {
+  const mockController = {
+    name: jest.fn().mockReturnThis(),
+    onChange: jest.fn().mockReturnThis(),
+    listen: jest.fn().mockReturnThis(),
+  };
+  const mockFolder = {
+    add: jest.fn(() => mockController),
+    addColor: jest.fn(() => mockController),
+    addFolder: jest.fn().mockReturnThis(),
+    open: jest.fn(),
+    removeFolder: jest.fn(),
+  };
+  return {
+    GUI: jest.fn(() => ({
+      addFolder: jest.fn(() => mockFolder),
+      add: jest.fn(() => mockController),
+    })),
+  };
+});
 
 
 
@@ -44,67 +44,194 @@ describe('ShaderEditor', () => {
         renderer = new WebGLRenderer();
         camera = new PerspectiveCamera();
         shaderEditor = new ShaderEditor(mockGUI, renderer, scene, camera);
+=======
+// Mock 'dat.gui'
+jest.mock('dat.gui', () => {
+  const mockController = {
+    name: jest.fn().mockReturnThis(),
+    onChange: jest.fn().mockReturnThis(),
+    listen: jest.fn().mockReturnThis(),
+  };
+  const mockFolder = {
+    add: jest.fn(() => mockController),
+    addColor: jest.fn(() => mockController),
+    addFolder: jest.fn().mockReturnThis(),
+    open: jest.fn(),
+    removeFolder: jest.fn(),
+  };
+  return {
+    GUI: jest.fn(() => ({
+      addFolder: jest.fn(() => mockFolder),
+      add: jest.fn(() => mockController),
+    })),
+  };
+});
+
+// Mock 'three'
+jest.mock('three', () => {
+    const originalThree = jest.requireActual('three');
+    return {
+        ...originalThree,
+        WebGLRenderer: jest.fn().mockImplementation(() => {
+            return {
+                domElement: null,
+                getContext: jest.fn(),
+                setSize: jest.fn(),
+                setPixelRatio: jest.fn(),
+                render: jest.fn(),
+            };
+        }),
+    };
+});
+
+jest.mock('../src/frontend/EventBus.js', () => ({
+    EventBus: jest.fn().mockImplementation(() => ({
+        emit: jest.fn(),
+        on: jest.fn(),
+        subscribe: jest.fn(),
+        publish: jest.fn(),
+    })),
+}));
+
+// Mock 'three'
+jest.mock('three', () => {
+    const originalThree = jest.requireActual('three');
+    return {
+        ...originalThree,
+        WebGLRenderer: jest.fn().mockImplementation(() => {
+            return {
+                domElement: null,
+                getContext: jest.fn(),
+                setSize: jest.fn(),
+                setPixelRatio: jest.fn(),
+                render: jest.fn(),
+            };
+        }),
+    };
+});
+
+jest.mock('../src/frontend/EventBus.js', () => ({
+    EventBus: jest.fn().mockImplementation(() => ({
+        emit: jest.fn(),
+        on: jest.fn(),
+        subscribe: jest.fn(),
+        publish: jest.fn(),
+    })),
+}));
+
+describe('ShaderEditor', () => {
+  let gui;
+  let renderer;
+  let scene;
+  let camera;
+  let shaderEditor;
+  let eventBus;
+
+  beforeEach(() => {
+    // Reset mocks before each test
+    jest.clearAllMocks();
+
+    // Import GUI and create a mock instance
+    const { GUI } = require('dat.gui');
+    gui = new GUI();
+    
+    renderer = new WebGLRenderer();
+    scene = new Scene();
+    camera = new PerspectiveCamera();
+    eventBus = new EventBus();
+    shaderEditor = new ShaderEditor(gui, renderer, scene, camera, eventBus);
+  });
+
+  it('should initialize and create the "Shader Editor" folder in the GUI', () => {
+    expect(gui.addFolder).toHaveBeenCalledWith('Shader Editor');
+    const editorFolder = gui.addFolder.mock.results[0].value;
+    expect(editorFolder.add).toHaveBeenCalledWith(expect.any(Object), 'createShader');
+  });
+
+  describe('createShader', () => {
+    it('should create a mesh with a ShaderMaterial and add it to the scene', () => {
+      shaderEditor.createShader();
+
+      expect(ShaderMaterial).toHaveBeenCalled();
+      expect(scene.add).toHaveBeenCalled();
+      const addedMesh = scene.add.mock.calls[0][0];
+      expect(addedMesh.isMesh).toBe(true);
+      expect(addedMesh.material).toBeInstanceOf(ShaderMaterial);
     });
 
-    it('should add a mesh with a `ShaderMaterial` to the scene', () => {
+  it('should initialize and create the "Shader Editor" folder in the GUI', () => {
+    expect(gui.addFolder).toHaveBeenCalledWith('Shader Editor');
+    const editorFolder = gui.addFolder.mock.results[0].value;
+    expect(editorFolder.add).toHaveBeenCalledWith(expect.any(Object), 'createShader');
+  });
+
+  describe('createShader', () => {
+    it('should create a mesh with a ShaderMaterial and add it to the scene', () => {
+      shaderEditor.createShader();
+
+      expect(ShaderMaterial).toHaveBeenCalled();
+      expect(scene.add).toHaveBeenCalled();
+      const addedMesh = scene.add.mock.calls[0][0];
+      expect(addedMesh.isMesh).toBe(true);
+      expect(addedMesh.material).toBeInstanceOf(ShaderMaterial);
+>>>>>>> Stashed changes
+    });
+
+    it('should dispose of the old material and remove the mesh if a shader already exists', () => {
+      shaderEditor.createShader();
+      const firstMaterial = shaderEditor.shaderMaterial;
+      const firstMesh = shaderEditor.shaderMesh;
+      scene.remove = jest.fn(); // Mock scene.remove for this test
+
+      shaderEditor.createShader();
+
+      expect(firstMaterial.dispose).toHaveBeenCalled();
+      expect(scene.remove).toHaveBeenCalledWith(firstMesh);
+    });
+
+    it('should create new shader controls', () => {
         shaderEditor.createShader();
-        expect(scene.children.length).toBeGreaterThan(0);
-        const addedMesh = scene.children[0];
-        expect(addedMesh).toBeInstanceOf(Mesh);
-        expect(addedMesh.material).toBeInstanceOf(ShaderMaterial);
-    });
+        const editorFolder = gui.addFolder.mock.results[0].value;
+        const uniformsFolder = editorFolder.addFolder.mock.results[0].value;
+  
+        // Check for color uniform
+        expect(uniformsFolder.addColor).toHaveBeenCalledWith(expect.any(Object), 'value');
+  
+        // Check for float uniform
+        expect(uniformsFolder.add).toHaveBeenCalledWith(expect.any(Object), 'value', 0, 1);
+  
+        // Check for shader code editors
+        expect(editorFolder.add).toHaveBeenCalledWith(expect.any(Object), 'vertex');
+        expect(editorFolder.add).toHaveBeenCalledWith(expect.any(Object), 'fragment');
+      });
+  });
 
-    it('`initGUI` should create a "Shader Editor" folder in the GUI', () => {
-        expect(mockGUI.addFolder).toHaveBeenCalledWith('Shader Editor');
-    });
-
-    it('Updating a uniform value should set `needsUpdate` on the material to true', () => {
+  describe('GUI interactions', () => {
+    it("should update shader code and set needsUpdate to true when changed in the GUI", () => {
         shaderEditor.createShader();
-        const material = shaderEditor.shaderMaterial;
-        material.needsUpdate = false; // Reset to false for testing
-
-        // Simulate changing a color uniform
-        const colorUniformController = mockGUI.addFolder.mock.results[0].value.addColor.mock.results[0].value;
-        colorUniformController.onChange.mock.calls[0][0](); // Call the onChange handler
-        expect(material.needsUpdate).toBe(true);
-
-        material.needsUpdate = false; // Reset for next test
-
-        // Simulate changing a float uniform
-        const floatUniformController = mockGUI.addFolder.mock.results[0].value.add.mock.results[0].value;
-        floatUniformController.listen.mock.results[0].value.onChange.mock.calls[0][0](); // Call the onChange handler
-        expect(material.needsUpdate).toBe(true);
-    });
-
-    it('Editing GLSL code in the GUI should update the material\'s `vertexShader` or `fragmentShader`', () => {
+        const editorFolder = gui.addFolder.mock.results[0].value;
+        const shaderCodeController = editorFolder.add.mock.results[1].value; // Assuming vertex shader is the second 'add' call
+  
+        const newVertexShader = 'void main() { gl_Position = vec4(0.0); }';
+        const onChangeCallback = shaderCodeController.onChange.mock.calls[0][0];
+        onChangeCallback(newVertexShader);
+  
+        expect(shaderEditor.shaderMaterial.vertexShader).toBe(newVertexShader);
+        expect(shaderEditor.shaderMaterial.needsUpdate).toBe(true);
+      });
+  
+      it("should update uniform value and set needsUpdate to true when changed in the GUI", () => {
         shaderEditor.createShader();
-        const material = shaderEditor.shaderMaterial;
-
-        const newVertexShaderCode = 'void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 2.0); }';
-        const newFragmentShaderCode = 'void main() { gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); }';
-
-        // Simulate editing vertex shader
-        const vertexShaderController = mockGUI.add.mock.results[0].value;
-        vertexShaderController.listen.mock.results[0].value.onChange.mock.calls[0][0](newVertexShaderCode);
-        expect(material.vertexShader).toBe(newVertexShaderCode);
-        expect(material.needsUpdate).toBe(true);
-
-        material.needsUpdate = false; // Reset for next test
-
-        // Simulate editing fragment shader
-        const fragmentShaderController = mockGUI.add.mock.results[1].value;
-        fragmentShaderController.listen.mock.results[0].value.onChange.mock.calls[0][0](newFragmentShaderCode);
-        expect(material.fragmentShader).toBe(newFragmentShaderCode);
-        expect(material.needsUpdate).toBe(true);
-    });
-
-    it('Creating a new shader should dispose of the previous shader material if it exists', () => {
-        shaderEditor.createShader();
-        const firstShaderMaterial = shaderEditor.shaderMaterial;
-        const disposeSpy = jest.spyOn(firstShaderMaterial, 'dispose');
-
-        shaderEditor.createShader(); // Create a new shader
-
-        expect(disposeSpy).toHaveBeenCalled();
-    });
+        const editorFolder = gui.addFolder.mock.results[0].value;
+        const uniformsFolder = editorFolder.addFolder.mock.results[0].value;
+        const colorController = uniformsFolder.addColor.mock.results[0].value;
+  
+        shaderEditor.shaderMaterial.needsUpdate = false; // Reset for test
+  
+        const onChangeCallback = colorController.onChange.mock.calls[0][0];
+        onChangeCallback(); // Simulate the change
+  
+        expect(shaderEditor.shaderMaterial.needsUpdate).toBe(true);
+      });
+  });
 });

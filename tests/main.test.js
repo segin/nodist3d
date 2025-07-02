@@ -1,8 +1,18 @@
 import { App } from '../src/frontend/main.js';
 import { Scene, WebGLRenderer, PerspectiveCamera, Mesh, BoxGeometry, MeshBasicMaterial } from 'three';
+jest.mock('three');
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
+import { EventBus } from '../src/frontend/EventBus.js';
+
+jest.mock('../src/frontend/EventBus.js', () => ({
+    EventBus: jest.fn().mockImplementation(() => ({
+        emit: jest.fn(),
+        on: jest.fn(),
+        publish: jest.fn(),
+    })),
+}));
 
 // Mock dat.gui
 // Mock dat.gui
@@ -63,7 +73,6 @@ jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
         scaleSnap: null
     }))
 }));
-
 // Mock OrbitControls
 jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
     OrbitControls: jest.fn().mockImplementation(() => ({
@@ -84,8 +93,7 @@ jest.mock('three/examples/jsm/loaders/OBJLoader.js');
 jest.mock('three/examples/jsm/loaders/GLTFLoader.js', () => ({
     GLTFLoader: jest.fn().mockImplementation(() => ({
         parse: jest.fn((data, path, onLoad) => {
-            const mockGltf = { scene: new Mesh(new BoxGeometry(), new MeshBasicMaterial()) };
-            mockGltf.scene.name = 'MockGLTFScene';
+            const mockGltf = { scene: { name: 'MockGLTFScene' } };
             onLoad(mockGltf);
         })
     }))
@@ -166,7 +174,7 @@ global.URL = {
         const updateGUISpy = jest.spyOn(app, 'updateGUI');
 
         // Simulate selection change to null (deselection)
-        app.eventBus.emit('selectionChange', null);
+        app.eventBus.publish('selectionChange', null);
 
         expect(updateGUISpy).toHaveBeenCalledWith(null);
     });

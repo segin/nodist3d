@@ -1,6 +1,14 @@
-
+import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, Group, PerspectiveCamera } from 'three';
+jest.mock('three');
 import { History } from '../src/frontend/History.js';
 import { EventBus } from '../src/frontend/EventBus.js';
+
+jest.mock('../src/frontend/EventBus.js', () => ({
+    EventBus: jest.fn().mockImplementation(() => ({
+        emit: jest.fn(),
+        on: jest.fn(),
+    })),
+}));
 
 describe('History', () => {
     let scene;
@@ -187,7 +195,7 @@ describe('History', () => {
         scene.add(cube2);
         historyManager.saveState(); // State 2
 
-        historyManager.undo(); // Go back to State 1
+        historyManager.undo(); // Back to State 1
 
         const cube3 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         scene.add(cube3);
