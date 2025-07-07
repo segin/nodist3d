@@ -146,7 +146,7 @@ This checklist meticulously tracks all requirements and tasks derived from the i
     -   [x] Tube
     -   [x] Teapot
 -   [x] Optimize the application interface for mobile.
--   [ ] Node.js webserver listens on localhost for a browser to connect to.
+-   [x] Node.js webserver listens on localhost for a browser to connect to.
 -   [ ] Optimize the code.
 -   [ ] Use a custom zip file format with JSON data inside for persistent local storage.
 -   [ ] Make sure there is an interface button on the user controls of the web frontend to easily enter and leave full screen mode.
