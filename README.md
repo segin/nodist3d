@@ -149,7 +149,7 @@ This checklist meticulously tracks all requirements and tasks derived from the i
 -   [x] Node.js webserver listens on localhost for a browser to connect to.
 -   [x] Optimize the code.
 -   [x] Use a custom zip file format with JSON data inside for persistent local storage.
--   [ ] Make sure there is an interface button on the user controls of the web frontend to easily enter and leave full screen mode.
+-   [x] Make sure there is an interface button on the user controls of the web frontend to easily enter and leave full screen mode.
 
 ### Testing
 
