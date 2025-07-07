@@ -186,7 +186,7 @@ This section outlines potential future enhancements and features for nodist3d.
     -   [x] Change light type (e.g., PointLight, DirectionalLight, AmbientLight).
     -   [x] Adjust light intensity.
     -   [x] Adjust light position.
--   [ ] Implement a "snap to grid" feature.
+-   [x] Implement a "snap to grid" feature.
 -   [ ] Add a selection mechanism for objects.
 -   [ ] Implement object grouping/ungrouping.
 -   [ ] Add a "duplicate object" feature.
