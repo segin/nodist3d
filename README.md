@@ -107,7 +107,7 @@ This checklist meticulously tracks all requirements and tasks derived from the i
 
 ### Project Setup & Management
 
--   [ ] Create a web-based 3D modeling program.
+-   [x] Create a web-based 3D modeling program.
 -   [ ] Use Node.js to host the backend.
 -   [ ] Use WebGL to render everything in the browser.
 -   [ ] Create a Git repository in this directory if one does not exist (checked using `find` command).
