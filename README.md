@@ -202,7 +202,7 @@ This section outlines potential future enhancements and features for nodist3d.
 -   [x] Implement a custom shader editor for advanced material customization.
 -   [x] Add support for textures.
 -   [x] Implement a physics engine for basic simulations.
--   [ ] Implement Observer Pattern (Event Bus).
+-   [x] Implement Observer Pattern (Event Bus).
 
 ### Backend & Storage
 
