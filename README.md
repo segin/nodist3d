@@ -172,7 +172,7 @@ This section outlines potential future enhancements and features for nodist3d.
     -   [x] Implement orbit camera control.
     -   [x] Implement pan camera control.
     -   [x] Implement zoom camera control.
--   [ ] Add a grid helper for better scene orientation.
+-   [x] Add a grid helper for better scene orientation.
 -   [ ] Add an axis helper for better scene orientation.
 -   [ ] Implement material editing:
     -   [ ] Change object color.
