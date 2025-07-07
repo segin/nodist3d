@@ -1,4 +1,5 @@
 
+import { CSG } from 'three-csg-ts';
 import { PrimitiveFactory } from './PrimitiveFactory.js';
 
 export class ObjectManager {
@@ -15,6 +16,40 @@ export class ObjectManager {
             this.eventBus.emit('objectAdded', mesh);
         }
         return mesh;
+    }
+
+    performCSG(objectA, objectB, operation) {
+        const bspA = CSG.fromMesh(objectA);
+        const bspB = CSG.fromMesh(objectB);
+
+        let resultBsp;
+        switch (operation) {
+            case 'union':
+                resultBsp = bspA.union(bspB);
+                break;
+            case 'subtract':
+                resultBsp = bspA.subtract(bspB);
+                break;
+            case 'intersect':
+                resultBsp = bspA.intersect(bspB);
+                break;
+            default:
+                console.warn('Unknown CSG operation:', operation);
+                return null;
+        }
+
+        const resultMesh = CSG.toMesh(resultBsp, objectA.matrix);
+        resultMesh.material = objectA.material;
+
+        this.scene.remove(objectA);
+        this.scene.remove(objectB);
+        this.scene.add(resultMesh);
+
+        this.eventBus.emit('objectAdded', resultMesh);
+        this.eventBus.emit('objectRemoved', objectA);
+        this.eventBus.emit('objectRemoved', objectB);
+
+        return resultMesh;
     }
 
     updateMaterial(object, newMaterialProperties) {
