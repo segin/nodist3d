@@ -116,7 +116,7 @@ This checklist meticulously tracks all requirements and tasks derived from the i
 -   [x] Commit the blank `README.md`.
 -   [x] Commit `README.md` after adding all checkboxes.
 -   [x] Each primitive object shall be a new check box in the list.
--   [ ] Create a `CONTEXT.md` file for working context, ideas, and progress.
+-   [x] Create a `CONTEXT.md` file for working context, ideas, and progress.
 -   [ ] Treat `CONTEXT.md` as a cache; clear it out once done with something.
 -   [ ] Commit changes to `CONTEXT.md` to the Git repository.
 -   [ ] Check for the existence of `gh` using Termux `pkg` commands.
