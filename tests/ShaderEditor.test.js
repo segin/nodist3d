@@ -2,49 +2,6 @@ import { ShaderEditor } from '../src/frontend/ShaderEditor.js';
 import { Scene, WebGLRenderer, PerspectiveCamera, ShaderMaterial } from 'three';
 import { EventBus } from '../src/frontend/EventBus.js';
 
-<<<<<<< Updated upstream
-// Mock 'dat.gui'
-jest.mock('dat.gui', () => {
-  const mockController = {
-    name: jest.fn().mockReturnThis(),
-    onChange: jest.fn().mockReturnThis(),
-    listen: jest.fn().mockReturnThis(),
-  };
-  const mockFolder = {
-    add: jest.fn(() => mockController),
-    addColor: jest.fn(() => mockController),
-    addFolder: jest.fn().mockReturnThis(),
-    open: jest.fn(),
-    removeFolder: jest.fn(),
-  };
-  return {
-    GUI: jest.fn(() => ({
-      addFolder: jest.fn(() => mockFolder),
-      add: jest.fn(() => mockController),
-    })),
-  };
-});
-
-
-
-
-describe('ShaderEditor', () => {
-    let scene;
-    let renderer;
-    let camera;
-    let shaderEditor;
-    let mockGUI;
-
-    beforeEach(() => {
-        // Re-import GUI after mocking
-        const { GUI } = require('dat.gui');
-        mockGUI = new GUI();
-
-        scene = new Scene();
-        renderer = new WebGLRenderer();
-        camera = new PerspectiveCamera();
-        shaderEditor = new ShaderEditor(mockGUI, renderer, scene, camera);
-=======
 // Mock 'dat.gui'
 jest.mock('dat.gui', () => {
   const mockController = {
@@ -81,32 +38,12 @@ jest.mock('three', () => {
                 render: jest.fn(),
             };
         }),
-    };
-});
-
-jest.mock('../src/frontend/EventBus.js', () => ({
-    EventBus: jest.fn().mockImplementation(() => ({
-        emit: jest.fn(),
-        on: jest.fn(),
-        subscribe: jest.fn(),
-        publish: jest.fn(),
-    })),
-}));
-
-// Mock 'three'
-jest.mock('three', () => {
-    const originalThree = jest.requireActual('three');
-    return {
-        ...originalThree,
-        WebGLRenderer: jest.fn().mockImplementation(() => {
-            return {
-                domElement: null,
-                getContext: jest.fn(),
-                setSize: jest.fn(),
-                setPixelRatio: jest.fn(),
-                render: jest.fn(),
-            };
-        }),
+        ShaderMaterial: jest.fn().mockImplementation(() => ({
+            dispose: jest.fn(),
+            vertexShader: '',
+            fragmentShader: '',
+            needsUpdate: false,
+        })),
     };
 });
 
@@ -157,24 +94,6 @@ describe('ShaderEditor', () => {
       const addedMesh = scene.add.mock.calls[0][0];
       expect(addedMesh.isMesh).toBe(true);
       expect(addedMesh.material).toBeInstanceOf(ShaderMaterial);
-    });
-
-  it('should initialize and create the "Shader Editor" folder in the GUI', () => {
-    expect(gui.addFolder).toHaveBeenCalledWith('Shader Editor');
-    const editorFolder = gui.addFolder.mock.results[0].value;
-    expect(editorFolder.add).toHaveBeenCalledWith(expect.any(Object), 'createShader');
-  });
-
-  describe('createShader', () => {
-    it('should create a mesh with a ShaderMaterial and add it to the scene', () => {
-      shaderEditor.createShader();
-
-      expect(ShaderMaterial).toHaveBeenCalled();
-      expect(scene.add).toHaveBeenCalled();
-      const addedMesh = scene.add.mock.calls[0][0];
-      expect(addedMesh.isMesh).toBe(true);
-      expect(addedMesh.material).toBeInstanceOf(ShaderMaterial);
->>>>>>> Stashed changes
     });
 
     it('should dispose of the old material and remove the mesh if a shader already exists', () => {

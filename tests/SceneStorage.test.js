@@ -4,6 +4,7 @@ import { SceneStorage } from '../src/frontend/SceneStorage.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
 import { EventBus } from '../src/frontend/EventBus.js';
+import JSZip from 'jszip';
 
 jest.mock('../src/frontend/EventBus.js', () => ({
     EventBus: jest.fn().mockImplementation(() => ({
@@ -108,6 +109,7 @@ describe('SceneStorage', () => {
     let eventBus;
 
     beforeEach(() => {
+        THREE.Scene.prototype.toJSON = jest.fn(() => ({}));
         scene = new Scene();
         eventBus = new EventBus();
         sceneStorage = new SceneStorage(scene);

@@ -30,7 +30,7 @@ export class GroupManager {
         }
 
         this.scene.add(group);
-        this.eventBus.emit('objectsGrouped', group); // Emit event
+        this.eventBus.emit('groupAdded', group); // Emit event
         return group;
     }
 

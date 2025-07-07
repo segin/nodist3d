@@ -1,5 +1,4 @@
-import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, Group, PerspectiveCamera } from 'three';
-jest.mock('three');
+import * as THREE from 'three';
 import { History } from '../src/frontend/History.js';
 import { EventBus } from '../src/frontend/EventBus.js';
 
@@ -9,6 +8,8 @@ jest.mock('../src/frontend/EventBus.js', () => ({
         on: jest.fn(),
     })),
 }));
+
+THREE.Scene.prototype.toJSON = jest.fn(() => ({}));
 
 describe('History', () => {
     let scene;
@@ -23,6 +24,7 @@ describe('History', () => {
     });
 
     beforeEach(() => {
+        THREE.Scene.prototype.toJSON = jest.fn(() => ({}));
         scene = new THREE.Scene();
         eventBus = new EventBus();
         camera = new THREE.PerspectiveCamera(75, global.innerWidth / global.innerHeight, 0.1, 1000);

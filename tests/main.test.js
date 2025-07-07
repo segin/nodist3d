@@ -1,6 +1,5 @@
 import { App } from '../src/frontend/main.js';
 import { Scene, WebGLRenderer, PerspectiveCamera, Mesh, BoxGeometry, MeshBasicMaterial } from 'three';
-jest.mock('three');
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';

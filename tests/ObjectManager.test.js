@@ -1,6 +1,16 @@
 import * as THREE from 'three';
 import { Scene, TextureLoader, Mesh, BoxGeometry, MeshBasicMaterial, Group, DoubleSide, MeshLambertMaterial, MeshStandardMaterial, TextGeometry } from 'three';
-jest.mock('three');
+
+jest.mock('three', () => {
+    const THREE = jest.requireActual('three');
+    return {
+        ...THREE,
+        TextureLoader: jest.fn().mockImplementation(() => ({
+            load: jest.fn(),
+        })),
+    };
+});
+
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
 import { EventBus } from '../src/frontend/EventBus.js';
@@ -12,7 +22,18 @@ jest.mock('../src/frontend/EventBus.js', () => ({
     })),
 }));
 
-// Mock FontLoader to prevent file loading errors in test environment
+jest.mock('three/examples/jsm/loaders/FontLoader.js', () => ({
+    FontLoader: jest.fn().mockImplementation(() => ({
+        load: jest.fn((url, onLoad) => {
+            // Immediately call the onLoad callback with a mock font object
+            onLoad({
+                isFont: true,
+                data: {},
+                generateShapes: jest.fn(() => [])
+            });
+        }),
+    })),
+}));
 
 describe('ObjectManager', () => {
     let scene;

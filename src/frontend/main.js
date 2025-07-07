@@ -1,7 +1,7 @@
 import { SceneManager } from './SceneManager.js';
 import { ObjectManager } from './ObjectManager.js';
 import { Pointer } from './Pointer.js';
-import { TransformControls } from '../node_modules/three/examples/jsm/controls/TransformControls.js';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter.js';
@@ -19,36 +19,39 @@ import { EventBus } from './EventBus.js';
 
 class App {
     constructor() {
-        this.canvas = document.querySelector('#c');
-        this.eventBus = new EventBus();
-        this.sceneManager = new SceneManager(this.canvas);
-        this.primitiveFactory = new PrimitiveFactory();
-        this.objectManager = new ObjectManager(this.sceneManager.scene, this.primitiveFactory, this.eventBus);
-        this.pointer = new Pointer(this.sceneManager.camera, this.sceneManager.scene, this.sceneManager.renderer, this.eventBus);
-        this.sceneStorage = new SceneStorage(this.sceneManager.scene);
-        this.history = new History(this.sceneManager.scene, this.eventBus);
-        this.lightManager = new LightManager(this.sceneManager.scene, this.eventBus);
-        this.groupManager = new GroupManager(this.sceneManager.scene, this.eventBus);
-        this.physicsManager = new PhysicsManager(this.sceneManager.scene);
+        document.addEventListener('DOMContentLoaded', () => {
+            this.canvas = document.querySelector('#c');
+            this.eventBus = new EventBus();
+            this.sceneManager = new SceneManager(this.canvas);
+            this.primitiveFactory = new PrimitiveFactory();
+            this.objectManager = new ObjectManager(this.sceneManager.scene, this.primitiveFactory, this.eventBus);
+            this.pointer = new Pointer(this.sceneManager.camera, this.sceneManager.scene, this.sceneManager.renderer, this.eventBus);
+            this.sceneStorage = new SceneStorage(this.sceneManager.scene);
+            this.history = new History(this.sceneManager.scene, this.eventBus);
+            this.lightManager = new LightManager(this.sceneManager.scene, this.eventBus);
+            this.groupManager = new GroupManager(this.sceneManager.scene, this.eventBus);
+            this.physicsManager = new PhysicsManager(this.sceneManager.scene);
 
-        this.gui = new GUI();
-        this.shaderEditor = new ShaderEditor(this.gui, this.sceneManager.renderer, this.sceneManager.scene, this.sceneManager.camera);
+            this.gui = new GUI();
+            this.shaderEditor = new ShaderEditor(this.gui, this.sceneManager.renderer, this.sceneManager.scene, this.sceneManager.camera);
 
-        this.currentObjectFolder = null;
-        this.currentLightFolder = null;
+            this.currentObjectFolder = null;
+            this.currentLightFolder = null;
 
-        this.transformControls = new TransformControls(this.sceneManager.camera, this.sceneManager.renderer.domElement);
-        this.sceneManager.scene.add(this.transformControls);
+            this.transformControls = new TransformControls(this.sceneManager.camera, this.sceneManager.renderer.domElement);
+            this.sceneManager.scene.add(this.transformControls);
 
-        this.sceneGraphElement = document.getElementById('scene-graph');
-        this.sceneGraph = new SceneGraph(this.sceneManager.scene, this.sceneGraphElement, this.transformControls, this.updateGUI.bind(this), this.eventBus);
+            this.sceneGraphElement = document.getElementById('scene-graph');
+            this.sceneGraph = new SceneGraph(this.sceneManager.scene, this.sceneGraphElement, this.transformControls, this.updateGUI.bind(this), this.eventBus);
 
-        this.clock = new THREE.Clock();
+            this.clock = new THREE.Clock();
 
-        this.setupEventListeners();
-        this.setupUIButtons();
-        this.setupSnapControls();
-        this.history.saveState(); // Initial save state
+            this.setupEventListeners();
+            this.setupUIButtons();
+            this.setupSnapControls();
+            this.history.saveState(); // Initial save state
+            this.start();
+        });
     }
 
     updateGUI(object) {
@@ -122,6 +125,19 @@ class App {
                         }
                     }, 'addTexture').name('Add Texture');
                     materialFolder.open();
+                }
+
+                if (object.geometry && object.geometry.parameters) {
+                    const geometryFolder = this.currentObjectFolder.addFolder('Geometry');
+                    for (const key in object.geometry.parameters) {
+                        if (typeof object.geometry.parameters[key] === 'number') {
+                            geometryFolder.add(object.geometry.parameters, key, 0, 10).name(key).onChange(() => {
+                                this.objectManager.updatePrimitive(object, object.geometry.parameters);
+                                this.eventBus.emit('historyChange');
+                            });
+                        }
+                    }
+                    geometryFolder.open();
                 }
                 this.currentObjectFolder.open();
             }

@@ -1,5 +1,4 @@
-import { Scene, AmbientLight } from 'three';
-jest.mock('three');
+import * as THREE from 'three';
 import { LightManager } from '../src/frontend/LightManager.js';
 import { EventBus } from '../src/frontend/EventBus.js';
 
@@ -16,7 +15,7 @@ describe('LightManager', () => {
     let eventBus;
 
     beforeEach(() => {
-        scene = new Scene();
+        scene = new THREE.Scene();
         eventBus = new EventBus();
         lightManager = new LightManager(scene, eventBus);
     });

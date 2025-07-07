@@ -1,178 +1,189 @@
-class MockEventDispatcher {
-    constructor() {
-        this._listeners = {};
-    }
-    addEventListener(type, listener) {
-        if (!this._listeners[type]) {
-            this._listeners[type] = [];
-        }
-        this._listeners[type].push(listener);
-    }
-    removeEventListener(type, listener) {
-        if (this._listeners[type]) {
-            this._listeners[type] = this._listeners[type].filter(l => l !== listener);
-        }
-    }
-    dispatchEvent(event) {
-        if (this._listeners[event.type]) {
-            this._listeners[event.type].forEach(listener => listener(event));
-        }
-    }
-}
+const THREE = jest.requireActual('three');
 
-class MockObject3D extends MockEventDispatcher {
-    constructor() {
-        super();
-        this.uuid = 'mock-uuid-' + Math.random();
-        this.name = 'mock-object';
-        this.children = [];
-        this.parent = null;
-        this.isObject3D = true;
-        this.type = 'Object3D';
-    }
-    add(object) {
-        this.children.push(object);
-        object.parent = this;
-        this.dispatchEvent({ type: 'added', target: object });
-    }
-    remove(object) {
-        this.children = this.children.filter(child => child !== object);
-        object.parent = null;
-        this.dispatchEvent({ type: 'removed', target: object });
-    }
-    clone() {
-        const cloned = new MockObject3D();
-        Object.assign(cloned, this);
-        cloned.uuid = 'mock-uuid-clone-' + Math.random();
-        cloned.children = this.children.map(child => child.clone());
-        return cloned;
-    }
-    traverse(callback) { callback(this); this.children.forEach(child => child.traverse(callback)); }
-    updateMatrixWorld() {}
-    removeFromParent() { if (this.parent) this.parent.remove(this); }
-    dispose() {}
-}
+const mockGeometry = {
+    dispose: jest.fn(),
+    parameters: {
+        width: 1,
+        height: 1,
+        depth: 1,
+        radius: 1,
+        radiusTop: 1,
+        radiusBottom: 1,
+        radialSegments: 8,
+    },
+    clone: jest.fn().mockReturnThis(),
+};
 
-class MockMesh extends MockObject3D {
-    constructor(geometry, material) {
-        super();
-        this.geometry = geometry;
-        this.material = {
-            ...material,
-            color: { getHex: () => 0x123456, set: jest.fn() },
-            needsUpdate: false,
-            map: null,
-            normalMap: null,
-            roughnessMap: null,
-            dispose: jest.fn()
-        };
-        this.isMesh = true;
-        this.type = 'Mesh';
-        this.uuid = 'mock-mesh-uuid-' + Math.random();
-        this.name = 'mock-mesh';
-    }
-    clone() {
-        const cloned = new MockMesh(this.geometry, this.material);
-        Object.assign(cloned, this);
-        cloned.uuid = 'mock-mesh-uuid-clone-' + Math.random();
-        return cloned;
-    }
-}
+const mockMaterial = {
+    dispose: jest.fn(),
+    clone: jest.fn().mockReturnThis(),
+    color: {
+        getHex: jest.fn().mockReturnValue(0xffffff),
+        set: jest.fn(),
+        setHex: jest.fn(),
+    },
+    map: null,
+    normalMap: null,
+    roughnessMap: null,
+    metalness: 0.5,
+    roughness: 0.5,
+    side: undefined,
+};
 
-class MockScene extends MockObject3D {
-    constructor() {
-        super();
-        this.type = 'Scene';
-    }
-}
+const mockMesh = {
+    isMesh: true,
+    type: 'Mesh',
+    name: 'Mesh',
+    uuid: 'mock-mesh-uuid',
+    position: { x: 0, y: 0, z: 0, set: jest.fn(), copy: jest.fn(), sub: jest.fn() },
+    rotation: { x: 0, y: 0, z: 0, set: jest.fn(), copy: jest.fn() },
+    scale: { x: 1, y: 1, z: 1, set: jest.fn(), copy: jest.fn() },
+    geometry: { ...mockGeometry },
+    material: mockMaterial,
+    clone: jest.fn().mockReturnThis(),
+    add: jest.fn(),
+    remove: jest.fn(),
+    traverse: jest.fn(),
+    getWorldPosition: jest.fn(),
+    getWorldQuaternion: jest.fn(),
+    updateMatrixWorld: jest.fn(),
+    children: [],
+    parent: null,
+    visible: true,
+    matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    matrixWorld: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    addEventListener: jest.fn(),
+    hasEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+    copy: jest.fn(),
+};
 
-class MockTextureLoader {
-    load(url, onLoad) {
-        const texture = { url };
-        onLoad(texture);
-    }
-}
-
-class MockColor {
-    constructor(color) {
-        this.value = color;
-    }
-    set(color) {
-        this.value = color;
-    }
-    getHex() {
-        return this.value;
-    }
-}
-
-class MockVector2 { constructor(x, y) { this.x = x; this.y = y; } }
-class MockVector3 { constructor(x, y, z) { this.x = x; this.y = y; this.z = z; } }
-class MockEuler { constructor(x, y, z, order) { this._x = x; this._y = y; this._z = z; this._order = order; } }
-class MockQuaternion { constructor(x, y, z, w) { this._x = x; this._y = y; this._z = z; this._w = w; } }
-class MockMatrix4 { constructor() { this.elements = []; } }
-class MockLayers { constructor() { this.mask = 1; } }
-class MockMeshPhongMaterial { constructor() { this.isMaterial = true; this.color = new MockColor(0x44aa88); } }
-class MockBufferAttribute { constructor() {} }
-class MockUint16BufferAttribute { constructor() {} }
-class MockFloat32BufferAttribute { constructor() {} }
-class MockSphere { constructor() {} }
-class MockCatmullRomCurve3 { constructor() { return { points: [] }; } }
-class MockShape { constructor() {} }
-class MockLOD extends MockObject3D { constructor() { super(); this.type = 'LOD'; this.levels = []; } addLevel(object, distance) { this.levels.push({ object, distance }); } }
-
-// Geometries
-class MockBoxGeometry { constructor() { this.type = 'BoxGeometry'; } }
-class MockSphereGeometry { constructor() { this.type = 'SphereGeometry'; } }
-class MockCylinderGeometry { constructor() { this.type = 'CylinderGeometry'; } }
-class MockConeGeometry { constructor() { this.type = 'ConeGeometry'; } }
-class MockTorusGeometry { constructor() { this.type = 'TorusGeometry'; } }
-class MockTorusKnotGeometry { constructor() { this.type = 'TorusKnotGeometry'; } }
-class MockIcosahedronGeometry { constructor() { this.type = 'IcosahedronGeometry'; } }
-class MockDodecahedronGeometry { constructor() { this.type = 'DodecahedronGeometry'; } }
-class MockOctahedronGeometry { constructor() { this.type = 'OctahedronGeometry'; } }
-class MockPlaneGeometry { constructor() { this.type = 'PlaneGeometry'; } }
-class MockTubeGeometry { constructor() { this.type = 'TubeGeometry'; } }
-class MockTeapotGeometry { constructor() { this.type = 'BufferGeometry'; } } // TeapotGeometry is a BufferGeometry
-class MockExtrudeGeometry { constructor() { this.type = 'ExtrudeGeometry'; } }
-class MockLatheGeometry { constructor() { this.type = 'LatheGeometry'; } }
-class MockTextGeometry { constructor() { this.type = 'TextGeometry'; this.center = jest.fn(); this.dispose = jest.fn(); this.morphTargets = []; } }
-
+const mockGroup = {
+    isGroup: true,
+    type: 'Group',
+    name: 'Group',
+    uuid: 'mock-group-uuid',
+    position: { x: 0, y: 0, z: 0, set: jest.fn(), copy: jest.fn() },
+    rotation: { x: 0, y: 0, z: 0, set: jest.fn() },
+    scale: { x: 1, y: 1, z: 1, set: jest.fn() },
+    children: [],
+    add: jest.fn(),
+    remove: jest.fn(),
+    clone: jest.fn().mockReturnThis(),
+    traverse: jest.fn(),
+    getWorldPosition: jest.fn(),
+    updateMatrixWorld: jest.fn(),
+    parent: null,
+    matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    matrixWorld: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    addEventListener: jest.fn(),
+    hasEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+    copy: jest.fn(),
+};
 
 module.exports = {
-    Scene: MockScene,
-    TextureLoader: MockTextureLoader,
-    Object3D: MockObject3D,
-    Mesh: MockMesh,
-    Color: MockColor,
-    Vector2: MockVector2,
-    Vector3: MockVector3,
-    Euler: MockEuler,
-    Quaternion: MockQuaternion,
-    Matrix4: MockMatrix4,
-    Layers: MockLayers,
-    MeshPhongMaterial: MockMeshPhongMaterial,
-    BufferAttribute: MockBufferAttribute,
-    Uint16BufferAttribute: MockUint16BufferAttribute,
-    Float32BufferAttribute: MockFloat32BufferAttribute,
-    Sphere: MockSphere,
-    CatmullRomCurve3: MockCatmullRomCurve3,
-    Shape: MockShape,
-    LOD: MockLOD,
-    BoxGeometry: MockBoxGeometry,
-    SphereGeometry: MockSphereGeometry,
-    CylinderGeometry: MockCylinderGeometry,
-    ConeGeometry: MockConeGeometry,
-    TorusGeometry: MockTorusGeometry,
-    TorusKnotGeometry: MockTorusKnotGeometry,
-    IcosahedronGeometry: MockIcosahedronGeometry,
-    DodecahedronGeometry: MockDodecahedronGeometry,
-    OctahedronGeometry: MockOctahedronGeometry,
-    PlaneGeometry: MockPlaneGeometry,
-    TubeGeometry: MockTubeGeometry,
-    TeapotGeometry: MockTeapotGeometry,
-    ExtrudeGeometry: MockExtrudeGeometry,
-    LatheGeometry: MockLatheGeometry,
-    TextGeometry: MockTextGeometry,
-    FrontSide: 0, // Mock THREE.FrontSide
-    DoubleSide: 2, // Mock THREE.DoubleSide
+    ...THREE,
+    Scene: jest.fn().mockImplementation(() => ({
+        add: jest.fn(),
+        remove: jest.fn(),
+        children: [],
+        isScene: true,
+        uuid: 'mock-scene-uuid',
+    })),
+    WebGLRenderer: jest.fn().mockImplementation(() => ({
+        domElement: {
+            addEventListener: jest.fn(),
+            removeEventListener: jest.fn(),
+            style: {},
+            clientWidth: 800,
+            clientHeight: 600,
+            getContext: jest.fn(),
+            toDataURL: jest.fn(),
+        },
+        setSize: jest.fn(),
+        setPixelRatio: jest.fn(),
+        render: jest.fn(),
+    })),
+    PerspectiveCamera: jest.fn().mockImplementation(() => ({
+        isPerspectiveCamera: true,
+        position: { x: 0, y: 0, z: 5, copy: jest.fn(), set: jest.fn() },
+        quaternion: { x: 0, y: 0, z: 0, w: 1, clone: jest.fn(), set: jest.fn() },
+        aspect: 1,
+        updateProjectionMatrix: jest.fn(),
+    })),
+    BoxGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'BoxGeometry' })),
+    SphereGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'SphereGeometry' })),
+    CylinderGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'CylinderGeometry' })),
+    ConeGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'ConeGeometry' })),
+    TorusGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'TorusGeometry' })),
+    TorusKnotGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'TorusKnotGeometry' })),
+    IcosahedronGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'IcosahedronGeometry' })),
+    DodecahedronGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'DodecahedronGeometry' })),
+    OctahedronGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'OctahedronGeometry' })),
+    PlaneGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'PlaneGeometry' })),
+    TubeGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'TubeGeometry' })),
+    BufferGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'BufferGeometry' })),
+    TextGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'TextGeometry' })),
+    FontLoader: jest.fn().mockImplementation(() => ({
+        load: jest.fn(),
+    })),
+    ExtrudeGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'ExtrudeGeometry' })),
+    LatheGeometry: jest.fn().mockImplementation(() => ({ ...mockGeometry, type: 'LatheGeometry' })),
+    Mesh: jest.fn().mockImplementation(() => ({ ...mockMesh })),
+    MeshBasicMaterial: jest.fn().mockImplementation(() => ({ ...mockMaterial })),
+    MeshLambertMaterial: jest.fn().mockImplementation(() => ({ ...mockMaterial })),
+    MeshStandardMaterial: jest.fn().mockImplementation(() => ({ ...mockMaterial })),
+    PointLight: jest.fn().mockImplementation(() => ({ isLight: true, name: 'PointLight', position: { set: jest.fn() } })),
+    DirectionalLight: jest.fn().mockImplementation(() => ({
+        isLight: true,
+        name: 'DirectionalLight',
+        position: { set: jest.fn(), normalize: jest.fn(), copy: jest.fn() },
+        target: {
+            position: { copy: jest.fn() },
+            set: jest.fn(),
+            clone: jest.fn().mockReturnThis(),
+        },
+        clone: jest.fn().mockReturnThis(),
+    })),
+    AmbientLight: jest.fn().mockImplementation(() => ({ isLight: true, name: 'AmbientLight' })),
+    Group: jest.fn().mockImplementation(() => ({ ...mockGroup })),
+    Vector2: jest.fn(),
+    Vector3: jest.fn().mockImplementation(() => ({
+        x: 0,
+        y: 0,
+        z: 0,
+        set: jest.fn(),
+        copy: jest.fn(),
+        add: jest.fn(),
+        sub: jest.fn(),
+        multiplyScalar: jest.fn(),
+        divideScalar: jest.fn(),
+        normalize: jest.fn(),
+        clone: jest.fn().mockReturnThis(),
+    })),
+    Raycaster: jest.fn().mockImplementation(() => ({
+        setFromCamera: jest.fn(),
+        intersectObjects: jest.fn().mockReturnValue([]),
+    })),
+    EdgesGeometry: jest.fn(),
+    LineBasicMaterial: jest.fn(),
+    LineSegments: jest.fn(),
+    TextureLoader: jest.fn().mockImplementation(() => ({
+        load: jest.fn(),
+    })),
+    DoubleSide: 2,
+    Object3D: jest.fn().mockImplementation(() => ({
+        position: { x: 0, y: 0, z: 0, set: jest.fn(), copy: jest.fn() },
+        rotation: { x: 0, y: 0, z: 0, set: jest.fn(), copy: jest.fn() },
+        scale: { x: 1, y: 1, z: 1, set: jest.fn(), copy: jest.fn() },
+        add: jest.fn(),
+        remove: jest.fn(),
+        clone: jest.fn().mockReturnThis(),
+        traverse: jest.fn(),
+        getWorldPosition: jest.fn(),
+        updateMatrixWorld: jest.fn(),
+    })),
 };

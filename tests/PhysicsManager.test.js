@@ -1,5 +1,4 @@
-import { Scene, BufferGeometry, Mesh, MeshBasicMaterial } from 'three';
-jest.mock('three');
+import { Scene, BufferGeometry, Mesh, MeshBasicMaterial, Quaternion } from 'three';
 import { PhysicsManager } from '../src/frontend/PhysicsManager.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
@@ -57,6 +56,7 @@ describe('PhysicsManager', () => {
 
     it('should update the corresponding mesh position and quaternion after a physics world step', () => {
         const cube = objectManager.addPrimitive('Box');
+        cube.quaternion = new Quaternion();
         const body = physicsManager.addBody(cube, 1, 'box');
 
         // Set initial positions
@@ -94,7 +94,7 @@ describe('PhysicsManager', () => {
 
     it('should correctly orient the physics shape when the associated mesh is rotated', () => {
         const cube = objectManager.addPrimitive('Box');
-        cube.rotation.x = Math.PI / 2; // Rotate 90 degrees around X axis
+        cube.quaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2);
         cube.updateMatrixWorld(); // Update the world matrix to reflect rotation
 
         const body = physicsManager.addBody(cube, 1, 'box');
@@ -152,6 +152,7 @@ describe('PhysicsManager', () => {
 
     it('should apply world gravity to dynamic bodies correctly over time', () => {
         const cube = objectManager.addPrimitive('Box');
+        cube.quaternion = new Quaternion();
         const initialY = 10;
         cube.position.set(0, initialY, 0);
         const body = physicsManager.addBody(cube, 1, 'box'); // Dynamic body
@@ -178,16 +179,11 @@ describe('PhysicsManager', () => {
     });
 
     it('should ensure `update` method correctly steps the physics world with the provided `deltaTime`', () => {
-        const initialNumSteps = physicsManager.world.fixedStep(); // Get initial number of steps
+        const stepSpy = jest.spyOn(physicsManager.world, 'step');
         const deltaTime = 0.1; // A custom delta time
 
         physicsManager.update(deltaTime);
 
-        // Verify that the world's step function was called. This is hard to directly test
-        // without mocking CANNON.World.prototype.step, but we can infer it by checking
-        // if the number of steps increased.
-        // Note: This test is a bit weak as it relies on internal implementation details
-        // of cannon-es. A more robust test would mock CANNON.World.prototype.step.
-        expect(physicsManager.world.fixedStep()).toBeGreaterThan(initialNumSteps);
+        expect(stepSpy).toHaveBeenCalledWith(deltaTime);
     });
 });

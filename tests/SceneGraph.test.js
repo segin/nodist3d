@@ -1,5 +1,4 @@
 import { Scene, Mesh, BoxGeometry, PointLight, Group, Camera } from 'three';
-jest.mock('three');
 import { SceneGraph } from '../src/frontend/SceneGraph.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { EventBus } from '../src/frontend/EventBus.js';

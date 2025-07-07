@@ -1,5 +1,4 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, Vector3, GridHelper, AxesHelper } from 'three';
-jest.mock('three');
+import * as THREE from 'three';
 import { SceneManager } from '../src/frontend/SceneManager.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { EventBus } from '../src/frontend/EventBus.js';
@@ -41,11 +40,12 @@ describe('SceneManager', () => {
 
         eventBus = new EventBus();
         sceneManager = new SceneManager(mockCanvas, eventBus);
-        sceneManager.initialControlsTarget = new Vector3(0, 0, 0);
+        sceneManager.initialControlsTarget = new THREE.Vector3(0, 0, 0);
 
         // Mock renderer.setSize and camera.updateProjectionMatrix
         jest.spyOn(sceneManager.renderer, 'setSize');
         jest.spyOn(sceneManager.camera, 'updateProjectionMatrix');
+        sceneManager.renderer.domElement = mockCanvas;
     });
 
     it('should update the renderer size and camera aspect ratio on window resize', () => {
@@ -81,23 +81,14 @@ describe('SceneManager', () => {
     });
 
     it('The scene should contain a GridHelper and an AxesHelper on initialization', () => {
-        let hasGridHelper = false;
-        let hasAxesHelper = false;
-
-        sceneManager.scene.children.forEach(child => {
-            if (child instanceof GridHelper) {
-                hasGridHelper = true;
-            }
-            if (child instanceof AxesHelper) {
-                hasAxesHelper = true;
-            }
-        });
+        const hasGridHelper = sceneManager.scene.children.some(child => child instanceof THREE.GridHelper);
+        const hasAxesHelper = sceneManager.scene.children.some(child => child instanceof THREE.AxesHelper);
 
         expect(hasGridHelper).toBe(true);
         expect(hasAxesHelper).toBe(true);
     });
 
     it("The renderer's DOM element should be the same as the canvas provided in the constructor", () => {
-        expect(sceneManager.renderer.domElement).toStrictEqual(mockCanvas);
+        expect(sceneManager.renderer.domElement).toBe(mockCanvas);
     });
 });

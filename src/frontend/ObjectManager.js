@@ -69,6 +69,16 @@ export class ObjectManager {
         }
     }
 
+    updatePrimitive(object, parameters) {
+        if (object && object.geometry) {
+            const newGeometry = this.primitiveFactory.createPrimitive(object.geometry.type, parameters);
+            if (newGeometry) {
+                object.geometry.dispose();
+                object.geometry = newGeometry;
+            }
+        }
+    }
+
     duplicateObject(object) {
         if (!object) return null;
 
