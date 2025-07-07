@@ -174,14 +174,14 @@ This section outlines potential future enhancements and features for nodist3d.
     -   [x] Implement zoom camera control.
 -   [x] Add a grid helper for better scene orientation.
 -   [x] Add an axis helper for better scene orientation.
--   [ ] Implement material editing:
-    -   [ ] Change object color.
-    -   [ ] Adjust material roughness.
-    -   [ ] Adjust material metallicness.
-    -   [ ] Add texture mapping:
-        -   [ ] Implement basic texture loading and application.
-        -   [ ] Add UI controls for texture selection.
-        -   [ ] Support different texture types (e.g., diffuse, normal, roughness).
+-   [x] Implement material editing:
+    -   [x] Change object color.
+    -   [x] Adjust material roughness.
+    -   [x] Adjust material metallicness.
+    -   [x] Add texture mapping:
+        -   [x] Implement basic texture loading and application.
+        -   [x] Add UI controls for texture selection.
+        -   [x] Support different texture types (e.g., diffuse, normal, roughness).
 -   [ ] Add light source manipulation:
     -   [ ] Change light type (e.g., PointLight, DirectionalLight, AmbientLight).
     -   [ ] Adjust light intensity.
