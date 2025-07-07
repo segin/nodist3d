@@ -119,7 +119,7 @@ This checklist meticulously tracks all requirements and tasks derived from the i
 -   [x] Create a `CONTEXT.md` file for working context, ideas, and progress.
 -   [ ] Treat `CONTEXT.md` as a cache; clear it out once done with something.
 -   [x] Commit changes to `CONTEXT.md` to the Git repository.
--   [ ] Check for the existence of `gh` using Termux `pkg` commands.
+-   [x] Check for the existence of `gh` using Termux `pkg` commands.
 -   [ ] Take note of all installed `pkg` and `npm` packages before getting started.
 -   [ ] Create a GitHub repository `nodist3d`.
 -   [ ] Push each commit to GitHub as it happens.
