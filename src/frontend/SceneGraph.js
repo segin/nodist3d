@@ -1,17 +1,18 @@
 import * as THREE from 'three';
 
 export class SceneGraph {
-    constructor(scene, uiElement, transformControls, updateGUI) {
+    constructor(scene, uiElement, transformControls, updateGUI, eventBus) {
         this.scene = scene;
         this.uiElement = uiElement;
         this.transformControls = transformControls;
         this.updateGUI = updateGUI;
+        this.eventBus = eventBus;
         this.update();
 
-        // Listen for changes in the scene (e.g., object added/removed)
-        // This is a simplified approach; for complex scenes, consider a more robust event system.
-        this.scene.addEventListener('added', this.update.bind(this));
-        this.scene.addEventListener('removed', this.update.bind(this));
+        this.eventBus.on('objectAdded', this.update.bind(this));
+        this.eventBus.on('objectRemoved', this.update.bind(this));
+        this.eventBus.on('groupAdded', this.update.bind(this));
+        this.eventBus.on('groupRemoved', this.update.bind(this));
     }
 
     update() {

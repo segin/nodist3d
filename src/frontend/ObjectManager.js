@@ -66,6 +66,7 @@ export class ObjectManager {
             }
             // Remove the object from the scene
             this.scene.remove(object);
+            this.eventBus.emit('objectRemoved', object);
         }
     }
 

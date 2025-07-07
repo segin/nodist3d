@@ -165,7 +165,7 @@ This section outlines potential future enhancements and features for nodist3d.
 
 -   [x] Implement interactive controls for object manipulation (translate, rotate, scale).
 -   [x] Add a property panel to adjust primitive parameters (e.g., cube dimensions, sphere radius).
--   [ ] Implement a scene graph/outliner to manage multiple objects.
+-   [x] Implement a scene graph/outliner to manage multiple objects.
 -   [ ] Implement undo functionality.
 -   [ ] Implement redo functionality.
 -   [ ] Implement camera controls:
