@@ -191,7 +191,7 @@ This section outlines potential future enhancements and features for nodist3d.
 -   [x] Implement object grouping/ungrouping.
 -   [x] Add a "duplicate object" feature.
 -   [x] Implement a "delete object" feature.
--   [ ] Add a "reset view" button.
+-   [x] Add a "reset view" button.
 -   [ ] Implement a "save as image" feature for rendering the scene.
 
 ### Core Functionality & Primitives
