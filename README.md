@@ -196,7 +196,7 @@ This section outlines potential future enhancements and features for nodist3d.
 
 ### Core Functionality & Primitives
 
--   [ ] Add more complex primitives (e.g., LatheGeometry, ExtrudeGeometry, TextGeometry).
+-   [x] Add more complex primitives (e.g., LatheGeometry, ExtrudeGeometry, TextGeometry).
 -   [ ] Implement boolean operations (CSG - Constructive Solid Geometry) for combining/subtracting objects.
 -   [ ] Add support for importing/exporting common 3D formats (e.g., OBJ, GLTF).
 -   [ ] Implement a custom shader editor for advanced material customization.
