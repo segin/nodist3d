@@ -114,7 +114,7 @@ This checklist meticulously tracks all requirements and tasks derived from the i
 -   [x] Meticulously add each item to a central `README.md` document.
 -   [x] First create a blank `README.md`.
 -   [x] Commit the blank `README.md`.
--   [ ] Commit `README.md` after adding all checkboxes.
+-   [x] Commit `README.md` after adding all checkboxes.
 -   [ ] Each primitive object shall be a new checkbox in the list.
 -   [ ] Create a `CONTEXT.md` file for working context, ideas, and progress.
 -   [ ] Treat `CONTEXT.md` as a cache; clear it out once done with something.
