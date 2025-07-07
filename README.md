@@ -122,7 +122,7 @@ This checklist meticulously tracks all requirements and tasks derived from the i
 -   [x] Check for the existence of `gh` using Termux `pkg` commands.
 -   [x] Take note of all installed `pkg` and `npm` packages before getting started.
 -   [x] Create a GitHub repository `nodist3d`.
--   [ ] Push each commit to GitHub as it happens.
+-   [x] Push each commit to GitHub as it happens.
 -   [ ] Explain that the name is Node.js + -ist + 3D.
 -   [ ] Save this original prompt as `PROMPT.md`.
 -   [ ] Commit `PROMPT.md`.
