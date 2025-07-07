@@ -199,7 +199,7 @@ This section outlines potential future enhancements and features for nodist3d.
 -   [x] Add more complex primitives (e.g., LatheGeometry, ExtrudeGeometry, TextGeometry).
 -   [x] Implement boolean operations (CSG - Constructive Solid Geometry) for combining/subtracting objects.
 -   [x] Add support for importing/exporting common 3D formats (e.g., OBJ, GLTF).
--   [ ] Implement a custom shader editor for advanced material customization.
+-   [x] Implement a custom shader editor for advanced material customization.
 -   [ ] Add support for textures.
 -   [ ] Implement a physics engine for basic simulations.
 -   [ ] Implement Observer Pattern (Event Bus).
