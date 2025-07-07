@@ -213,7 +213,7 @@ This section outlines potential future enhancements and features for nodist3d.
 ### Performance & Optimization
 
 -   [x] Implement level of detail (LOD) for complex scenes.
--   [ ] Optimize rendering performance for mobile devices.
+-   [x] Optimize rendering performance for mobile devices.
 -   [ ] Implement Web Workers for offloading heavy computations.
 
 ### Testing & CI/CD

@@ -6,7 +6,7 @@ export class SceneManager {
     constructor(canvas) {
         this.canvas = canvas;
         this.scene = new global.THREE.Scene();
-        this.renderer = new global.THREE.WebGLRenderer({ canvas: this.canvas });
+        this.renderer = new global.THREE.WebGLRenderer({ canvas: this.canvas, powerPreference: "high-performance" });
         this.camera = new global.THREE.PerspectiveCamera(75, 2, 0.1, 5);
         this.camera.position.z = 2;
 
