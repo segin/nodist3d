@@ -168,10 +168,10 @@ This section outlines potential future enhancements and features for nodist3d.
 -   [x] Implement a scene graph/outliner to manage multiple objects.
 -   [x] Implement undo functionality.
 -   [x] Implement redo functionality.
--   [ ] Implement camera controls:
-    -   [ ] Implement orbit camera control.
-    -   [ ] Implement pan camera control.
-    -   [ ] Implement zoom camera control.
+-   [x] Implement camera controls:
+    -   [x] Implement orbit camera control.
+    -   [x] Implement pan camera control.
+    -   [x] Implement zoom camera control.
 -   [ ] Add a grid helper for better scene orientation.
 -   [ ] Add an axis helper for better scene orientation.
 -   [ ] Implement material editing:
