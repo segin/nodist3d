@@ -125,7 +125,7 @@ This checklist meticulously tracks all requirements and tasks derived from the i
 -   [x] Push each commit to GitHub as it happens.
 -   [x] Explain that the name is Node.js + -ist + 3D.
 -   [x] Save this original prompt as `PROMPT.md`.
--   [ ] Commit `PROMPT.md`.
+-   [x] Commit `PROMPT.md`.
 -   [ ] Never change `PROMPT.md`.
 
 ### Core Functionality
