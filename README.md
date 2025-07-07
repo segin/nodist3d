@@ -124,7 +124,7 @@ This checklist meticulously tracks all requirements and tasks derived from the i
 -   [x] Create a GitHub repository `nodist3d`.
 -   [x] Push each commit to GitHub as it happens.
 -   [x] Explain that the name is Node.js + -ist + 3D.
--   [ ] Save this original prompt as `PROMPT.md`.
+-   [x] Save this original prompt as `PROMPT.md`.
 -   [ ] Commit `PROMPT.md`.
 -   [ ] Never change `PROMPT.md`.
 
