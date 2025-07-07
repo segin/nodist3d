@@ -155,7 +155,7 @@ This checklist meticulously tracks all requirements and tasks derived from the i
 
 -   [x] Create a suite of unit tests.
 -   [x] Create a full test harness.
--   [ ] Test the full codebase.
+-   [x] Test the full codebase.
 
 ## Roadmap
 
