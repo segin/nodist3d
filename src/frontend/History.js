@@ -46,25 +46,36 @@ export class History {
     restoreState() {
         const state = this.history[this.currentIndex];
         const loader = new THREE.ObjectLoader();
-        const newScene = loader.parse(state);
+        loader.parse(state, (newScene) => {
+            // Create maps of objects in the current and new scenes
+            const currentObjects = new Map(this.scene.children.map(obj => [obj.uuid, obj]));
+            const newObjects = new Map(newScene.children.map(obj => [obj.uuid, obj]));
 
-        // Clear current scene
-        while (this.scene.children.length > 0) {
-            const object = this.scene.children[0];
-            this.scene.remove(object);
-            if (object.geometry) object.geometry.dispose();
-            if (object.material) {
-                if (Array.isArray(object.material)) {
-                    object.material.forEach(material => material.dispose());
-                } else {
-                    object.material.dispose();
+            // Remove objects that are in the current scene but not in the new one
+            for (const [uuid, object] of currentObjects) {
+                if (!newObjects.has(uuid)) {
+                    this.scene.remove(object);
                 }
             }
-        }
 
-        // Add objects from the restored scene
-        newScene.children.forEach(object => {
-            this.scene.add(object);
+            // Add or update objects that are in the new scene
+            for (const [uuid, newObject] of newObjects) {
+                const currentObject = currentObjects.get(uuid);
+                if (currentObject) {
+                    // Object exists, so update its properties
+                    currentObject.position.copy(newObject.position);
+                    currentObject.rotation.copy(newObject.rotation);
+                    currentObject.scale.copy(newObject.scale);
+                    if (currentObject.material && newObject.material) {
+                        currentObject.material.color.copy(newObject.material.color);
+                        currentObject.material.roughness = newObject.material.roughness;
+                        currentObject.material.metalness = newObject.material.metalness;
+                    }
+                } else {
+                    // Object is new, so add it to the scene
+                    this.scene.add(newObject);
+                }
+            }
         });
     }
 }
