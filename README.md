@@ -206,7 +206,7 @@ This section outlines potential future enhancements and features for nodist3d.
 
 ### Backend & Storage
 
--   [ ] Implement the custom zip file format for local storage.
+-   [x] Implement the custom zip file format for local storage.
 -   [ ] Add cloud storage integration (e.g., Google Drive, Dropbox) for scene persistence.
 -   [ ] Implement real-time collaboration features (multi-user editing).
 
