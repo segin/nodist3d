@@ -145,7 +145,7 @@ This checklist meticulously tracks all requirements and tasks derived from the i
     -   [x] Plane
     -   [x] Tube
     -   [x] Teapot
--   [ ] Optimize the application interface for mobile.
+-   [x] Optimize the application interface for mobile.
 -   [ ] Node.js webserver listens on localhost for a browser to connect to.
 -   [ ] Optimize the code.
 -   [ ] Use a custom zip file format with JSON data inside for persistent local storage.
