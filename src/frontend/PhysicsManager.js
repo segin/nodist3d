@@ -9,14 +9,18 @@ export class PhysicsManager {
     }
 
     addBody(mesh, mass = 1, shapeType = 'box') {
+        if (!mesh.geometry.parameters) {
+            console.warn("Unsupported geometry for physics body. Geometry has no parameters.");
+            return null;
+        }
         let shape;
         if (shapeType === 'box') {
-            const halfExtents = new CANNON.Vec3(mesh.geometry.parameters.width / 2, mesh.geometry.parameters.height / 2, mesh.geometry.parameters.depth / 2);
+            const halfExtents = new CANNON.Vec3(mesh.geometry.parameters.width / 2 * mesh.scale.x, mesh.geometry.parameters.height / 2 * mesh.scale.y, mesh.geometry.parameters.depth / 2 * mesh.scale.z);
             shape = new CANNON.Box(halfExtents);
         } else if (shapeType === 'sphere') {
-            shape = new CANNON.Sphere(mesh.geometry.parameters.radius);
+            shape = new CANNON.Sphere(mesh.geometry.parameters.radius * mesh.scale.x);
         } else if (shapeType === 'cylinder') {
-            shape = new CANNON.Cylinder(mesh.geometry.parameters.radiusTop, mesh.geometry.parameters.radiusBottom, mesh.geometry.parameters.height, mesh.geometry.parameters.radialSegments);
+            shape = new CANNON.Cylinder(mesh.geometry.parameters.radiusTop * mesh.scale.x, mesh.geometry.parameters.radiusBottom * mesh.scale.x, mesh.geometry.parameters.height * mesh.scale.y, mesh.geometry.parameters.radialSegments);
         } else {
             console.warn("Unsupported shape type for physics body:", shapeType);
             return null;
@@ -25,6 +29,7 @@ export class PhysicsManager {
         const body = new CANNON.Body({
             mass: mass,
             position: new CANNON.Vec3(mesh.position.x, mesh.position.y, mesh.position.z),
+            quaternion: new CANNON.Quaternion(mesh.quaternion.x, mesh.quaternion.y, mesh.quaternion.z, mesh.quaternion.w),
             shape: shape
         });
         this.world.addBody(body);
@@ -38,7 +43,7 @@ export class PhysicsManager {
     }
 
     update(deltaTime) {
-        this.world.step(1 / 60, deltaTime); // Update physics world
+        this.world.step(deltaTime); // Update physics world
 
         for (const item of this.bodies) {
             item.mesh.position.copy(item.body.position);

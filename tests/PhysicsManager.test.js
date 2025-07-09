@@ -56,7 +56,7 @@ describe('PhysicsManager', () => {
 
     it('should update the corresponding mesh position and quaternion after a physics world step', () => {
         const cube = objectManager.addPrimitive('Box');
-        cube.quaternion = new Quaternion();
+        cube.quaternion.copy(new Quaternion());
         const body = physicsManager.addBody(cube, 1, 'box');
 
         // Set initial positions
@@ -152,7 +152,7 @@ describe('PhysicsManager', () => {
 
     it('should apply world gravity to dynamic bodies correctly over time', () => {
         const cube = objectManager.addPrimitive('Box');
-        cube.quaternion = new Quaternion();
+        cube.quaternion.copy(new Quaternion());
         const initialY = 10;
         cube.position.set(0, initialY, 0);
         const body = physicsManager.addBody(cube, 1, 'box'); // Dynamic body
