@@ -5,6 +5,7 @@ Create a web-based 3D modeling program using Node.js to host the backend and Web
 *Directive: If the user requests that I add or remember any directives, they should be saved to this project's `GEMINI.md`.*
 *Directive: Always update the contents of the `GEMINI.md` file with the current subtask you are working on. Ensure that if you are completely interrupted and reset, you are able to adequately restore your working state as to be able to resume your work without significant interruption.*
 *Directive: After every `git commit`, the immediate next action should be a `git push` with the sole exception of the commit failing - in that case, resolve the commit failure, and then `git push`.*
+*Directive: When implementing test cases, it is a requirement to implement only one at a time. You must only check off one completed test unit per `git commit` and `git push`.*
 
 ## Working Context, Ideas, and Progress for nodist3d
 
