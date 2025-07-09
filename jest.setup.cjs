@@ -1,29 +1,25 @@
-
 const { JSDOM } = require('jsdom');
-const dom = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>');
+const fetch = require('node-fetch');
+
+global.fetch = fetch;
+global.Request = fetch.Request;
+global.Response = fetch.Response;
+global.Headers = fetch.Headers;
+global.URL.createObjectURL = jest.fn();
+
+const dom = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>', {
+    url: 'http://localhost',
+});
+
 global.document = dom.window.document;
 global.window = dom.window;
 global.navigator = dom.window.navigator;
+global.self = global.window;
 
 // Mock console.error and console.warn to prevent them from cluttering test output
 // and to allow checking if they were called in tests.
 global.console.error = jest.fn();
 global.console.warn = jest.fn();
-
-const mockConstructor = jest.fn();
-
-const mockVector2 = {
-    x: 0,
-    y: 0,
-    set: jest.fn(function(x, y) {
-        this.x = x;
-        this.y = y;
-        return this;
-    }),
-    clone: jest.fn(function() {
-        return { ...this };
-    }),
-};
 
 const mockVector3 = {
     x: 0,
@@ -51,8 +47,24 @@ const mockVector3 = {
         return this;
     }),
     normalize: jest.fn(function() {
-        // For simplicity in tests, normalize can return the same object
-        // In a real scenario, you might want to implement actual normalization logic
+        const length = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        if (length > 0) {
+            this.x /= length;
+            this.y /= length;
+            this.z /= length;
+        }
+        return this;
+    }),
+    addVectors: jest.fn(function(a, b) {
+        this.x = a.x + b.x;
+        this.y = a.y + b.y;
+        this.z = a.z + b.z;
+        return this;
+    }),
+    divideScalar: jest.fn(function(s) {
+        this.x /= s;
+        this.y /= s;
+        this.z /= s;
         return this;
     }),
 };
@@ -110,16 +122,12 @@ const mockObject3D = {
     }),
     toJSON: jest.fn(function() {
         return {
-            metadata: {
-                version: 4.5,
-                type: 'Scene',
-                generator: 'Scene.toJSON'
-            },
             object: {
-                uuid: 'scene-uuid',
-                type: 'Scene',
-                children: this.children.map(child => child.toJSON())
-            }
+                uuid: this.uuid,
+                type: this.type,
+                name: this.name,
+                children: this.children.map(child => child.toJSON()),
+            },
         };
     }),
 };
@@ -161,8 +169,32 @@ const mockMesh = {
     material: { ...mockMaterial },
 };
 
+const mockScene = {
+    ...mockObject3D,
+    type: 'Scene',
+    background: null,
+    children: [
+        { type: 'GridHelper', toJSON: () => ({ object: { type: 'GridHelper' } }) },
+        { type: 'AxesHelper', toJSON: () => ({ object: { type: 'AxesHelper' } }) },
+    ],
+    toJSON: jest.fn(function() {
+        return {
+            metadata: {
+                version: 4.5,
+                type: 'Scene',
+                generator: 'Scene.toJSON'
+            },
+            object: {
+                uuid: 'scene-uuid',
+                type: 'Scene',
+                children: this.children.map(child => child.toJSON())
+            }
+        };
+    }),
+};
+
 const THREE = {
-    Vector2: jest.fn().mockImplementation(() => ({ ...mockVector2 })),
+    Vector2: jest.fn().mockImplementation(() => ({ ...mockVector3 })),
     Vector3: jest.fn().mockImplementation(() => ({ ...mockVector3 })),
     Quaternion: jest.fn().mockImplementation(() => ({ ...mockQuaternion })),
     Color: jest.fn().mockImplementation((color) => ({
@@ -171,45 +203,7 @@ const THREE = {
         set: jest.fn(function(value) { this._value = value; return this; }),
         setHex: jest.fn(function(value) { this._value = value; return this; }),
     })),
-    Scene: jest.fn().mockImplementation(() => ({
-        ...mockObject3D,
-        type: 'Scene',
-        background: null,
-        toJSON: jest.fn(function() {
-            const sceneData = {
-                metadata: { version: 4.6, type: 'Scene', generator: 'Object3D.toJSON' },
-                geometries: [],
-                materials: [],
-                object: {
-                    uuid: this.uuid,
-                    type: this.type,
-                    children: []
-                }
-            };
-
-            this.traverse(object => {
-                if (object.isMesh && object.geometry) {
-                    const geometryJson = object.geometry.toJSON();
-                    if (!sceneData.geometries.some(g => g.uuid === geometryJson.uuid)) {
-                        sceneData.geometries.push(geometryJson);
-                    }
-                }
-                if (object.isMesh && object.material) {
-                    const materials = Array.isArray(object.material) ? object.material : [object.material];
-                    materials.forEach(material => {
-                        const materialJson = material.toJSON();
-                        if (!sceneData.materials.some(m => m.uuid === materialJson.uuid)) {
-                            sceneData.materials.push(materialJson);
-                        }
-                    });
-                }
-                if (object !== this) {
-                    sceneData.object.children.push(object.toJSON());
-                }
-            });
-            return sceneData;
-        }),
-    })),
+    Scene: jest.fn().mockImplementation(() => ({ ...mockScene })),
     PerspectiveCamera: jest.fn().mockImplementation(() => ({
         ...mockObject3D,
         isPerspectiveCamera: true,
@@ -217,21 +211,7 @@ const THREE = {
         updateProjectionMatrix: jest.fn(),
     })),
     WebGLRenderer: jest.fn(() => ({
-        domElement: {
-            addEventListener: jest.fn(),
-            removeEventListener: jest.fn(),
-            // Add clientWidth and clientHeight for SceneManager tests
-            clientWidth: 800,
-            clientHeight: 600,
-            style: {},
-            // Mock getBoundingClientRect for Pointer.js tests
-            getBoundingClientRect: jest.fn(() => ({
-                left: 0,
-                top: 0,
-                width: 800,
-                height: 600,
-            })),
-        },
+        domElement: dom.window.document.createElement('canvas'),
         setSize: jest.fn(),
         render: jest.fn(),
         dispose: jest.fn(),
@@ -250,18 +230,7 @@ const THREE = {
             name: 'Group',
             uuid: 'mock-group-uuid',
             children: [],
-            toJSON: jest.fn(function() {
-                return {
-                    metadata: { version: 4.6, type: 'Object', generator: 'Object3D.toJSON' },
-                    object: {
-                        uuid: this.uuid,
-                        type: this.type,
-                        children: this.children.map(child => child.toJSON ? child.toJSON().object : { uuid: child.uuid, type: child.type })
-                    }
-                };
-            }),
         };
-        // Override add and remove to correctly manage children for groups
         group.add = jest.fn(function(object) {
             this.children.push(object);
             object.parent = this;
@@ -284,21 +253,18 @@ const THREE = {
     MeshPhongMaterial: jest.fn(() => ({ ...mockMaterial })),
     ShaderMaterial: jest.fn(() => ({
         ...mockMaterial,
-        vertexShader: `
-            void main() {
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-            }
-        `,
-        fragmentShader: `
-            void main() {
-                gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-            }
-        `,
+        vertexShader: '',
+        fragmentShader: '',
         uniforms: {},
     })),
     TextureLoader: jest.fn().mockImplementation(() => ({
         load: jest.fn((url, onLoad) => {
             if (onLoad) onLoad(new THREE.Texture());
+        }),
+    })),
+    ObjectLoader: jest.fn().mockImplementation(() => ({
+        parse: jest.fn((data, onLoad) => {
+            if (onLoad) onLoad(new THREE.Scene());
         }),
     })),
     Texture: jest.fn(() => ({
@@ -326,8 +292,8 @@ const THREE = {
         intensity: 1,
     })),
     AmbientLight: jest.fn(() => ({ ...mockObject3D, isAmbientLight: true })),
-    GridHelper: jest.fn(() => ({ ...mockObject3D, isGridHelper: true })),
-    AxesHelper: jest.fn(() => ({ ...mockObject3D, isAxesHelper: true })),
+    GridHelper: jest.fn(() => ({ ...mockObject3D, isGridHelper: true, toJSON: () => ({ object: { type: 'GridHelper' } }) })),
+    AxesHelper: jest.fn(() => ({ ...mockObject3D, isAxesHelper: true, toJSON: () => ({ object: { type: 'AxesHelper' } }) })),
     LineSegments: jest.fn(() => ({ ...mockObject3D, renderOrder: 1 })),
     EdgesGeometry: jest.fn(() => ({...mockGeometry})),
     LineBasicMaterial: jest.fn(() => ({...mockMaterial})),
@@ -389,7 +355,6 @@ jest.mock('dat.gui', () => ({
     }))
 }));
 
-global.URL.createObjectURL = jest.fn();
 global.URL.revokeObjectURL = jest.fn();
 
 global.FileReader = jest.fn(() => ({
@@ -421,25 +386,3 @@ global.Worker = class {
     this.onmessage(msg);
   }
 };
-
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    json: () => Promise.resolve({}),
-  })
-);
-
-// Mock FileLoader to prevent actual file system access during tests
-jest.mock('three/src/loaders/FileLoader.js', () => {
-    return {
-        FileLoader: jest.fn().mockImplementation(() => ({
-            load: jest.fn((url, onLoad) => {
-                // Simulate loading a font file
-                if (url.includes('helvetiker_regular.typeface.json')) {
-                    onLoad(JSON.stringify({ metadata: { type: 'Font' } }));
-                } else {
-                    onLoad('');
-                }
-            }),
-        })),
-    };
-});

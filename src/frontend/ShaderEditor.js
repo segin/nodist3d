@@ -44,15 +44,17 @@ export class ShaderEditor {
 
         this.uniforms = {};
 
-        this.shaderMaterial = new global.THREE.ShaderMaterial({
-            vertexShader,
-            fragmentShader,
-            uniforms: this.uniforms
+        this.shaderMaterial = new THREE.ShaderMaterial({
+            vertexShader: this.vertexShader,
+            fragmentShader: this.fragmentShader,
+            uniforms: this.uniforms,
         });
 
-        const geometry = new global.THREE.BoxGeometry(1, 1, 1);
-        this.shaderMesh = new global.THREE.Mesh(geometry, this.shaderMaterial);
-        this.scene.add(this.shaderMesh);
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.shaderMaterial);
+        mesh.name = 'ShaderMesh';
+        this.scene.add(mesh);
+        this.eventBus.emit('objectAdded', mesh);
+        return mesh;
 
         this.addShaderControls();
     }

@@ -17,49 +17,26 @@ export class SceneGraph {
 
     update() {
         this.uiElement.innerHTML = '';
-        const ul = document.createElement('ul');
-
         this.scene.children.forEach(object => {
-            const isLight = object.isLight; // Check if the object is a light
-            const isMesh = object instanceof THREE.Mesh; // Check if the object is a mesh
-
-            if (isLight || isMesh) { // Only show Mesh objects and Lights in the scene graph
+            if (object.isMesh || object.isLight) {
                 const li = document.createElement('li');
-
                 const nameSpan = document.createElement('span');
-                nameSpan.textContent = object.name || object.type;
+                nameSpan.textContent = object.name;
                 nameSpan.style.cursor = 'pointer';
                 nameSpan.addEventListener('click', () => {
-                    this.transformControls.attach(object);
-                    this.updateGUI(object);
+                    this.eventBus.emit('objectSelected', object);
                 });
                 li.appendChild(nameSpan);
 
-                const renameInput = document.createElement('input');
-                renameInput.type = 'text';
-                renameInput.value = object.name || '';
-                renameInput.placeholder = 'Rename';
-                renameInput.style.marginLeft = '5px';
-                renameInput.addEventListener('change', (event) => {
-                    object.name = event.target.value;
-                    this.update(); // Re-render the list to show new name
-                });
-                li.appendChild(renameInput);
-
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete';
-                deleteButton.style.marginLeft = '5px';
-                deleteButton.addEventListener('click', () => {
-                    this.scene.remove(object);
-                    this.transformControls.detach();
-                    this.updateGUI(null);
-                    this.update(); // Re-render the list after deletion
-                });
+                deleteButton.onclick = () => {
+                    this.eventBus.emit('deleteObject', object);
+                };
                 li.appendChild(deleteButton);
 
-                ul.appendChild(li);
+                this.uiElement.appendChild(li);
             }
         });
-        this.uiElement.appendChild(ul);
     }
 }

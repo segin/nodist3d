@@ -13,14 +13,11 @@ export class GroupManager {
         }
 
         const group = new THREE.Group();
-        group.name = "New Group";
+        group.name = 'Group';
 
         const center = new THREE.Vector3();
-        for (const object of objects) {
-            center.add(object.position);
-        }
-        center.divideScalar(objects.length);
-
+        const positions = objects.map(obj => obj.position);
+        center.addVectors(...positions).divideScalar(objects.length);
         group.position.copy(center);
 
         for (const object of objects) {
@@ -30,7 +27,6 @@ export class GroupManager {
         }
 
         this.scene.add(group);
-        this.eventBus.emit('groupAdded', group); // Emit event
         return group;
     }
 

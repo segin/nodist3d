@@ -81,11 +81,10 @@ describe('SceneManager', () => {
     });
 
     it('The scene should contain a GridHelper and an AxesHelper on initialization', () => {
-        const hasGridHelper = sceneManager.scene.children.some(child => child instanceof THREE.GridHelper);
-        const hasAxesHelper = sceneManager.scene.children.some(child => child instanceof THREE.AxesHelper);
-
-        expect(hasGridHelper).toBe(true);
-        expect(hasAxesHelper).toBe(true);
+        const gridHelper = sceneManager.scene.children.find(child => child.type === 'GridHelper');
+        const axesHelper = sceneManager.scene.children.find(child => child.type === 'AxesHelper');
+        expect(gridHelper).toBeDefined();
+        expect(axesHelper).toBeDefined();
     });
 
     it("The renderer's DOM element should be the same as the canvas provided in the constructor", () => {

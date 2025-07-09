@@ -1,28 +1,21 @@
 class EventBus {
     constructor() {
-        this.eventListeners = {};
+        this.events = {};
     }
 
-    on(eventName, listener) {
-        if (!this.eventListeners[eventName]) {
-            this.eventListeners[eventName] = [];
+    on(event, listener) {
+        if (!this.events[event]) {
+            this.events[event] = [];
         }
-        this.eventListeners[eventName].push(listener);
+        this.events[event].push(listener);
     }
 
-    emit(eventName, data) {
-        if (this.eventListeners[eventName]) {
-            this.eventListeners[eventName].forEach(listener => listener(data));
-        }
-    }
-
-    off(eventName, listener) {
-        if (this.eventListeners[eventName]) {
-            this.eventListeners[eventName] = this.eventListeners[eventName].filter(
-                existingListener => existingListener !== listener
-            );
+    emit(event, data) {
+        if (this.events[event]) {
+            this.events[event].forEach(listener => listener(data));
         }
     }
 }
 
-export default EventBus;
+const eventBus = new EventBus();
+export default eventBus;
