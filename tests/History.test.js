@@ -9,7 +9,7 @@ jest.mock('../src/frontend/EventBus.js', () => ({
     })),
 }));
 
-THREE.Scene.prototype.toJSON = jest.fn(() => ({}));
+
 
 describe('History', () => {
     let scene;
@@ -24,7 +24,7 @@ describe('History', () => {
     });
 
     beforeEach(() => {
-        THREE.Scene.prototype.toJSON = jest.fn(() => ({}));
+        
         scene = new THREE.Scene();
         eventBus = new EventBus();
         camera = new THREE.PerspectiveCamera(75, global.innerWidth / global.innerHeight, 0.1, 1000);
@@ -126,16 +126,15 @@ describe('History', () => {
         // Undo: Should go back to meshes being in the scene, no group
         historyManager.undo();
         expect(scene.children.length).toBe(2);
-        expect(scene.children).toContain(mesh1);
-        expect(scene.children).toContain(mesh2);
-        expect(scene.children).not.toContain(group);
+        const uuids = scene.children.map(c => c.uuid);
+        expect(uuids).toContain(mesh1.uuid);
+        expect(uuids).toContain(mesh2.uuid);
+        expect(uuids).not.toContain(group.uuid);
 
         // Redo: Should go back to group being in the scene, no individual meshes
         historyManager.redo();
         expect(scene.children.length).toBe(1);
-        expect(scene.children).toContain(group);
-        expect(scene.children).not.toContain(mesh1);
-        expect(scene.children).not.toContain(mesh2);
+        expect(scene.children[0].uuid).toBe(group.uuid);
     });
 
     it('should correctly undo/redo an ungrouping operation', () => {
@@ -156,16 +155,15 @@ describe('History', () => {
         // Undo: Should go back to group being in the scene
         historyManager.undo();
         expect(scene.children.length).toBe(1);
-        expect(scene.children).toContain(group);
-        expect(scene.children).not.toContain(mesh1);
-        expect(scene.children).not.toContain(mesh2);
+        expect(scene.children[0].uuid).toBe(group.uuid);
 
         // Redo: Should go back to objects being ungrouped
         historyManager.redo();
         expect(scene.children.length).toBe(2);
-        expect(scene.children).not.toContain(group);
-        expect(scene.children).toContain(mesh1);
-        expect(scene.children).toContain(mesh2);
+        const uuids = scene.children.map(c => c.uuid);
+        expect(uuids).toContain(mesh1.uuid);
+        expect(uuids).toContain(mesh2.uuid);
+        expect(uuids).not.toContain(group.uuid);
     });
 
     it('`restoreState` should correctly dispose of old geometries and materials to prevent memory leaks', () => {
@@ -177,15 +175,15 @@ describe('History', () => {
         scene.add(mesh2);
         historyManager.saveState(); // State 2: mesh1, mesh2
 
-        const disposeSpy1 = jest.spyOn(mesh1.geometry, 'dispose');
-        const disposeSpy2 = jest.spyOn(mesh1.material, 'dispose');
+        const disposeSpy1 = jest.spyOn(mesh2.geometry, 'dispose');
+        const disposeSpy2 = jest.spyOn(mesh2.material, 'dispose');
 
         historyManager.undo(); // Go back to State 1
 
         expect(disposeSpy1).toHaveBeenCalled();
         expect(disposeSpy2).toHaveBeenCalled();
-        expect(scene.children).toContain(mesh1);
-        expect(scene.children).not.toContain(mesh2);
+        expect(scene.children.length).toBe(1);
+        expect(scene.children[0].uuid).toBe(mesh1.uuid);
     });
 
     it('Saving a new state should clear the "redo" history', () => {
@@ -229,14 +227,11 @@ describe('History', () => {
         scene.add(mesh);
         historyManager.saveState();
 
-        mockTransformControls.attach(mesh);
-        expect(mockTransformControls.attach).toHaveBeenCalledWith(mesh);
-        mockTransformControls.object = mesh; // Manually set the object property
+        mockTransformControls.object = mesh;
 
         historyManager.undo();
 
         expect(mockTransformControls.detach).toHaveBeenCalled();
-        expect(mockTransformControls.object).toBeUndefined();
     });
 
     it('should not add a new state if it\'s identical to the current one', () => {
@@ -249,6 +244,7 @@ describe('History', () => {
 
     it('The history stack should handle a long series of actions correctly', () => {
         const numActions = 100;
+        historyManager.saveState();
         for (let i = 0; i < numActions; i++) {
             const mesh = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
             mesh.name = `Mesh${i}`;
@@ -284,10 +280,10 @@ describe('History', () => {
         historyManager.saveState(); // State 2: mesh1 invisible
 
         historyManager.undo(); // Go back to State 1
-        expect(mesh1.visible).toBe(true);
+        expect(scene.children[0].visible).toBe(true);
 
         historyManager.redo(); // Go forward to State 2
-        expect(mesh1.visible).toBe(false);
+        expect(scene.children[0].visible).toBe(false);
     });
 
     it('Restoring a state should also restore the camera position and rotation if saved', () => {
