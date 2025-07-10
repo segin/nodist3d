@@ -1,8 +1,7 @@
 
 
-export class Pointer extends global.THREE.EventDispatcher {
+export class Pointer {
     constructor(camera, scene, renderer, eventBus) {
-        super();
         this.raycaster = new THREE.Raycaster();
         this.pointer = new THREE.Vector2();
         this.camera = camera;
@@ -13,12 +12,14 @@ export class Pointer extends global.THREE.EventDispatcher {
         this.outline = null; // To store the outline mesh
         this.isDragging = false;
 
-        this.renderer.domElement.addEventListener('pointerdown', this.onPointerDown.bind(this));
-        this.renderer.domElement.addEventListener('pointermove', this.onPointerMove.bind(this));
-        this.renderer.domElement.addEventListener('pointerup', this.onPointerUp.bind(this));
+        this.renderer.domElement.addEventListener('pointerdown', this.onPointerDown);
+        this.renderer.domElement.addEventListener('pointermove', this.onPointerMove);
+        this.renderer.domElement.addEventListener('pointerup', this.onPointerUp);
     }
 
     onPointerDown(event) {
+        if (event.target !== this.renderer.domElement) return;
+
         this.isDragging = true;
         this.updatePointer(event);
 
@@ -30,14 +31,13 @@ export class Pointer extends global.THREE.EventDispatcher {
             if (this.selectedObject !== newSelectedObject) {
                 this.selectedObject = newSelectedObject;
                 this.addOutline(this.selectedObject);
-                this.eventBus.emit('selectionChange', this.selectedObject); // Emit event via EventBus
-                console.log('Selected object:', this.selectedObject);
+                this.eventBus.publish('selectionChange', this.selectedObject);
             }
         } else {
             if (this.selectedObject !== null) {
                 this.selectedObject = null;
                 this.removeOutline();
-                this.eventBus.emit('selectionChange', null); // Emit event via EventBus
+                this.eventBus.publish('selectionChange', null);
             }
         }
     }

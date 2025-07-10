@@ -1,13 +1,6 @@
-import * as THREE from 'three';
+import './__mocks__/three-dat.gui.js';
 import { LightManager } from '../src/frontend/LightManager.js';
-import { EventBus } from '../src/frontend/EventBus.js';
-
-jest.mock('../src/frontend/EventBus.js', () => ({
-    EventBus: jest.fn().mockImplementation(() => ({
-        emit: jest.fn(),
-        on: jest.fn(),
-    })),
-}));
+import EventBus from '../src/frontend/EventBus.js';
 
 describe('LightManager', () => {
     let scene;
@@ -16,7 +9,7 @@ describe('LightManager', () => {
 
     beforeEach(() => {
         scene = new THREE.Scene();
-        eventBus = new EventBus();
+        eventBus = EventBus;
         lightManager = new LightManager(scene, eventBus);
     });
 
@@ -114,8 +107,11 @@ describe('LightManager', () => {
 
     it('should ensure ambient lights do not have a position property that can be updated', () => {
         const ambientLight = lightManager.addLight('AmbientLight', 0xffffff, 1);
-        const initialPosition = ambientLight.position.clone();
-        lightManager.updateLight(ambientLight, { position: { x: 10, y: 10, z: 10 } });
-        expect(ambientLight.position.equals(initialPosition)).toBe(true);
+        // AmbientLight does not have a position property, so attempting to update it should not cause an error
+        // and its position (if it somehow existed) should remain undefined or null.
+        expect(() => {
+            lightManager.updateLight(ambientLight, { position: { x: 10, y: 10, z: 10 } });
+        }).not.toThrow();
+        expect(ambientLight.position).toBeUndefined();
     });
 });

@@ -9,10 +9,10 @@ export class SceneGraph {
         this.eventBus = eventBus;
         this.update();
 
-        this.eventBus.on('objectAdded', this.update.bind(this));
-        this.eventBus.on('objectRemoved', this.update.bind(this));
-        this.eventBus.on('groupAdded', this.update.bind(this));
-        this.eventBus.on('groupRemoved', this.update.bind(this));
+        this.eventBus.subscribe('objectAdded', this.update.bind(this));
+        this.eventBus.subscribe('objectRemoved', this.update.bind(this));
+        this.eventBus.subscribe('groupAdded', this.update.bind(this));
+        this.eventBus.subscribe('groupRemoved', this.update.bind(this));
     }
 
     update() {
@@ -24,14 +24,14 @@ export class SceneGraph {
                 nameSpan.textContent = object.name;
                 nameSpan.style.cursor = 'pointer';
                 nameSpan.addEventListener('click', () => {
-                    this.eventBus.emit('objectSelected', object);
+                    this.eventBus.publish('objectSelected', object);
                 });
                 li.appendChild(nameSpan);
 
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete';
                 deleteButton.onclick = () => {
-                    this.eventBus.emit('deleteObject', object);
+                    this.eventBus.publish('deleteObject', object);
                 };
                 li.appendChild(deleteButton);
 

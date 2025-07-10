@@ -1,7 +1,8 @@
 import { GUI } from 'dat.gui';
 
 export class ShaderEditor {
-    constructor(gui, renderer, scene, camera) {
+    constructor(gui, renderer, scene, camera, eventBus) {
+        this.eventBus = eventBus;
         this.gui = gui;
         this.renderer = renderer;
         this.scene = scene;
@@ -53,7 +54,7 @@ export class ShaderEditor {
         const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.shaderMaterial);
         mesh.name = 'ShaderMesh';
         this.scene.add(mesh);
-        this.eventBus.emit('objectAdded', mesh);
+        this.eventBus.publish('objectAdded', mesh);
         return mesh;
 
         this.addShaderControls();

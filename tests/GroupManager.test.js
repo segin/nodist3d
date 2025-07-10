@@ -1,13 +1,6 @@
-import * as THREE from 'three';
+import './__mocks__/three-dat.gui.js';
 import { GroupManager } from '../src/frontend/GroupManager.js';
-import { EventBus } from '../src/frontend/EventBus.js';
-
-jest.mock('../src/frontend/EventBus.js', () => ({
-    EventBus: jest.fn().mockImplementation(() => ({
-        emit: jest.fn(),
-        on: jest.fn(),
-    })),
-}));
+import EventBus from '../src/frontend/EventBus.js';
 
 describe('GroupManager', () => {
     let scene;
@@ -17,7 +10,7 @@ describe('GroupManager', () => {
 
     beforeEach(() => {
         scene = new THREE.Scene();
-        eventBus = new EventBus();
+        eventBus = EventBus;
         groupManager = new GroupManager(scene, eventBus);
 
         object1 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
@@ -145,13 +138,13 @@ describe('GroupManager', () => {
     });
 
     it('should maintain the world-space transforms of objects when they are grouped', () => {
-        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const mesh1 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         mesh1.position.set(10, 0, 0);
         mesh1.rotation.set(0, Math.PI / 2, 0);
         mesh1.scale.set(2, 2, 2);
         scene.add(mesh1);
 
-        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const mesh2 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         mesh2.position.set(20, 0, 0);
         mesh2.rotation.set(0, 0, Math.PI / 4);
         mesh2.scale.set(0.5, 0.5, 0.5);
@@ -198,8 +191,8 @@ describe('GroupManager', () => {
     });
 
     it('Grouping should remove the original objects from the scene and add the new group', () => {
-        const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
-        const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+        const mesh1 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
+        const mesh2 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
         scene.add(mesh1);
         scene.add(mesh2);
 

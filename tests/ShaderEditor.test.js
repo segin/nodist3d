@@ -1,60 +1,5 @@
-import { ShaderEditor } from '../src/frontend/ShaderEditor.js';
-import { Scene, WebGLRenderer, PerspectiveCamera, ShaderMaterial } from 'three';
-import { EventBus } from '../src/frontend/EventBus.js';
-
-// Mock 'dat.gui'
-jest.mock('dat.gui', () => {
-  const mockController = {
-    name: jest.fn().mockReturnThis(),
-    onChange: jest.fn().mockReturnThis(),
-    listen: jest.fn().mockReturnThis(),
-  };
-  const mockFolder = {
-    add: jest.fn(() => mockController),
-    addColor: jest.fn(() => mockController),
-    addFolder: jest.fn().mockReturnThis(),
-    open: jest.fn(),
-    removeFolder: jest.fn(),
-  };
-  return {
-    GUI: jest.fn(() => ({
-      addFolder: jest.fn(() => mockFolder),
-      add: jest.fn(() => mockController),
-    })),
-  };
-});
-
-// Mock 'three'
-jest.mock('three', () => {
-    const originalThree = jest.requireActual('three');
-    return {
-        ...originalThree,
-        WebGLRenderer: jest.fn().mockImplementation(() => {
-            return {
-                domElement: null,
-                getContext: jest.fn(),
-                setSize: jest.fn(),
-                setPixelRatio: jest.fn(),
-                render: jest.fn(),
-            };
-        }),
-        ShaderMaterial: jest.fn().mockImplementation(() => ({
-            dispose: jest.fn(),
-            vertexShader: '',
-            fragmentShader: '',
-            needsUpdate: false,
-        })),
-    };
-});
-
-jest.mock('../src/frontend/EventBus.js', () => ({
-    EventBus: jest.fn().mockImplementation(() => ({
-        emit: jest.fn(),
-        on: jest.fn(),
-        subscribe: jest.fn(),
-        publish: jest.fn(),
-    })),
-}));
+import './__mocks__/three-dat.gui.js';
+import EventBus from '../src/frontend/EventBus.js';
 
 describe('ShaderEditor', () => {
   let gui;
@@ -75,7 +20,7 @@ describe('ShaderEditor', () => {
     renderer = new WebGLRenderer();
     scene = new Scene();
     camera = new PerspectiveCamera();
-    eventBus = new EventBus();
+    eventBus = EventBus;
     shaderEditor = new ShaderEditor(gui, renderer, scene, camera, eventBus);
   });
 

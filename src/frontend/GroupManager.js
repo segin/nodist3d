@@ -48,7 +48,7 @@ export class GroupManager {
         }
 
         this.scene.remove(group);
-        this.eventBus.emit('groupRemoved', group); // Emit event
+        this.eventBus.publish('groupRemoved', group); // Emit event
         return ungroupedObjects;
     }
 }

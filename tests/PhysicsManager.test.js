@@ -1,16 +1,20 @@
-import { Scene, BufferGeometry, Mesh, MeshBasicMaterial, Quaternion } from 'three';
+import './__mocks__/three-dat.gui.js';
+import './__mocks__/three-dat.gui.js';
+import './__mocks__/three-dat.gui.js';
+import './__mocks__/three-dat.gui.js';
+import './__mocks__/three-dat.gui.js';
+import './__mocks__/three-dat.gui.js';
+import './__mocks__/three-dat.gui.js';
+import './__mocks__/three-dat.gui.js';
+import './__mocks__/three-dat.gui.js';
+import './__mocks__/three-dat.gui.js';
+import './__mocks__/three-dat.gui.js';
+import './__mocks__/three-dat.gui.js';
 import { PhysicsManager } from '../src/frontend/PhysicsManager.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
-import { EventBus } from '../src/frontend/EventBus.js';
+import EventBus from '../src/frontend/EventBus.js';
 import * as CANNON from 'cannon-es';
-
-jest.mock('../src/frontend/EventBus.js', () => ({
-    EventBus: jest.fn().mockImplementation(() => ({
-        emit: jest.fn(),
-        on: jest.fn(),
-    })),
-}));
 
 describe('PhysicsManager', () => {
     let scene;
@@ -21,7 +25,7 @@ describe('PhysicsManager', () => {
 
     beforeEach(() => {
         scene = new Scene();
-        eventBus = new EventBus();
+        eventBus = EventBus;
         physicsManager = new PhysicsManager(scene);
         primitiveFactory = new PrimitiveFactory();
         objectManager = new ObjectManager(scene, primitiveFactory, eventBus);

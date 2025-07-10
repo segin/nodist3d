@@ -1,31 +1,31 @@
-// src/frontend/EventBus.js
-
 class EventBus {
     constructor() {
         this.events = {};
     }
 
-    subscribe(event, callback) {
-        if (!this.events[event]) {
-            this.events[event] = [];
+    subscribe(eventName, callback) {
+        if (!this.events[eventName]) {
+            this.events[eventName] = [];
         }
-        this.events[event].push(callback);
+        this.events[eventName].push(callback);
     }
 
-    unsubscribe(event, callback) {
-        if (!this.events[event]) return;
-
-        this.events[event] = this.events[event].filter(
-            (existingCallback) => existingCallback !== callback
-        );
+    unsubscribe(eventName, callback) {
+        if (this.events[eventName]) {
+            this.events[eventName] = this.events[eventName].filter(cb => cb !== callback);
+        }
     }
 
-    publish(event, data) {
-        if (!this.events[event]) return;
-
-        this.events[event].forEach((callback) => {
-            callback(data);
-        });
+    publish(eventName, data) {
+        if (this.events[eventName]) {
+            this.events[eventName].forEach(callback => {
+                try {
+                    callback(data);
+                } catch (error) {
+                    console.error(`Error in event listener for ${eventName}:`, error);
+                }
+            });
+        }
     }
 }
 

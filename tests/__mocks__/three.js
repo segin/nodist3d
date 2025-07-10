@@ -7,4 +7,10 @@ module.exports = {
     render: jest.fn(),
     domElement: document.createElement('div'),
   }),
+  TextGeometry: jest.fn().mockImplementation(() => {
+    return {
+      type: 'TextGeometry',
+      dispose: jest.fn(),
+    };
+  }),
 };

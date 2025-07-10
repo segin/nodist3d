@@ -1,13 +1,6 @@
 import * as THREE from 'three';
 import { History } from '../src/frontend/History.js';
-import { EventBus } from '../src/frontend/EventBus.js';
-
-jest.mock('../src/frontend/EventBus.js', () => ({
-    EventBus: jest.fn().mockImplementation(() => ({
-        emit: jest.fn(),
-        on: jest.fn(),
-    })),
-}));
+import EventBus from '../src/frontend/EventBus.js';
 
 
 
@@ -26,7 +19,7 @@ describe('History', () => {
     beforeEach(() => {
         
         scene = new THREE.Scene();
-        eventBus = new EventBus();
+        eventBus = EventBus;
         camera = new THREE.PerspectiveCamera(75, global.innerWidth / global.innerHeight, 0.1, 1000);
         historyManager = new History(scene, eventBus);
 

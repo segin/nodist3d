@@ -42,14 +42,14 @@ export class LightManager {
         light.name = name || type;
         this.scene.add(light);
         this.lights.push(light);
-        this.eventBus.emit('lightAdded', light); // Emit event
+        this.eventBus.publish('lightAdded', light); // Emit event
         return light;
     }
 
     removeLight(light) {
         this.scene.remove(light);
         this.lights = this.lights.filter(l => l !== light);
-        this.eventBus.emit('lightRemoved', light); // Emit event
+        this.eventBus.publish('lightRemoved', light); // Emit event
     }
 
     updateLight(light, properties) {
@@ -64,7 +64,7 @@ export class LightManager {
                 }
             }
         }
-        this.eventBus.emit('lightUpdated', light); // Emit event
+        this.eventBus.publish('lightUpdated', light); // Emit event
     }
 
     changeLightType(oldLight, newType) {

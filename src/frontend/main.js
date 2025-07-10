@@ -15,13 +15,13 @@ import { GroupManager } from './GroupManager.js';
 import { ShaderEditor } from './ShaderEditor.js';
 import { PhysicsManager } from './PhysicsManager.js';
 import { PrimitiveFactory } from './PrimitiveFactory.js';
-import { EventBus } from './EventBus.js';
+import EventBus from './EventBus.js';
 
 class App {
     constructor() {
         document.addEventListener('DOMContentLoaded', () => {
             this.canvas = document.querySelector('#c');
-            this.eventBus = new EventBus();
+            this.eventBus = EventBus;
             this.sceneManager = new SceneManager(this.canvas);
             this.primitiveFactory = new PrimitiveFactory();
             this.objectManager = new ObjectManager(this.sceneManager.scene, this.primitiveFactory, this.eventBus);
@@ -33,7 +33,7 @@ class App {
             this.physicsManager = new PhysicsManager(this.sceneManager.scene);
 
             this.gui = new GUI();
-            this.shaderEditor = new ShaderEditor(this.gui, this.sceneManager.renderer, this.sceneManager.scene, this.sceneManager.camera);
+            this.shaderEditor = new ShaderEditor(this.gui, this.sceneManager.renderer, this.sceneManager.scene, this.sceneManager.camera, this.eventBus);
 
             this.currentObjectFolder = null;
             this.currentLightFolder = null;
@@ -67,42 +67,42 @@ class App {
         if (object) {
             if (object.isLight) {
                 this.currentLightFolder = this.gui.addFolder(object.name || object.uuid);
-                this.currentLightFolder.addColor(object, 'color').name('Color').onChange(() => this.eventBus.emit('historyChange'));
-                this.currentLightFolder.add(object, 'intensity', 0, 2).name('Intensity').onChange(() => this.eventBus.emit('historyChange'));
+                this.currentLightFolder.addColor(object, 'color').name('Color').onChange(() => this.eventBus.publish('historyChange'));
+                this.currentLightFolder.add(object, 'intensity', 0, 2).name('Intensity').onChange(() => this.eventBus.publish('historyChange'));
                 this.currentLightFolder.add({ type: object.type }, 'type', ['PointLight', 'DirectionalLight', 'AmbientLight']).name('Light Type').onChange((value) => {
                     const newLight = this.lightManager.changeLightType(object, value);
                     this.transformControls.attach(newLight);
                     this.updateGUI(newLight);
                     this.sceneGraph.update();
-                    this.eventBus.emit('historyChange');
+                    this.eventBus.publish('historyChange');
                 });
                 if (object.position) {
-                    this.currentLightFolder.add(object.position, 'x', -10, 10).name('Position X').onChange(() => this.eventBus.emit('historyChange'));
-                    this.currentLightFolder.add(object.position, 'y', -10, 10).name('Position Y').onChange(() => this.eventBus.emit('historyChange'));
-                    this.currentLightFolder.add(object.position, 'z', -10, 10).name('Position Z').onChange(() => this.eventBus.emit('historyChange'));
+                    this.currentLightFolder.add(object.position, 'x', -10, 10).name('Position X').onChange(() => this.eventBus.publish('historyChange'));
+                    this.currentLightFolder.add(object.position, 'y', -10, 10).name('Position Y').onChange(() => this.eventBus.publish('historyChange'));
+                    this.currentLightFolder.add(object.position, 'z', -10, 10).name('Position Z').onChange(() => this.eventBus.publish('historyChange'));
                 }
                 this.currentLightFolder.open();
             } else {
                 this.currentObjectFolder = this.gui.addFolder(object.name || object.uuid);
-                this.currentObjectFolder.add(object.position, 'x', -5, 5).name('Position X').onChange(() => this.eventBus.emit('historyChange'));
-                this.currentObjectFolder.add(object.position, 'y', -5, 5).name('Position Y').onChange(() => this.eventBus.emit('historyChange'));
-                this.currentObjectFolder.add(object.position, 'z', -5, 5).name('Position Z').onChange(() => this.eventBus.emit('historyChange'));
-                this.currentObjectFolder.add(object.rotation, 'x', -Math.PI, Math.PI).name('Rotation X').onChange(() => this.eventBus.emit('historyChange'));
-                this.currentObjectFolder.add(object.rotation, 'y', -Math.PI, Math.PI).name('Rotation Y').onChange(() => this.eventBus.emit('historyChange'));
-                this.currentObjectFolder.add(object.rotation, 'z', -Math.PI, Math.PI).name('Rotation Z').onChange(() => this.eventBus.emit('historyChange'));
-                this.currentObjectFolder.add(object.scale, 'x', 0.1, 5).name('Scale X').onChange(() => this.eventBus.emit('historyChange'));
-                this.currentObjectFolder.add(object.scale, 'y', 0.1, 5).name('Scale Y').onChange(() => this.eventBus.emit('historyChange'));
-                this.currentObjectFolder.add(object.scale, 'z', 0.1, 5).name('Scale Z').onChange(() => this.eventBus.emit('historyChange'));
+                this.currentObjectFolder.add(object.position, 'x', -5, 5).name('Position X').onChange(() => this.eventBus.publish('historyChange'));
+                this.currentObjectFolder.add(object.position, 'y', -5, 5).name('Position Y').onChange(() => this.eventBus.publish('historyChange'));
+                this.currentObjectFolder.add(object.position, 'z', -5, 5).name('Position Z').onChange(() => this.eventBus.publish('historyChange'));
+                this.currentObjectFolder.add(object.rotation, 'x', -Math.PI, Math.PI).name('Rotation X').onChange(() => this.eventBus.publish('historyChange'));
+                this.currentObjectFolder.add(object.rotation, 'y', -Math.PI, Math.PI).name('Rotation Y').onChange(() => this.eventBus.publish('historyChange'));
+                this.currentObjectFolder.add(object.rotation, 'z', -Math.PI, Math.PI).name('Rotation Z').onChange(() => this.eventBus.publish('historyChange'));
+                this.currentObjectFolder.add(object.scale, 'x', 0.1, 5).name('Scale X').onChange(() => this.eventBus.publish('historyChange'));
+                this.currentObjectFolder.add(object.scale, 'y', 0.1, 5).name('Scale Y').onChange(() => this.eventBus.publish('historyChange'));
+                this.currentObjectFolder.add(object.scale, 'z', 0.1, 5).name('Scale Z').onChange(() => this.eventBus.publish('historyChange'));
                 if (object.material) {
                     const materialFolder = this.currentObjectFolder.addFolder('Material');
                     if (object.material.color) {
-                        materialFolder.addColor(object.material, 'color').name('Color').onChange(() => this.eventBus.emit('historyChange'));
+                        materialFolder.addColor(object.material, 'color').name('Color').onChange(() => this.eventBus.publish('historyChange'));
                     }
                     if (object.material.roughness !== undefined) {
-                        materialFolder.add(object.material, 'roughness', 0, 1).name('Roughness').onChange(() => this.eventBus.emit('historyChange'));
+                        materialFolder.add(object.material, 'roughness', 0, 1).name('Roughness').onChange(() => this.eventBus.publish('historyChange'));
                     }
                     if (object.material.metalness !== undefined) {
-                        materialFolder.add(object.material, 'metalness', 0, 1).name('Metalness').onChange(() => this.eventBus.emit('historyChange'));
+                        materialFolder.add(object.material, 'metalness', 0, 1).name('Metalness').onChange(() => this.eventBus.publish('historyChange'));
                     }
                     const textureInput = document.createElement('input');
                     textureInput.type = 'file';
@@ -115,7 +115,7 @@ class App {
                         const file = event.target.files[0];
                         if (file) {
                             this.objectManager.addTexture(object, file, textureTypeController.getValue());
-                            this.eventBus.emit('historyChange');
+                            this.eventBus.publish('historyChange');
                         }
                     });
 
@@ -133,7 +133,7 @@ class App {
                         if (typeof object.geometry.parameters[key] === 'number') {
                             geometryFolder.add(object.geometry.parameters, key, 0, 10).name(key).onChange(() => {
                                 this.objectManager.updatePrimitive(object, object.geometry.parameters);
-                                this.eventBus.emit('historyChange');
+                                this.eventBus.publish('historyChange');
                             });
                         }
                     }
@@ -147,7 +147,7 @@ class App {
     setupEventListeners() {
         this.transformControls.addEventListener('dragging-changed', (event) => {
             if (!event.value) {
-                this.eventBus.emit('historyChange');
+                this.eventBus.publish('historyChange');
             }
         });
 
@@ -155,7 +155,7 @@ class App {
             this.pointer.onPointerDown(event);
         });
 
-        this.eventBus.on('selectionChange', () => {
+        this.eventBus.subscribe('selectionChange', () => {
             if (this.pointer.selectedObject) {
                 this.transformControls.attach(this.pointer.selectedObject);
                 this.updateGUI(this.pointer.selectedObject);
@@ -183,19 +183,19 @@ class App {
         lightFolder.add({
             addAmbientLight: () => {
                 const light = this.lightManager.addLight('AmbientLight', 0x404040, 1, undefined, 'AmbientLight');
-                this.eventBus.emit('historyChange');
+                this.eventBus.publish('historyChange');
             }
         }, 'addAmbientLight').name('Add Ambient Light');
         lightFolder.add({
             addDirectionalLight: () => {
                 const light = this.lightManager.addLight('DirectionalLight', 0xffffff, 1, { x: 1, y: 1, z: 1 }, 'DirectionalLight');
-                this.eventBus.emit('historyChange');
+                this.eventBus.publish('historyChange');
             }
         }, 'addDirectionalLight').name('Add Directional Light');
         lightFolder.add({
             addPointLight: () => {
                 const light = this.lightManager.addLight('PointLight', 0xffffff, 1, { x: 0, y: 0, z: 0 }, 'PointLight');
-                this.eventBus.emit('historyChange');
+                this.eventBus.publish('historyChange');
             }
         }, 'addPointLight').name('Add Point Light');
         lightFolder.open();
@@ -209,7 +209,7 @@ class App {
                     this.transformControls.attach(newObject);
                     this.updateGUI(newObject);
                     this.sceneGraph.update();
-                    this.eventBus.emit('historyChange');
+                    this.eventBus.publish('historyChange');
                 }
             });
             ui.appendChild(button);
@@ -244,7 +244,7 @@ class App {
                 this.objectManager.deleteObject(objectToDelete);
                 this.updateGUI(null);
                 this.sceneGraph.update();
-                this.eventBus.emit('historyChange');
+                this.eventBus.publish('historyChange');
             }
         });
         ui.appendChild(deleteButton);
@@ -259,7 +259,7 @@ class App {
                 this.pointer.addOutline(duplicatedObject);
                 this.updateGUI(duplicatedObject);
                 this.sceneGraph.update();
-                this.eventBus.emit('historyChange');
+                this.eventBus.publish('historyChange');
             }
         });
         ui.appendChild(duplicateButton);
@@ -276,7 +276,7 @@ class App {
                     this.pointer.addOutline(newGroup);
                     this.updateGUI(newGroup);
                     this.sceneGraph.update();
-                    this.eventBus.emit('historyChange');
+                    this.eventBus.publish('historyChange');
                 }
             } else {
                 console.warn("Select at least two objects to group.");
@@ -294,7 +294,7 @@ class App {
                 this.pointer.selectedObject = null;
                 this.updateGUI(null);
                 this.sceneGraph.update();
-                this.eventBus.emit('historyChange');
+                this.eventBus.publish('historyChange');
             }
         });
         ui.appendChild(ungroupButton);
@@ -312,7 +312,7 @@ class App {
                         this.pointer.addOutline(resultObject);
                         this.updateGUI(resultObject);
                         this.sceneGraph.update();
-                        this.eventBus.emit('historyChange');
+                        this.eventBus.publish('historyChange');
                     }
                 } else {
                     console.warn("Select exactly two objects for CSG operation.");
@@ -329,7 +329,7 @@ class App {
         resetButton.textContent = 'Reset View';
         resetButton.addEventListener('click', () => {
             this.sceneManager.resetCamera();
-            this.eventBus.emit('historyChange');
+            this.eventBus.publish('historyChange');
         });
         ui.appendChild(resetButton);
 
@@ -384,7 +384,7 @@ class App {
                 this.transformControls.detach();
                 this.updateGUI(null);
                 this.sceneGraph.update();
-                this.eventBus.emit('historyChange');
+                this.eventBus.publish('historyChange');
             }
         });
         ui.appendChild(loadInput);
@@ -413,7 +413,7 @@ class App {
                     this.pointer.addOutline(object);
                     this.updateGUI(object);
                     this.sceneGraph.update();
-                    this.eventBus.emit('historyChange');
+                    this.eventBus.publish('historyChange');
                 };
                 reader.readAsText(file);
             }
@@ -444,7 +444,7 @@ class App {
                         this.pointer.addOutline(gltf.scene);
                         this.updateGUI(gltf.scene);
                         this.sceneGraph.update();
-                        this.eventBus.emit('historyChange');
+                        this.eventBus.publish('historyChange');
                     });
                 };
                 reader.readAsArrayBuffer(file);
@@ -496,7 +496,7 @@ class App {
         physicsButton.addEventListener('click', () => {
             if (this.pointer.selectedObject) {
                 this.physicsManager.addBody(this.pointer.selectedObject, 1, 'box');
-                this.eventBus.emit('historyChange');
+                this.eventBus.publish('historyChange');
             }
         });
         ui.appendChild(physicsButton);

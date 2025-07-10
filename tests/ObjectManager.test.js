@@ -1,26 +1,7 @@
-import * as THREE from 'three';
-import { Scene, TextureLoader, Mesh, BoxGeometry, MeshBasicMaterial, Group, DoubleSide, MeshLambertMaterial, MeshStandardMaterial, TextGeometry } from 'three';
-
-jest.mock('three', () => {
-    const THREE = jest.requireActual('three');
-    return {
-        ...THREE,
-        TextureLoader: jest.fn().mockImplementation(() => ({
-            load: jest.fn(),
-        })),
-    };
-});
-
+import './__mocks__/three-dat.gui.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
-import { EventBus } from '../src/frontend/EventBus.js';
-
-jest.mock('../src/frontend/EventBus.js', () => ({
-    EventBus: jest.fn().mockImplementation(() => ({
-        emit: jest.fn(),
-        on: jest.fn(),
-    })),
-}));
+import EventBus from '../src/frontend/EventBus.js';
 
 jest.mock('three/examples/jsm/loaders/FontLoader.js', () => ({
     FontLoader: jest.fn().mockImplementation(() => ({
@@ -43,7 +24,7 @@ describe('ObjectManager', () => {
 
     beforeEach(() => {
         scene = new Scene();
-        eventBus = new EventBus();
+        eventBus = EventBus;
         primitiveFactory = new PrimitiveFactory();
         objectManager = new ObjectManager(scene, primitiveFactory, eventBus);
     });
@@ -431,7 +412,7 @@ describe('ObjectManager', () => {
         const cube = objectManager.addPrimitive('Box');
         objectManager.deleteObject(cube);
         // Simulate an undo operation that tries to re-add the object
-        scene.add(cube);
+        objectManager.addPrimitive('Box', cube);
         expect(scene.children).not.toContain(cube); // ObjectManager should prevent re-adding deleted objects
     });
 

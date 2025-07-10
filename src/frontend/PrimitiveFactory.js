@@ -21,6 +21,29 @@ export class PrimitiveFactory {
     }
 
     createPrimitive(type, options = {}) {
+        if (type === 'Text') {
+            return new Promise((resolve) => {
+                if (this.font) {
+                    const geometry = new TextGeometry(options.text || "nodist3d", {
+                        font: this.font,
+                        size: options.size || 0.5,
+                        height: options.height || 0.2,
+                        curveSegments: options.curveSegments || 12,
+                        bevelEnabled: options.bevelEnabled || true,
+                        bevelThickness: options.bevelThickness || 0.03,
+                        bevelSize: options.bevelSize || 0.02,
+                        bevelOffset: options.bevelOffset || 0,
+                        bevelSegments: options.bevelSegments || 5
+                    });
+                    geometry.center();
+                    resolve(this._createMesh(geometry, options.color || 0x00bfff));
+                } else {
+                    console.error("Font not loaded. Cannot create text.");
+                    resolve(null);
+                }
+            });
+        }
+
         let geometry;
         let color = options.color || 0x44aa88;
         let mesh;
@@ -129,27 +152,6 @@ export class PrimitiveFactory {
                 color = options.color || 0xff6347;
                 mesh = this._createMesh(geometry, color);
                 break;
-            case 'Text':
-                return new Promise((resolve) => {
-                    if (this.font) {
-                        geometry = new THREE.TextGeometry(options.text || "nodist3d", {
-                            font: this.font,
-                            size: options.size || 0.5,
-                            height: options.height || 0.2,
-                            curveSegments: options.curveSegments || 12,
-                            bevelEnabled: options.bevelEnabled || true,
-                            bevelThickness: options.bevelThickness || 0.03,
-                            bevelSize: options.bevelSize || 0.02,
-                            bevelOffset: options.bevelOffset || 0,
-                            bevelSegments: options.bevelSegments || 5
-                        });
-                        geometry.center();
-                        resolve(this._createMesh(geometry, options.color || 0x00bfff));
-                    } else {
-                        console.error("Font not loaded. Cannot create text.");
-                        resolve(null);
-                    }
-                });
             case 'LODCube':
                 const lod = new THREE.LOD();
                 const material = new THREE.MeshPhongMaterial({ color: options.color || 0x00ff00 });

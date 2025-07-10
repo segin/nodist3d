@@ -9,11 +9,19 @@ export class ObjectManager {
         this.eventBus = eventBus;
     }
 
-    addPrimitive(type, options = {}) {
-        const mesh = this.primitiveFactory.createPrimitive(type, options);
+    async addPrimitive(type, options = {}) {
+        const meshResult = this.primitiveFactory.createPrimitive(type, options);
+        
+        let mesh;
+        if (meshResult instanceof Promise) {
+            mesh = await meshResult;
+        } else {
+            mesh = meshResult;
+        }
+
         if (mesh) {
             this.scene.add(mesh);
-            this.eventBus.emit('objectAdded', mesh);
+            this.eventBus.publish('objectAdded', mesh);
         }
         return mesh;
     }
@@ -45,25 +53,28 @@ export class ObjectManager {
         this.scene.remove(objectB);
         this.scene.add(resultMesh);
 
-        this.eventBus.emit('objectAdded', resultMesh);
-        this.eventBus.emit('objectRemoved', objectA);
-        this.eventBus.emit('objectRemoved', objectB);
+        this.eventBus.publish('objectAdded', resultMesh);
+        this.eventBus.publish('objectRemoved', objectA);
+        this.eventBus.publish('objectRemoved', objectB);
 
         return resultMesh;
     }
 
     updateMaterial(object, newMaterialProperties) {
         if (object && object.material) {
-            for (const prop in newMaterialProperties) {
-                if (object.material[prop] !== undefined) {
-                    if (prop === 'color') {
-                        object.material.color.set(newMaterialProperties[prop]);
-                    } else {
-                        object.material[prop] = newMaterialProperties[prop];
+            const materials = Array.isArray(object.material) ? object.material : [object.material];
+            materials.forEach(material => {
+                for (const prop in newMaterialProperties) {
+                    if (material[prop] !== undefined) {
+                        if (prop === 'color') {
+                            material.color.set(newMaterialProperties[prop]);
+                        } else {
+                            material[prop] = newMaterialProperties[prop];
+                        }
                     }
                 }
-            }
-            object.material.needsUpdate = true;
+                material.needsUpdate = true;
+            });
         }
     }
 
@@ -87,6 +98,10 @@ export class ObjectManager {
 
     deleteObject(object) {
         if (object) {
+            if (object.isGroup) {
+                // Recursively delete children
+                object.children.slice().forEach(child => this.deleteObject(child));
+            }
             // Dispose of geometry and material to free up memory
             if (object.geometry) {
                 object.geometry.dispose();
@@ -101,7 +116,7 @@ export class ObjectManager {
             }
             // Remove the object from the scene
             this.scene.remove(object);
-            this.eventBus.emit('objectRemoved', object);
+            this.eventBus.publish('objectRemoved', object);
         }
     }
 
@@ -137,6 +152,9 @@ export class ObjectManager {
 
         // Set a new name for the duplicated object
         newObject.name = object.name ? `${object.name}_copy` : `${object.uuid}_copy`;
+
+        // Add a small offset to the position to avoid z-fighting
+        newObject.position.addScalar(0.5);
 
         // Add the new object to the scene
         this.scene.add(newObject);

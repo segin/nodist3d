@@ -8,10 +8,10 @@ export class History {
         this.currentIndex = -1;
         this.transformControls = null;
 
-        this.eventBus.on('historyChange', () => this.saveState());
-        this.eventBus.on('objectAdded', () => this.saveState());
-        this.eventBus.on('lightAdded', () => this.saveState());
-        this.eventBus.on('groupAdded', () => this.saveState());
+        this.eventBus.subscribe('historyChange', () => this.saveState());
+        this.eventBus.subscribe('objectAdded', () => this.saveState());
+        this.eventBus.subscribe('lightAdded', () => this.saveState());
+        this.eventBus.subscribe('groupAdded', () => this.saveState());
     }
 
     setTransformControls(controls) {
