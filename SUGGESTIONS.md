@@ -48,7 +48,7 @@ This document provides a detailed list of over 300 suggested improvements for th
 - [x] **Create an Input Manager**: Centralize all mouse and keyboard event listeners (`mousedown`, `keyup`, etc.) into a dedicated `InputManager` class instead of attaching them directly to the `window` or `document` in `main.js`.
 - [x] **Leverage Modern JavaScript**: Use modern ES6+ features like optional chaining (`?.`), nullish coalescing (`??`), and `async/await` to write more concise and readable code.
 - [x] **Implement Placeholder Files**: The files `PhysicsManager.js` and `ShaderEditor.js` are empty. Either implement their functionality or remove them from the project.
-- [ ] **Cache and Reuse Materials**: In `ObjectManager`, instead of creating a `new THREE.MeshStandardMaterial()` every time, cache materials based on their properties and reuse them to reduce draw calls and improve performance.
+- [x] **Cache and Reuse Materials**: In `ObjectManager`, instead of creating a `new THREE.MeshStandardMaterial()` every time, cache materials based on their properties and reuse them to reduce draw calls and improve performance.
 - [ ] **Improve `Pointer.js` Decoupling**: While `Pointer.js` uses custom events (good!), it still seems to rely on global state. Refactor it to receive necessary state (like the list of selectable objects) via its methods.
 - [ ] **Clean up `main.js` Event Listeners**: Organize all UI event listeners from `main.js` into a separate `UIMediator` or similar class that handles interactions between the DOM and the 3D scene managers.
 - [ ] **Use Class Private Fields**: Adopt `#privateField` syntax for class properties and methods that are not meant to be accessed from outside the class.
