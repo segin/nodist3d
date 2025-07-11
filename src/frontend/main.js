@@ -19,7 +19,13 @@ import EventBus from './EventBus.js';
 import { Clock } from 'three';
 import log from './logger.js';
 
+/**
+ * The main application class.
+ */
 class App {
+    /**
+     * Initializes the application.
+     */
     constructor() {
         this.clock = new Clock();
         this.state = {
@@ -58,6 +64,10 @@ class App {
         });
     }
 
+    /**
+     * Updates the GUI with the properties of the selected object.
+     * @param {THREE.Object3D} object The selected object.
+     */
     updateGUI(object) {
         if (this.currentObjectFolder) {
             this.gui.removeFolder(this.currentObjectFolder);
@@ -148,6 +158,9 @@ class App {
         }
     }
 
+    /**
+     * Sets up the event listeners for the application.
+     */
     setupEventListeners() {
         this.transformControls.addEventListener('dragging-changed', (event) => {
             if (!event.value) {
@@ -180,6 +193,9 @@ class App {
         });
     }
 
+    /**
+     * Sets up the UI buttons for the application.
+     */
     setupUIButtons() {
         const ui = document.getElementById('ui');
 
@@ -504,6 +520,9 @@ class App {
         ui.appendChild(redoButton);
     }
 
+    /**
+     * Sets up the snap controls in the GUI.
+     */
     setupSnapControls() {
         const snapFolder = this.gui.addFolder('Snap Settings');
         const snapSettings = {
@@ -544,6 +563,9 @@ class App {
         snapFolder.open();
     }
 
+    /**
+     * The main animation loop.
+     */
     animate() {
         const deltaTime = this.clock.getDelta();
         this.physicsManager.update(deltaTime);
@@ -553,6 +575,9 @@ class App {
         requestAnimationFrame(this.animate.bind(this));
     }
 
+    /**
+     * Starts the application.
+     */
     start() {
         this.animate();
         this.sceneGraph.update();
