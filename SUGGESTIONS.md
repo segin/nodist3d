@@ -15,7 +15,7 @@ This document provides a detailed list of over 300 suggested improvements for th
 - [-] **Comprehensive Error Handling**: Add `try...catch` blocks for operations that can fail, such as `localStorage` access, WebSocket connections, and data parsing.
 - [x] **Use a Logger**: Replace all `console.log()` calls with a proper logging library (e.g., `loglevel` on the frontend) that allows for different log levels (debug, info, warn, error).
 - [-] **Add JSDoc Comments**: Document all classes and public methods using JSDoc comments. This will improve code clarity and enable automatic documentation generation.
-- [ ] **Define Constants**: Create a `constants.js` file for "magic strings" like event names (`'object-added'`), object types (`'box'`), and UI IDs to prevent typos and improve maintainability.
+- [x] **Define Constants**: Create a `constants.js` file for "magic strings" like event names (`'object-added'`), object types (`'box'`), and UI IDs to prevent typos and improve maintainability.
 - [ ] **State Machine for Application Modes**: Implement a finite state machine (FSM) to manage application modes (e.g., `IDLE`, `TRANSFORMING_OBJECT`, `EDITING_MATERIAL`) instead of using boolean flags.
 - [ ] **Service Locator Pattern**: As an alternative to DI, implement a Service Locator to provide access to shared services like managers, reducing the need for global variables.
 - [ ] **Single Responsibility Principle**: Break down large manager classes. For example, `ObjectManager` could be split into `ObjectFactory`, `ObjectSelector`, and `ObjectPropertyUpdater`.
