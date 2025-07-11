@@ -1,3 +1,4 @@
+import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, Group, DoubleSide, TextureLoader, MeshLambertMaterial, Object3D, BufferGeometry } from 'three';
 import './__mocks__/three-dat.gui.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
