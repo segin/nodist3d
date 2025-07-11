@@ -37,30 +37,39 @@ export class SceneStorage {
     }
 
     async loadScene(file) {
-        const zip = new JSZip();
-        const loadedZip = await zip.loadAsync(file);
-        const sceneJson = await loadedZip.file('scene.json').async('string');
+        try {
+            const zip = new JSZip();
+            const loadedZip = await zip.loadAsync(file);
+            const sceneJsonFile = loadedZip.file('scene.json');
+            if (!sceneJsonFile) {
+                throw new Error('scene.json not found in the zip file.');
+            }
+            const sceneJson = await sceneJsonFile.async('string');
 
-        // Clear existing objects from the scene
-        while(this.scene.children.length > 0){
-            const object = this.scene.children[0];
-            this.scene.remove(object);
-            if (object.geometry) object.geometry.dispose();
-            if (object.material) {
-                if (Array.isArray(object.material)) {
-                    object.material.forEach(material => material.dispose());
-                } else {
-                    object.material.dispose();
+            // Clear existing objects from the scene
+            while(this.scene.children.length > 0){
+                const object = this.scene.children[0];
+                this.scene.remove(object);
+                if (object.geometry) object.geometry.dispose();
+                if (object.material) {
+                    if (Array.isArray(object.material)) {
+                        object.material.forEach(material => material.dispose());
+                    } else {
+                        object.material.dispose();
+                    }
                 }
             }
-        }
 
-        // Deserialize the scene using the worker
-        return new Promise((resolve, reject) => {
-            this.loadPromiseResolve = resolve; // Store resolve function for async worker response
-            this.worker.postMessage({ type: 'deserialize', data: sceneJson });
-            this.worker.onerror = (error) => reject(new Error('Worker error during deserialization: ' + error.message));
-        });
+            // Deserialize the scene using the worker
+            return new Promise((resolve, reject) => {
+                this.loadPromiseResolve = resolve; // Store resolve function for async worker response
+                this.worker.postMessage({ type: 'deserialize', data: sceneJson });
+                this.worker.onerror = (error) => reject(new Error('Worker error during deserialization: ' + error.message));
+            });
+        } catch (error) {
+            console.error("Error loading scene:", error);
+            return Promise.reject(error);
+        }
     }
 
     handleWorkerMessage(event) {
