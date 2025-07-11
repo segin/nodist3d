@@ -13,7 +13,7 @@ This document provides a detailed list of over 300 suggested improvements for th
 - [x] **Externalize Configuration**: Move hardcoded values like the server port (`3000`), WebSocket URL, and history size into a separate configuration file or use environment variables.
 - [x] **Consistent Module System**: The project mixes CommonJS (`require` in `server.js`) and ES Modules (`import`). Standardize on ES Modules by adding `"type": "module"` to `package.json` and updating `server.js` syntax.
 - [-] **Comprehensive Error Handling**: Add `try...catch` blocks for operations that can fail, such as `localStorage` access, WebSocket connections, and data parsing.
-- [ ] **Use a Logger**: Replace all `console.log()` calls with a proper logging library (e.g., `loglevel` on the frontend) that allows for different log levels (debug, info, warn, error).
+- [x] **Use a Logger**: Replace all `console.log()` calls with a proper logging library (e.g., `loglevel` on the frontend) that allows for different log levels (debug, info, warn, error).
 - [ ] **Add JSDoc Comments**: Document all classes and public methods using JSDoc comments. This will improve code clarity and enable automatic documentation generation.
 - [ ] **Define Constants**: Create a `constants.js` file for "magic strings" like event names (`'object-added'`), object types (`'box'`), and UI IDs to prevent typos and improve maintainability.
 - [ ] **State Machine for Application Modes**: Implement a finite state machine (FSM) to manage application modes (e.g., `IDLE`, `TRANSFORMING_OBJECT`, `EDITING_MATERIAL`) instead of using boolean flags.
