@@ -33,7 +33,7 @@ import { InputManager } from './InputManager.js';
 /**
  * The main application class.
  */
-class App {
+export class App {
     /**
      * Initializes the application.
      */
@@ -105,7 +105,7 @@ class App {
                     this.transformControls.attach(newLight);
                     this.updateGUI(newLight);
                     this.sceneGraph.update();
-                    this.eventBus.publish(Events.HISTORY_CHANGE, new AddObjectCommand(this.sceneManager.scene, newLight));
+                    this.eventBus.publish(Events.HISTORY_CHANGE, new AddObjectCommand(this.engine.scene, newLight));
                 });
                 if (object.position) {
                     this.currentLightFolder.add(object.position, 'x', -10, 10).name('Position X').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
@@ -177,126 +177,6 @@ class App {
 
     /**
      * Sets up the event listeners for the application.
-     */
-    setupEventListeners() {
-        this.transformControls.addEventListener('dragging-changed', (event) => {
-            if (!event.value) {
-                this.state.mode = 'OBJECT_SELECTED';
-                this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(this.state.selectedObject, { position: this.state.selectedObject.position, rotation: this.state.selectedObject.rotation, scale: this.state.selectedObject.scale }, this.state.selectedObject.userData.oldTransform));
-            } else {
-                this.state.mode = 'TRANSFORMING';
-                this.state.selectedObject.userData.oldTransform = {
-                    position: this.state.selectedObject.position.clone(),
-                    rotation: this.state.selectedObject.rotation.clone(),
-                    scale: this.state.selectedObject.scale.clone(),
-                };
-            }
-        });
-
-        this.eventBus.subscribe(Events.SELECTION_CHANGE, (selectedObject) => {
-            if (this.state.selectedObject) {
-                this.pointer.removeOutline();
-            }
-            this.state.selectedObject = selectedObject;
-            if (this.state.selectedObject) {
-                this.state.mode = 'OBJECT_SELECTED';
-                this.pointer.addOutline(this.state.selectedObject);
-                this.transformControls.attach(this.state.selectedObject);
-            } else {
-                this.state.mode = 'IDLE';
-                this.transformControls.detach();
-            }
-            this.updateGUI(this.state.selectedObject);
-            this.sceneGraph.update();
-        });
-
-        this.eventBus.subscribe(Events.DELETE_OBJECT, (object) => {
-            if (this.state.selectedObject === object) {
-                this.eventBus.publish(Events.SELECTION_CHANGE, null);
-            }
-            const command = new RemoveObjectCommand(this.sceneManager.scene, object);
-            command.execute();
-            this.eventBus.publish(Events.HISTORY_CHANGE, command);
-            this.sceneGraph.update();
-        });
-
-        const fullscreenButton = document.getElementById('fullscreen');
-        fullscreenButton.addEventListener('click', () => {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else {
-                document.documentElement.requestFullscreen();
-            }
-        });
-    }
-
-    /**
-     * Sets up the UI buttons for the application.
-     */
-    /**
-     * Sets up the event listeners for the application.
-     */
-    setupEventListeners() {
-        this.transformControls.addEventListener('dragging-changed', (event) => {
-            if (!event.value) {
-                this.state.mode = 'OBJECT_SELECTED';
-                this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(this.state.selectedObject, { position: this.state.selectedObject.position, rotation: this.state.selectedObject.rotation, scale: this.state.selectedObject.scale }, this.state.selectedObject.userData.oldTransform));
-            } else {
-                this.state.mode = 'TRANSFORMING';
-                this.state.selectedObject.userData.oldTransform = {
-                    position: this.state.selectedObject.position.clone(),
-                    rotation: this.state.selectedObject.rotation.clone(),
-                    scale: this.state.selectedObject.scale.clone(),
-                };
-            }
-        });
-
-        this.eventBus.subscribe(Events.SELECTION_CHANGE, (selectedObject) => {
-            if (this.state.selectedObject) {
-                this.pointer.removeOutline();
-            }
-            this.state.selectedObject = selectedObject;
-            if (this.state.selectedObject) {
-                this.state.mode = 'OBJECT_SELECTED';
-                this.pointer.addOutline(this.state.selectedObject);
-                this.transformControls.attach(this.state.selectedObject);
-            } else {
-                this.state.mode = 'IDLE';
-                this.transformControls.detach();
-            }
-            this.updateGUI(this.state.selectedObject);
-            this.sceneGraph.update();
-        });
-
-        this.eventBus.subscribe(Events.DELETE_OBJECT, (object) => {
-            if (this.state.selectedObject === object) {
-                this.eventBus.publish(Events.SELECTION_CHANGE, null);
-            }
-            const command = new RemoveObjectCommand(this.engine.scene, object);
-            this.eventBus.publish(Events.HISTORY_CHANGE, command);
-            this.sceneGraph.update();
-        });
-
-        this.eventBus.subscribe(Events.UNDO, () => {
-            this.history.undo();
-        });
-
-        this.eventBus.subscribe(Events.REDO, () => {
-            this.history.redo();
-        });
-
-        const fullscreenButton = document.getElementById('fullscreen');
-        fullscreenButton.addEventListener('click', () => {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else {
-                document.documentElement.requestFullscreen();
-            }
-        });
-    }
-
-    /**
-     * Sets up the UI buttons for the application.
      */
     setupEventListeners() {
         this.transformControls.addEventListener('dragging-changed', (event) => {
@@ -733,49 +613,3 @@ class App {
     }
 }
 
-    /**
-     * Sets up the snap controls in the GUI.
-     */
-    setupSnapControls() {
-        const snapFolder = this.gui.addFolder('Snap Settings');
-        const snapSettings = {
-            snapTranslation: false,
-            snapRotation: false,
-            snapScale: false,
-            translationSnapValue: 0.1,
-            rotationSnapValue: Math.PI / 8,
-            scaleSnapValue: 0.1
-        };
-
-        snapFolder.add(snapSettings, 'snapTranslation').name('Snap Translation').onChange((value) => {
-            this.transformControls.translationSnap = value ? snapSettings.translationSnapValue : null;
-        });
-        snapFolder.add(snapSettings, 'translationSnapValue', 0.01, 1).name('Translation Snap').onChange((value) => {
-            if (snapSettings.snapTranslation) {
-                this.transformControls.translationSnap = value;
-            }
-        });
-
-        snapFolder.add(snapSettings, 'snapRotation').name('Snap Rotation').onChange((value) => {
-            this.transformControls.rotationSnap = value ? snapSettings.rotationSnapValue : null;
-        });
-        snapFolder.add(snapSettings, 'rotationSnapValue', 0.01, Math.PI / 2).name('Rotation Snap').onChange((value) => {
-            if (snapSettings.snapRotation) {
-                this.transformControls.rotationSnap = value;
-            }
-        });
-
-        snapFolder.add(snapSettings, 'snapScale').name('Snap Scale').onChange((value) => {
-            this.transformControls.scaleSnap = value ? snapSettings.scaleSnapValue : null;
-        });
-        snapFolder.add(snapSettings, 'scaleSnapValue', 0.01, 1).name('Scale Snap').onChange((value) => {
-            if (snapSettings.snapScale) {
-                this.transformControls.scaleSnap = value;
-            }
-        });
-        snapFolder.open();
-    }
-}
-
-const app = new App();
-app.start();
