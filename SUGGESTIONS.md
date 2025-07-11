@@ -31,7 +31,7 @@ This document provides a detailed list of over 300 suggested improvements for th
 
 - [x] **Robust File Paths**: Use `path.join(__dirname, ...)` to construct the static file path. This prevents path issues across different operating systems.
 - [x] **Add Security Middleware**: Use `helmet` in your Express server to set secure HTTP headers and protect against common web vulnerabilities.
-- [ ] **Enable CORS**: Implement the `cors` middleware to handle cross-origin requests, which will be necessary if the API and frontend are served on different ports or domains.
+- [x] **Enable CORS**: Implement the `cors` middleware to handle cross-origin requests, which will be necessary if the API and frontend are served on different ports or domains.
 - [ ] **Handle WebSocket Errors**: Add an `'error'` event listener to each WebSocket connection to log errors and prevent the server from crashing due to unhandled exceptions.
 - [ ] **Use Environment Variables for Port**: Read the server port from `process.env.PORT` with a fallback to `3000` to make deployment easier.
 - [ ] **Refactor WebSocket Broadcasting**: The current broadcast iterates through all clients. For better performance, consider implementing a room-based system if you need to send messages to specific client groups.
