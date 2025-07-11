@@ -6,35 +6,22 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { EventBus } from '../src/frontend/EventBus.js';
 
 jest.mock('../src/frontend/EventBus.js', () => ({
-    EventBus: jest.fn().mockImplementation(() => ({
-        emit: jest.fn(),
-        on: jest.fn(),
+    __esModule: true,
+    default: {
+        subscribe: jest.fn(),
         publish: jest.fn(),
-    })),
+    },
 }));
 
 // Mock dat.gui
 // Mock dat.gui
 // Mock dat.gui
 const mockGUI = {
-    addFolder: jest.fn(() => ({
-        add: jest.fn(() => ({
-            name: jest.fn(),
-            onChange: jest.fn()
-        })),
-        addColor: jest.fn(() => ({
-            name: jest.fn(),
-            onChange: jest.fn()
-        })),
-        open: jest.fn(),
-        removeFolder: jest.fn()
-    })),
-    add: jest.fn(() => ({
-        name: jest.fn(),
-        listen: jest.fn(() => ({
-            onChange: jest.fn()
-        }))
-    }))
+    addFolder: jest.fn().mockReturnThis(),
+    add: jest.fn().mockReturnThis(),
+    name: jest.fn().mockReturnThis(),
+    onChange: jest.fn().mockReturnThis(),
+    open: jest.fn().mockReturnThis(),
 };
 
 describe('App Integration Tests', () => {
@@ -46,6 +33,7 @@ describe('App Integration Tests', () => {
             <canvas id="c"></canvas>
             <div id="ui"></div>
             <div id="scene-graph"></div>
+            <button id="fullscreen"></button>
         `;
     });
 
@@ -55,7 +43,7 @@ describe('App Integration Tests', () => {
         mockGUI.addFolder.mockClear();
         mockGUI.add.mockClear();
 
-        app = new App();
+        document.dispatchEvent(new Event('DOMContentLoaded'));
     });
 
 // Mock TransformControls
