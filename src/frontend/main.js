@@ -1,7 +1,7 @@
 import { ObjectFactory } from './ObjectFactory.js';
 import { CSGManager } from './CSGManager.js';
 import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
-import { SceneManager } from './SceneManager.js';
+import { Engine } from './Engine.js';
 import { ObjectManager } from './ObjectManager.js';
 import { Pointer } from './Pointer.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
@@ -36,7 +36,6 @@ class App {
      * Initializes the application.
      */
     constructor() {
-        this.clock = new Clock();
         this.state = {
             selectedObject: null,
             mode: 'IDLE',
@@ -44,36 +43,38 @@ class App {
         document.addEventListener('DOMContentLoaded', () => {
             this.canvas = document.querySelector('#c');
             this.eventBus = EventBus;
-            this.sceneManager = new SceneManager(this.canvas);
+            this.physicsManager = new PhysicsManager();
+            this.transformControls = new TransformControls(this.camera, this.canvas);
+            this.engine = new Engine(this.canvas, this.physicsManager, this.transformControls);
             this.primitiveFactory = new PrimitiveFactory();
-            this.objectManager = new ObjectManager(this.sceneManager.scene, this.eventBus);
-            this.objectFactory = new ObjectFactory(this.sceneManager.scene, this.primitiveFactory, this.eventBus);
-            this.csgManager = new CSGManager(this.sceneManager.scene, this.eventBus);
+            this.objectManager = new ObjectManager(this.engine.scene, this.eventBus);
+            this.objectFactory = new ObjectFactory(this.engine.scene, this.primitiveFactory, this.eventBus);
+            this.csgManager = new CSGManager(this.engine.scene, this.eventBus);
             this.objectPropertyUpdater = new ObjectPropertyUpdater(this.primitiveFactory);
-            this.pointer = new Pointer(this.sceneManager.camera, this.sceneManager.scene, this.sceneManager.renderer, this.eventBus);
-            this.sceneStorage = new SceneStorage(this.sceneManager.scene);
+            this.pointer = new Pointer(this.engine.camera, this.engine.scene, this.engine.renderer, this.eventBus);
+            this.sceneStorage = new SceneStorage(this.engine.scene);
             this.history = new History(this.eventBus);
-            this.lightManager = new LightManager(this.sceneManager.scene, this.eventBus);
-            this.groupManager = new GroupManager(this.sceneManager.scene, this.eventBus);
-            this.physicsManager = new PhysicsManager(this.sceneManager.scene);
-
+            this.lightManager = new LightManager(this.engine.scene, this.eventBus);
+            this.groupManager = new GroupManager(this.engine.scene, this.eventBus);
+            
             this.gui = new GUI();
-            this.shaderEditor = new ShaderEditor(this.gui, this.sceneManager.renderer, this.sceneManager.scene, this.sceneManager.camera, this.eventBus);
+            this.shaderEditor = new ShaderEditor(this.gui, this.engine.renderer, this.engine.scene, this.engine.camera, this.eventBus);
 
             this.currentObjectFolder = null;
             this.currentLightFolder = null;
 
-            this.transformControls = new TransformControls(this.sceneManager.camera, this.sceneManager.renderer.domElement);
-            this.sceneManager.scene.add(this.transformControls);
+            
+            this.engine.scene.add(this.transformControls);
 
             this.sceneGraphElement = document.getElementById('scene-graph');
-            this.sceneGraph = new SceneGraph(this.sceneManager.scene, this.sceneGraphElement, this.transformControls, this.updateGUI.bind(this), this.eventBus);
+            this.sceneGraph = new SceneGraph(this.engine.scene, this.sceneGraphElement, this.transformControls, this.updateGUI.bind(this), this.eventBus);
 
             this.setupEventListeners();
             this.setupUIButtons();
             this.setupSnapControls();
-            this.history.add(new AddObjectCommand(this.sceneManager.scene, new THREE.Object3D())); // Initial empty command
-            this.start();
+            this.history.add(new AddObjectCommand(this.engine.scene, new THREE.Object3D())); // Initial empty command
+            this.engine.start();
+            this.sceneGraph.update();
         });
     }
 
@@ -229,6 +230,61 @@ class App {
     /**
      * Sets up the UI buttons for the application.
      */
+    setupEventListeners() {
+        this.transformControls.addEventListener('dragging-changed', (event) => {
+            if (!event.value) {
+                this.state.mode = 'OBJECT_SELECTED';
+                this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(this.state.selectedObject, { position: this.state.selectedObject.position, rotation: this.state.selectedObject.rotation, scale: this.state.selectedObject.scale }, this.state.selectedObject.userData.oldTransform));
+            } else {
+                this.state.mode = 'TRANSFORMING';
+                this.state.selectedObject.userData.oldTransform = {
+                    position: this.state.selectedObject.position.clone(),
+                    rotation: this.state.selectedObject.rotation.clone(),
+                    scale: this.state.selectedObject.scale.clone(),
+                };
+            }
+        });
+
+        this.eventBus.subscribe(Events.SELECTION_CHANGE, (selectedObject) => {
+            if (this.state.selectedObject) {
+                this.pointer.removeOutline();
+            }
+            this.state.selectedObject = selectedObject;
+            if (this.state.selectedObject) {
+                this.state.mode = 'OBJECT_SELECTED';
+                this.pointer.addOutline(this.state.selectedObject);
+                this.transformControls.attach(this.state.selectedObject);
+            } else {
+                this.state.mode = 'IDLE';
+                this.transformControls.detach();
+            }
+            this.updateGUI(this.state.selectedObject);
+            this.sceneGraph.update();
+        });
+
+        this.eventBus.subscribe(Events.DELETE_OBJECT, (object) => {
+            if (this.state.selectedObject === object) {
+                this.eventBus.publish(Events.SELECTION_CHANGE, null);
+            }
+            const command = new RemoveObjectCommand(this.engine.scene, object);
+            command.execute();
+            this.eventBus.publish(Events.HISTORY_CHANGE, command);
+            this.sceneGraph.update();
+        });
+
+        const fullscreenButton = document.getElementById('fullscreen');
+        fullscreenButton.addEventListener('click', () => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen();
+            }
+        });
+    }
+
+    /**
+     * Sets up the UI buttons for the application.
+     */
     setupUIButtons() {
         const ui = document.getElementById('ui');
 
@@ -236,19 +292,22 @@ class App {
         lightFolder.add({
             addAmbientLight: () => {
                 const light = this.lightManager.addLight('AmbientLight', 0x404040, 1, undefined, 'AmbientLight');
-                this.eventBus.publish(Events.HISTORY_CHANGE, new AddObjectCommand(this.sceneManager.scene, light));
+                const command = new AddObjectCommand(this.engine.scene, light);
+                this.eventBus.publish(Events.HISTORY_CHANGE, command);
             }
         }, 'addAmbientLight').name('Add Ambient Light');
         lightFolder.add({
             addDirectionalLight: () => {
                 const light = this.lightManager.addLight('DirectionalLight', 0xffffff, 1, { x: 1, y: 1, z: 1 }, 'DirectionalLight');
-                this.eventBus.publish(Events.HISTORY_CHANGE, new AddObjectCommand(this.sceneManager.scene, light));
+                const command = new AddObjectCommand(this.engine.scene, light);
+                this.eventBus.publish(Events.HISTORY_CHANGE, command);
             }
         }, 'addDirectionalLight').name('Add Directional Light');
         lightFolder.add({
             addPointLight: () => {
                 const light = this.lightManager.addLight('PointLight', 0xffffff, 1, { x: 0, y: 0, z: 0 }, 'PointLight');
-                this.eventBus.publish(Events.HISTORY_CHANGE, new AddObjectCommand(this.sceneManager.scene, light));
+                const command = new AddObjectCommand(this.engine.scene, light);
+                this.eventBus.publish(Events.HISTORY_CHANGE, command);
             }
         }, 'addPointLight').name('Add Point Light');
         lightFolder.open();
@@ -259,11 +318,10 @@ class App {
             button.addEventListener('click', async () => {
                 const newObject = await addMethod();
                 if (newObject) {
-                    const command = new AddObjectCommand(this.sceneManager.scene, newObject);
-                    command.execute();
+                    const command = new AddObjectCommand(this.engine.scene, newObject);
+                    this.eventBus.publish(Events.HISTORY_CHANGE, command);
                     this.eventBus.publish(Events.SELECTION_CHANGE, newObject);
                     this.sceneGraph.update();
-                    this.eventBus.publish(Events.HISTORY_CHANGE, command);
                 }
             });
             ui.appendChild(button);
@@ -292,11 +350,10 @@ class App {
         deleteButton.addEventListener('click', () => {
             if (this.state.selectedObject) {
                 const objectToDelete = this.state.selectedObject;
-                const command = new RemoveObjectCommand(this.sceneManager.scene, objectToDelete);
-                command.execute();
+                const command = new RemoveObjectCommand(this.engine.scene, objectToDelete);
+                this.eventBus.publish(Events.HISTORY_CHANGE, command);
                 this.eventBus.publish(Events.SELECTION_CHANGE, null);
                 this.sceneGraph.update();
-                this.eventBus.publish(Events.HISTORY_CHANGE, command);
             }
         });
         ui.appendChild(deleteButton);
@@ -306,11 +363,10 @@ class App {
         duplicateButton.addEventListener('click', () => {
             if (this.state.selectedObject) {
                 const duplicatedObject = this.objectFactory.duplicateObject(this.state.selectedObject);
-                const command = new AddObjectCommand(this.sceneManager.scene, duplicatedObject);
-                command.execute();
+                const command = new AddObjectCommand(this.engine.scene, duplicatedObject);
+                this.eventBus.publish(Events.HISTORY_CHANGE, command);
                 this.eventBus.publish(Events.SELECTION_CHANGE, duplicatedObject);
                 this.sceneGraph.update();
-                this.eventBus.publish(Events.HISTORY_CHANGE, command);
             }
         });
         ui.appendChild(duplicateButton);
@@ -318,13 +374,12 @@ class App {
         const groupButton = document.createElement('button');
         groupButton.textContent = 'Group Selected';
         groupButton.addEventListener('click', () => {
-            const selectedObjects = this.sceneManager.scene.children.filter(obj => obj.userData.selected);
+            const selectedObjects = this.engine.scene.children.filter(obj => obj.userData.selected);
             if (selectedObjects.length > 1) {
-                const command = new GroupCommand(this.sceneManager.scene, this.groupManager, selectedObjects);
-                command.execute();
+                const command = new GroupCommand(this.engine.scene, this.groupManager, selectedObjects);
+                this.eventBus.publish(Events.HISTORY_CHANGE, command);
                 this.eventBus.publish(Events.SELECTION_CHANGE, command.group);
                 this.sceneGraph.update();
-                this.eventBus.publish(Events.HISTORY_CHANGE, command);
             } else {
                 log.warn("Select at least two objects to group.");
             }
@@ -335,11 +390,10 @@ class App {
         ungroupButton.textContent = 'Ungroup Selected';
         ungroupButton.addEventListener('click', () => {
             if (this.state.selectedObject && this.state.selectedObject instanceof THREE.Group) {
-                const command = new UngroupCommand(this.sceneManager.scene, this.groupManager, this.state.selectedObject);
-                command.execute();
+                const command = new UngroupCommand(this.engine.scene, this.groupManager, this.state.selectedObject);
+                this.eventBus.publish(Events.HISTORY_CHANGE, command);
                 this.eventBus.publish(Events.SELECTION_CHANGE, null);
                 this.sceneGraph.update();
-                this.eventBus.publish(Events.HISTORY_CHANGE, command);
             }
         });
         ui.appendChild(ungroupButton);
@@ -348,15 +402,14 @@ class App {
             const button = document.createElement('button');
             button.textContent = text;
             button.addEventListener('click', () => {
-                const selectedObjects = this.sceneManager.scene.children.filter(obj => obj.userData.selected);
+                const selectedObjects = this.engine.scene.children.filter(obj => obj.userData.selected);
                 if (selectedObjects.length === 2) {
                     const resultObject = this.csgManager.performCSG(selectedObjects[0], selectedObjects[1], operation);
                     if (resultObject) {
-                        const command = new AddObjectCommand(this.sceneManager.scene, resultObject);
-                        command.execute();
+                        const command = new AddObjectCommand(this.engine.scene, resultObject);
+                        this.eventBus.publish(Events.HISTORY_CHANGE, command);
                         this.eventBus.publish(Events.SELECTION_CHANGE, resultObject);
                         this.sceneGraph.update();
-                        this.eventBus.publish(Events.HISTORY_CHANGE, command);
                     }
                 } else {
                     log.warn("Select exactly two objects for CSG operation.");
@@ -372,16 +425,15 @@ class App {
         const resetButton = document.createElement('button');
         resetButton.textContent = 'Reset View';
         resetButton.addEventListener('click', () => {
-            this.sceneManager.resetCamera();
-            this.eventBus.publish(Events.HISTORY_CHANGE, new Command());
+            this.engine.resetCamera();
         });
         ui.appendChild(resetButton);
 
         const saveImageButton = document.createElement('button');
         saveImageButton.textContent = 'Save as Image';
         saveImageButton.addEventListener('click', () => {
-            this.sceneManager.renderer.render(this.sceneManager.scene, this.sceneManager.camera);
-            const dataURL = this.sceneManager.renderer.domElement.toDataURL('image/png');
+            this.engine.renderer.render(this.engine.scene, this.engine.camera);
+            const dataURL = this.engine.renderer.domElement.toDataURL('image/png');
             const a = document.createElement('a');
             a.href = dataURL;
             a.download = 'nodist3d-scene.png';
@@ -428,7 +480,7 @@ class App {
                 this.transformControls.detach();
                 this.updateGUI(null);
                 this.sceneGraph.update();
-                this.eventBus.publish(Events.HISTORY_CHANGE, new AddObjectCommand(this.sceneManager.scene, loadedData));
+                this.eventBus.publish(Events.HISTORY_CHANGE, new AddObjectCommand(this.engine.scene, loadedData));
             }
         });
         ui.appendChild(loadInput);
@@ -451,12 +503,11 @@ class App {
                 reader.onload = (e) => {
                     const objLoader = new OBJLoader();
                     const object = objLoader.parse(e.target.result);
-                    this.sceneManager.scene.add(object);
-                    const command = new AddObjectCommand(this.sceneManager.scene, object);
-                    command.execute();
+                    this.engine.scene.add(object);
+                    const command = new AddObjectCommand(this.engine.scene, object);
+                    this.eventBus.publish(Events.HISTORY_CHANGE, command);
                     this.eventBus.publish(Events.SELECTION_CHANGE, object);
                     this.sceneGraph.update();
-                    this.eventBus.publish(Events.HISTORY_CHANGE, command);
                 };
                 reader.readAsText(file);
             }
@@ -481,12 +532,11 @@ class App {
                 reader.onload = (e) => {
                     const gltfLoader = new GLTFLoader();
                     gltfLoader.parse(e.target.result, '', (gltf) => {
-                        this.sceneManager.scene.add(gltf.scene);
-                        const command = new AddObjectCommand(this.sceneManager.scene, gltf.scene);
-                        command.execute();
+                        this.engine.scene.add(gltf.scene);
+                        const command = new AddObjectCommand(this.engine.scene, gltf.scene);
+                        this.eventBus.publish(Events.HISTORY_CHANGE, command);
                         this.eventBus.publish(Events.SELECTION_CHANGE, gltf.scene);
                         this.sceneGraph.update();
-                        this.eventBus.publish(Events.HISTORY_CHANGE, command);
                     });
                 };
                 reader.readAsArrayBuffer(file);
@@ -505,7 +555,7 @@ class App {
         exportObjButton.textContent = 'Export OBJ';
         exportObjButton.addEventListener('click', () => {
             const exporter = new OBJExporter();
-            const result = exporter.parse(this.sceneManager.scene);
+            const result = exporter.parse(this.engine.scene);
             const blob = new Blob([result], { type: 'text/plain' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -519,7 +569,7 @@ class App {
         exportGltfButton.textContent = 'Export GLTF';
         exportGltfButton.addEventListener('click', () => {
             const exporter = new GLTFExporter();
-            exporter.parse(this.sceneManager.scene, (result) => {
+            exporter.parse(this.engine.scene, (result) => {
                 const output = JSON.stringify(result, null, 2);
                 const blob = new Blob([output], { type: 'text/plain' });
                 const a = document.createElement('a');
@@ -605,26 +655,6 @@ class App {
             }
         });
         snapFolder.open();
-    }
-
-    /**
-     * The main animation loop.
-     */
-    animate() {
-        const deltaTime = this.clock.getDelta();
-        this.physicsManager.update(deltaTime);
-        this.transformControls.update();
-        this.sceneManager.controls.update();
-        this.sceneManager.render();
-        requestAnimationFrame(this.animate.bind(this));
-    }
-
-    /**
-     * Starts the application.
-     */
-    start() {
-        this.animate();
-        this.sceneGraph.update();
     }
 }
 
