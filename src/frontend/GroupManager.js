@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import log from './logger.js';
 
 export class GroupManager {
     constructor(scene, eventBus) {
@@ -8,7 +9,7 @@ export class GroupManager {
 
     groupObjects(objects) {
         if (objects.length < 2) {
-            console.warn("Select at least two objects to group.");
+            log.warn("Select at least two objects to group.");
             return null;
         }
 
@@ -16,8 +17,11 @@ export class GroupManager {
         group.name = 'Group';
 
         const center = new THREE.Vector3();
-        const positions = objects.map(obj => obj.position);
-        center.addVectors(...positions).divideScalar(objects.length);
+        for (const object of objects) {
+            center.add(object.position);
+        }
+        center.divideScalar(objects.length);
+
         group.position.copy(center);
 
         for (const object of objects) {
@@ -32,7 +36,7 @@ export class GroupManager {
 
     ungroupObjects(group) {
         if (!group || !(group instanceof THREE.Group)) {
-            console.warn("Invalid group provided for ungrouping.");
+            log.warn("Invalid group provided for ungrouping.");
             return [];
         }
 

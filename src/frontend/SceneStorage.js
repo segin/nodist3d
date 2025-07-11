@@ -1,5 +1,6 @@
 import JSZip from 'jszip';
 import * as THREE from 'three'; // Import THREE to use ObjectLoader and other Three.js components
+import log from './logger.js';
 
 export class SceneStorage {
     constructor(scene, eventBus) {
@@ -67,7 +68,7 @@ export class SceneStorage {
                 this.worker.onerror = (error) => reject(new Error('Worker error during deserialization: ' + error.message));
             });
         } catch (error) {
-            console.error("Error loading scene:", error);
+            log.error("Error loading scene:", error);
             return Promise.reject(error);
         }
     }
@@ -84,7 +85,7 @@ export class SceneStorage {
                 this.loadPromiseResolve = null;
             }
         } else if (event.data.type === 'error') {
-            console.error('Worker error:', event.data.message, event.data.error);
+            log.error('Worker error:', event.data.message, event.data.error);
             if (this.loadPromiseResolve) {
                 this.loadPromiseResolve(null); // Resolve with null or reject the promise
                 this.loadPromiseResolve = null;

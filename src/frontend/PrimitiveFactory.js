@@ -4,6 +4,7 @@ import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry.js'
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 import { ExtrudeGeometry, LatheGeometry } from 'three';
+import log from './logger.js';
 
 export class PrimitiveFactory {
     constructor() {
@@ -38,7 +39,7 @@ export class PrimitiveFactory {
                     geometry.center();
                     resolve(this._createMesh(geometry, options.color || 0x00bfff));
                 } else {
-                    console.error("Font not loaded. Cannot create text.");
+                    log.error("Font not loaded. Cannot create text.");
                     resolve(null);
                 }
             });
@@ -173,7 +174,7 @@ export class PrimitiveFactory {
 
                 return lod;
             default:
-                console.error(`Unknown primitive type: ${type}`);
+                log.error(`Unknown primitive type: ${type}`);
                 return null;
         }
         return mesh;

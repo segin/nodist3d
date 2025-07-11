@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import log from './logger.js';
 
 export class LightManager {
     constructor(scene, eventBus) {
@@ -33,7 +34,7 @@ export class LightManager {
                 light = new THREE.AmbientLight(color, intensity);
                 break;
             default:
-                console.warn('Unknown light type:', type);
+                log.warn('Unknown light type:', type);
                 return null;
         }
         if (position) {

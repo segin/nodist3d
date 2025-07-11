@@ -17,6 +17,7 @@ import { PhysicsManager } from './PhysicsManager.js';
 import { PrimitiveFactory } from './PrimitiveFactory.js';
 import EventBus from './EventBus.js';
 import { Clock } from 'three';
+import log from './logger.js';
 
 class App {
     constructor() {
@@ -272,7 +273,7 @@ class App {
                     this.eventBus.publish('historyChange');
                 }
             } else {
-                console.warn("Select at least two objects to group.");
+                log.warn("Select at least two objects to group.");
             }
         });
         ui.appendChild(groupButton);
@@ -302,7 +303,7 @@ class App {
                         this.eventBus.publish('historyChange');
                     }
                 } else {
-                    console.warn("Select exactly two objects for CSG operation.");
+                    log.warn("Select exactly two objects for CSG operation.");
                 }
             });
             ui.appendChild(button);
@@ -467,7 +468,7 @@ class App {
                 a.click();
                 URL.revokeObjectURL(a.href);
             }, (error) => {
-                console.error('An error occurred during GLTF export:', error);
+                log.error('An error occurred during GLTF export:', error);
             }, { binary: false });
         });
         ui.appendChild(exportGltfButton);

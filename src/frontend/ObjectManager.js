@@ -1,6 +1,7 @@
 
 import { CSG } from 'three-csg-ts';
 import { PrimitiveFactory } from './PrimitiveFactory.js';
+import log from './logger.js';
 
 export class ObjectManager {
     constructor(scene, primitiveFactory, eventBus) {
@@ -42,7 +43,7 @@ export class ObjectManager {
                 resultBsp = bspA.intersect(bspB);
                 break;
             default:
-                console.warn('Unknown CSG operation:', operation);
+                log.warn('Unknown CSG operation:', operation);
                 return null;
         }
 

@@ -1,4 +1,5 @@
 import * as CANNON from 'cannon-es';
+import log from './logger.js';
 
 export class PhysicsManager {
     constructor(scene) {
@@ -10,7 +11,7 @@ export class PhysicsManager {
 
     addBody(mesh, mass = 1, shapeType = 'box') {
         if (!mesh.geometry.parameters) {
-            console.warn("Unsupported geometry for physics body. Geometry has no parameters.");
+            log.warn("Unsupported geometry for physics body. Geometry has no parameters.");
             return null;
         }
         let shape;
@@ -22,7 +23,7 @@ export class PhysicsManager {
         } else if (shapeType === 'cylinder') {
             shape = new CANNON.Cylinder(mesh.geometry.parameters.radiusTop * mesh.scale.x, mesh.geometry.parameters.radiusBottom * mesh.scale.x, mesh.geometry.parameters.height * mesh.scale.y, mesh.geometry.parameters.radialSegments);
         } else {
-            console.warn("Unsupported shape type for physics body:", shapeType);
+            log.warn("Unsupported shape type for physics body:", shapeType);
             return null;
         }
 

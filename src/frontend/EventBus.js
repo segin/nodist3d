@@ -1,3 +1,5 @@
+import log from './logger.js';
+
 class EventBus {
     constructor() {
         this.events = {};
@@ -22,7 +24,7 @@ class EventBus {
                 try {
                     callback(data);
                 } catch (error) {
-                    console.error(`Error in event listener for ${eventName}:`, error);
+                    log.error(`Error in event listener for ${eventName}:`, error);
                 }
             });
         }
