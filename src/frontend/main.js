@@ -16,9 +16,14 @@ import { ShaderEditor } from './ShaderEditor.js';
 import { PhysicsManager } from './PhysicsManager.js';
 import { PrimitiveFactory } from './PrimitiveFactory.js';
 import EventBus from './EventBus.js';
+import { Clock } from 'three';
 
 class App {
     constructor() {
+        this.clock = new Clock();
+        this.state = {
+            selectedObject: null,
+        };
         document.addEventListener('DOMContentLoaded', () => {
             this.canvas = document.querySelector('#c');
             this.eventBus = EventBus;
@@ -43,8 +48,6 @@ class App {
 
             this.sceneGraphElement = document.getElementById('scene-graph');
             this.sceneGraph = new SceneGraph(this.sceneManager.scene, this.sceneGraphElement, this.transformControls, this.updateGUI.bind(this), this.eventBus);
-
-            this.clock = new THREE.Clock();
 
             this.setupEventListeners();
             this.setupUIButtons();
@@ -151,18 +154,18 @@ class App {
             }
         });
 
-        this.pointer.renderer.domElement.addEventListener('pointerdown', (event) => {
-            this.pointer.onPointerDown(event);
-        });
-
-        this.eventBus.subscribe('selectionChange', () => {
-            if (this.pointer.selectedObject) {
-                this.transformControls.attach(this.pointer.selectedObject);
-                this.updateGUI(this.pointer.selectedObject);
+        this.eventBus.subscribe('selectionChange', (selectedObject) => {
+            if (this.state.selectedObject) {
+                this.pointer.removeOutline();
+            }
+            this.state.selectedObject = selectedObject;
+            if (this.state.selectedObject) {
+                this.pointer.addOutline(this.state.selectedObject);
+                this.transformControls.attach(this.state.selectedObject);
             } else {
                 this.transformControls.detach();
-                this.updateGUI(null);
             }
+            this.updateGUI(this.state.selectedObject);
             this.sceneGraph.update();
         });
 
@@ -206,8 +209,7 @@ class App {
             button.addEventListener('click', async () => {
                 const newObject = await addMethod();
                 if (newObject) {
-                    this.transformControls.attach(newObject);
-                    this.updateGUI(newObject);
+                    this.eventBus.publish('selectionChange', newObject);
                     this.sceneGraph.update();
                     this.eventBus.publish('historyChange');
                 }
@@ -236,13 +238,10 @@ class App {
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete Selected';
         deleteButton.addEventListener('click', () => {
-            if (this.pointer.selectedObject) {
-                const objectToDelete = this.pointer.selectedObject;
-                this.transformControls.detach();
-                this.pointer.removeOutline();
-                this.pointer.selectedObject = null;
+            if (this.state.selectedObject) {
+                const objectToDelete = this.state.selectedObject;
+                this.eventBus.publish('selectionChange', null);
                 this.objectManager.deleteObject(objectToDelete);
-                this.updateGUI(null);
                 this.sceneGraph.update();
                 this.eventBus.publish('historyChange');
             }
@@ -252,12 +251,9 @@ class App {
         const duplicateButton = document.createElement('button');
         duplicateButton.textContent = 'Duplicate Selected';
         duplicateButton.addEventListener('click', () => {
-            if (this.pointer.selectedObject) {
-                const duplicatedObject = this.objectManager.duplicateObject(this.pointer.selectedObject);
-                this.transformControls.attach(duplicatedObject);
-                this.pointer.selectedObject = duplicatedObject;
-                this.pointer.addOutline(duplicatedObject);
-                this.updateGUI(duplicatedObject);
+            if (this.state.selectedObject) {
+                const duplicatedObject = this.objectManager.duplicateObject(this.state.selectedObject);
+                this.eventBus.publish('selectionChange', duplicatedObject);
                 this.sceneGraph.update();
                 this.eventBus.publish('historyChange');
             }
@@ -271,10 +267,7 @@ class App {
             if (selectedObjects.length > 1) {
                 const newGroup = this.groupManager.groupObjects(selectedObjects);
                 if (newGroup) {
-                    this.transformControls.attach(newGroup);
-                    this.pointer.selectedObject = newGroup;
-                    this.pointer.addOutline(newGroup);
-                    this.updateGUI(newGroup);
+                    this.eventBus.publish('selectionChange', newGroup);
                     this.sceneGraph.update();
                     this.eventBus.publish('historyChange');
                 }
@@ -287,12 +280,9 @@ class App {
         const ungroupButton = document.createElement('button');
         ungroupButton.textContent = 'Ungroup Selected';
         ungroupButton.addEventListener('click', () => {
-            if (this.pointer.selectedObject && this.pointer.selectedObject instanceof THREE.Group) {
-                const ungrouped = this.groupManager.ungroupObjects(this.pointer.selectedObject);
-                this.transformControls.detach();
-                this.pointer.removeOutline();
-                this.pointer.selectedObject = null;
-                this.updateGUI(null);
+            if (this.state.selectedObject && this.state.selectedObject instanceof THREE.Group) {
+                const ungrouped = this.groupManager.ungroupObjects(this.state.selectedObject);
+                this.eventBus.publish('selectionChange', null);
                 this.sceneGraph.update();
                 this.eventBus.publish('historyChange');
             }
@@ -307,10 +297,7 @@ class App {
                 if (selectedObjects.length === 2) {
                     const resultObject = this.objectManager.performCSG(selectedObjects[0], selectedObjects[1], operation);
                     if (resultObject) {
-                        this.transformControls.attach(resultObject);
-                        this.pointer.selectedObject = resultObject;
-                        this.pointer.addOutline(resultObject);
-                        this.updateGUI(resultObject);
+                        this.eventBus.publish('selectionChange', resultObject);
                         this.sceneGraph.update();
                         this.eventBus.publish('historyChange');
                     }
@@ -408,10 +395,7 @@ class App {
                     const objLoader = new OBJLoader();
                     const object = objLoader.parse(e.target.result);
                     this.sceneManager.scene.add(object);
-                    this.transformControls.attach(object);
-                    this.pointer.selectedObject = object;
-                    this.pointer.addOutline(object);
-                    this.updateGUI(object);
+                    this.eventBus.publish('selectionChange', object);
                     this.sceneGraph.update();
                     this.eventBus.publish('historyChange');
                 };
@@ -439,10 +423,7 @@ class App {
                     const gltfLoader = new GLTFLoader();
                     gltfLoader.parse(e.target.result, '', (gltf) => {
                         this.sceneManager.scene.add(gltf.scene);
-                        this.transformControls.attach(gltf.scene);
-                        this.pointer.selectedObject = gltf.scene;
-                        this.pointer.addOutline(gltf.scene);
-                        this.updateGUI(gltf.scene);
+                        this.eventBus.publish('selectionChange', gltf.scene);
                         this.sceneGraph.update();
                         this.eventBus.publish('historyChange');
                     });
@@ -494,8 +475,8 @@ class App {
         const physicsButton = document.createElement('button');
         physicsButton.textContent = 'Add Physics Body';
         physicsButton.addEventListener('click', () => {
-            if (this.pointer.selectedObject) {
-                this.physicsManager.addBody(this.pointer.selectedObject, 1, 'box');
+            if (this.state.selectedObject) {
+                this.physicsManager.addBody(this.state.selectedObject, 1, 'box');
                 this.eventBus.publish('historyChange');
             }
         });
