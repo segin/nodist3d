@@ -230,6 +230,9 @@ class App {
     /**
      * Sets up the UI buttons for the application.
      */
+    /**
+     * Sets up the event listeners for the application.
+     */
     setupEventListeners() {
         this.transformControls.addEventListener('dragging-changed', (event) => {
             if (!event.value) {
@@ -613,6 +616,50 @@ class App {
         });
         ui.appendChild(redoButton);
     }
+
+    /**
+     * Sets up the snap controls in the GUI.
+     */
+    setupSnapControls() {
+        const snapFolder = this.gui.addFolder('Snap Settings');
+        const snapSettings = {
+            snapTranslation: false,
+            snapRotation: false,
+            snapScale: false,
+            translationSnapValue: 0.1,
+            rotationSnapValue: Math.PI / 8,
+            scaleSnapValue: 0.1
+        };
+
+        snapFolder.add(snapSettings, 'snapTranslation').name('Snap Translation').onChange((value) => {
+            this.transformControls.translationSnap = value ? snapSettings.translationSnapValue : null;
+        });
+        snapFolder.add(snapSettings, 'translationSnapValue', 0.01, 1).name('Translation Snap').onChange((value) => {
+            if (snapSettings.snapTranslation) {
+                this.transformControls.translationSnap = value;
+            }
+        });
+
+        snapFolder.add(snapSettings, 'snapRotation').name('Snap Rotation').onChange((value) => {
+            this.transformControls.rotationSnap = value ? snapSettings.rotationSnapValue : null;
+        });
+        snapFolder.add(snapSettings, 'rotationSnapValue', 0.01, Math.PI / 2).name('Rotation Snap').onChange((value) => {
+            if (snapSettings.snapRotation) {
+                this.transformControls.rotationSnap = value;
+            }
+        });
+
+        snapFolder.add(snapSettings, 'snapScale').name('Snap Scale').onChange((value) => {
+            this.transformControls.scaleSnap = value ? snapSettings.scaleSnapValue : null;
+        });
+        snapFolder.add(snapSettings, 'scaleSnapValue', 0.01, 1).name('Scale Snap').onChange((value) => {
+            if (snapSettings.snapScale) {
+                this.transformControls.scaleSnap = value;
+            }
+        });
+        snapFolder.open();
+    }
+}
 
     /**
      * Sets up the snap controls in the GUI.
