@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { History } from '../src/frontend/History.js';
-import { default as MockEventBus } from '../src/frontend/EventBus.js';
+import EventBus from '../src/frontend/EventBus.js';
 
 
 
@@ -19,7 +19,7 @@ describe('History', () => {
     beforeEach(() => {
         
         scene = new THREE.Scene();
-        eventBus = MockEventBus;
+        eventBus = EventBus;
         camera = new THREE.PerspectiveCamera(75, global.innerWidth / global.innerHeight, 0.1, 1000);
         historyManager = new History(scene, eventBus);
 
