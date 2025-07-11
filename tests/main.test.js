@@ -43,6 +43,9 @@ describe('App Integration Tests', () => {
         mockGUI.addFolder.mockClear();
         mockGUI.add.mockClear();
 
+        // Instantiate App within beforeEach to ensure DOM is ready and mocks are applied
+        app = new App();
+        // Manually trigger DOMContentLoaded since App's constructor relies on it
         document.dispatchEvent(new Event('DOMContentLoaded'));
     });
 
