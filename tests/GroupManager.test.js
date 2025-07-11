@@ -1,3 +1,4 @@
+import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, Group, Vector3 } from 'three';
 import './__mocks__/three-dat.gui.js';
 import { GroupManager } from '../src/frontend/GroupManager.js';
 import EventBus from '../src/frontend/EventBus.js';
