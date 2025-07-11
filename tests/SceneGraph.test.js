@@ -1,7 +1,7 @@
 import { Scene, Mesh, BoxGeometry, PointLight, Group, Camera } from 'three';
 import { SceneGraph } from '../src/frontend/SceneGraph.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
-import { default as MockEventBus } from '../src/frontend/EventBus.js';
+import EventBus from '../src/frontend/EventBus.js';
 
 describe('SceneGraph', () => {
     let scene;
@@ -48,7 +48,7 @@ describe('SceneGraph', () => {
 
         transformControls = new TransformControls(new Camera(), document.createElement('canvas'));
         updateGUI = jest.fn();
-        eventBus = MockEventBus;
+        eventBus = EventBus;
         sceneGraph = new SceneGraph(scene, uiElement, transformControls, updateGUI, eventBus);
     });
 
