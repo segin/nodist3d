@@ -19,6 +19,12 @@ export class History {
         this.redoStack = []; // Clear the redo stack
     }
 
+    saveState() {
+        // This is a placeholder. Real implementation would serialize scene and camera.
+        // For now, we just push a dummy state.
+        this.add({ type: 'dummy_state', undo: () => {}, execute: () => {} });
+    }
+
     undo() {
         if (this.transformControls) {
             this.transformControls.detach();
