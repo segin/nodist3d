@@ -1,3 +1,6 @@
+import { ObjectFactory } from './ObjectFactory.js';
+import { CSGManager } from './CSGManager.js';
+import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
 import { SceneManager } from './SceneManager.js';
 import { ObjectManager } from './ObjectManager.js';
 import { Pointer } from './Pointer.js';
@@ -38,7 +41,10 @@ class App {
             this.eventBus = EventBus;
             this.sceneManager = new SceneManager(this.canvas);
             this.primitiveFactory = new PrimitiveFactory();
-            this.objectManager = new ObjectManager(this.sceneManager.scene, this.primitiveFactory, this.eventBus);
+            this.objectManager = new ObjectManager(this.sceneManager.scene, this.eventBus);
+            this.objectFactory = new ObjectFactory(this.sceneManager.scene, this.primitiveFactory, this.eventBus);
+            this.csgManager = new CSGManager(this.sceneManager.scene, this.eventBus);
+            this.objectPropertyUpdater = new ObjectPropertyUpdater(this.primitiveFactory);
             this.pointer = new Pointer(this.sceneManager.camera, this.sceneManager.scene, this.sceneManager.renderer, this.eventBus);
             this.sceneStorage = new SceneStorage(this.sceneManager.scene);
             this.history = new History(this.sceneManager.scene, this.eventBus);
@@ -83,42 +89,42 @@ class App {
         if (object) {
             if (object.isLight) {
                 this.currentLightFolder = this.gui.addFolder(object.name || object.uuid);
-                this.currentLightFolder.addColor(object, 'color').name('Color').onChange(() => this.eventBus.publish('historyChange'));
-                this.currentLightFolder.add(object, 'intensity', 0, 2).name('Intensity').onChange(() => this.eventBus.publish('historyChange'));
+                this.currentLightFolder.addColor(object, 'color').name('Color').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
+                this.currentLightFolder.add(object, 'intensity', 0, 2).name('Intensity').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
                 this.currentLightFolder.add({ type: object.type }, 'type', ['PointLight', 'DirectionalLight', 'AmbientLight']).name('Light Type').onChange((value) => {
                     const newLight = this.lightManager.changeLightType(object, value);
                     this.transformControls.attach(newLight);
                     this.updateGUI(newLight);
                     this.sceneGraph.update();
-                    this.eventBus.publish('historyChange');
+                    this.eventBus.publish(Events.HISTORY_CHANGE);
                 });
                 if (object.position) {
-                    this.currentLightFolder.add(object.position, 'x', -10, 10).name('Position X').onChange(() => this.eventBus.publish('historyChange'));
-                    this.currentLightFolder.add(object.position, 'y', -10, 10).name('Position Y').onChange(() => this.eventBus.publish('historyChange'));
-                    this.currentLightFolder.add(object.position, 'z', -10, 10).name('Position Z').onChange(() => this.eventBus.publish('historyChange'));
+                    this.currentLightFolder.add(object.position, 'x', -10, 10).name('Position X').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
+                    this.currentLightFolder.add(object.position, 'y', -10, 10).name('Position Y').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
+                    this.currentLightFolder.add(object.position, 'z', -10, 10).name('Position Z').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
                 }
                 this.currentLightFolder.open();
             } else {
                 this.currentObjectFolder = this.gui.addFolder(object.name || object.uuid);
-                this.currentObjectFolder.add(object.position, 'x', -5, 5).name('Position X').onChange(() => this.eventBus.publish('historyChange'));
-                this.currentObjectFolder.add(object.position, 'y', -5, 5).name('Position Y').onChange(() => this.eventBus.publish('historyChange'));
-                this.currentObjectFolder.add(object.position, 'z', -5, 5).name('Position Z').onChange(() => this.eventBus.publish('historyChange'));
-                this.currentObjectFolder.add(object.rotation, 'x', -Math.PI, Math.PI).name('Rotation X').onChange(() => this.eventBus.publish('historyChange'));
-                this.currentObjectFolder.add(object.rotation, 'y', -Math.PI, Math.PI).name('Rotation Y').onChange(() => this.eventBus.publish('historyChange'));
-                this.currentObjectFolder.add(object.rotation, 'z', -Math.PI, Math.PI).name('Rotation Z').onChange(() => this.eventBus.publish('historyChange'));
-                this.currentObjectFolder.add(object.scale, 'x', 0.1, 5).name('Scale X').onChange(() => this.eventBus.publish('historyChange'));
-                this.currentObjectFolder.add(object.scale, 'y', 0.1, 5).name('Scale Y').onChange(() => this.eventBus.publish('historyChange'));
-                this.currentObjectFolder.add(object.scale, 'z', 0.1, 5).name('Scale Z').onChange(() => this.eventBus.publish('historyChange'));
+                this.currentObjectFolder.add(object.position, 'x', -5, 5).name('Position X').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
+                this.currentObjectFolder.add(object.position, 'y', -5, 5).name('Position Y').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
+                this.currentObjectFolder.add(object.position, 'z', -5, 5).name('Position Z').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
+                this.currentObjectFolder.add(object.rotation, 'x', -Math.PI, Math.PI).name('Rotation X').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
+                this.currentObjectFolder.add(object.rotation, 'y', -Math.PI, Math.PI).name('Rotation Y').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
+                this.currentObjectFolder.add(object.rotation, 'z', -Math.PI, Math.PI).name('Rotation Z').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
+                this.currentObjectFolder.add(object.scale, 'x', 0.1, 5).name('Scale X').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
+                this.currentObjectFolder.add(object.scale, 'y', 0.1, 5).name('Scale Y').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
+                this.currentObjectFolder.add(object.scale, 'z', 0.1, 5).name('Scale Z').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
                 if (object.material) {
                     const materialFolder = this.currentObjectFolder.addFolder('Material');
                     if (object.material.color) {
-                        materialFolder.addColor(object.material, 'color').name('Color').onChange(() => this.eventBus.publish('historyChange'));
+                        materialFolder.addColor(object.material, 'color').name('Color').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
                     }
                     if (object.material.roughness !== undefined) {
-                        materialFolder.add(object.material, 'roughness', 0, 1).name('Roughness').onChange(() => this.eventBus.publish('historyChange'));
+                        materialFolder.add(object.material, 'roughness', 0, 1).name('Roughness').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
                     }
                     if (object.material.metalness !== undefined) {
-                        materialFolder.add(object.material, 'metalness', 0, 1).name('Metalness').onChange(() => this.eventBus.publish('historyChange'));
+                        materialFolder.add(object.material, 'metalness', 0, 1).name('Metalness').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE));
                     }
                     const textureInput = document.createElement('input');
                     textureInput.type = 'file';
@@ -130,8 +136,8 @@ class App {
                     textureInput.addEventListener('change', (event) => {
                         const file = event.target.files[0];
                         if (file) {
-                            this.objectManager.addTexture(object, file, textureTypeController.getValue());
-                            this.eventBus.publish('historyChange');
+                            this.objectPropertyUpdater.addTexture(object, file, textureTypeController.getValue());
+                            this.eventBus.publish(Events.HISTORY_CHANGE);
                         }
                     });
 
@@ -148,8 +154,8 @@ class App {
                     for (const key in object.geometry.parameters) {
                         if (typeof object.geometry.parameters[key] === 'number') {
                             geometryFolder.add(object.geometry.parameters, key, 0, 10).name(key).onChange(() => {
-                                this.objectManager.updatePrimitive(object, object.geometry.parameters);
-                                this.eventBus.publish('historyChange');
+                                this.objectPropertyUpdater.updatePrimitive(object, object.geometry.parameters);
+                                this.eventBus.publish(Events.HISTORY_CHANGE);
                             });
                         }
                     }
@@ -250,23 +256,23 @@ class App {
             ui.appendChild(button);
         };
 
-        createAddButton('Add Cube', () => this.objectManager.addPrimitive(ObjectTypes.BOX));
-        createAddButton('Add Sphere', () => this.objectManager.addPrimitive(ObjectTypes.SPHERE));
-        createAddButton('Add Cylinder', () => this.objectManager.addPrimitive(ObjectTypes.CYLINDER));
-        createAddButton('Add Cone', () => this.objectManager.addPrimitive(ObjectTypes.CONE));
-        createAddButton('Add Torus', () => this.objectManager.addPrimitive(ObjectTypes.TORUS));
-        createAddButton('Add Torus Knot', () => this.objectManager.addPrimitive(ObjectTypes.TORUS_KNOT));
-        createAddButton('Add Tetrahedron', () => this.objectManager.addPrimitive(ObjectTypes.TETRAHEDRON));
-        createAddButton('Add Icosahedron', () => this.objectManager.addPrimitive(ObjectTypes.ICOSAHEDRON));
-        createAddButton('Add Dodecahedron', () => this.objectManager.addPrimitive(ObjectTypes.DODECAHEDRON));
-        createAddButton('Add Octahedron', () => this.objectManager.addPrimitive(ObjectTypes.OCTAHEDRON));
-        createAddButton('Add Plane', () => this.objectManager.addPrimitive(ObjectTypes.PLANE));
-        createAddButton('Add Tube', () => this.objectManager.addPrimitive(ObjectTypes.TUBE));
-        createAddButton('Add Teapot', () => this.objectManager.addPrimitive(ObjectTypes.TEAPOT));
-        createAddButton('Add Lathe', () => this.objectManager.addPrimitive(ObjectTypes.LATHE));
-        createAddButton('Add Extrude', () => this.objectManager.addPrimitive(ObjectTypes.EXTRUDE));
-        createAddButton('Add Text', () => this.objectManager.addPrimitive(ObjectTypes.TEXT));
-        createAddButton('Add LOD Cube', () => this.objectManager.addPrimitive(ObjectTypes.LOD_CUBE));
+        createAddButton('Add Cube', () => this.objectFactory.addPrimitive(ObjectTypes.BOX));
+        createAddButton('Add Sphere', () => this.objectFactory.addPrimitive(ObjectTypes.SPHERE));
+        createAddButton('Add Cylinder', () => this.objectFactory.addPrimitive(ObjectTypes.CYLINDER));
+        createAddButton('Add Cone', () => this.objectFactory.addPrimitive(ObjectTypes.CONE));
+        createAddButton('Add Torus', () => this.objectFactory.addPrimitive(ObjectTypes.TORUS));
+        createAddButton('Add Torus Knot', () => this.objectFactory.addPrimitive(ObjectTypes.TORUS_KNOT));
+        createAddButton('Add Tetrahedron', () => this.objectFactory.addPrimitive(ObjectTypes.TETRAHEDRON));
+        createAddButton('Add Icosahedron', () => this.objectFactory.addPrimitive(ObjectTypes.ICOSAHEDRON));
+        createAddButton('Add Dodecahedron', () => this.objectFactory.addPrimitive(ObjectTypes.DODECAHEDRON));
+        createAddButton('Add Octahedron', () => this.objectFactory.addPrimitive(ObjectTypes.OCTAHEDRON));
+        createAddButton('Add Plane', () => this.objectFactory.addPrimitive(ObjectTypes.PLANE));
+        createAddButton('Add Tube', () => this.objectFactory.addPrimitive(ObjectTypes.TUBE));
+        createAddButton('Add Teapot', () => this.objectFactory.addPrimitive(ObjectTypes.TEAPOT));
+        createAddButton('Add Lathe', () => this.objectFactory.addPrimitive(ObjectTypes.LATHE));
+        createAddButton('Add Extrude', () => this.objectFactory.addPrimitive(ObjectTypes.EXTRUDE));
+        createAddButton('Add Text', () => this.objectFactory.addPrimitive(ObjectTypes.TEXT));
+        createAddButton('Add LOD Cube', () => this.objectFactory.addPrimitive(ObjectTypes.LOD_CUBE));
 
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete Selected';
@@ -285,7 +291,7 @@ class App {
         duplicateButton.textContent = 'Duplicate Selected';
         duplicateButton.addEventListener('click', () => {
             if (this.state.selectedObject) {
-                const duplicatedObject = this.objectManager.duplicateObject(this.state.selectedObject);
+                const duplicatedObject = this.objectFactory.duplicateObject(this.state.selectedObject);
                 this.eventBus.publish(Events.SELECTION_CHANGE, duplicatedObject);
                 this.sceneGraph.update();
                 this.eventBus.publish(Events.HISTORY_CHANGE);
@@ -328,7 +334,7 @@ class App {
             button.addEventListener('click', () => {
                 const selectedObjects = this.sceneManager.scene.children.filter(obj => obj.userData.selected);
                 if (selectedObjects.length === 2) {
-                    const resultObject = this.objectManager.performCSG(selectedObjects[0], selectedObjects[1], operation);
+                    const resultObject = this.csgManager.performCSG(selectedObjects[0], selectedObjects[1], operation);
                     if (resultObject) {
                         this.eventBus.publish(Events.SELECTION_CHANGE, resultObject);
                         this.sceneGraph.update();
