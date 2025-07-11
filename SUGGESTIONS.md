@@ -37,7 +37,7 @@ This document provides a detailed list of over 300 suggested improvements for th
 - [~] **Refactor WebSocket Broadcasting**: The current broadcast iterates through all clients. For better performance, consider implementing a room-based system if you need to send messages to specific client groups. (Note: The application does not currently use WebSockets.)
 - [x] **Graceful Server Shutdown**: Implement logic to gracefully shut down the server, closing all WebSocket connections and saving any necessary state.
 - [x] **Structured Logging**: Log server events as structured JSON objects instead of plain text for easier querying and analysis in log management systems.
-- [ ] **Implement WebSocket Heartbeat**: Add a ping/pong mechanism to detect and close dead WebSocket connections.
+- [~] **Implement WebSocket Heartbeat**: Add a ping/pong mechanism to detect and close dead WebSocket connections. (Note: The application does not currently use WebSockets.)
 - [ ] **Add a Health Check Endpoint**: Create a simple HTTP endpoint (e.g., `/healthz`) that returns a `200 OK` status, useful for deployment environments.
 - [ ] **WebSocket Message Versioning**: Include a version number in your WebSocket message protocol to allow for backward-compatible changes in the future.
 - [ ] **Centralized Error Handling in Express**: Use a dedicated Express error-handling middleware to catch all unhandled route errors.
