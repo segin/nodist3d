@@ -9,7 +9,7 @@ This document provides a detailed list of over 300 suggested improvements for th
 ### I. Architecture & General Improvements
 
 - [ ] **Dependency Injection**: Instead of managers accessing each other globally, use a central container or dependency injection (DI) to manage class instances. This will decouple your modules and make them easier to test.
-- [ ] **Centralized State Management**: The application state is currently scattered across various managers and DOM elements. Centralize it in a main `App` class or a dedicated state management object to improve predictability and simplify data flow.
+- [-] **Centralized State Management**: The application state is currently scattered across various managers and DOM elements. Centralize it in a main `App` class or a dedicated state management object to improve predictability and simplify data flow.
 - [ ] **Externalize Configuration**: Move hardcoded values like the server port (`3000`), WebSocket URL, and history size into a separate configuration file or use environment variables.
 - [ ] **Consistent Module System**: The project mixes CommonJS (`require` in `server.js`) and ES Modules (`import`). Standardize on ES Modules by adding `"type": "module"` to `package.json` and updating `server.js` syntax.
 - [ ] **Comprehensive Error Handling**: Add `try...catch` blocks for operations that can fail, such as `localStorage` access, WebSocket connections, and data parsing.
