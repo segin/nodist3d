@@ -27,6 +27,7 @@ import { RemoveObjectCommand } from './commands/RemoveObjectCommand.js';
 import { TransformObjectCommand } from './commands/TransformObjectCommand.js';
 import { GroupCommand } from './commands/GroupCommand.js';
 import { UngroupCommand } from './commands/UngroupCommand.js';
+import { UIRenderer } from './UIRenderer.js';
 
 /**
  * The main application class.
@@ -66,8 +67,8 @@ class App {
             
             this.engine.scene.add(this.transformControls);
 
-            this.sceneGraphElement = document.getElementById('scene-graph');
-            this.sceneGraph = new SceneGraph(this.engine.scene, this.sceneGraphElement, this.transformControls, this.updateGUI.bind(this), this.eventBus);
+            this.sceneGraph = new SceneGraph(this.engine.scene, this.eventBus);
+            this.uiRenderer = new UIRenderer(this.sceneGraphElement, this.eventBus);
 
             this.setupEventListeners();
             this.setupUIButtons();

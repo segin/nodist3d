@@ -9,6 +9,7 @@ export const Events = {
     GROUP_ADDED: 'groupAdded',
     GROUP_REMOVED: 'groupRemoved',
     DELETE_OBJECT: 'deleteObject',
+    SCENE_GRAPH_NEEDS_UPDATE: 'sceneGraphNeedsUpdate',
 };
 
 export const ObjectTypes = {
