@@ -1,10 +1,22 @@
 
 import { Events } from './constants.js';
 
+import { Events } from './constants.js';
+
 export class ObjectManager {
-    constructor(scene, eventBus) {
+    constructor(scene, primitiveFactory, eventBus) {
         this.scene = scene;
+        this.primitiveFactory = primitiveFactory;
         this.eventBus = eventBus;
+    }
+
+    addPrimitive(type, options) {
+        const object = this.primitiveFactory.createPrimitive(type, options);
+        if (object) {
+            this.scene.add(object);
+            this.eventBus.publish(Events.OBJECT_ADDED, object);
+        }
+        return object;
     }
 
     deleteObject(object) {
