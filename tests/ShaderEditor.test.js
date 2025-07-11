@@ -1,5 +1,13 @@
-import './__mocks__/three-dat.gui.js';
+import { WebGLRenderer, Scene, PerspectiveCamera, ShaderMaterial } from 'three';
+import { ShaderEditor } from '../src/frontend/ShaderEditor.js';
 import EventBus from '../src/frontend/EventBus.js';
+jest.mock('../src/frontend/EventBus.js', () => ({
+    __esModule: true,
+    default: {
+        subscribe: jest.fn(),
+        publish: jest.fn(),
+    },
+}));
 
 describe('ShaderEditor', () => {
   let gui;
