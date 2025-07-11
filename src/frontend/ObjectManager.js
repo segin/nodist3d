@@ -1,8 +1,6 @@
 
 import { Events } from './constants.js';
 
-import { Events } from './constants.js';
-
 export class ObjectManager {
     constructor(scene, primitiveFactory, eventBus) {
         this.scene = scene;
