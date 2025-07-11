@@ -45,6 +45,7 @@ Create a web-based 3D modeling program using Node.js to host the backend and Web
 - Fixed `tests/ObjectManager.test.js` to use the singleton `EventBus` instance.
 - Fixed `tests/PhysicsManager.test.js` to use the singleton `EventBus` instance.
 - Fixed `tests/ShaderEditor.test.js` to use the singleton `EventBus` instance and updated `main.js` to pass `eventBus` to `ShaderEditor`, and improved mocks in `ShaderEditor.test.js`.
+        - Revert: Accidental mock of App class in `tests/main.test.js`.
         - Refactor: Removed global App instantiation from `main.js`.
         - Fixed `tests/History.test.js` to use `MockEventBus`.
         - Fixed `tests/SceneGraph.test.js` to use `MockEventBus`.
