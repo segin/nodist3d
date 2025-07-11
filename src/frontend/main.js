@@ -28,6 +28,7 @@ import { TransformObjectCommand } from './commands/TransformObjectCommand.js';
 import { GroupCommand } from './commands/GroupCommand.js';
 import { UngroupCommand } from './commands/UngroupCommand.js';
 import { UIRenderer } from './UIRenderer.js';
+import { InputManager } from './InputManager.js';
 
 /**
  * The main application class.
@@ -52,6 +53,7 @@ class App {
             this.objectFactory = new ObjectFactory(this.engine.scene, this.primitiveFactory, this.eventBus);
             this.csgManager = new CSGManager(this.engine.scene, this.eventBus);
             this.objectPropertyUpdater = new ObjectPropertyUpdater(this.primitiveFactory);
+            this.inputManager = new InputManager(this.eventBus);
             this.pointer = new Pointer(this.engine.camera, this.engine.scene, this.engine.renderer, this.eventBus);
             this.sceneStorage = new SceneStorage(this.engine.scene);
             this.history = new History(this.eventBus);
@@ -289,6 +291,69 @@ class App {
     /**
      * Sets up the UI buttons for the application.
      */
+    setupEventListeners() {
+        this.transformControls.addEventListener('dragging-changed', (event) => {
+            if (!event.value) {
+                this.state.mode = 'OBJECT_SELECTED';
+                this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(this.state.selectedObject, { position: this.state.selectedObject.position, rotation: this.state.selectedObject.rotation, scale: this.state.selectedObject.scale }, this.state.selectedObject.userData.oldTransform));
+            } else {
+                this.state.mode = 'TRANSFORMING';
+                this.state.selectedObject.userData.oldTransform = {
+                    position: this.state.selectedObject.position.clone(),
+                    rotation: this.state.selectedObject.rotation.clone(),
+                    scale: this.state.selectedObject.scale.clone(),
+                };
+            }
+        });
+
+        this.eventBus.subscribe(Events.SELECTION_CHANGE, (selectedObject) => {
+            if (this.state.selectedObject) {
+                this.pointer.removeOutline();
+            }
+            this.state.selectedObject = selectedObject;
+            if (this.state.selectedObject) {
+                this.state.mode = 'OBJECT_SELECTED';
+                this.pointer.addOutline(this.state.selectedObject);
+                this.transformControls.attach(this.state.selectedObject);
+            } else {
+                this.state.mode = 'IDLE';
+                this.transformControls.detach();
+            }
+            this.updateGUI(this.state.selectedObject);
+            this.sceneGraph.update();
+        });
+
+        this.eventBus.subscribe(Events.DELETE_OBJECT, (object) => {
+            if (this.state.selectedObject === object) {
+                this.eventBus.publish(Events.SELECTION_CHANGE, null);
+            }
+            const command = new RemoveObjectCommand(this.engine.scene, object);
+            command.execute();
+            this.eventBus.publish(Events.HISTORY_CHANGE, command);
+            this.sceneGraph.update();
+        });
+
+        this.eventBus.subscribe(Events.UNDO, () => {
+            this.history.undo();
+        });
+
+        this.eventBus.subscribe(Events.REDO, () => {
+            this.history.redo();
+        });
+
+        const fullscreenButton = document.getElementById('fullscreen');
+        fullscreenButton.addEventListener('click', () => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen();
+            }
+        });
+    }
+
+    /**
+     * Sets up the UI buttons for the application.
+     */
     setupUIButtons() {
         const ui = document.getElementById('ui');
 
@@ -393,7 +458,7 @@ class App {
         const ungroupButton = document.createElement('button');
         ungroupButton.textContent = 'Ungroup Selected';
         ungroupButton.addEventListener('click', () => {
-            if (this.state.selectedObject && this.state.selectedObject instanceof THREE.Group) {
+            if (this.state.selectedObject && this.state.selectedObject.isGroup) {
                 const command = new UngroupCommand(this.engine.scene, this.groupManager, this.state.selectedObject);
                 this.eventBus.publish(Events.HISTORY_CHANGE, command);
                 this.eventBus.publish(Events.SELECTION_CHANGE, null);
@@ -596,26 +661,6 @@ class App {
             }
         });
         ui.appendChild(physicsButton);
-
-        const undoButton = document.createElement('button');
-        undoButton.textContent = 'Undo';
-        undoButton.addEventListener('click', () => {
-            this.history.undo();
-            this.sceneGraph.update();
-            this.transformControls.detach();
-            this.updateGUI(null);
-        });
-        ui.appendChild(undoButton);
-
-        const redoButton = document.createElement('button');
-        redoButton.textContent = 'Redo';
-        redoButton.addEventListener('click', () => {
-            this.history.redo();
-            this.sceneGraph.update();
-            this.transformControls.detach();
-            this.updateGUI(null);
-        });
-        ui.appendChild(redoButton);
     }
 
     /**
