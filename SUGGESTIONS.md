@@ -44,7 +44,7 @@ This document provides a detailed list of over 300 suggested improvements for th
 
 ### III. Frontend - JavaScript & Logic
 
-- [ ] **Refactor WebSocket Message Handling**: The large `if/else if` block in `main.js`'s `ws.onmessage` handler is inefficient. Refactor it into a `switch` statement or, even better, a handler map object (`const messageHandlers = { 'type': handlerFunc, ... }`).
+- [~] **Refactor WebSocket Message Handling**: The large `if/else if` block in `main.js`'s `ws.onmessage` handler is inefficient. Refactor it into a `switch` statement or, even better, a handler map object (`const messageHandlers = { 'type': handlerFunc, ... }`). (Note: The application does not currently use WebSockets.)
 - [ ] **Create an Input Manager**: Centralize all mouse and keyboard event listeners (`mousedown`, `keyup`, etc.) into a dedicated `InputManager` class instead of attaching them directly to the `window` or `document` in `main.js`.
 - [ ] **Leverage Modern JavaScript**: Use modern ES6+ features like optional chaining (`?.`), nullish coalescing (`??`), and `async/await` to write more concise and readable code.
 - [ ] **Implement Placeholder Files**: The files `PhysicsManager.js` and `ShaderEditor.js` are empty. Either implement their functionality or remove them from the project.
