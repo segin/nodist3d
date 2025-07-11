@@ -15,6 +15,13 @@ app.use(helmet());
 app.use(cors());
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
-app.listen(port, '0.0.0.0', () => {
+const server = app.listen(port, '0.0.0.0', () => {
   log.info(`Server listening at http://localhost:${port}`);
+});
+
+process.on('SIGINT', () => {
+    log.info('SIGINT signal received: closing HTTP server');
+    server.close(() => {
+        log.info('HTTP server closed');
+    });
 });
