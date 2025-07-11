@@ -5,14 +5,6 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { EventBus } from '../src/frontend/EventBus.js';
 
-jest.mock('../src/frontend/EventBus.js', () => ({
-    __esModule: true,
-    default: {
-        subscribe: jest.fn(),
-        publish: jest.fn(),
-    },
-}));
-
 // Mock dat.gui
 // Mock dat.gui
 // Mock dat.gui
