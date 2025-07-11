@@ -121,7 +121,7 @@ describe('SceneStorage', () => {
     beforeEach(() => {
         THREE.Scene.prototype.toJSON = jest.fn(() => ({}));
         scene = new Scene();
-        eventBus = new EventBus();
+        eventBus = EventBus;
         sceneStorage = new SceneStorage(scene);
         primitiveFactory = new PrimitiveFactory();
         objectManager = new ObjectManager(scene, primitiveFactory, eventBus);
