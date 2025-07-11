@@ -278,13 +278,16 @@ const THREE = {
     Font: jest.fn(() => ({
         type: 'Font',
     })),
-    DirectionalLight: jest.fn(() => ({
-        ...mockObject3D,
-        isDirectionalLight: true,
-        position: { ...mockVector3 },
-        color: { set: jest.fn() },
-        intensity: 1,
-    })),
+    DirectionalLight: jest.fn(() => {
+        const light = {
+            ...mockObject3D,
+            isDirectionalLight: true,
+            color: { set: jest.fn() },
+            intensity: 1,
+        };
+        light.position = new THREE.Vector3(); // Ensure position is a Vector3 instance
+        return light;
+    }),
     PointLight: jest.fn(() => ({
         ...mockObject3D,
         isPointLight: true,
