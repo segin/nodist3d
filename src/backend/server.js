@@ -19,6 +19,12 @@ app.get('/healthz', (req, res) => {
     res.status(200).send('OK');
 });
 
+// Centralized error handler
+app.use((err, req, res, next) => {
+    log.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+
 const server = app.listen(port, '0.0.0.0', () => {
   log.info(`Server listening at http://localhost:${port}`);
 });
