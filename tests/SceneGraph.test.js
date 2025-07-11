@@ -49,6 +49,7 @@ describe('SceneGraph', () => {
         transformControls = new TransformControls(new Camera(), document.createElement('canvas'));
         updateGUI = jest.fn();
         eventBus = EventBus;
+        console.log('EventBus in SceneGraph.test.js beforeEach:', eventBus);
         sceneGraph = new SceneGraph(scene, uiElement, transformControls, updateGUI, eventBus);
     });
 
