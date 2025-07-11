@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, PointLight, DirectionalLight, Group, AmbientLight } from 'three';
 import { SceneStorage } from '../src/frontend/SceneStorage.js';
+import JSZip from 'jszip';
+import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
+import { EventBus } from '../src/frontend/EventBus.js';
+
 jest.mock('../src/frontend/ObjectManager.js', () => {
     const THREE = jest.requireActual('three');
     return {
@@ -19,18 +23,7 @@ jest.mock('../src/frontend/ObjectManager.js', () => {
         })),
     };
 });
-import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
-import { EventBus } from '../src/frontend/EventBus.js';
-import JSZip from 'jszip';
 
-jest.mock('../src/frontend/EventBus.js', () => ({
-    EventBus: jest.fn().mockImplementation(() => ({
-        emit: jest.fn(),
-        on: jest.fn(),
-        subscribe: jest.fn(),
-        publish: jest.fn(),
-    })),
-}));
 
 
 // Mock the worker for testing purposes
