@@ -31,6 +31,7 @@ class App {
         this.clock = new Clock();
         this.state = {
             selectedObject: null,
+            mode: 'IDLE',
         };
         document.addEventListener('DOMContentLoaded', () => {
             this.canvas = document.querySelector('#c');
@@ -165,7 +166,10 @@ class App {
     setupEventListeners() {
         this.transformControls.addEventListener('dragging-changed', (event) => {
             if (!event.value) {
+                this.state.mode = 'OBJECT_SELECTED';
                 this.eventBus.publish(Events.HISTORY_CHANGE);
+            } else {
+                this.state.mode = 'TRANSFORMING';
             }
         });
 
@@ -175,9 +179,11 @@ class App {
             }
             this.state.selectedObject = selectedObject;
             if (this.state.selectedObject) {
+                this.state.mode = 'OBJECT_SELECTED';
                 this.pointer.addOutline(this.state.selectedObject);
                 this.transformControls.attach(this.state.selectedObject);
             } else {
+                this.state.mode = 'IDLE';
                 this.transformControls.detach();
             }
             this.updateGUI(this.state.selectedObject);
