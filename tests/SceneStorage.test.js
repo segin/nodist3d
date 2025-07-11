@@ -1,7 +1,21 @@
 import * as THREE from 'three';
 import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, PointLight, DirectionalLight, Group, AmbientLight } from 'three';
 import { SceneStorage } from '../src/frontend/SceneStorage.js';
-import { ObjectManager } from '../src/frontend/ObjectManager.js';
+jest.mock('../src/frontend/ObjectManager.js', () => ({
+    ObjectManager: jest.fn().mockImplementation(() => ({
+        addPrimitive: jest.fn((type) => {
+            // Return a mock mesh for addPrimitive calls
+            const mockMesh = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
+            mockMesh.name = `Mock${type}`;
+            mockMesh.uuid = `mock-${type}-uuid`;
+            mockMesh.position.set(0, 0, 0);
+            mockMesh.rotation.set(0, 0, 0);
+            mockMesh.scale.set(1, 1, 1);
+            return mockMesh;
+        }),
+        updateMaterial: jest.fn(),
+    })),
+}));
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
 import { EventBus } from '../src/frontend/EventBus.js';
 import JSZip from 'jszip';
