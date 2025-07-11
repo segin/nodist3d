@@ -51,6 +51,7 @@ Create a web-based 3D modeling program using Node.js to host the backend and Web
         - Fixed `tests/main.test.js` to instantiate App in `beforeEach` block.
         - Revert: Accidental mock of App class in `tests/main.test.js`.
         - Refactor: Removed global App instantiation from `main.js`.
+        - Refactor: Removed EventBus mock from `tests/main.test.js`.
         - Fixed `tests/History.test.js` to use `MockEventBus`.
         - Fixed `tests/SceneGraph.test.js` to use `MockEventBus`.
         - Fixed `jest.setup.cjs` to correctly mock `DirectionalLight` position.
