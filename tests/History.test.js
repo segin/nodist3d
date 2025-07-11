@@ -21,7 +21,7 @@ describe('History', () => {
         scene = new THREE.Scene();
         eventBus = EventBus;
         camera = new THREE.PerspectiveCamera(75, global.innerWidth / global.innerHeight, 0.1, 1000);
-        historyManager = new History(scene, eventBus);
+        historyManager = new History(eventBus);
 
         // Mock the scene's camera for testing camera state saving/restoring
         scene.camera = camera;
