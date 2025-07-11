@@ -15,6 +15,7 @@ Create a web-based 3D modeling program using Node.js to host the backend and Web
 *Directive: Always update the contents of the `GEMINI.js` file with the current subtask you are working on. Ensure that if you are completely interrupted and reset, you are able to adequately restore your working state as to be able to resume your work without significant interruption.*
 *Directive: After every `git commit`, the immediate next action should be a `git push` with the sole exception of the commit failing - in that case, resolve the commit failure, and then `git push`.*
 *Directive: When implementing test cases, it is a requirement to implement only one at a time. You must only check off one completed test unit per `git commit` and `git push`.*
+*Directive: Scan the codebase and suggest 500 possible improvements. Combine them with suggestions file. Make the whole thing a checklist. Implement only one item at a time, then make `git commit` and `git push` before moving on to the next item.*
 
 ## Working Context, Ideas, and Progress for nodist3d
 
@@ -52,3 +53,7 @@ Create a web-based 3D modeling program using Node.js to host the backend and Web
 ### Next Steps:
 - Run tests to verify changes.
 - Prioritize next roadmap features based on the `README.md`.
+- Continue implementing features from the `README.md` checklist.
+- Regularly update `GEMINI.md` with progress.
+- Ensure all changes are tested and committed individually.
+- Push all commits to the remote repository.
