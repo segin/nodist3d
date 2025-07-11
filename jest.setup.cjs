@@ -203,7 +203,25 @@ const THREE = {
         set: jest.fn(function(value) { this._value = value; return this; }),
         setHex: jest.fn(function(value) { this._value = value; return this; }),
     })),
-    Scene: jest.fn().mockImplementation(() => ({ ...mockScene })),
+    Scene: jest.fn(() => {
+        const scene = {
+            children: [],
+            add: jest.fn(object => {
+                if (object.parent) {
+                    object.removeFromParent();
+                }
+                object.parent = scene;
+                scene.children.push(object);
+            }),
+            remove: jest.fn(object => {
+                scene.children = scene.children.filter(child => child !== object);
+                object.parent = null;
+            }),
+            traverse: jest.fn(),
+            getObjectByProperty: jest.fn(() => null),
+        };
+        return scene;
+    }),
     PerspectiveCamera: jest.fn().mockImplementation(() => ({
         ...mockObject3D,
         isPerspectiveCamera: true,
