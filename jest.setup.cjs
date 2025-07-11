@@ -281,7 +281,7 @@ const THREE = {
     DirectionalLight: jest.fn(() => ({
         ...mockObject3D,
         isDirectionalLight: true,
-        position: { ...mockVector3, normalize: jest.fn(() => ({...mockVector3})) },
+        position: { ...mockVector3 },
         color: { set: jest.fn() },
         intensity: 1,
     })),
