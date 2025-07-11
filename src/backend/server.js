@@ -15,6 +15,10 @@ app.use(helmet());
 app.use(cors());
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
+app.get('/healthz', (req, res) => {
+    res.status(200).send('OK');
+});
+
 const server = app.listen(port, '0.0.0.0', () => {
   log.info(`Server listening at http://localhost:${port}`);
 });
