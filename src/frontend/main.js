@@ -335,17 +335,22 @@ class App {
                 this.eventBus.publish(Events.SELECTION_CHANGE, null);
             }
             const command = new RemoveObjectCommand(this.engine.scene, object);
-            command.execute();
             this.eventBus.publish(Events.HISTORY_CHANGE, command);
             this.sceneGraph.update();
         });
 
         this.eventBus.subscribe(Events.UNDO, () => {
             this.history.undo();
+            this.sceneGraph.update();
+            this.transformControls.detach();
+            this.updateGUI(null);
         });
 
         this.eventBus.subscribe(Events.REDO, () => {
             this.history.redo();
+            this.sceneGraph.update();
+            this.transformControls.detach();
+            this.updateGUI(null);
         });
 
         const fullscreenButton = document.getElementById('fullscreen');
@@ -668,6 +673,20 @@ class App {
             }
         });
         ui.appendChild(physicsButton);
+
+        const undoButton = document.createElement('button');
+        undoButton.textContent = 'Undo';
+        undoButton.addEventListener('click', () => {
+            this.history.undo();
+        });
+        ui.appendChild(undoButton);
+
+        const redoButton = document.createElement('button');
+        redoButton.textContent = 'Redo';
+        redoButton.addEventListener('click', () => {
+            this.history.redo();
+        });
+        ui.appendChild(redoButton);
     }
 
     /**
