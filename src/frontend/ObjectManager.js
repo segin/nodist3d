@@ -2,6 +2,7 @@
 import { CSG } from 'three-csg-ts';
 import { PrimitiveFactory } from './PrimitiveFactory.js';
 import log from './logger.js';
+import { Events } from './constants.js';
 
 export class ObjectManager {
     constructor(scene, primitiveFactory, eventBus) {
@@ -22,7 +23,7 @@ export class ObjectManager {
 
         if (mesh) {
             this.scene.add(mesh);
-            this.eventBus.publish('objectAdded', mesh);
+            this.eventBus.publish(Events.OBJECT_ADDED, mesh);
         }
         return mesh;
     }
@@ -54,9 +55,9 @@ export class ObjectManager {
         this.scene.remove(objectB);
         this.scene.add(resultMesh);
 
-        this.eventBus.publish('objectAdded', resultMesh);
-        this.eventBus.publish('objectRemoved', objectA);
-        this.eventBus.publish('objectRemoved', objectB);
+        this.eventBus.publish(Events.OBJECT_ADDED, resultMesh);
+        this.eventBus.publish(Events.OBJECT_REMOVED, objectA);
+        this.eventBus.publish(Events.OBJECT_REMOVED, objectB);
 
         return resultMesh;
     }
@@ -117,7 +118,7 @@ export class ObjectManager {
             }
             // Remove the object from the scene
             this.scene.remove(object);
-            this.eventBus.publish('objectRemoved', object);
+            this.eventBus.publish(Events.OBJECT_REMOVED, object);
         }
     }
 

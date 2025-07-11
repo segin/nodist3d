@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import log from './logger.js';
+import { Events } from './constants.js';
 
 export class LightManager {
     constructor(scene, eventBus) {
@@ -43,14 +44,14 @@ export class LightManager {
         light.name = name || type;
         this.scene.add(light);
         this.lights.push(light);
-        this.eventBus.publish('lightAdded', light); // Emit event
+        this.eventBus.publish(Events.LIGHT_ADDED, light); // Emit event
         return light;
     }
 
     removeLight(light) {
         this.scene.remove(light);
         this.lights = this.lights.filter(l => l !== light);
-        this.eventBus.publish('lightRemoved', light); // Emit event
+        this.eventBus.publish(Events.LIGHT_REMOVED, light); // Emit event
     }
 
     updateLight(light, properties) {
@@ -65,7 +66,7 @@ export class LightManager {
                 }
             }
         }
-        this.eventBus.publish('lightUpdated', light); // Emit event
+        this.eventBus.publish(Events.LIGHT_UPDATED, light); // Emit event
     }
 
     changeLightType(oldLight, newType) {

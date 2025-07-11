@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import log from './logger.js';
+import { Events } from './constants.js';
 
 export class GroupManager {
     constructor(scene, eventBus) {
@@ -31,6 +32,7 @@ export class GroupManager {
         }
 
         this.scene.add(group);
+        this.eventBus.publish(Events.GROUP_ADDED, group); // Emit event
         return group;
     }
 
@@ -52,7 +54,7 @@ export class GroupManager {
         }
 
         this.scene.remove(group);
-        this.eventBus.publish('groupRemoved', group); // Emit event
+        this.eventBus.publish(Events.GROUP_REMOVED, group); // Emit event
         return ungroupedObjects;
     }
 }

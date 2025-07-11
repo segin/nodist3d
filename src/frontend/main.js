@@ -18,6 +18,7 @@ import { PrimitiveFactory } from './PrimitiveFactory.js';
 import EventBus from './EventBus.js';
 import { Clock } from 'three';
 import log from './logger.js';
+import { Events, ObjectTypes } from './constants.js';
 
 /**
  * The main application class.
@@ -164,11 +165,11 @@ class App {
     setupEventListeners() {
         this.transformControls.addEventListener('dragging-changed', (event) => {
             if (!event.value) {
-                this.eventBus.publish('historyChange');
+                this.eventBus.publish(Events.HISTORY_CHANGE);
             }
         });
 
-        this.eventBus.subscribe('selectionChange', (selectedObject) => {
+        this.eventBus.subscribe(Events.SELECTION_CHANGE, (selectedObject) => {
             if (this.state.selectedObject) {
                 this.pointer.removeOutline();
             }
@@ -181,6 +182,15 @@ class App {
             }
             this.updateGUI(this.state.selectedObject);
             this.sceneGraph.update();
+        });
+
+        this.eventBus.subscribe(Events.DELETE_OBJECT, (object) => {
+            if (this.state.selectedObject === object) {
+                this.eventBus.publish(Events.SELECTION_CHANGE, null);
+            }
+            this.objectManager.deleteObject(object);
+            this.sceneGraph.update();
+            this.eventBus.publish(Events.HISTORY_CHANGE);
         });
 
         const fullscreenButton = document.getElementById('fullscreen');
@@ -203,19 +213,19 @@ class App {
         lightFolder.add({
             addAmbientLight: () => {
                 const light = this.lightManager.addLight('AmbientLight', 0x404040, 1, undefined, 'AmbientLight');
-                this.eventBus.publish('historyChange');
+                this.eventBus.publish(Events.HISTORY_CHANGE);
             }
         }, 'addAmbientLight').name('Add Ambient Light');
         lightFolder.add({
             addDirectionalLight: () => {
                 const light = this.lightManager.addLight('DirectionalLight', 0xffffff, 1, { x: 1, y: 1, z: 1 }, 'DirectionalLight');
-                this.eventBus.publish('historyChange');
+                this.eventBus.publish(Events.HISTORY_CHANGE);
             }
         }, 'addDirectionalLight').name('Add Directional Light');
         lightFolder.add({
             addPointLight: () => {
                 const light = this.lightManager.addLight('PointLight', 0xffffff, 1, { x: 0, y: 0, z: 0 }, 'PointLight');
-                this.eventBus.publish('historyChange');
+                this.eventBus.publish(Events.HISTORY_CHANGE);
             }
         }, 'addPointLight').name('Add Point Light');
         lightFolder.open();
@@ -226,41 +236,41 @@ class App {
             button.addEventListener('click', async () => {
                 const newObject = await addMethod();
                 if (newObject) {
-                    this.eventBus.publish('selectionChange', newObject);
+                    this.eventBus.publish(Events.SELECTION_CHANGE, newObject);
                     this.sceneGraph.update();
-                    this.eventBus.publish('historyChange');
+                    this.eventBus.publish(Events.HISTORY_CHANGE);
                 }
             });
             ui.appendChild(button);
         };
 
-        createAddButton('Add Cube', () => this.objectManager.addPrimitive('Box'));
-        createAddButton('Add Sphere', () => this.objectManager.addPrimitive('Sphere'));
-        createAddButton('Add Cylinder', () => this.objectManager.addPrimitive('Cylinder'));
-        createAddButton('Add Cone', () => this.objectManager.addPrimitive('Cone'));
-        createAddButton('Add Torus', () => this.objectManager.addPrimitive('Torus'));
-        createAddButton('Add Torus Knot', () => this.objectManager.addPrimitive('TorusKnot'));
-        createAddButton('Add Tetrahedron', () => this.objectManager.addPrimitive('Tetrahedron'));
-        createAddButton('Add Icosahedron', () => this.objectManager.addPrimitive('Icosahedron'));
-        createAddButton('Add Dodecahedron', () => this.objectManager.addPrimitive('Dodecahedron'));
-        createAddButton('Add Octahedron', () => this.objectManager.addPrimitive('Octahedron'));
-        createAddButton('Add Plane', () => this.objectManager.addPrimitive('Plane'));
-        createAddButton('Add Tube', () => this.objectManager.addPrimitive('Tube'));
-        createAddButton('Add Teapot', () => this.objectManager.addPrimitive('Teapot'));
-        createAddButton('Add Lathe', () => this.objectManager.addPrimitive('Lathe'));
-        createAddButton('Add Extrude', () => this.objectManager.addPrimitive('Extrude'));
-        createAddButton('Add Text', () => this.objectManager.addPrimitive('Text'));
-        createAddButton('Add LOD Cube', () => this.objectManager.addPrimitive('LODCube'));
+        createAddButton('Add Cube', () => this.objectManager.addPrimitive(ObjectTypes.BOX));
+        createAddButton('Add Sphere', () => this.objectManager.addPrimitive(ObjectTypes.SPHERE));
+        createAddButton('Add Cylinder', () => this.objectManager.addPrimitive(ObjectTypes.CYLINDER));
+        createAddButton('Add Cone', () => this.objectManager.addPrimitive(ObjectTypes.CONE));
+        createAddButton('Add Torus', () => this.objectManager.addPrimitive(ObjectTypes.TORUS));
+        createAddButton('Add Torus Knot', () => this.objectManager.addPrimitive(ObjectTypes.TORUS_KNOT));
+        createAddButton('Add Tetrahedron', () => this.objectManager.addPrimitive(ObjectTypes.TETRAHEDRON));
+        createAddButton('Add Icosahedron', () => this.objectManager.addPrimitive(ObjectTypes.ICOSAHEDRON));
+        createAddButton('Add Dodecahedron', () => this.objectManager.addPrimitive(ObjectTypes.DODECAHEDRON));
+        createAddButton('Add Octahedron', () => this.objectManager.addPrimitive(ObjectTypes.OCTAHEDRON));
+        createAddButton('Add Plane', () => this.objectManager.addPrimitive(ObjectTypes.PLANE));
+        createAddButton('Add Tube', () => this.objectManager.addPrimitive(ObjectTypes.TUBE));
+        createAddButton('Add Teapot', () => this.objectManager.addPrimitive(ObjectTypes.TEAPOT));
+        createAddButton('Add Lathe', () => this.objectManager.addPrimitive(ObjectTypes.LATHE));
+        createAddButton('Add Extrude', () => this.objectManager.addPrimitive(ObjectTypes.EXTRUDE));
+        createAddButton('Add Text', () => this.objectManager.addPrimitive(ObjectTypes.TEXT));
+        createAddButton('Add LOD Cube', () => this.objectManager.addPrimitive(ObjectTypes.LOD_CUBE));
 
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete Selected';
         deleteButton.addEventListener('click', () => {
             if (this.state.selectedObject) {
                 const objectToDelete = this.state.selectedObject;
-                this.eventBus.publish('selectionChange', null);
+                this.eventBus.publish(Events.SELECTION_CHANGE, null);
                 this.objectManager.deleteObject(objectToDelete);
                 this.sceneGraph.update();
-                this.eventBus.publish('historyChange');
+                this.eventBus.publish(Events.HISTORY_CHANGE);
             }
         });
         ui.appendChild(deleteButton);
@@ -270,9 +280,9 @@ class App {
         duplicateButton.addEventListener('click', () => {
             if (this.state.selectedObject) {
                 const duplicatedObject = this.objectManager.duplicateObject(this.state.selectedObject);
-                this.eventBus.publish('selectionChange', duplicatedObject);
+                this.eventBus.publish(Events.SELECTION_CHANGE, duplicatedObject);
                 this.sceneGraph.update();
-                this.eventBus.publish('historyChange');
+                this.eventBus.publish(Events.HISTORY_CHANGE);
             }
         });
         ui.appendChild(duplicateButton);
@@ -284,9 +294,9 @@ class App {
             if (selectedObjects.length > 1) {
                 const newGroup = this.groupManager.groupObjects(selectedObjects);
                 if (newGroup) {
-                    this.eventBus.publish('selectionChange', newGroup);
+                    this.eventBus.publish(Events.SELECTION_CHANGE, newGroup);
                     this.sceneGraph.update();
-                    this.eventBus.publish('historyChange');
+                    this.eventBus.publish(Events.HISTORY_CHANGE);
                 }
             } else {
                 log.warn("Select at least two objects to group.");
@@ -299,9 +309,9 @@ class App {
         ungroupButton.addEventListener('click', () => {
             if (this.state.selectedObject && this.state.selectedObject instanceof THREE.Group) {
                 const ungrouped = this.groupManager.ungroupObjects(this.state.selectedObject);
-                this.eventBus.publish('selectionChange', null);
+                this.eventBus.publish(Events.SELECTION_CHANGE, null);
                 this.sceneGraph.update();
-                this.eventBus.publish('historyChange');
+                this.eventBus.publish(Events.HISTORY_CHANGE);
             }
         });
         ui.appendChild(ungroupButton);
@@ -314,9 +324,9 @@ class App {
                 if (selectedObjects.length === 2) {
                     const resultObject = this.objectManager.performCSG(selectedObjects[0], selectedObjects[1], operation);
                     if (resultObject) {
-                        this.eventBus.publish('selectionChange', resultObject);
+                        this.eventBus.publish(Events.SELECTION_CHANGE, resultObject);
                         this.sceneGraph.update();
-                        this.eventBus.publish('historyChange');
+                        this.eventBus.publish(Events.HISTORY_CHANGE);
                     }
                 } else {
                     log.warn("Select exactly two objects for CSG operation.");
@@ -333,7 +343,7 @@ class App {
         resetButton.textContent = 'Reset View';
         resetButton.addEventListener('click', () => {
             this.sceneManager.resetCamera();
-            this.eventBus.publish('historyChange');
+            this.eventBus.publish(Events.HISTORY_CHANGE);
         });
         ui.appendChild(resetButton);
 
@@ -388,7 +398,7 @@ class App {
                 this.transformControls.detach();
                 this.updateGUI(null);
                 this.sceneGraph.update();
-                this.eventBus.publish('historyChange');
+                this.eventBus.publish(Events.HISTORY_CHANGE);
             }
         });
         ui.appendChild(loadInput);
@@ -412,9 +422,9 @@ class App {
                     const objLoader = new OBJLoader();
                     const object = objLoader.parse(e.target.result);
                     this.sceneManager.scene.add(object);
-                    this.eventBus.publish('selectionChange', object);
+                    this.eventBus.publish(Events.SELECTION_CHANGE, object);
                     this.sceneGraph.update();
-                    this.eventBus.publish('historyChange');
+                    this.eventBus.publish(Events.HISTORY_CHANGE);
                 };
                 reader.readAsText(file);
             }
@@ -440,9 +450,9 @@ class App {
                     const gltfLoader = new GLTFLoader();
                     gltfLoader.parse(e.target.result, '', (gltf) => {
                         this.sceneManager.scene.add(gltf.scene);
-                        this.eventBus.publish('selectionChange', gltf.scene);
+                        this.eventBus.publish(Events.SELECTION_CHANGE, gltf.scene);
                         this.sceneGraph.update();
-                        this.eventBus.publish('historyChange');
+                        this.eventBus.publish(Events.HISTORY_CHANGE);
                     });
                 };
                 reader.readAsArrayBuffer(file);
@@ -494,7 +504,7 @@ class App {
         physicsButton.addEventListener('click', () => {
             if (this.state.selectedObject) {
                 this.physicsManager.addBody(this.state.selectedObject, 1, 'box');
-                this.eventBus.publish('historyChange');
+                this.eventBus.publish(Events.HISTORY_CHANGE);
             }
         });
         ui.appendChild(physicsButton);

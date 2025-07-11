@@ -1,0 +1,32 @@
+export const Events = {
+    OBJECT_ADDED: 'objectAdded',
+    OBJECT_REMOVED: 'objectRemoved',
+    SELECTION_CHANGE: 'selectionChange',
+    HISTORY_CHANGE: 'historyChange',
+    LIGHT_ADDED: 'lightAdded',
+    LIGHT_REMOVED: 'lightRemoved',
+    LIGHT_UPDATED: 'lightUpdated',
+    GROUP_ADDED: 'groupAdded',
+    GROUP_REMOVED: 'groupRemoved',
+    DELETE_OBJECT: 'deleteObject',
+};
+
+export const ObjectTypes = {
+    BOX: 'Box',
+    SPHERE: 'Sphere',
+    CYLINDER: 'Cylinder',
+    CONE: 'Cone',
+    TORUS: 'Torus',
+    TORUS_KNOT: 'TorusKnot',
+    TETRAHEDRON: 'Tetrahedron',
+    ICOSAHEDRON: 'Icosahedron',
+    DODECAHEDRON: 'Dodecahedron',
+    OCTAHEDRON: 'Octahedron',
+    PLANE: 'Plane',
+    TUBE: 'Tube',
+    TEAPOT: 'Teapot',
+    LATHE: 'Lathe',
+    EXTRUDE: 'Extrude',
+    TEXT: 'Text',
+    LOD_CUBE: 'LODCube',
+};

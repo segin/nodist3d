@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { Events } from './constants.js';
 
 export class Pointer {
     constructor(camera, scene, renderer, eventBus) {
@@ -26,9 +27,9 @@ export class Pointer {
 
         if (intersects.length > 0) {
             const newSelectedObject = intersects[0].object;
-            this.eventBus.publish('selectionChange', newSelectedObject);
+            this.eventBus.publish(Events.SELECTION_CHANGE, newSelectedObject);
         } else {
-            this.eventBus.publish('selectionChange', null);
+            this.eventBus.publish(Events.SELECTION_CHANGE, null);
         }
     }
 

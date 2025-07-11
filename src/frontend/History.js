@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { Events } from './constants.js';
 
 export class History {
     constructor(scene, eventBus) {
@@ -8,10 +9,10 @@ export class History {
         this.currentIndex = -1;
         this.transformControls = null;
 
-        this.eventBus.subscribe('historyChange', () => this.saveState());
-        this.eventBus.subscribe('objectAdded', () => this.saveState());
-        this.eventBus.subscribe('lightAdded', () => this.saveState());
-        this.eventBus.subscribe('groupAdded', () => this.saveState());
+        this.eventBus.subscribe(Events.HISTORY_CHANGE, () => this.saveState());
+        this.eventBus.subscribe(Events.OBJECT_ADDED, () => this.saveState());
+        this.eventBus.subscribe(Events.LIGHT_ADDED, () => this.saveState());
+        this.eventBus.subscribe(Events.GROUP_ADDED, () => this.saveState());
     }
 
     setTransformControls(controls) {
