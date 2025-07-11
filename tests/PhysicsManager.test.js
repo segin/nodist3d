@@ -1,15 +1,4 @@
-import './__mocks__/three-dat.gui.js';
-import './__mocks__/three-dat.gui.js';
-import './__mocks__/three-dat.gui.js';
-import './__mocks__/three-dat.gui.js';
-import './__mocks__/three-dat.gui.js';
-import './__mocks__/three-dat.gui.js';
-import './__mocks__/three-dat.gui.js';
-import './__mocks__/three-dat.gui.js';
-import './__mocks__/three-dat.gui.js';
-import './__mocks__/three-dat.gui.js';
-import './__mocks__/three-dat.gui.js';
-import './__mocks__/three-dat.gui.js';
+import { Scene } from 'three';
 import { PhysicsManager } from '../src/frontend/PhysicsManager.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
