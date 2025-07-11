@@ -9,6 +9,7 @@ import log from './logger.js';
 export class PrimitiveFactory {
     constructor() {
         this.font = null;
+        this.materialCache = {};
         const loader = new FontLoader();
         loader.load('./node_modules/three/examples/fonts/helvetiker_regular.typeface.json', (font) => {
             this.font = font;
@@ -16,7 +17,11 @@ export class PrimitiveFactory {
     }
 
     _createMesh(geometry, color, side = THREE.FrontSide) {
-        const material = new THREE.MeshPhongMaterial({ color, side });
+        const cacheKey = `${color}_${side}`;
+        if (!this.materialCache[cacheKey]) {
+            this.materialCache[cacheKey] = new THREE.MeshPhongMaterial({ color, side });
+        }
+        const material = this.materialCache[cacheKey];
         const mesh = new THREE.Mesh(geometry, material);
         return mesh;
     }
