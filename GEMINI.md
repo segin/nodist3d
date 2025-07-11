@@ -45,7 +45,8 @@ Create a web-based 3D modeling program using Node.js to host the backend and Web
 - Fixed `tests/ObjectManager.test.js` to use the singleton `EventBus` instance.
 - Fixed `tests/PhysicsManager.test.js` to use the singleton `EventBus` instance.
 - Fixed `tests/ShaderEditor.test.js` to use the singleton `EventBus` instance and updated `main.js` to pass `eventBus` to `ShaderEditor`, and improved mocks in `ShaderEditor.test.js`.
-- Fixed `src/frontend/SceneGraph.js` to use `eventBus.publish` and `eventBus.subscribe`, and refined `document.createElement` mock in `tests/SceneGraph.test.js`.
+        - Fixed `tests/PhysicsManager.test.js` syntax error.
+        - Fixed `src/frontend/SceneGraph.js` to use `eventBus.publish` and `eventBus.subscribe`, and refined `document.createElement` mock in `tests/SceneGraph.test.js`.
 
 ### New Memory:
 - When `replace` tool fails due to multiple matches or complex replacements, rebuild the full file content into a temporary file and then move it to replace the original. No need to `git add` if the filename is the same.
