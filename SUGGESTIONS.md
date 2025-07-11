@@ -33,7 +33,7 @@ This document provides a detailed list of over 300 suggested improvements for th
 - [x] **Add Security Middleware**: Use `helmet` in your Express server to set secure HTTP headers and protect against common web vulnerabilities.
 - [x] **Enable CORS**: Implement the `cors` middleware to handle cross-origin requests, which will be necessary if the API and frontend are served on different ports or domains.
 - [~] **Handle WebSocket Errors**: Add an `'error'` event listener to each WebSocket connection to log errors and prevent the server from crashing due to unhandled exceptions. (Note: The application does not currently use WebSockets.)
-- [ ] **Use Environment Variables for Port**: Read the server port from `process.env.PORT` with a fallback to `3000` to make deployment easier.
+- [x] **Use Environment Variables for Port**: Read the server port from `process.env.PORT` with a fallback to `3000` to make deployment easier.
 - [ ] **Refactor WebSocket Broadcasting**: The current broadcast iterates through all clients. For better performance, consider implementing a room-based system if you need to send messages to specific client groups.
 - [ ] **Graceful Server Shutdown**: Implement logic to gracefully shut down the server, closing all WebSocket connections and saving any necessary state.
 - [ ] **Structured Logging**: Log server events as structured JSON objects instead of plain text for easier querying and analysis in log management systems.
