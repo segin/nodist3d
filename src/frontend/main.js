@@ -273,9 +273,16 @@ class App {
                 this.eventBus.publish(Events.SELECTION_CHANGE, null);
             }
             const command = new RemoveObjectCommand(this.engine.scene, object);
-            command.execute();
             this.eventBus.publish(Events.HISTORY_CHANGE, command);
             this.sceneGraph.update();
+        });
+
+        this.eventBus.subscribe(Events.UNDO, () => {
+            this.history.undo();
+        });
+
+        this.eventBus.subscribe(Events.REDO, () => {
+            this.history.redo();
         });
 
         const fullscreenButton = document.getElementById('fullscreen');
