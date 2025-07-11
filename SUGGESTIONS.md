@@ -40,7 +40,7 @@ This document provides a detailed list of over 300 suggested improvements for th
 - [~] **Implement WebSocket Heartbeat**: Add a ping/pong mechanism to detect and close dead WebSocket connections. (Note: The application does not currently use WebSockets.)
 - [x] **Add a Health Check Endpoint**: Create a simple HTTP endpoint (e.g., `/healthz`) that returns a `200 OK` status, useful for deployment environments.
 - [~] **WebSocket Message Versioning**: Include a version number in your WebSocket message protocol to allow for backward-compatible changes in the future. (Note: The application does not currently use WebSockets.)
-- [ ] **Centralized Error Handling in Express**: Use a dedicated Express error-handling middleware to catch all unhandled route errors.
+- [x] **Centralized Error Handling in Express**: Use a dedicated Express error-handling middleware to catch all unhandled route errors.
 
 ### III. Frontend - JavaScript & Logic
 
