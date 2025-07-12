@@ -175,6 +175,46 @@ class App {
                         this.redo();
                     }
                     break;
+                case 'f':
+                    if (event.ctrlKey || event.metaKey) {
+                        event.preventDefault();
+                        this.toggleFullscreen();
+                    }
+                    break;
+            }
+        });
+
+        // Fullscreen button
+        const fullscreenButton = document.getElementById('fullscreen');
+        if (fullscreenButton) {
+            fullscreenButton.addEventListener('click', () => {
+                this.toggleFullscreen();
+            });
+        }
+
+        // Listen for fullscreen changes to update button text
+        document.addEventListener('fullscreenchange', () => {
+            if (fullscreenButton) {
+                fullscreenButton.textContent = document.fullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+            }
+        });
+        
+        // Handle vendor-specific fullscreen events
+        document.addEventListener('webkitfullscreenchange', () => {
+            if (fullscreenButton) {
+                fullscreenButton.textContent = document.webkitFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+            }
+        });
+        
+        document.addEventListener('mozfullscreenchange', () => {
+            if (fullscreenButton) {
+                fullscreenButton.textContent = document.mozFullScreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+            }
+        });
+        
+        document.addEventListener('MSFullscreenChange', () => {
+            if (fullscreenButton) {
+                fullscreenButton.textContent = document.msFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
             }
         });
     }
@@ -1038,6 +1078,32 @@ class App {
         }
         
         this.updateSceneGraph();
+    }
+
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            // Enter fullscreen
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.mozRequestFullScreen) {
+                document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.msRequestFullscreen) {
+                document.documentElement.msRequestFullscreen();
+            }
+        } else {
+            // Exit fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
     }
 
     animate() {
