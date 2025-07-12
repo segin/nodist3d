@@ -19,55 +19,39 @@ Create a web-based 3D modeling program using Node.js to host the backend and Web
 
 ## Working Context, Ideas, and Progress for nodist3d
 
+*Directive: This section must be updated by the AI agent after each significant change to maintain working state continuity.*
+*Directive: The AI agent must update the "Current Focus" section to reflect the exact task being worked on.*
+*Directive: The AI agent must move completed tasks from "Current Focus" to "Completed Tasks" section.*
+*Directive: The AI agent must update "Next Steps" with the immediate next actions based on the roadmap.*
+
 ### Current Focus:
-- Running tests to verify changes.
+- Implementing next three roadmap items systematically:
+  1. Property panel for primitive parameters (COMPLETED)
+  2. Scene graph/outliner for object management (IN PROGRESS)
+  3. Undo functionality (PENDING)
 
 ### Completed Tasks:
-- Optimized font loading in `ObjectManager.js` by loading the font once in the constructor and removing duplicate `addLathe`, `addExtrude`, and `addText` functions.
-- Refactored `main.js` to use an `App` class for better organization and moved UI setup into dedicated methods.
-- Implemented Web Workers for offloading heavy computations (scene serialization/deserialization).
-- Implemented Level of Detail (LOD) for complex scenes.
-- Implemented the Factory Pattern for 3D primitives using `PrimitiveFactory.js`.
-- Created `src/frontend/EventBus.js`.
-- Modified `main.js` to instantiate `EventBus` and pass it to relevant managers, and updated `eventBus.emit` to `eventBus.publish`.
-- Refactored `Pointer.js` to publish `selectionChange` events via `EventBus` and removed redundant `THREE.EventDispatcher` inheritance.
-- Modified `main.js` to subscribe to `selectionChange` events using `eventBus.subscribe`.
-- Refactored `History.js` to subscribe to relevant events for state saving using `eventBus.subscribe`.
-- Modified `ObjectManager.js` to publish events using `eventBus.publish`.
-- Modified `LightManager.js` to publish events using `eventBus.publish`.
-- Modified `GroupManager.js` to publish events using `eventBus.publish`.
-- Updated `README.md` to mark Event Bus as complete.
-- Removed `super()` call from `src/frontend/Pointer.js`.
-- Modified `main.js` to use the singleton `EventBus` instance.
-- Rewrote `jest.config.cjs` to fix syntax errors.
-- Fixed `tests/History.test.js` to use the singleton `EventBus` instance.
-- Fixed `tests/GroupManager.test.js` to use the singleton `EventBus` instance.
-- Fixed `tests/ObjectManager.test.js` to use the singleton `EventBus` instance.
-- Fixed `tests/PhysicsManager.test.js` to use the singleton `EventBus` instance.
-- Fixed `tests/ShaderEditor.test.js` to use the singleton `EventBus` instance and updated `main.js` to pass `eventBus` to `ShaderEditor`, and improved mocks in `ShaderEditor.test.js`.
-        - Revert: EventBus mock usage in `tests/SceneGraph.test.js`.
-        - Revert: EventBus mock usage in `tests/History.test.js`.
-        - Fixed `tests/SceneStorage.test.js` to correctly mock `ObjectManager` by importing `THREE` inside the mock factory.
-        - Fixed `tests/main.test.js` to instantiate App in `beforeEach` block.
-        - Revert: Accidental mock of App class in `tests/main.test.js`.
-        - Refactor: Removed global App instantiation from `main.js`.
-        - Refactor: Removed EventBus mock from `tests/main.test.js`.
-        - Fixed `tests/History.test.js` to use `MockEventBus`.
-        - Fixed `tests/SceneGraph.test.js` to use `MockEventBus`.
-        - Fixed `jest.setup.cjs` to correctly mock `DirectionalLight` position.
-        - Fixed `tests/GroupManager.test.js` to explicitly import THREE components.
-        - Fixed `tests/ObjectManager.test.js` to explicitly import THREE components.
-        - Fixed `tests/ShaderEditor.test.js` to explicitly import THREE components.
-        - Fixed `tests/PhysicsManager.test.js` syntax error.
-        - Fixed `src/frontend/SceneGraph.js` to use `eventBus.publish` and `eventBus.subscribe`, and refined `document.createElement` mock in `tests/SceneGraph.test.js`.
+- Reset all roadmap items to unchecked to start fresh implementation
+- Implemented clean, simplified App class architecture with basic interactive controls
+- Added TransformControls for translate, rotate, scale operations
+- Implemented click-to-select functionality with visual feedback
+- Added keyboard shortcuts (G=translate, R=rotate, S=scale)
+- Created working test suite with proper mocks for THREE.js components
+- Basic primitives: Box, Sphere, Cylinder, Cone, Torus, Plane
+- Object duplication and deletion features
+- Grid and axis helpers for better orientation
+- Fixed test architecture issues by simplifying the codebase
+- ✅ COMPLETED: Interactive controls for object manipulation (translate, rotate, scale) - commit 291e5f9
+- ✅ COMPLETED: Property panel for primitive parameters with real-time geometry updates - commit pending
 
-### New Memory:
-- When `replace` tool fails due to multiple matches or complex replacements, rebuild the full file content into a temporary file and then move it to replace the original. No need to `git add` if the filename is the same.
+### Implementation Strategy:
+- Follow one-by-one implementation with individual commits and pushes
+- Each roadmap item gets its own commit with comprehensive testing
+- Maintain working state by updating this file continuously
+- Use clean, maintainable code patterns that are easy to extend
 
 ### Next Steps:
-- Run tests to verify changes.
-- Prioritize next roadmap features based on the `README.md`.
-- Continue implementing features from the `README.md` checklist.
-- Regularly update `GEMINI.md` with progress.
-- Ensure all changes are tested and committed individually.
-- Push all commits to the remote repository.
+1. Add property panel to adjust primitive parameters (dimensions, radius, etc.)
+2. Implement scene graph/outliner for managing multiple objects
+3. Add undo functionality for actions
+4. Continue with remaining roadmap items systematically

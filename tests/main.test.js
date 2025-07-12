@@ -79,7 +79,28 @@ jest.mock('dat.gui', () => ({
                 name: jest.fn(() => ({ onChange: jest.fn() })),
                 onChange: jest.fn()
             })),
-            open: jest.fn()
+            addFolder: jest.fn(() => ({
+                add: jest.fn(() => ({
+                    name: jest.fn(() => ({ onChange: jest.fn() })),
+                    onChange: jest.fn()
+                })),
+                addColor: jest.fn(() => ({
+                    name: jest.fn(() => ({ onChange: jest.fn() })),
+                    onChange: jest.fn()
+                })),
+                open: jest.fn(),
+                close: jest.fn()
+            })),
+            addColor: jest.fn(() => ({
+                name: jest.fn(() => ({ onChange: jest.fn() })),
+                onChange: jest.fn()
+            })),
+            open: jest.fn(),
+            close: jest.fn(),
+            remove: jest.fn(),
+            removeFolder: jest.fn(),
+            __controllers: [],
+            __folders: []
         }))
     }))
 }));

@@ -126,6 +126,10 @@ class App {
         objectFolder.add(this, 'deleteSelectedObject').name('Delete Selected');
         objectFolder.add(this, 'duplicateSelectedObject').name('Duplicate Selected');
         objectFolder.open();
+
+        // Properties panel (initially hidden)
+        this.propertiesFolder = this.gui.addFolder('Properties');
+        this.propertiesFolder.close();
     }
 
     setupLighting() {
@@ -229,6 +233,9 @@ class App {
             obj.material.emissive.setHex(0x000000);
         });
         object.material.emissive.setHex(0x444444);
+        
+        // Update properties panel
+        this.updatePropertiesPanel(object);
     }
 
     deselectObject() {
@@ -236,7 +243,234 @@ class App {
             this.selectedObject.material.emissive.setHex(0x000000);
             this.selectedObject = null;
             this.transformControls.detach();
+            
+            // Clear properties panel
+            this.clearPropertiesPanel();
         }
+    }
+
+    updatePropertiesPanel(object) {
+        this.clearPropertiesPanel();
+        
+        if (!object) return;
+        
+        // Add object name
+        const nameController = {
+            name: object.name || 'Unnamed Object'
+        };
+        this.propertiesFolder.add(nameController, 'name').name('Name').onChange((value) => {
+            object.name = value;
+        });
+        
+        // Add position controls
+        const positionFolder = this.propertiesFolder.addFolder('Position');
+        positionFolder.add(object.position, 'x', -10, 10).name('X').onChange(() => {
+            // Position updates are handled automatically by THREE.js
+        });
+        positionFolder.add(object.position, 'y', -10, 10).name('Y').onChange(() => {
+            // Position updates are handled automatically by THREE.js
+        });
+        positionFolder.add(object.position, 'z', -10, 10).name('Z').onChange(() => {
+            // Position updates are handled automatically by THREE.js
+        });
+        
+        // Add rotation controls (in degrees for better UX)
+        const rotationFolder = this.propertiesFolder.addFolder('Rotation');
+        const rotationDegrees = {
+            x: object.rotation.x * 180 / Math.PI,
+            y: object.rotation.y * 180 / Math.PI,
+            z: object.rotation.z * 180 / Math.PI
+        };
+        rotationFolder.add(rotationDegrees, 'x', -180, 180).name('X (deg)').onChange((value) => {
+            object.rotation.x = value * Math.PI / 180;
+        });
+        rotationFolder.add(rotationDegrees, 'y', -180, 180).name('Y (deg)').onChange((value) => {
+            object.rotation.y = value * Math.PI / 180;
+        });
+        rotationFolder.add(rotationDegrees, 'z', -180, 180).name('Z (deg)').onChange((value) => {
+            object.rotation.z = value * Math.PI / 180;
+        });
+        
+        // Add scale controls
+        const scaleFolder = this.propertiesFolder.addFolder('Scale');
+        scaleFolder.add(object.scale, 'x', 0.1, 5).name('X').onChange(() => {
+            // Scale updates are handled automatically by THREE.js
+        });
+        scaleFolder.add(object.scale, 'y', 0.1, 5).name('Y').onChange(() => {
+            // Scale updates are handled automatically by THREE.js
+        });
+        scaleFolder.add(object.scale, 'z', 0.1, 5).name('Z').onChange(() => {
+            // Scale updates are handled automatically by THREE.js
+        });
+        
+        // Add material properties
+        const materialFolder = this.propertiesFolder.addFolder('Material');
+        const materialColor = {
+            color: object.material.color.getHex()
+        };
+        materialFolder.addColor(materialColor, 'color').name('Color').onChange((value) => {
+            object.material.color.setHex(value);
+        });
+        
+        // Add geometry-specific properties
+        this.addGeometryProperties(object);
+        
+        this.propertiesFolder.open();
+    }
+
+    addGeometryProperties(object) {
+        const geometry = object.geometry;
+        const geometryFolder = this.propertiesFolder.addFolder('Geometry');
+        
+        // Store original geometry parameters for rebuilding
+        if (!object.userData.geometryParams) {
+            object.userData.geometryParams = this.getGeometryParameters(geometry);
+        }
+        
+        const params = object.userData.geometryParams;
+        
+        if (geometry.type === 'BoxGeometry') {
+            geometryFolder.add(params, 'width', 0.1, 5).name('Width').onChange(() => {
+                this.rebuildGeometry(object, 'box');
+            });
+            geometryFolder.add(params, 'height', 0.1, 5).name('Height').onChange(() => {
+                this.rebuildGeometry(object, 'box');
+            });
+            geometryFolder.add(params, 'depth', 0.1, 5).name('Depth').onChange(() => {
+                this.rebuildGeometry(object, 'box');
+            });
+        } else if (geometry.type === 'SphereGeometry') {
+            geometryFolder.add(params, 'radius', 0.1, 3).name('Radius').onChange(() => {
+                this.rebuildGeometry(object, 'sphere');
+            });
+            geometryFolder.add(params, 'widthSegments', 4, 64).step(1).name('Width Segments').onChange(() => {
+                this.rebuildGeometry(object, 'sphere');
+            });
+            geometryFolder.add(params, 'heightSegments', 2, 64).step(1).name('Height Segments').onChange(() => {
+                this.rebuildGeometry(object, 'sphere');
+            });
+        } else if (geometry.type === 'CylinderGeometry') {
+            geometryFolder.add(params, 'radiusTop', 0.1, 3).name('Top Radius').onChange(() => {
+                this.rebuildGeometry(object, 'cylinder');
+            });
+            geometryFolder.add(params, 'radiusBottom', 0.1, 3).name('Bottom Radius').onChange(() => {
+                this.rebuildGeometry(object, 'cylinder');
+            });
+            geometryFolder.add(params, 'height', 0.1, 5).name('Height').onChange(() => {
+                this.rebuildGeometry(object, 'cylinder');
+            });
+        } else if (geometry.type === 'ConeGeometry') {
+            geometryFolder.add(params, 'radius', 0.1, 3).name('Radius').onChange(() => {
+                this.rebuildGeometry(object, 'cone');
+            });
+            geometryFolder.add(params, 'height', 0.1, 5).name('Height').onChange(() => {
+                this.rebuildGeometry(object, 'cone');
+            });
+        } else if (geometry.type === 'TorusGeometry') {
+            geometryFolder.add(params, 'radius', 0.1, 3).name('Radius').onChange(() => {
+                this.rebuildGeometry(object, 'torus');
+            });
+            geometryFolder.add(params, 'tube', 0.05, 1).name('Tube').onChange(() => {
+                this.rebuildGeometry(object, 'torus');
+            });
+        } else if (geometry.type === 'PlaneGeometry') {
+            geometryFolder.add(params, 'width', 0.1, 10).name('Width').onChange(() => {
+                this.rebuildGeometry(object, 'plane');
+            });
+            geometryFolder.add(params, 'height', 0.1, 10).name('Height').onChange(() => {
+                this.rebuildGeometry(object, 'plane');
+            });
+        }
+    }
+
+    getGeometryParameters(geometry) {
+        const params = geometry.parameters || {};
+        
+        // Set default parameters if not available
+        switch (geometry.type) {
+            case 'BoxGeometry':
+                return {
+                    width: params.width || 1,
+                    height: params.height || 1,
+                    depth: params.depth || 1
+                };
+            case 'SphereGeometry':
+                return {
+                    radius: params.radius || 0.5,
+                    widthSegments: params.widthSegments || 32,
+                    heightSegments: params.heightSegments || 32
+                };
+            case 'CylinderGeometry':
+                return {
+                    radiusTop: params.radiusTop || 0.5,
+                    radiusBottom: params.radiusBottom || 0.5,
+                    height: params.height || 1
+                };
+            case 'ConeGeometry':
+                return {
+                    radius: params.radius || 0.5,
+                    height: params.height || 1
+                };
+            case 'TorusGeometry':
+                return {
+                    radius: params.radius || 0.4,
+                    tube: params.tube || 0.2
+                };
+            case 'PlaneGeometry':
+                return {
+                    width: params.width || 2,
+                    height: params.height || 2
+                };
+            default:
+                return {};
+        }
+    }
+
+    rebuildGeometry(object, type) {
+        const params = object.userData.geometryParams;
+        let newGeometry;
+        
+        switch (type) {
+            case 'box':
+                newGeometry = new THREE.BoxGeometry(params.width, params.height, params.depth);
+                break;
+            case 'sphere':
+                newGeometry = new THREE.SphereGeometry(params.radius, params.widthSegments, params.heightSegments);
+                break;
+            case 'cylinder':
+                newGeometry = new THREE.CylinderGeometry(params.radiusTop, params.radiusBottom, params.height, 32);
+                break;
+            case 'cone':
+                newGeometry = new THREE.ConeGeometry(params.radius, params.height, 32);
+                break;
+            case 'torus':
+                newGeometry = new THREE.TorusGeometry(params.radius, params.tube, 16, 100);
+                break;
+            case 'plane':
+                newGeometry = new THREE.PlaneGeometry(params.width, params.height);
+                break;
+        }
+        
+        if (newGeometry) {
+            object.geometry.dispose();
+            object.geometry = newGeometry;
+        }
+    }
+
+    clearPropertiesPanel() {
+        // Remove all controllers from the properties folder
+        const controllers = [...this.propertiesFolder.__controllers];
+        controllers.forEach(controller => {
+            this.propertiesFolder.remove(controller);
+        });
+        
+        // Remove all subfolders
+        const folders = [...this.propertiesFolder.__folders];
+        folders.forEach(folder => {
+            this.propertiesFolder.removeFolder(folder);
+        });
+        
+        this.propertiesFolder.close();
     }
 
     deleteObject(object) {
