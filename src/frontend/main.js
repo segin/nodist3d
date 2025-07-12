@@ -55,6 +55,9 @@ class App {
             this.camera.updateProjectionMatrix();
             this.renderer.setSize(window.innerWidth, window.innerHeight);
         });
+
+        // Mobile touch optimizations
+        this.setupMobileOptimizations();
     }
 
     setupSceneGraph() {
@@ -244,6 +247,90 @@ class App {
                     this.loadScene(file);
                 }
             });
+        }
+    }
+
+    setupMobileOptimizations() {
+        // Detect mobile devices
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
+        if (isMobile || isTouch) {
+            // Disable transform controls hover effects on mobile for better performance
+            this.transformControls.addEventListener('mouseDown', () => {
+                this.orbitControls.enabled = false;
+            });
+            
+            this.transformControls.addEventListener('mouseUp', () => {
+                this.orbitControls.enabled = true;
+            });
+
+            // Optimize orbit controls for touch
+            this.orbitControls.enableKeys = false; // Disable keyboard on mobile
+            this.orbitControls.touches = {
+                ONE: THREE.TOUCH.ROTATE,
+                TWO: THREE.TOUCH.DOLLY_PAN
+            };
+            
+            // Reduce damping for snappier feel on mobile
+            this.orbitControls.dampingFactor = 0.1;
+            
+            // Add touch-friendly selection using longer press
+            let touchStartTime = 0;
+            let touchStart = { x: 0, y: 0 };
+            const touchSelectThreshold = 200; // milliseconds
+            const touchMoveThreshold = 10; // pixels
+
+            this.renderer.domElement.addEventListener('touchstart', (event) => {
+                touchStartTime = Date.now();
+                if (event.touches.length === 1) {
+                    touchStart.x = event.touches[0].clientX;
+                    touchStart.y = event.touches[0].clientY;
+                }
+            });
+
+            this.renderer.domElement.addEventListener('touchend', (event) => {
+                const touchDuration = Date.now() - touchStartTime;
+                const touchEnd = {
+                    x: event.changedTouches[0].clientX,
+                    y: event.changedTouches[0].clientY
+                };
+                
+                const moveDistance = Math.sqrt(
+                    Math.pow(touchEnd.x - touchStart.x, 2) + 
+                    Math.pow(touchEnd.y - touchStart.y, 2)
+                );
+
+                // If touch was short and didn't move much, treat as selection
+                if (touchDuration < touchSelectThreshold && moveDistance < touchMoveThreshold) {
+                    this.handleTouch(event.changedTouches[0]);
+                }
+            });
+            
+            // Prevent context menu on long press
+            this.renderer.domElement.addEventListener('contextmenu', (event) => {
+                event.preventDefault();
+            });
+            
+            // Add visual feedback for mobile interactions
+            document.body.classList.add('mobile-optimized');
+        }
+    }
+    
+    handleTouch(touch) {
+        const rect = this.renderer.domElement.getBoundingClientRect();
+        const mouse = new THREE.Vector2();
+        mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
+
+        this.raycaster.setFromCamera(mouse, this.camera);
+        const intersects = this.raycaster.intersectObjects(this.objects);
+
+        if (intersects.length > 0) {
+            const selectedObject = intersects[0].object;
+            this.selectObject(selectedObject);
+        } else {
+            this.deselectObject();
         }
     }
 
