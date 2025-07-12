@@ -163,7 +163,7 @@ This section outlines potential future enhancements and features for nodist3d.
 
 ### User Interface & Experience
 
--   [ ] Implement interactive controls for object manipulation (translate, rotate, scale).
+-   [x] Implement interactive controls for object manipulation (translate, rotate, scale).
 -   [ ] Add a property panel to adjust primitive parameters (e.g., cube dimensions, sphere radius).
 -   [ ] Implement a scene graph/outliner to manage multiple objects.
 -   [ ] Implement undo functionality.

@@ -1,615 +1,294 @@
-import { ObjectFactory } from './ObjectFactory.js';
-import { CSGManager } from './CSGManager.js';
-import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
-import { Engine } from './Engine.js';
-import { ObjectManager } from './ObjectManager.js';
-import { Pointer } from './Pointer.js';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter.js';
-import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { GUI } from 'dat.gui';
-import { SceneGraph } from './SceneGraph.js';
-import { SceneStorage } from './SceneStorage.js';
-import { History } from './History.js';
-import { LightManager } from './LightManager.js';
-import { GroupManager } from './GroupManager.js';
-import { ShaderEditor } from './ShaderEditor.js';
-import { PhysicsManager } from './PhysicsManager.js';
-import { PrimitiveFactory } from './PrimitiveFactory.js';
-import EventBus from './EventBus.js';
-import { Clock } from 'three';
-import log from './logger.js';
-import { Events, ObjectTypes } from './constants.js';
-import { AddObjectCommand } from './commands/AddObjectCommand.js';
-import { RemoveObjectCommand } from './commands/RemoveObjectCommand.js';
-import { TransformObjectCommand } from './commands/TransformObjectCommand.js';
-import { GroupCommand } from './commands/GroupCommand.js';
-import { UngroupCommand } from './commands/UngroupCommand.js';
-import { UIRenderer } from './UIRenderer.js';
-import { InputManager } from './InputManager.js';
 
 /**
- * The main application class.
+ * Simple 3D modeling application with basic primitives and transform controls
  */
-export class App {
-    /**
-     * Initializes the application.
-     */
+class App {
     constructor() {
-        this.state = {
-            selectedObject: null,
-            mode: 'IDLE',
-        };
-        document.addEventListener('DOMContentLoaded', () => {
-            this.canvas = document.querySelector('#c');
-            this.eventBus = EventBus;
-            this.physicsManager = new PhysicsManager();
-            this.transformControls = new TransformControls(this.camera, this.canvas);
-            this.engine = new Engine(this.canvas, this.physicsManager, this.transformControls);
-            this.primitiveFactory = new PrimitiveFactory();
-            this.objectManager = new ObjectManager(this.engine.scene, this.eventBus);
-            this.objectFactory = new ObjectFactory(this.engine.scene, this.primitiveFactory, this.eventBus);
-            this.csgManager = new CSGManager(this.engine.scene, this.eventBus);
-            this.objectPropertyUpdater = new ObjectPropertyUpdater(this.primitiveFactory);
-            this.inputManager = new InputManager(this.eventBus);
-            this.pointer = new Pointer(this.engine.camera, this.engine.scene, this.engine.renderer, this.eventBus);
-            this.sceneStorage = new SceneStorage(this.engine.scene);
-            this.history = new History(this.eventBus);
-            this.lightManager = new LightManager(this.engine.scene, this.eventBus);
-            this.groupManager = new GroupManager(this.engine.scene, this.eventBus);
-            
-            this.gui = new GUI();
-            this.shaderEditor = new ShaderEditor(this.gui, this.engine.renderer, this.engine.scene, this.engine.camera, this.eventBus);
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.selectedObject = null;
+        this.objects = [];
+        
+        this.init();
+        this.setupControls();
+        this.setupGUI();
+        this.setupLighting();
+        this.setupHelpers();
+        this.animate();
+    }
 
-            this.currentObjectFolder = null;
-            this.currentLightFolder = null;
+    init() {
+        // Setup renderer
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(this.renderer.domElement);
 
-            
-            this.engine.scene.add(this.transformControls);
+        // Setup camera
+        this.camera.position.set(5, 5, 5);
+        this.camera.lookAt(0, 0, 0);
 
-            this.sceneGraph = new SceneGraph(this.engine.scene, this.eventBus);
-            this.uiRenderer = new UIRenderer(this.sceneGraphElement, this.eventBus);
-
-            this.setupEventListeners();
-            this.setupUIButtons();
-            this.setupSnapControls();
-            this.history.add(new AddObjectCommand(this.engine.scene, new THREE.Object3D())); // Initial empty command
-            this.engine.start();
-            this.sceneGraph.update();
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
         });
     }
 
-    /**
-     * Updates the GUI with the properties of the selected object.
-     * @param {THREE.Object3D} object The selected object.
-     */
-    updateGUI(object) {
-        if (this.currentObjectFolder) {
-            this.gui.removeFolder(this.currentObjectFolder);
-            this.currentObjectFolder = null;
-        }
-        if (this.currentLightFolder) {
-            this.gui.removeFolder(this.currentLightFolder);
-            this.currentLightFolder = null;
-        }
+    setupControls() {
+        // Orbit controls for camera
+        this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.orbitControls.enableDamping = true;
+        this.orbitControls.dampingFactor = 0.05;
 
-        if (object) {
-            if (object.isLight) {
-                this.currentLightFolder = this.gui.addFolder(object.name || object.uuid);
-                this.currentLightFolder.addColor(object, 'color').name('Color').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                this.currentLightFolder.add(object, 'intensity', 0, 2).name('Intensity').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                this.currentLightFolder.add({ type: object.type }, 'type', ['PointLight', 'DirectionalLight', 'AmbientLight']).name('Light Type').onChange((value) => {
-                    const newLight = this.lightManager.changeLightType(object, value);
-                    this.transformControls.attach(newLight);
-                    this.updateGUI(newLight);
-                    this.sceneGraph.update();
-                    this.eventBus.publish(Events.HISTORY_CHANGE, new AddObjectCommand(this.engine.scene, newLight));
-                });
-                if (object.position) {
-                    this.currentLightFolder.add(object.position, 'x', -10, 10).name('Position X').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                    this.currentLightFolder.add(object.position, 'y', -10, 10).name('Position Y').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                    this.currentLightFolder.add(object.position, 'z', -10, 10).name('Position Z').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                }
-                this.currentLightFolder.open();
-            } else {
-                this.currentObjectFolder = this.gui.addFolder(object.name || object.uuid);
-                this.currentObjectFolder.add(object.position, 'x', -5, 5).name('Position X').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                this.currentObjectFolder.add(object.position, 'y', -5, 5).name('Position Y').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                this.currentObjectFolder.add(object.position, 'z', -5, 5).name('Position Z').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                this.currentObjectFolder.add(object.rotation, 'x', -Math.PI, Math.PI).name('Rotation X').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                this.currentObjectFolder.add(object.rotation, 'y', -Math.PI, Math.PI).name('Rotation Y').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                this.currentObjectFolder.add(object.rotation, 'z', -Math.PI, Math.PI).name('Rotation Z').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                this.currentObjectFolder.add(object.scale, 'x', 0.1, 5).name('Scale X').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                this.currentObjectFolder.add(object.scale, 'y', 0.1, 5).name('Scale Y').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                this.currentObjectFolder.add(object.scale, 'z', 0.1, 5).name('Scale Z').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                if (object.material) {
-                    const materialFolder = this.currentObjectFolder.addFolder('Material');
-                    if (object.material.color) {
-                        materialFolder.addColor(object.material, 'color').name('Color').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                    }
-                    if (object.material.roughness !== undefined) {
-                        materialFolder.add(object.material, 'roughness', 0, 1).name('Roughness').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                    }
-                    if (object.material.metalness !== undefined) {
-                        materialFolder.add(object.material, 'metalness', 0, 1).name('Metalness').onChange(() => this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform)));
-                    }
-                    const textureInput = document.createElement('input');
-                    textureInput.type = 'file';
-                    textureInput.accept = 'image/*';
-                    textureInput.style.display = 'none';
-
-                    const textureTypeController = materialFolder.add({ type: 'map' }, 'type', ['map', 'normalMap', 'roughnessMap']).name('Texture Type');
-
-                    textureInput.addEventListener('change', (event) => {
-                        const file = event.target.files[0];
-                        if (file) {
-                            this.objectPropertyUpdater.addTexture(object, file, textureTypeController.getValue());
-                            this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform));
-                        }
-                    });
-
-                    materialFolder.add({
-                        addTexture: () => {
-                            textureInput.click();
-                        }
-                    }, 'addTexture').name('Add Texture');
-                    materialFolder.open();
-                }
-
-                if (object.geometry && object.geometry.parameters) {
-                    const geometryFolder = this.currentObjectFolder.addFolder('Geometry');
-                    for (const key in object.geometry.parameters) {
-                        if (typeof object.geometry.parameters[key] === 'number') {
-                            geometryFolder.add(object.geometry.parameters, key, 0, 10).name(key).onChange(() => {
-                                this.objectPropertyUpdater.updatePrimitive(object, object.geometry.parameters);
-                                this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(object, { position: object.position, rotation: object.rotation, scale: object.scale }, this.state.selectedObject.userData.oldTransform));
-                            });
-                        }
-                    }
-                    geometryFolder.open();
-                }
-                this.currentObjectFolder.open();
-            }
-        }
-    }
-
-    /**
-     * Sets up the event listeners for the application.
-     */
-    setupEventListeners() {
+        // Transform controls for object manipulation
+        this.transformControls = new TransformControls(this.camera, this.renderer.domElement);
+        this.transformControls.addEventListener('change', () => {
+            this.renderer.render(this.scene, this.camera);
+        });
         this.transformControls.addEventListener('dragging-changed', (event) => {
-            if (!event.value) {
-                this.state.mode = 'OBJECT_SELECTED';
-                this.eventBus.publish(Events.HISTORY_CHANGE, new TransformObjectCommand(this.state.selectedObject, { position: this.state.selectedObject.position, rotation: this.state.selectedObject.rotation, scale: this.state.selectedObject.scale }, this.state.selectedObject.userData.oldTransform));
+            this.orbitControls.enabled = !event.value;
+        });
+        this.scene.add(this.transformControls);
+
+        // Raycaster for object selection
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
+        
+        this.renderer.domElement.addEventListener('click', (event) => {
+            if (this.transformControls.dragging) return;
+            
+            this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            this.raycaster.setFromCamera(this.mouse, this.camera);
+            const intersects = this.raycaster.intersectObjects(this.objects);
+            
+            if (intersects.length > 0) {
+                this.selectObject(intersects[0].object);
             } else {
-                this.state.mode = 'TRANSFORMING';
-                this.state.selectedObject.userData.oldTransform = {
-                    position: this.state.selectedObject.position.clone(),
-                    rotation: this.state.selectedObject.rotation.clone(),
-                    scale: this.state.selectedObject.scale.clone(),
-                };
+                this.deselectObject();
             }
         });
 
-        this.eventBus.subscribe(Events.SELECTION_CHANGE, (selectedObject) => {
-            if (this.state.selectedObject) {
-                this.pointer.removeOutline();
-            }
-            this.state.selectedObject = selectedObject;
-            if (this.state.selectedObject) {
-                this.state.mode = 'OBJECT_SELECTED';
-                this.pointer.addOutline(this.state.selectedObject);
-                this.transformControls.attach(this.state.selectedObject);
-            } else {
-                this.state.mode = 'IDLE';
-                this.transformControls.detach();
-            }
-            this.updateGUI(this.state.selectedObject);
-            this.sceneGraph.update();
-        });
-
-        this.eventBus.subscribe(Events.DELETE_OBJECT, (object) => {
-            if (this.state.selectedObject === object) {
-                this.eventBus.publish(Events.SELECTION_CHANGE, null);
-            }
-            const command = new RemoveObjectCommand(this.engine.scene, object);
-            this.eventBus.publish(Events.HISTORY_CHANGE, command);
-            this.sceneGraph.update();
-        });
-
-        this.eventBus.subscribe(Events.UNDO, () => {
-            this.history.undo();
-            this.sceneGraph.update();
-            this.transformControls.detach();
-            this.updateGUI(null);
-        });
-
-        this.eventBus.subscribe(Events.REDO, () => {
-            this.history.redo();
-            this.sceneGraph.update();
-            this.transformControls.detach();
-            this.updateGUI(null);
-        });
-
-        const fullscreenButton = document.getElementById('fullscreen');
-        fullscreenButton.addEventListener('click', () => {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else {
-                document.documentElement.requestFullscreen();
-            }
-        });
-    }
-
-    /**
-     * Sets up the UI buttons for the application.
-     */
-    setupUIButtons() {
-        const ui = document.getElementById('ui');
-
-        const lightFolder = this.gui.addFolder('Lights');
-        lightFolder.add({
-            addAmbientLight: () => {
-                const light = this.lightManager.addLight('AmbientLight', 0x404040, 1, undefined, 'AmbientLight');
-                const command = new AddObjectCommand(this.engine.scene, light);
-                this.eventBus.publish(Events.HISTORY_CHANGE, command);
-            }
-        }, 'addAmbientLight').name('Add Ambient Light');
-        lightFolder.add({
-            addDirectionalLight: () => {
-                const light = this.lightManager.addLight('DirectionalLight', 0xffffff, 1, { x: 1, y: 1, z: 1 }, 'DirectionalLight');
-                const command = new AddObjectCommand(this.engine.scene, light);
-                this.eventBus.publish(Events.HISTORY_CHANGE, command);
-            }
-        }, 'addDirectionalLight').name('Add Directional Light');
-        lightFolder.add({
-            addPointLight: () => {
-                const light = this.lightManager.addLight('PointLight', 0xffffff, 1, { x: 0, y: 0, z: 0 }, 'PointLight');
-                const command = new AddObjectCommand(this.engine.scene, light);
-                this.eventBus.publish(Events.HISTORY_CHANGE, command);
-            }
-        }, 'addPointLight').name('Add Point Light');
-        lightFolder.open();
-
-        const createAddButton = (text, addMethod) => {
-            const button = document.createElement('button');
-            button.textContent = text;
-            button.addEventListener('click', async () => {
-                const newObject = await addMethod();
-                if (newObject) {
-                    const command = new AddObjectCommand(this.engine.scene, newObject);
-                    this.eventBus.publish(Events.HISTORY_CHANGE, command);
-                    this.eventBus.publish(Events.SELECTION_CHANGE, newObject);
-                    this.sceneGraph.update();
-                }
-            });
-            ui.appendChild(button);
-        };
-
-        createAddButton('Add Cube', () => this.objectFactory.addPrimitive(ObjectTypes.BOX));
-        createAddButton('Add Sphere', () => this.objectFactory.addPrimitive(ObjectTypes.SPHERE));
-        createAddButton('Add Cylinder', () => this.objectFactory.addPrimitive(ObjectTypes.CYLINDER));
-        createAddButton('Add Cone', () => this.objectFactory.addPrimitive(ObjectTypes.CONE));
-        createAddButton('Add Torus', () => this.objectFactory.addPrimitive(ObjectTypes.TORUS));
-        createAddButton('Add Torus Knot', () => this.objectFactory.addPrimitive(ObjectTypes.TORUS_KNOT));
-        createAddButton('Add Tetrahedron', () => this.objectFactory.addPrimitive(ObjectTypes.TETRAHEDRON));
-        createAddButton('Add Icosahedron', () => this.objectFactory.addPrimitive(ObjectTypes.ICOSAHEDRON));
-        createAddButton('Add Dodecahedron', () => this.objectFactory.addPrimitive(ObjectTypes.DODECAHEDRON));
-        createAddButton('Add Octahedron', () => this.objectFactory.addPrimitive(ObjectTypes.OCTAHEDRON));
-        createAddButton('Add Plane', () => this.objectFactory.addPrimitive(ObjectTypes.PLANE));
-        createAddButton('Add Tube', () => this.objectFactory.addPrimitive(ObjectTypes.TUBE));
-        createAddButton('Add Teapot', () => this.objectFactory.addPrimitive(ObjectTypes.TEAPOT));
-        createAddButton('Add Lathe', () => this.objectFactory.addPrimitive(ObjectTypes.LATHE));
-        createAddButton('Add Extrude', () => this.objectFactory.addPrimitive(ObjectTypes.EXTRUDE));
-        createAddButton('Add Text', () => this.objectFactory.addPrimitive(ObjectTypes.TEXT));
-        createAddButton('Add LOD Cube', () => this.objectFactory.addPrimitive(ObjectTypes.LOD_CUBE));
-
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete Selected';
-        deleteButton.addEventListener('click', () => {
-            if (this.state.selectedObject) {
-                const objectToDelete = this.state.selectedObject;
-                const command = new RemoveObjectCommand(this.engine.scene, objectToDelete);
-                this.eventBus.publish(Events.HISTORY_CHANGE, command);
-                this.eventBus.publish(Events.SELECTION_CHANGE, null);
-                this.sceneGraph.update();
-            }
-        });
-        ui.appendChild(deleteButton);
-
-        const duplicateButton = document.createElement('button');
-        duplicateButton.textContent = 'Duplicate Selected';
-        duplicateButton.addEventListener('click', () => {
-            if (this.state.selectedObject) {
-                const duplicatedObject = this.objectFactory.duplicateObject(this.state.selectedObject);
-                const command = new AddObjectCommand(this.engine.scene, duplicatedObject);
-                this.eventBus.publish(Events.HISTORY_CHANGE, command);
-                this.eventBus.publish(Events.SELECTION_CHANGE, duplicatedObject);
-                this.sceneGraph.update();
-            }
-        });
-        ui.appendChild(duplicateButton);
-
-        const groupButton = document.createElement('button');
-        groupButton.textContent = 'Group Selected';
-        groupButton.addEventListener('click', () => {
-            const selectedObjects = this.engine.scene.children.filter(obj => obj.userData.selected);
-            if (selectedObjects.length > 1) {
-                const command = new GroupCommand(this.engine.scene, this.groupManager, selectedObjects);
-                this.eventBus.publish(Events.HISTORY_CHANGE, command);
-                this.eventBus.publish(Events.SELECTION_CHANGE, command.group);
-                this.sceneGraph.update();
-            } else {
-                log.warn("Select at least two objects to group.");
-            }
-        });
-        ui.appendChild(groupButton);
-
-        const ungroupButton = document.createElement('button');
-        ungroupButton.textContent = 'Ungroup Selected';
-        ungroupButton.addEventListener('click', () => {
-            if (this.state.selectedObject && this.state.selectedObject.isGroup) {
-                const command = new UngroupCommand(this.engine.scene, this.groupManager, this.state.selectedObject);
-                this.eventBus.publish(Events.HISTORY_CHANGE, command);
-                this.eventBus.publish(Events.SELECTION_CHANGE, null);
-                this.sceneGraph.update();
-            }
-        });
-        ui.appendChild(ungroupButton);
-
-        const createCSGButton = (text, operation) => {
-            const button = document.createElement('button');
-            button.textContent = text;
-            button.addEventListener('click', () => {
-                const selectedObjects = this.engine.scene.children.filter(obj => obj.userData.selected);
-                if (selectedObjects.length === 2) {
-                    const resultObject = this.csgManager.performCSG(selectedObjects[0], selectedObjects[1], operation);
-                    if (resultObject) {
-                        const command = new AddObjectCommand(this.engine.scene, resultObject);
-                        this.eventBus.publish(Events.HISTORY_CHANGE, command);
-                        this.eventBus.publish(Events.SELECTION_CHANGE, resultObject);
-                        this.sceneGraph.update();
+        // Keyboard shortcuts
+        window.addEventListener('keydown', (event) => {
+            switch (event.key.toLowerCase()) {
+                case 'g':
+                    this.transformControls.setMode('translate');
+                    break;
+                case 'r':
+                    this.transformControls.setMode('rotate');
+                    break;
+                case 's':
+                    this.transformControls.setMode('scale');
+                    break;
+                case 'delete':
+                case 'backspace':
+                    if (this.selectedObject) {
+                        this.deleteObject(this.selectedObject);
                     }
-                } else {
-                    log.warn("Select exactly two objects for CSG operation.");
-                }
-            });
-            ui.appendChild(button);
-        };
-
-        createCSGButton('Union', 'union');
-        createCSGButton('Subtract', 'subtract');
-        createCSGButton('Intersect', 'intersect');
-
-        const resetButton = document.createElement('button');
-        resetButton.textContent = 'Reset View';
-        resetButton.addEventListener('click', () => {
-            this.engine.resetCamera();
-        });
-        ui.appendChild(resetButton);
-
-        const saveImageButton = document.createElement('button');
-        saveImageButton.textContent = 'Save as Image';
-        saveImageButton.addEventListener('click', () => {
-            this.engine.renderer.render(this.engine.scene, this.engine.camera);
-            const dataURL = this.engine.renderer.domElement.toDataURL('image/png');
-            const a = document.createElement('a');
-            a.href = dataURL;
-            a.download = 'nodist3d-scene.png';
-            a.click();
-        });
-        ui.appendChild(saveImageButton);
-
-        const translateButton = document.createElement('button');
-        translateButton.textContent = 'Translate';
-        translateButton.addEventListener('click', () => {
-            this.transformControls.setMode('translate');
-        });
-        ui.appendChild(translateButton);
-
-        const rotateButton = document.createElement('button');
-        rotateButton.textContent = 'Rotate';
-        rotateButton.addEventListener('click', () => {
-            this.transformControls.setMode('rotate');
-        });
-        ui.appendChild(rotateButton);
-
-        const scaleButton = document.createElement('button');
-        scaleButton.textContent = 'Scale';
-        scaleButton.addEventListener('click', () => {
-            this.transformControls.setMode('scale');
-        });
-        ui.appendChild(scaleButton);
-
-        const saveButton = document.createElement('button');
-        saveButton.textContent = 'Save Scene';
-        saveButton.addEventListener('click', () => {
-            this.sceneStorage.saveScene();
-        });
-        ui.appendChild(saveButton);
-
-        const loadInput = document.createElement('input');
-        loadInput.type = 'file';
-        loadInput.accept = '.nodist3d';
-        loadInput.style.display = 'none';
-        loadInput.addEventListener('change', async (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const loadedData = await this.sceneStorage.loadScene(file);
-                this.transformControls.detach();
-                this.updateGUI(null);
-                this.sceneGraph.update();
-                this.eventBus.publish(Events.HISTORY_CHANGE, new AddObjectCommand(this.engine.scene, loadedData));
+                    break;
             }
         });
-        ui.appendChild(loadInput);
-
-        const loadButton = document.createElement('button');
-        loadButton.textContent = 'Load Scene';
-        loadButton.addEventListener('click', () => {
-            loadInput.click();
-        });
-        ui.appendChild(loadButton);
-
-        const importObjInput = document.createElement('input');
-        importObjInput.type = 'file';
-        importObjInput.accept = '.obj';
-        importObjInput.style.display = 'none';
-        importObjInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const objLoader = new OBJLoader();
-                    const object = objLoader.parse(e.target.result);
-                    this.engine.scene.add(object);
-                    const command = new AddObjectCommand(this.engine.scene, object);
-                    this.eventBus.publish(Events.HISTORY_CHANGE, command);
-                    this.eventBus.publish(Events.SELECTION_CHANGE, object);
-                    this.sceneGraph.update();
-                };
-                reader.readAsText(file);
-            }
-        });
-        ui.appendChild(importObjInput);
-
-        const importObjButton = document.createElement('button');
-        importObjButton.textContent = 'Import OBJ';
-        importObjButton.addEventListener('click', () => {
-            importObjInput.click();
-        });
-        ui.appendChild(importObjButton);
-
-        const importGltfInput = document.createElement('input');
-        importGltfInput.type = 'file';
-        importGltfInput.accept = '.gltf,.glb';
-        importGltfInput.style.display = 'none';
-        importGltfInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const gltfLoader = new GLTFLoader();
-                    gltfLoader.parse(e.target.result, '', (gltf) => {
-                        this.engine.scene.add(gltf.scene);
-                        const command = new AddObjectCommand(this.engine.scene, gltf.scene);
-                        this.eventBus.publish(Events.HISTORY_CHANGE, command);
-                        this.eventBus.publish(Events.SELECTION_CHANGE, gltf.scene);
-                        this.sceneGraph.update();
-                    });
-                };
-                reader.readAsArrayBuffer(file);
-            }
-        });
-        ui.appendChild(importGltfInput);
-
-        const importGltfButton = document.createElement('button');
-        importGltfButton.textContent = 'Import GLTF';
-        importGltfButton.addEventListener('click', () => {
-            importGltfInput.click();
-        });
-        ui.appendChild(importGltfButton);
-
-        const exportObjButton = document.createElement('button');
-        exportObjButton.textContent = 'Export OBJ';
-        exportObjButton.addEventListener('click', () => {
-            const exporter = new OBJExporter();
-            const result = exporter.parse(this.engine.scene);
-            const blob = new Blob([result], { type: 'text/plain' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'scene.obj';
-            a.click();
-            URL.revokeObjectURL(a.href);
-        });
-        ui.appendChild(exportObjButton);
-
-        const exportGltfButton = document.createElement('button');
-        exportGltfButton.textContent = 'Export GLTF';
-        exportGltfButton.addEventListener('click', () => {
-            const exporter = new GLTFExporter();
-            exporter.parse(this.engine.scene, (result) => {
-                const output = JSON.stringify(result, null, 2);
-                const blob = new Blob([output], { type: 'text/plain' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = 'scene.gltf';
-                a.click();
-                URL.revokeObjectURL(a.href);
-            }, (error) => {
-                log.error('An error occurred during GLTF export:', error);
-            }, { binary: false });
-        });
-        ui.appendChild(exportGltfButton);
-
-        const physicsButton = document.createElement('button');
-        physicsButton.textContent = 'Add Physics Body';
-        physicsButton.addEventListener('click', () => {
-            if (this.state.selectedObject) {
-                this.physicsManager.addBody(this.state.selectedObject, 1, 'box');
-                this.eventBus.publish(Events.HISTORY_CHANGE, new Command());
-            }
-        });
-        ui.appendChild(physicsButton);
-
-        const undoButton = document.createElement('button');
-        undoButton.textContent = 'Undo';
-        undoButton.addEventListener('click', () => {
-            this.history.undo();
-        });
-        ui.appendChild(undoButton);
-
-        const redoButton = document.createElement('button');
-        redoButton.textContent = 'Redo';
-        redoButton.addEventListener('click', () => {
-            this.history.redo();
-        });
-        ui.appendChild(redoButton);
     }
 
-    /**
-     * Sets up the snap controls in the GUI.
-     */
-    setupSnapControls() {
-        const snapFolder = this.gui.addFolder('Snap Settings');
-        const snapSettings = {
-            snapTranslation: false,
-            snapRotation: false,
-            snapScale: false,
-            translationSnapValue: 0.1,
-            rotationSnapValue: Math.PI / 8,
-            scaleSnapValue: 0.1
-        };
+    setupGUI() {
+        this.gui = new GUI();
+        
+        // Primitive creation
+        const primitiveFolder = this.gui.addFolder('Add Primitives');
+        primitiveFolder.add(this, 'addBox').name('Add Box');
+        primitiveFolder.add(this, 'addSphere').name('Add Sphere');
+        primitiveFolder.add(this, 'addCylinder').name('Add Cylinder');
+        primitiveFolder.add(this, 'addCone').name('Add Cone');
+        primitiveFolder.add(this, 'addTorus').name('Add Torus');
+        primitiveFolder.add(this, 'addPlane').name('Add Plane');
+        primitiveFolder.open();
 
-        snapFolder.add(snapSettings, 'snapTranslation').name('Snap Translation').onChange((value) => {
-            this.transformControls.translationSnap = value ? snapSettings.translationSnapValue : null;
+        // Transform controls
+        const transformFolder = this.gui.addFolder('Transform');
+        const transformModes = { mode: 'translate' };
+        transformFolder.add(transformModes, 'mode', ['translate', 'rotate', 'scale']).onChange((value) => {
+            this.transformControls.setMode(value);
         });
-        snapFolder.add(snapSettings, 'translationSnapValue', 0.01, 1).name('Translation Snap').onChange((value) => {
-            if (snapSettings.snapTranslation) {
-                this.transformControls.translationSnap = value;
-            }
-        });
+        transformFolder.open();
 
-        snapFolder.add(snapSettings, 'snapRotation').name('Snap Rotation').onChange((value) => {
-            this.transformControls.rotationSnap = value ? snapSettings.rotationSnapValue : null;
-        });
-        snapFolder.add(snapSettings, 'rotationSnapValue', 0.01, Math.PI / 2).name('Rotation Snap').onChange((value) => {
-            if (snapSettings.snapRotation) {
-                this.transformControls.rotationSnap = value;
-            }
-        });
+        // Object management
+        const objectFolder = this.gui.addFolder('Object');
+        objectFolder.add(this, 'deleteSelectedObject').name('Delete Selected');
+        objectFolder.add(this, 'duplicateSelectedObject').name('Duplicate Selected');
+        objectFolder.open();
+    }
 
-        snapFolder.add(snapSettings, 'snapScale').name('Snap Scale').onChange((value) => {
-            this.transformControls.scaleSnap = value ? snapSettings.scaleSnapValue : null;
+    setupLighting() {
+        // Ambient light
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+        this.scene.add(ambientLight);
+
+        // Directional light
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(10, 10, 10);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.height = 2048;
+        this.scene.add(directionalLight);
+    }
+
+    setupHelpers() {
+        // Grid helper
+        const gridHelper = new THREE.GridHelper(10, 10);
+        this.scene.add(gridHelper);
+
+        // Axis helper
+        const axesHelper = new THREE.AxesHelper(5);
+        this.scene.add(axesHelper);
+    }
+
+    // Primitive creation methods
+    addBox() {
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        this.scene.add(mesh);
+        this.objects.push(mesh);
+        this.selectObject(mesh);
+    }
+
+    addSphere() {
+        const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+        const material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        this.scene.add(mesh);
+        this.objects.push(mesh);
+        this.selectObject(mesh);
+    }
+
+    addCylinder() {
+        const geometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 32);
+        const material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        this.scene.add(mesh);
+        this.objects.push(mesh);
+        this.selectObject(mesh);
+    }
+
+    addCone() {
+        const geometry = new THREE.ConeGeometry(0.5, 1, 32);
+        const material = new THREE.MeshLambertMaterial({ color: 0xffff00 });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        this.scene.add(mesh);
+        this.objects.push(mesh);
+        this.selectObject(mesh);
+    }
+
+    addTorus() {
+        const geometry = new THREE.TorusGeometry(0.4, 0.2, 16, 100);
+        const material = new THREE.MeshLambertMaterial({ color: 0xff00ff });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        this.scene.add(mesh);
+        this.objects.push(mesh);
+        this.selectObject(mesh);
+    }
+
+    addPlane() {
+        const geometry = new THREE.PlaneGeometry(2, 2);
+        const material = new THREE.MeshLambertMaterial({ color: 0x00ffff, side: THREE.DoubleSide });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        this.scene.add(mesh);
+        this.objects.push(mesh);
+        this.selectObject(mesh);
+    }
+
+    // Object manipulation methods
+    selectObject(object) {
+        this.selectedObject = object;
+        this.transformControls.attach(object);
+        
+        // Visual feedback
+        this.objects.forEach(obj => {
+            obj.material.emissive.setHex(0x000000);
         });
-        snapFolder.add(snapSettings, 'scaleSnapValue', 0.01, 1).name('Scale Snap').onChange((value) => {
-            if (snapSettings.snapScale) {
-                this.transformControls.scaleSnap = value;
+        object.material.emissive.setHex(0x444444);
+    }
+
+    deselectObject() {
+        if (this.selectedObject) {
+            this.selectedObject.material.emissive.setHex(0x000000);
+            this.selectedObject = null;
+            this.transformControls.detach();
+        }
+    }
+
+    deleteObject(object) {
+        if (object) {
+            this.scene.remove(object);
+            const index = this.objects.indexOf(object);
+            if (index > -1) {
+                this.objects.splice(index, 1);
             }
-        });
-        snapFolder.open();
+            if (this.selectedObject === object) {
+                this.deselectObject();
+            }
+        }
+    }
+
+    deleteSelectedObject() {
+        if (this.selectedObject) {
+            this.deleteObject(this.selectedObject);
+        }
+    }
+
+    duplicateSelectedObject() {
+        if (this.selectedObject) {
+            const geometry = this.selectedObject.geometry.clone();
+            const material = this.selectedObject.material.clone();
+            const mesh = new THREE.Mesh(geometry, material);
+            
+            mesh.position.copy(this.selectedObject.position);
+            mesh.rotation.copy(this.selectedObject.rotation);
+            mesh.scale.copy(this.selectedObject.scale);
+            
+            // Offset position slightly
+            mesh.position.x += 1;
+            
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            
+            this.scene.add(mesh);
+            this.objects.push(mesh);
+            this.selectObject(mesh);
+        }
+    }
+
+    animate() {
+        requestAnimationFrame(() => this.animate());
+        
+        this.orbitControls.update();
+        this.renderer.render(this.scene, this.camera);
     }
 }
 
+// Initialize the app when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new App();
+});
