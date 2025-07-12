@@ -6,15 +6,15 @@
     <title>nodist3d</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
-    <!-- Load JSZip as global script -->
-    <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
+    <!-- Load JSZip as global script from our server -->
+    <script src="/modules/jszip.js"></script>
     <script type="importmap">
     {
         "imports": {
-            "three": "https://unpkg.com/three@0.164.1/build/three.module.js",
-            "three/examples/jsm/controls/OrbitControls.js": "https://unpkg.com/three@0.164.1/examples/jsm/controls/OrbitControls.js",
-            "three/examples/jsm/controls/TransformControls.js": "https://unpkg.com/three@0.164.1/examples/jsm/controls/TransformControls.js",
-            "dat.gui": "https://unpkg.com/dat.gui@0.7.9/build/dat.gui.module.js"
+            "three": "/modules/three.js",
+            "three/examples/jsm/controls/OrbitControls.js": "/modules/OrbitControls.js",
+            "three/examples/jsm/controls/TransformControls.js": "/modules/TransformControls.js",
+            "dat.gui": "/modules/dat.gui.js"
         }
     }
     </script>

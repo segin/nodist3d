@@ -1,5 +1,5 @@
 // src/frontend/worker.js
-importScripts('https://unpkg.com/three@0.164.1/build/three.min.js');
+importScripts('/modules/three.min.js');
 
 self.onmessage = function(event) {
     const { type, data } = event.data;

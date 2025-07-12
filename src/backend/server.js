@@ -15,15 +15,11 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: [
-                "'self'",
-                "'unsafe-inline'",  // Allow import maps and inline scripts
-                "https://unpkg.com"  // Allow scripts from unpkg CDN
-            ],
+            scriptSrc: ["'self'", "'unsafe-inline'"], // Only unsafe-inline for import maps
             styleSrc: ["'self'", "'unsafe-inline'"],
-            imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'", "https:"],
-            fontSrc: ["'self'", "https:", "data:"],
+            imgSrc: ["'self'", "data:"],
+            connectSrc: ["'self'"],
+            fontSrc: ["'self'", "data:"],
             objectSrc: ["'none'"],
             mediaSrc: ["'self'"],
             frameSrc: ["'none'"]
@@ -31,6 +27,39 @@ app.use(helmet({
     }
 }));
 app.use(cors());
+
+// Serve modules from node_modules with proper MIME types
+app.get('/modules/three.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'three', 'build', 'three.module.js'));
+});
+
+app.get('/modules/OrbitControls.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'three', 'examples', 'jsm', 'controls', 'OrbitControls.js'));
+});
+
+app.get('/modules/TransformControls.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'three', 'examples', 'jsm', 'controls', 'TransformControls.js'));
+});
+
+app.get('/modules/dat.gui.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'dat.gui', 'build', 'dat.gui.module.js'));
+});
+
+app.get('/modules/jszip.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'jszip', 'dist', 'jszip.min.js'));
+});
+
+// Serve three.min.js for web worker
+app.get('/modules/three.min.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'three', 'build', 'three.min.js'));
+});
+
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
 app.get('/healthz', (req, res) => {
