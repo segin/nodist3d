@@ -163,58 +163,58 @@ This section outlines potential future enhancements and features for nodist3d.
 
 ### User Interface & Experience
 
--   [x] Implement interactive controls for object manipulation (translate, rotate, scale).
--   [x] Add a property panel to adjust primitive parameters (e.g., cube dimensions, sphere radius).
--   [x] Implement a scene graph/outliner to manage multiple objects.
--   [x] Implement undo functionality.
--   [x] Implement redo functionality.
--   [x] Implement camera controls:
-    -   [x] Implement orbit camera control.
-    -   [x] Implement pan camera control.
-    -   [x] Implement zoom camera control.
--   [x] Add a grid helper for better scene orientation.
--   [x] Add an axis helper for better scene orientation.
--   [x] Implement material editing:
-    -   [x] Change object color.
-    -   [x] Adjust material roughness.
-    -   [x] Adjust material metallicness.
-    -   [x] Add texture mapping:
-        -   [x] Implement basic texture loading and application.
-        -   [x] Add UI controls for texture selection.
-        -   [x] Support different texture types (e.g., diffuse, normal, roughness).
--   [x] Add light source manipulation:
-    -   [x] Change light type (e.g., PointLight, DirectionalLight, AmbientLight).
-    -   [x] Adjust light intensity.
-    -   [x] Adjust light position.
--   [x] Implement a "snap to grid" feature.
--   [x] Add a selection mechanism for objects.
--   [x] Implement object grouping/ungrouping.
--   [x] Add a "duplicate object" feature.
--   [x] Implement a "delete object" feature.
--   [x] Add a "reset view" button.
--   [x] Implement a "save as image" feature for rendering the scene.
+-   [ ] Implement interactive controls for object manipulation (translate, rotate, scale).
+-   [ ] Add a property panel to adjust primitive parameters (e.g., cube dimensions, sphere radius).
+-   [ ] Implement a scene graph/outliner to manage multiple objects.
+-   [ ] Implement undo functionality.
+-   [ ] Implement redo functionality.
+-   [ ] Implement camera controls:
+    -   [ ] Implement orbit camera control.
+    -   [ ] Implement pan camera control.
+    -   [ ] Implement zoom camera control.
+-   [ ] Add a grid helper for better scene orientation.
+-   [ ] Add an axis helper for better scene orientation.
+-   [ ] Implement material editing:
+    -   [ ] Change object color.
+    -   [ ] Adjust material roughness.
+    -   [ ] Adjust material metallicness.
+    -   [ ] Add texture mapping:
+        -   [ ] Implement basic texture loading and application.
+        -   [ ] Add UI controls for texture selection.
+        -   [ ] Support different texture types (e.g., diffuse, normal, roughness).
+-   [ ] Add light source manipulation:
+    -   [ ] Change light type (e.g., PointLight, DirectionalLight, AmbientLight).
+    -   [ ] Adjust light intensity.
+    -   [ ] Adjust light position.
+-   [ ] Implement a "snap to grid" feature.
+-   [ ] Add a selection mechanism for objects.
+-   [ ] Implement object grouping/ungrouping.
+-   [ ] Add a "duplicate object" feature.
+-   [ ] Implement a "delete object" feature.
+-   [ ] Add a "reset view" button.
+-   [ ] Implement a "save as image" feature for rendering the scene.
 
 ### Core Functionality & Primitives
 
--   [x] Add more complex primitives (e.g., LatheGeometry, ExtrudeGeometry, TextGeometry).
--   [x] Implement boolean operations (CSG - Constructive Solid Geometry) for combining/subtracting objects.
--   [x] Add support for importing/exporting common 3D formats (e.g., OBJ, GLTF).
--   [x] Implement a custom shader editor for advanced material customization.
--   [x] Add support for textures.
--   [x] Implement a physics engine for basic simulations.
--   [x] Implement Observer Pattern (Event Bus).
+-   [ ] Add more complex primitives (e.g., LatheGeometry, ExtrudeGeometry, TextGeometry).
+-   [ ] Implement boolean operations (CSG - Constructive Solid Geometry) for combining/subtracting objects.
+-   [ ] Add support for importing/exporting common 3D formats (e.g., OBJ, GLTF).
+-   [ ] Implement a custom shader editor for advanced material customization.
+-   [ ] Add support for textures.
+-   [ ] Implement a physics engine for basic simulations.
+-   [ ] Implement Observer Pattern (Event Bus).
 
 ### Backend & Storage
 
--   [x] Implement the custom zip file format for local storage.
+-   [ ] Implement the custom zip file format for local storage.
 -   [ ] Add cloud storage integration (e.g., Google Drive, Dropbox) for scene persistence.
 -   [ ] Implement real-time collaboration features (multi-user editing).
 
 ### Performance & Optimization
 
--   [x] Implement level of detail (LOD) for complex scenes.
--   [x] Optimize rendering performance for mobile devices.
--   [x] Implement Web Workers for offloading heavy computations.
+-   [ ] Implement level of detail (LOD) for complex scenes.
+-   [ ] Optimize rendering performance for mobile devices.
+-   [ ] Implement Web Workers for offloading heavy computations.
 
 ### Testing & CI/CD
 
