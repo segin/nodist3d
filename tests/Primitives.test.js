@@ -26,9 +26,9 @@ jest.mock('three', () => ({
         domElement: { addEventListener: jest.fn() }
     })),
     Mesh: jest.fn(() => ({
-        position: { x: 0, y: 0, z: 0 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
+        position: { x: 0, y: 0, z: 0, set: jest.fn() },
+        rotation: { x: 0, y: 0, z: 0, set: jest.fn() },
+        scale: { x: 1, y: 1, z: 1, set: jest.fn() },
         material: { color: { setHex: jest.fn() }, emissive: { setHex: jest.fn() } },
         name: '',
         castShadow: false,
@@ -120,7 +120,6 @@ describe('3D Primitives Functionality', () => {
         global.window = dom.window;
         global.requestAnimationFrame = jest.fn();
         global.console.log = jest.fn(); // Suppress console.log
-        global.Math = { ...global.Math, PI: 3.14159 };
         
         // Mock document methods
         jest.spyOn(document.body, 'appendChild').mockImplementation();
