@@ -14,12 +14,20 @@ class App {
         this.selectedObject = null;
         this.objects = [];
         
+        // History system for undo/redo
+        this.history = [];
+        this.historyIndex = -1;
+        this.maxHistorySize = 50;
+        
         this.init();
         this.setupControls();
         this.setupGUI();
         this.setupLighting();
         this.setupHelpers();
         this.animate();
+        
+        // Save initial state
+        this.saveState('Initial state');
     }
 
     init() {
@@ -105,6 +113,11 @@ class App {
         });
         this.transformControls.addEventListener('dragging-changed', (event) => {
             this.orbitControls.enabled = !event.value;
+            
+            // Save state when transform is completed
+            if (!event.value && this.selectedObject) {
+                this.saveState('Transform object');
+            }
         });
         this.scene.add(this.transformControls);
 
@@ -146,6 +159,22 @@ class App {
                         this.deleteObject(this.selectedObject);
                     }
                     break;
+                case 'z':
+                    if (event.ctrlKey || event.metaKey) {
+                        event.preventDefault();
+                        if (event.shiftKey) {
+                            this.redo();
+                        } else {
+                            this.undo();
+                        }
+                    }
+                    break;
+                case 'y':
+                    if (event.ctrlKey || event.metaKey) {
+                        event.preventDefault();
+                        this.redo();
+                    }
+                    break;
             }
         });
     }
@@ -176,6 +205,12 @@ class App {
         objectFolder.add(this, 'deleteSelectedObject').name('Delete Selected');
         objectFolder.add(this, 'duplicateSelectedObject').name('Duplicate Selected');
         objectFolder.open();
+
+        // History controls
+        const historyFolder = this.gui.addFolder('History');
+        historyFolder.add(this, 'undo').name('Undo');
+        historyFolder.add(this, 'redo').name('Redo');
+        historyFolder.open();
 
         // Properties panel (initially hidden)
         this.propertiesFolder = this.gui.addFolder('Properties');
@@ -218,6 +253,7 @@ class App {
         this.objects.push(mesh);
         this.selectObject(mesh);
         this.updateSceneGraph();
+        this.saveState('Add Box');
     }
 
     addSphere() {
@@ -231,6 +267,7 @@ class App {
         this.objects.push(mesh);
         this.selectObject(mesh);
         this.updateSceneGraph();
+        this.saveState('Add Sphere');
     }
 
     addCylinder() {
@@ -244,6 +281,7 @@ class App {
         this.objects.push(mesh);
         this.selectObject(mesh);
         this.updateSceneGraph();
+        this.saveState('Add Cylinder');
     }
 
     addCone() {
@@ -257,6 +295,7 @@ class App {
         this.objects.push(mesh);
         this.selectObject(mesh);
         this.updateSceneGraph();
+        this.saveState('Add Cone');
     }
 
     addTorus() {
@@ -270,6 +309,7 @@ class App {
         this.objects.push(mesh);
         this.selectObject(mesh);
         this.updateSceneGraph();
+        this.saveState('Add Torus');
     }
 
     addPlane() {
@@ -283,6 +323,7 @@ class App {
         this.objects.push(mesh);
         this.selectObject(mesh);
         this.updateSceneGraph();
+        this.saveState('Add Plane');
     }
 
     // Object manipulation methods
@@ -664,6 +705,7 @@ class App {
                 this.deselectObject();
             }
             this.updateSceneGraph();
+            this.saveState('Delete object');
         }
     }
 
@@ -699,7 +741,147 @@ class App {
             this.objects.push(mesh);
             this.selectObject(mesh);
             this.updateSceneGraph();
+            this.saveState('Duplicate object');
         }
+    }
+
+    // History system methods
+    saveState(description = 'Action') {
+        // Create a snapshot of the current state
+        const state = {
+            description: description,
+            timestamp: Date.now(),
+            objects: this.objects.map(obj => ({
+                name: obj.name,
+                type: obj.geometry.type,
+                position: obj.position.clone(),
+                rotation: obj.rotation.clone(),
+                scale: obj.scale.clone(),
+                material: {
+                    color: obj.material.color.clone(),
+                    emissive: obj.material.emissive.clone()
+                },
+                geometryParams: obj.userData.geometryParams ? {...obj.userData.geometryParams} : null,
+                visible: obj.visible,
+                uuid: obj.uuid
+            })),
+            selectedObjectUuid: this.selectedObject ? this.selectedObject.uuid : null
+        };
+        
+        // Remove any future states if we're not at the end
+        if (this.historyIndex < this.history.length - 1) {
+            this.history.splice(this.historyIndex + 1);
+        }
+        
+        // Add new state
+        this.history.push(state);
+        this.historyIndex++;
+        
+        // Limit history size
+        if (this.history.length > this.maxHistorySize) {
+            this.history.shift();
+            this.historyIndex--;
+        }
+        
+        console.log(`State saved: ${description} (${this.historyIndex + 1}/${this.history.length})`);
+    }
+
+    undo() {
+        if (this.historyIndex > 0) {
+            this.historyIndex--;
+            this.restoreState(this.history[this.historyIndex]);
+            console.log(`Undo: ${this.history[this.historyIndex].description}`);
+        } else {
+            console.log('Nothing to undo');
+        }
+    }
+
+    redo() {
+        if (this.historyIndex < this.history.length - 1) {
+            this.historyIndex++;
+            this.restoreState(this.history[this.historyIndex]);
+            console.log(`Redo: ${this.history[this.historyIndex].description}`);
+        } else {
+            console.log('Nothing to redo');
+        }
+    }
+
+    restoreState(state) {
+        // Clear current scene
+        this.objects.forEach(obj => {
+            this.scene.remove(obj);
+            obj.geometry.dispose();
+            obj.material.dispose();
+        });
+        this.objects.length = 0;
+        
+        // Restore objects
+        state.objects.forEach(objData => {
+            let geometry;
+            
+            // Recreate geometry based on type
+            switch (objData.type) {
+                case 'BoxGeometry':
+                    const params = objData.geometryParams || { width: 1, height: 1, depth: 1 };
+                    geometry = new THREE.BoxGeometry(params.width, params.height, params.depth);
+                    break;
+                case 'SphereGeometry':
+                    const sphereParams = objData.geometryParams || { radius: 0.5, widthSegments: 32, heightSegments: 32 };
+                    geometry = new THREE.SphereGeometry(sphereParams.radius, sphereParams.widthSegments, sphereParams.heightSegments);
+                    break;
+                case 'CylinderGeometry':
+                    const cylinderParams = objData.geometryParams || { radiusTop: 0.5, radiusBottom: 0.5, height: 1 };
+                    geometry = new THREE.CylinderGeometry(cylinderParams.radiusTop, cylinderParams.radiusBottom, cylinderParams.height, 32);
+                    break;
+                case 'ConeGeometry':
+                    const coneParams = objData.geometryParams || { radius: 0.5, height: 1 };
+                    geometry = new THREE.ConeGeometry(coneParams.radius, coneParams.height, 32);
+                    break;
+                case 'TorusGeometry':
+                    const torusParams = objData.geometryParams || { radius: 0.4, tube: 0.2 };
+                    geometry = new THREE.TorusGeometry(torusParams.radius, torusParams.tube, 16, 100);
+                    break;
+                case 'PlaneGeometry':
+                    const planeParams = objData.geometryParams || { width: 2, height: 2 };
+                    geometry = new THREE.PlaneGeometry(planeParams.width, planeParams.height);
+                    break;
+                default:
+                    geometry = new THREE.BoxGeometry(1, 1, 1);
+            }
+            
+            // Recreate material
+            const material = new THREE.MeshLambertMaterial({ 
+                color: objData.material.color,
+                side: objData.type === 'PlaneGeometry' ? THREE.DoubleSide : THREE.FrontSide
+            });
+            material.emissive.copy(objData.material.emissive);
+            
+            // Create mesh
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.name = objData.name;
+            mesh.position.copy(objData.position);
+            mesh.rotation.copy(objData.rotation);
+            mesh.scale.copy(objData.scale);
+            mesh.visible = objData.visible;
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            mesh.uuid = objData.uuid;
+            mesh.userData.geometryParams = objData.geometryParams;
+            
+            this.scene.add(mesh);
+            this.objects.push(mesh);
+        });
+        
+        // Restore selection
+        this.deselectObject();
+        if (state.selectedObjectUuid) {
+            const selectedObj = this.objects.find(obj => obj.uuid === state.selectedObjectUuid);
+            if (selectedObj) {
+                this.selectObject(selectedObj);
+            }
+        }
+        
+        this.updateSceneGraph();
     }
 
     animate() {
