@@ -3,6 +3,8 @@ import { Events } from './constants.js';
 export class History {
     constructor(eventBus) {
         this.eventBus = eventBus;
+        this.undoStack = [];
+        this.redoStack = [];
         this.history = [];
         this.currentIndex = -1;
         this.transformControls = null;
