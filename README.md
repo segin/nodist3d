@@ -105,57 +105,34 @@ This project is licensed under the ISC License. See the [LICENSE](LICENSE) file 
 
 This checklist meticulously tracks all requirements and tasks derived from the initial `PROMPT.md`.
 
-### Project Setup & Management
-
--   [x] Create a web-based 3D modeling program.
--   [x] Use Node.js to host the backend.
--   [x] Use WebGL to render everything in the browser.
--   [x] Create a Git repository in this directory if one does not exist (checked using `find` command).
--   [x] Meticulously add each item to a central `README.md` document.
--   [x] First create a blank `README.md`.
--   [x] Commit the blank `README.md`.
--   [x] Commit `README.md` after adding all checkboxes.
--   [x] Each primitive object shall be a new check box in the list.
--   [x] Create a `CONTEXT.md` file for working context, ideas, and progress.
--   [ ] Treat `CONTEXT.md` as a cache; clear it out once done with something.
--   [x] Commit changes to `CONTEXT.md` to the Git repository.
--   [x] Check for the existence of `gh` using Termux `pkg` commands.
--   [x] Take note of all installed `pkg` and `npm` packages before getting started.
--   [x] Create a GitHub repository `nodist3d`.
--   [x] Push each commit to GitHub as it happens.
--   [x] Explain that the name is Node.js + -ist + 3D.
--   [x] Save this original prompt as `PROMPT.md`.
--   [x] Commit `PROMPT.md`.
--   [x] Never change `PROMPT.md`.
-
 ### Core Functionality
 
--   [x] Include support for all basic 3D primitives.
--   [x] Come up with a list of 3D primitives to include in the default set (and ensure the list is not too short).
-    -   [x] Box (Cube)
-    -   [x] Sphere
-    -   [x] Cylinder
-    -   [x] Cone
-    -   [x] Torus
-    -   [x] Torus Knot
-    -   [x] Tetrahedron (Triangle)
-    -   [x] Icosahedron
-    -   [x] Dodecahedron
-    -   [x] Octahedron
-    -   [x] Plane
-    -   [x] Tube
-    -   [x] Teapot
--   [x] Optimize the application interface for mobile.
--   [x] Node.js webserver listens on localhost for a browser to connect to.
--   [x] Optimize the code.
--   [x] Use a custom zip file format with JSON data inside for persistent local storage.
--   [x] Make sure there is an interface button on the user controls of the web frontend to easily enter and leave full screen mode.
+-   [ ] Include support for all basic 3D primitives.
+-   [ ] Come up with a list of 3D primitives to include in the default set (and ensure the list is not too short).
+    -   [ ] Box (Cube)
+    -   [ ] Sphere
+    -   [ ] Cylinder
+    -   [ ] Cone
+    -   [ ] Torus
+    -   [ ] Torus Knot
+    -   [ ] Tetrahedron (Triangle)
+    -   [ ] Icosahedron
+    -   [ ] Dodecahedron
+    -   [ ] Octahedron
+    -   [ ] Plane
+    -   [ ] Tube
+    -   [ ] Teapot
+-   [ ] Optimize the application interface for mobile.
+-   [ ] Node.js webserver listens on localhost for a browser to connect to.
+-   [ ] Optimize the code.
+-   [ ] Use a custom zip file format with JSON data inside for persistent local storage.
+-   [ ] Make sure there is an interface button on the user controls of the web frontend to easily enter and leave full screen mode.
 
 ### Testing
 
--   [x] Create a suite of unit tests.
--   [x] Create a full test harness.
--   [x] Test the full codebase.
+-   [ ] Create a suite of unit tests.
+-   [ ] Create a full test harness.
+-   [ ] Test the full codebase.
 
 ## Roadmap
 
