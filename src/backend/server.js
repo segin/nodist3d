@@ -60,6 +60,11 @@ app.get('/modules/three.min.js', (req, res) => {
     res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'three', 'build', 'three.min.js'));
 });
 
+app.get('/modules/loglevel.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'loglevel', 'dist', 'loglevel.min.js'));
+});
+
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
 app.get('/healthz', (req, res) => {
