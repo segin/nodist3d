@@ -34,12 +34,62 @@ class App {
         this.camera.position.set(5, 5, 5);
         this.camera.lookAt(0, 0, 0);
 
+        // Setup scene graph UI
+        this.setupSceneGraph();
+
         // Handle window resize
         window.addEventListener('resize', () => {
             this.camera.aspect = window.innerWidth / window.innerHeight;
             this.camera.updateProjectionMatrix();
             this.renderer.setSize(window.innerWidth, window.innerHeight);
         });
+    }
+
+    setupSceneGraph() {
+        // Create scene graph panel
+        this.sceneGraphPanel = document.createElement('div');
+        this.sceneGraphPanel.id = 'scene-graph-panel';
+        this.sceneGraphPanel.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 250px;
+            max-height: 400px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-y: auto;
+            z-index: 1000;
+        `;
+        
+        // Create title
+        const title = document.createElement('h3');
+        title.textContent = 'Scene Graph';
+        title.style.cssText = `
+            margin: 0 0 10px 0;
+            padding: 0;
+            font-size: 14px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        `;
+        
+        // Create objects list
+        this.objectsList = document.createElement('ul');
+        this.objectsList.style.cssText = `
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        `;
+        
+        this.sceneGraphPanel.appendChild(title);
+        this.sceneGraphPanel.appendChild(this.objectsList);
+        document.body.appendChild(this.sceneGraphPanel);
+        
+        // Update initially
+        this.updateSceneGraph();
     }
 
     setupControls() {
@@ -163,9 +213,11 @@ class App {
         const mesh = new THREE.Mesh(geometry, material);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
+        mesh.name = `Box_${this.objects.length + 1}`;
         this.scene.add(mesh);
         this.objects.push(mesh);
         this.selectObject(mesh);
+        this.updateSceneGraph();
     }
 
     addSphere() {
@@ -174,9 +226,11 @@ class App {
         const mesh = new THREE.Mesh(geometry, material);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
+        mesh.name = `Sphere_${this.objects.length + 1}`;
         this.scene.add(mesh);
         this.objects.push(mesh);
         this.selectObject(mesh);
+        this.updateSceneGraph();
     }
 
     addCylinder() {
@@ -185,9 +239,11 @@ class App {
         const mesh = new THREE.Mesh(geometry, material);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
+        mesh.name = `Cylinder_${this.objects.length + 1}`;
         this.scene.add(mesh);
         this.objects.push(mesh);
         this.selectObject(mesh);
+        this.updateSceneGraph();
     }
 
     addCone() {
@@ -196,9 +252,11 @@ class App {
         const mesh = new THREE.Mesh(geometry, material);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
+        mesh.name = `Cone_${this.objects.length + 1}`;
         this.scene.add(mesh);
         this.objects.push(mesh);
         this.selectObject(mesh);
+        this.updateSceneGraph();
     }
 
     addTorus() {
@@ -207,9 +265,11 @@ class App {
         const mesh = new THREE.Mesh(geometry, material);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
+        mesh.name = `Torus_${this.objects.length + 1}`;
         this.scene.add(mesh);
         this.objects.push(mesh);
         this.selectObject(mesh);
+        this.updateSceneGraph();
     }
 
     addPlane() {
@@ -218,9 +278,11 @@ class App {
         const mesh = new THREE.Mesh(geometry, material);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
+        mesh.name = `Plane_${this.objects.length + 1}`;
         this.scene.add(mesh);
         this.objects.push(mesh);
         this.selectObject(mesh);
+        this.updateSceneGraph();
     }
 
     // Object manipulation methods
@@ -236,6 +298,9 @@ class App {
         
         // Update properties panel
         this.updatePropertiesPanel(object);
+        
+        // Update scene graph highlighting
+        this.updateSceneGraph();
     }
 
     deselectObject() {
@@ -473,6 +538,121 @@ class App {
         this.propertiesFolder.close();
     }
 
+    updateSceneGraph() {
+        // Clear existing list
+        this.objectsList.innerHTML = '';
+        
+        // Add each object to the scene graph
+        this.objects.forEach((object, index) => {
+            const listItem = document.createElement('li');
+            listItem.style.cssText = `
+                padding: 5px;
+                margin: 2px 0;
+                background: ${this.selectedObject === object ? '#444' : '#222'};
+                border-radius: 3px;
+                cursor: pointer;
+                border: 1px solid #555;
+            `;
+            
+            // Object name and type
+            const objectInfo = document.createElement('div');
+            objectInfo.style.cssText = `
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            `;
+            
+            const objectName = document.createElement('span');
+            objectName.textContent = object.name || `Object_${index + 1}`;
+            objectName.style.cssText = `
+                font-weight: bold;
+                color: #fff;
+            `;
+            
+            const objectType = document.createElement('span');
+            objectType.textContent = object.geometry.type.replace('Geometry', '');
+            objectType.style.cssText = `
+                font-size: 10px;
+                color: #aaa;
+                font-style: italic;
+            `;
+            
+            // Visibility toggle
+            const visibilityBtn = document.createElement('button');
+            visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.style.cssText = `
+                background: none;
+                border: none;
+                color: white;
+                cursor: pointer;
+                font-size: 12px;
+                padding: 2px 5px;
+                margin: 0 5px;
+            `;
+            visibilityBtn.onclick = (e) => {
+                e.stopPropagation();
+                object.visible = !object.visible;
+                visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            };
+            
+            // Delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = '🗑';
+            deleteBtn.style.cssText = `
+                background: none;
+                border: none;
+                color: #ff4444;
+                cursor: pointer;
+                font-size: 12px;
+                padding: 2px 5px;
+            `;
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                this.deleteObject(object);
+            };
+            
+            // Click to select
+            listItem.onclick = () => {
+                this.selectObject(object);
+            };
+            
+            objectInfo.appendChild(objectName);
+            objectInfo.appendChild(objectType);
+            
+            const buttonContainer = document.createElement('div');
+            buttonContainer.appendChild(visibilityBtn);
+            buttonContainer.appendChild(deleteBtn);
+            
+            objectInfo.appendChild(buttonContainer);
+            listItem.appendChild(objectInfo);
+            
+            // Add position info
+            const positionInfo = document.createElement('div');
+            positionInfo.style.cssText = `
+                font-size: 10px;
+                color: #999;
+                margin-top: 3px;
+            `;
+            positionInfo.textContent = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
+            listItem.appendChild(positionInfo);
+            
+            this.objectsList.appendChild(listItem);
+        });
+        
+        // Add message if no objects
+        if (this.objects.length === 0) {
+            const emptyMessage = document.createElement('li');
+            emptyMessage.textContent = 'No objects in scene';
+            emptyMessage.style.cssText = `
+                color: #666;
+                font-style: italic;
+                text-align: center;
+                padding: 20px;
+            `;
+            this.objectsList.appendChild(emptyMessage);
+        }
+    }
+
     deleteObject(object) {
         if (object) {
             this.scene.remove(object);
@@ -483,6 +663,7 @@ class App {
             if (this.selectedObject === object) {
                 this.deselectObject();
             }
+            this.updateSceneGraph();
         }
     }
 
@@ -505,12 +686,19 @@ class App {
             // Offset position slightly
             mesh.position.x += 1;
             
+            // Copy geometry parameters
+            if (this.selectedObject.userData.geometryParams) {
+                mesh.userData.geometryParams = { ...this.selectedObject.userData.geometryParams };
+            }
+            
             mesh.castShadow = true;
             mesh.receiveShadow = true;
+            mesh.name = `${this.selectedObject.name}_copy`;
             
             this.scene.add(mesh);
             this.objects.push(mesh);
             this.selectObject(mesh);
+            this.updateSceneGraph();
         }
     }
 

@@ -140,6 +140,28 @@ describe('Basic App Functionality', () => {
         jest.spyOn(document.body, 'appendChild').mockImplementation();
         jest.spyOn(window, 'addEventListener').mockImplementation();
         
+        // Mock document.createElement to return proper elements
+        jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+            const element = {
+                tagName: tagName.toUpperCase(),
+                style: {},
+                appendChild: jest.fn(),
+                textContent: '',
+                innerHTML: '',
+                onclick: null,
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn()
+            };
+            
+            // Add style.cssText property
+            Object.defineProperty(element.style, 'cssText', {
+                set: jest.fn(),
+                get: jest.fn()
+            });
+            
+            return element;
+        });
+        
         // Clear mocks
         jest.clearAllMocks();
     });
