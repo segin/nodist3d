@@ -13,6 +13,7 @@ jest.mock('three', () => {
         copy: jest.fn(function(v) { this.x = v.x; this.y = v.y; this.z = v.z; return this; }),
         addVectors: jest.fn(function(v1, v2) { this.x = v1.x + v2.x; this.y = v1.y + v2.y; this.z = v1.z + v2.z; return this; }),
         divideScalar: jest.fn(function(s) { this.x /= s; this.y /= s; this.z /= s; return this; }),
+        normalize: jest.fn(function() { return this; }),
     });
 
     // Helper to create a mock Euler with common methods
