@@ -189,7 +189,14 @@ class App {
         primitiveFolder.add(this, 'addCylinder').name('Add Cylinder');
         primitiveFolder.add(this, 'addCone').name('Add Cone');
         primitiveFolder.add(this, 'addTorus').name('Add Torus');
+        primitiveFolder.add(this, 'addTorusKnot').name('Add Torus Knot');
+        primitiveFolder.add(this, 'addTetrahedron').name('Add Tetrahedron');
+        primitiveFolder.add(this, 'addIcosahedron').name('Add Icosahedron');
+        primitiveFolder.add(this, 'addDodecahedron').name('Add Dodecahedron');
+        primitiveFolder.add(this, 'addOctahedron').name('Add Octahedron');
         primitiveFolder.add(this, 'addPlane').name('Add Plane');
+        primitiveFolder.add(this, 'addTube').name('Add Tube');
+        primitiveFolder.add(this, 'addTeapot').name('Add Teapot');
         primitiveFolder.open();
 
         // Transform controls
@@ -324,6 +331,155 @@ class App {
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Plane');
+    }
+
+    addTorusKnot() {
+        const geometry = new THREE.TorusKnotGeometry(0.4, 0.15, 100, 16);
+        const material = new THREE.MeshLambertMaterial({ color: 0x888888 });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        mesh.name = `TorusKnot_${this.objects.length + 1}`;
+        this.scene.add(mesh);
+        this.objects.push(mesh);
+        this.selectObject(mesh);
+        this.updateSceneGraph();
+        this.saveState('Add Torus Knot');
+    }
+
+    addTetrahedron() {
+        const geometry = new THREE.TetrahedronGeometry(0.6);
+        const material = new THREE.MeshLambertMaterial({ color: 0x00aa00 });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        mesh.name = `Tetrahedron_${this.objects.length + 1}`;
+        this.scene.add(mesh);
+        this.objects.push(mesh);
+        this.selectObject(mesh);
+        this.updateSceneGraph();
+        this.saveState('Add Tetrahedron');
+    }
+
+    addIcosahedron() {
+        const geometry = new THREE.IcosahedronGeometry(0.6);
+        const material = new THREE.MeshLambertMaterial({ color: 0xaa0000 });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        mesh.name = `Icosahedron_${this.objects.length + 1}`;
+        this.scene.add(mesh);
+        this.objects.push(mesh);
+        this.selectObject(mesh);
+        this.updateSceneGraph();
+        this.saveState('Add Icosahedron');
+    }
+
+    addDodecahedron() {
+        const geometry = new THREE.DodecahedronGeometry(0.6);
+        const material = new THREE.MeshLambertMaterial({ color: 0x0000aa });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        mesh.name = `Dodecahedron_${this.objects.length + 1}`;
+        this.scene.add(mesh);
+        this.objects.push(mesh);
+        this.selectObject(mesh);
+        this.updateSceneGraph();
+        this.saveState('Add Dodecahedron');
+    }
+
+    addOctahedron() {
+        const geometry = new THREE.OctahedronGeometry(0.6);
+        const material = new THREE.MeshLambertMaterial({ color: 0xaa00aa });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        mesh.name = `Octahedron_${this.objects.length + 1}`;
+        this.scene.add(mesh);
+        this.objects.push(mesh);
+        this.selectObject(mesh);
+        this.updateSceneGraph();
+        this.saveState('Add Octahedron');
+    }
+
+    addTube() {
+        const curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(-0.5, 0, 0),
+            new THREE.Vector3(0, 0.5, 0),
+            new THREE.Vector3(0.5, 0, 0),
+            new THREE.Vector3(0, -0.5, 0)
+        ]);
+        const geometry = new THREE.TubeGeometry(curve, 20, 0.1, 8, false);
+        const material = new THREE.MeshLambertMaterial({ color: 0xaaaa00 });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        mesh.name = `Tube_${this.objects.length + 1}`;
+        this.scene.add(mesh);
+        this.objects.push(mesh);
+        this.selectObject(mesh);
+        this.updateSceneGraph();
+        this.saveState('Add Tube');
+    }
+
+    addTeapot() {
+        // Create a simple teapot-like shape using a sphere with a handle and spout
+        const group = new THREE.Group();
+        
+        // Main body
+        const bodyGeometry = new THREE.SphereGeometry(0.4, 32, 32);
+        const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0x8b4513 });
+        const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+        body.scale.set(1, 0.8, 1);
+        body.castShadow = true;
+        body.receiveShadow = true;
+        group.add(body);
+        
+        // Spout
+        const spoutGeometry = new THREE.CylinderGeometry(0.05, 0.08, 0.3, 8);
+        const spoutMaterial = new THREE.MeshLambertMaterial({ color: 0x8b4513 });
+        const spout = new THREE.Mesh(spoutGeometry, spoutMaterial);
+        spout.position.set(0.35, 0.1, 0);
+        spout.rotation.z = Math.PI / 4;
+        spout.castShadow = true;
+        spout.receiveShadow = true;
+        group.add(spout);
+        
+        // Handle
+        const handleGeometry = new THREE.TorusGeometry(0.15, 0.03, 8, 16);
+        const handleMaterial = new THREE.MeshLambertMaterial({ color: 0x8b4513 });
+        const handle = new THREE.Mesh(handleGeometry, handleMaterial);
+        handle.position.set(-0.35, 0, 0);
+        handle.rotation.y = Math.PI / 2;
+        handle.castShadow = true;
+        handle.receiveShadow = true;
+        group.add(handle);
+        
+        // Lid
+        const lidGeometry = new THREE.CylinderGeometry(0.35, 0.4, 0.05, 32);
+        const lidMaterial = new THREE.MeshLambertMaterial({ color: 0x8b4513 });
+        const lid = new THREE.Mesh(lidGeometry, lidMaterial);
+        lid.position.set(0, 0.32, 0);
+        lid.castShadow = true;
+        lid.receiveShadow = true;
+        group.add(lid);
+        
+        // Knob
+        const knobGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+        const knobMaterial = new THREE.MeshLambertMaterial({ color: 0x8b4513 });
+        const knob = new THREE.Mesh(knobGeometry, knobMaterial);
+        knob.position.set(0, 0.4, 0);
+        knob.castShadow = true;
+        knob.receiveShadow = true;
+        group.add(knob);
+        
+        group.name = `Teapot_${this.objects.length + 1}`;
+        this.scene.add(group);
+        this.objects.push(group);
+        this.selectObject(group);
+        this.updateSceneGraph();
+        this.saveState('Add Teapot');
     }
 
     // Object manipulation methods

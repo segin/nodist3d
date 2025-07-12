@@ -107,21 +107,21 @@ This checklist meticulously tracks all requirements and tasks derived from the i
 
 ### Core Functionality
 
--   [ ] Include support for all basic 3D primitives.
--   [ ] Come up with a list of 3D primitives to include in the default set (and ensure the list is not too short).
-    -   [ ] Box (Cube)
-    -   [ ] Sphere
-    -   [ ] Cylinder
-    -   [ ] Cone
-    -   [ ] Torus
-    -   [ ] Torus Knot
-    -   [ ] Tetrahedron (Triangle)
-    -   [ ] Icosahedron
-    -   [ ] Dodecahedron
-    -   [ ] Octahedron
-    -   [ ] Plane
-    -   [ ] Tube
-    -   [ ] Teapot
+-   [x] Include support for all basic 3D primitives.
+-   [x] Come up with a list of 3D primitives to include in the default set (and ensure the list is not too short).
+    -   [x] Box (Cube)
+    -   [x] Sphere
+    -   [x] Cylinder
+    -   [x] Cone
+    -   [x] Torus
+    -   [x] Torus Knot
+    -   [x] Tetrahedron (Triangle)
+    -   [x] Icosahedron
+    -   [x] Dodecahedron
+    -   [x] Octahedron
+    -   [x] Plane
+    -   [x] Tube
+    -   [x] Teapot
 -   [ ] Optimize the application interface for mobile.
 -   [ ] Node.js webserver listens on localhost for a browser to connect to.
 -   [ ] Optimize the code.
