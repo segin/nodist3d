@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { GUI } from 'dat.gui';
+import { SceneStorage } from './SceneStorage.js';
 
 /**
  * Simple 3D modeling application with basic primitives and transform controls
@@ -44,6 +45,9 @@ class App {
 
         // Setup scene graph UI
         this.setupSceneGraph();
+
+        // Initialize scene storage
+        this.sceneStorage = new SceneStorage(this.scene, null); // EventBus not needed for basic save/load
 
         // Handle window resize
         window.addEventListener('resize', () => {
@@ -217,6 +221,30 @@ class App {
                 fullscreenButton.textContent = document.msFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
             }
         });
+
+        // Save scene button
+        const saveButton = document.getElementById('save-scene');
+        if (saveButton) {
+            saveButton.addEventListener('click', () => {
+                this.saveScene();
+            });
+        }
+
+        // Load scene button and file input
+        const loadButton = document.getElementById('load-scene');
+        const fileInput = document.getElementById('file-input');
+        if (loadButton && fileInput) {
+            loadButton.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    this.loadScene(file);
+                }
+            });
+        }
     }
 
     setupGUI() {
@@ -1103,6 +1131,36 @@ class App {
             } else if (document.msExitFullscreen) {
                 document.msExitFullscreen();
             }
+        }
+    }
+
+    async saveScene() {
+        try {
+            await this.sceneStorage.saveScene();
+            console.log('Scene saved successfully');
+        } catch (error) {
+            console.error('Error saving scene:', error);
+            alert('Error saving scene. Please try again.');
+        }
+    }
+
+    async loadScene(file) {
+        try {
+            await this.sceneStorage.loadScene(file);
+            console.log('Scene loaded successfully');
+            // Update the objects array to reflect the loaded scene
+            this.objects = [];
+            this.scene.traverse((child) => {
+                if (child.isMesh) {
+                    this.objects.push(child);
+                }
+            });
+            this.updateSceneGraph();
+            this.deselectObject();
+            this.saveState('Load scene');
+        } catch (error) {
+            console.error('Error loading scene:', error);
+            alert('Error loading scene. Please check the file format.');
         }
     }
 
