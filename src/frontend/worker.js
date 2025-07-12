@@ -1,6 +1,5 @@
 // src/frontend/worker.js
-import { ObjectLoader } from 'three';
-import { Scene } from 'three'; // Import Scene for ObjectLoader to work correctly
+importScripts('https://unpkg.com/three@0.164.1/build/three.min.js');
 
 self.onmessage = function(event) {
     const { type, data } = event.data;
@@ -15,7 +14,7 @@ self.onmessage = function(event) {
         }
     } else if (type === 'deserialize') {
         try {
-            const loader = new ObjectLoader();
+            const loader = new THREE.ObjectLoader();
             const scene = loader.parse(JSON.parse(data));
             self.postMessage({ type: 'deserialize_complete', data: scene });
         } catch (error) {

@@ -1,18 +1,18 @@
-import JSZip from 'jszip';
-import * as THREE from 'three'; // Import THREE to use ObjectLoader and other Three.js components
+// JSZip will be loaded globally from CDN
+import * as THREE from 'three';
 import log from './logger.js';
 
 export class SceneStorage {
     constructor(scene, eventBus) {
         this.eventBus = eventBus;
         this.scene = scene;
-        this.worker = new Worker('./src/frontend/worker.js');
+        this.worker = new Worker('./worker.js');
         this.worker.onmessage = this.handleWorkerMessage.bind(this);
         this.loadPromiseResolve = null;
     }
 
     async saveScene() {
-        const zip = new JSZip();
+        const zip = new window.JSZip();
         
         // Serialize the scene using the worker
         const sceneJson = await new Promise((resolve, reject) => {
@@ -39,7 +39,7 @@ export class SceneStorage {
 
     async loadScene(file) {
         try {
-            const zip = new JSZip();
+            const zip = new window.JSZip();
             const loadedZip = await zip.loadAsync(file);
             const sceneJsonFile = loadedZip.file('scene.json');
             if (!sceneJsonFile) {
