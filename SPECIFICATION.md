@@ -14,20 +14,20 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
 *   **1.1.1. Standardize on ES Modules**
     *   *Context*: The project currently mixes CommonJS (`require`) and ES Modules (`import`), which causes tooling friction.
     *   **Action Items**:
-        *   [ ] **Update `package.json`**: Add `"type": "module"` property to the root object.
-        *   [ ] **Refactor Backend (`src/backend/server.js`)**:
-            *   [ ] Replace `const express = require('express')` with `import express from 'express'`.
-            *   [ ] Replace all `require` calls with static `import` statements where possible.
-            *   [ ] For conditional imports, use `await import()`.
-            *   [ ] Replace `__dirname` (undefined in ESM) with `import { fileURLToPath } from 'url'; import { dirname } from 'path'; const __dirname = dirname(fileURLToPath(import.meta.url));`.
+        *   [x] **Update `package.json`**: Add `"type": "module"` property to the root object.
+        *   [x] **Refactor Backend (`src/backend/server.js`)**:
+            *   [x] Replace `const express = require('express')` with `import express from 'express'`.
+            *   [x] Replace all `require` calls with static `import` statements where possible.
+            *   [x] For conditional imports, use `await import()`.
+            *   [x] Replace `__dirname` (undefined in ESM) with `import { fileURLToPath } from 'url'; import { dirname } from 'path'; const __dirname = dirname(fileURLToPath(import.meta.url));`.
         *   [ ] **Refactor Frontend Imports**:
-            *   [ ] Audit all frontend files (`src/frontend/**/*.js`).
-            *   [ ] Ensure all local imports include the `.js` extension (e.g., `import { x } from './utils.js'`), which is mandatory for browser-native ESM.
-            *   [ ] Verify that `three` and other dependencies are imported via their ESM entry points or mapped correctly if using an import map.
+            *   [x] Audit all frontend files (`src/frontend/**/*.js`).
+            *   [x] Ensure all local imports include the `.js` extension (e.g., `import { x } from './utils.js'`), which is mandatory for browser-native ESM.
+            *   [x] Verify that `three` and other dependencies are imported via their ESM entry points or mapped correctly if using an import map.
     *   **Verification & Testing**:
-        *   [ ] Run `npm start` and ensure the server boots without "require is not defined" errors.
+        *   [x] Run `npm start` and ensure the server boots without "require is not defined" errors.
         *   [ ] Open the browser application and check the console for "Module not found" errors.
-        *   [ ] Run `npm test` (after updating test config) to ensure the test runner handles ESM correctly.
+        *   [x] Run `npm test` (after updating test config) to ensure the test runner handles ESM correctly.
 
 *   **1.1.2. Implement Dependency Injection (DI) Container**
     *   *Context*: Managers currently access each other via global variables or direct instantiation, leading to tight coupling and making unit testing difficult.

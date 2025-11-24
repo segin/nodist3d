@@ -65,6 +65,34 @@ app.get('/modules/loglevel.js', (req, res) => {
     res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'loglevel', 'dist', 'loglevel.min.js'));
 });
 
+// Serve cannon-es
+app.get('/modules/cannon-es.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'cannon-es', 'dist', 'cannon-es.js'));
+});
+
+// Serve three-csg-ts
+app.get('/modules/three-csg-ts.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'three-csg-ts', 'index.js'));
+});
+
+// Serve extra three examples
+app.get('/modules/TeapotGeometry.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'three', 'examples', 'jsm', 'geometries', 'TeapotGeometry.js'));
+});
+
+app.get('/modules/FontLoader.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'three', 'examples', 'jsm', 'loaders', 'FontLoader.js'));
+});
+
+app.get('/modules/TextGeometry.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'three', 'examples', 'jsm', 'geometries', 'TextGeometry.js'));
+});
+
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
 app.get('/healthz', (req, res) => {
