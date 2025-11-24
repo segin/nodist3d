@@ -23,19 +23,19 @@ The name "nodist3d" is a combination of:
 ## Core Features
 
 -   **Comprehensive Set of 3D Primitives:**
-    -   [x] Box (Cube)
-    -   [x] Sphere
-    -   [x] Cylinder
-    -   [x] Cone
-    -   [x] Torus
-    -   [x] Torus Knot
-    -   [x] Tetrahedron (Triangle)
-    -   [x] Icosahedron
-    -   [x] Dodecahedron
-    -   [x] Octahedron
-    -   [x] Plane
-    -   [x] Tube
-    -   [x] Teapot
+    -   [ ] Box (Cube)
+    -   [ ] Sphere
+    -   [ ] Cylinder
+    -   [ ] Cone
+    -   [ ] Torus
+    -   [ ] Torus Knot
+    -   [ ] Tetrahedron (Triangle)
+    -   [ ] Icosahedron
+    -   [ ] Dodecahedron
+    -   [ ] Octahedron
+    -   [ ] Plane
+    -   [ ] Tube
+    -   [ ] Teapot
 -   **Mobile-First Design:** The user interface is fully responsive and optimized for touch-based interactions on mobile devices.
 -   **Fullscreen Mode:** A dedicated button allows you to easily enter and exit fullscreen mode for an immersive modeling experience.
 -   **File-based Storage:** Your 3D scenes are saved in a custom `.nodist3d` zip file, which contains the scene data in a `scene.json` file.
@@ -107,21 +107,21 @@ This checklist meticulously tracks all requirements and tasks derived from the i
 
 ### Core Functionality
 
--   [x] Include support for all basic 3D primitives.
--   [x] Come up with a list of 3D primitives to include in the default set (and ensure the list is not too short).
-    -   [x] Box (Cube)
-    -   [x] Sphere
-    -   [x] Cylinder
-    -   [x] Cone
-    -   [x] Torus
-    -   [x] Torus Knot
-    -   [x] Tetrahedron (Triangle)
-    -   [x] Icosahedron
-    -   [x] Dodecahedron
-    -   [x] Octahedron
-    -   [x] Plane
-    -   [x] Tube
-    -   [x] Teapot
+-   [ ] Include support for all basic 3D primitives.
+-   [ ] Come up with a list of 3D primitives to include in the default set (and ensure the list is not too short).
+    -   [ ] Box (Cube)
+    -   [ ] Sphere
+    -   [ ] Cylinder
+    -   [ ] Cone
+    -   [ ] Torus
+    -   [ ] Torus Knot
+    -   [ ] Tetrahedron (Triangle)
+    -   [ ] Icosahedron
+    -   [ ] Dodecahedron
+    -   [ ] Octahedron
+    -   [ ] Plane
+    -   [ ] Tube
+    -   [ ] Teapot
 -   [ ] Optimize the application interface for mobile.
 -   [ ] Node.js webserver listens on localhost for a browser to connect to.
 -   [ ] Optimize the code.
@@ -140,10 +140,10 @@ This section outlines potential future enhancements and features for nodist3d.
 
 ### User Interface & Experience
 
--   [x] Implement interactive controls for object manipulation (translate, rotate, scale).
--   [x] Add a property panel to adjust primitive parameters (e.g., cube dimensions, sphere radius).
--   [x] Implement a scene graph/outliner to manage multiple objects.
--   [x] Implement undo functionality.
+-   [ ] Implement interactive controls for object manipulation (translate, rotate, scale).
+-   [ ] Add a property panel to adjust primitive parameters (e.g., cube dimensions, sphere radius).
+-   [ ] Implement a scene graph/outliner to manage multiple objects.
+-   [ ] Implement undo functionality.
 -   [ ] Implement redo functionality.
 -   [ ] Implement camera controls:
     -   [ ] Implement orbit camera control.

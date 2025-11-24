@@ -9,47 +9,47 @@ This document provides a detailed list of over 300 suggested improvements for th
 ### I. Architecture & General Improvements
 
 - [ ] **Dependency Injection**: Instead of managers accessing each other globally, use a central container or dependency injection (DI) to manage class instances. This will decouple your modules and make them easier to test.
-- [-] **Centralized State Management**: The application state is currently scattered across various managers and DOM elements. Centralize it in a main `App` class or a dedicated state management object to improve predictability and simplify data flow.
-- [x] **Externalize Configuration**: Move hardcoded values like the server port (`3000`), WebSocket URL, and history size into a separate configuration file or use environment variables.
-- [x] **Consistent Module System**: The project mixes CommonJS (`require` in `server.js`) and ES Modules (`import`). Standardize on ES Modules by adding `"type": "module"` to `package.json` and updating `server.js` syntax.
-- [-] **Comprehensive Error Handling**: Add `try...catch` blocks for operations that can fail, such as `localStorage` access, WebSocket connections, and data parsing.
-- [x] **Use a Logger**: Replace all `console.log()` calls with a proper logging library (e.g., `loglevel` on the frontend) that allows for different log levels (debug, info, warn, error).
-- [-] **Add JSDoc Comments**: Document all classes and public methods using JSDoc comments. This will improve code clarity and enable automatic documentation generation.
-- [x] **Define Constants**: Create a `constants.js` file for "magic strings" like event names (`'object-added'`), object types (`'box'`), and UI IDs to prevent typos and improve maintainability.
-- [-] **State Machine for Application Modes**: Implement a finite state machine (FSM) to manage application modes (e.g., `IDLE`, `TRANSFORMING_OBJECT`, `EDITING_MATERIAL`) instead of using boolean flags.
-- [~] **Service Locator Pattern**: As an alternative to DI, implement a Service Locator to provide access to shared services like managers, reducing the need for global variables. (Note: The current DI implementation is clean and effective, so this is not a priority.)
-- [-] **Single Responsibility Principle**: Break down large manager classes. For example, `ObjectManager` could be split into `ObjectFactory`, `ObjectSelector`, and `ObjectPropertyUpdater`.
-- [-] **Command Pattern for History**: Refactor `History.js` to use the Command pattern. Each action (add, remove, transform) becomes a command object with `execute()` and `undo()` methods, simplifying the history logic.
-- [~] **Data-Oriented Design for Properties**: Instead of storing properties directly on Three.js objects, maintain a separate data structure (e.g., a map of UUIDs to property objects). This separates app state from view state. (Note: The current approach of using `userData` is sufficient for now and this would be a major refactoring for little benefit at this stage.)
-- [x] **Create a Core `Engine` Class**: Encapsulate the `renderer`, `scene`, and `camera` setup and the animation loop inside a main `Engine` class to abstract Three.js boilerplate from `main.js`.
-- [x] **Decouple UI from Logic**: `SceneGraph.js` currently mixes logic with direct DOM manipulation. Refactor it to emit events like `sceneGraphNeedsUpdate` with data, and have a separate `UIRenderer` class handle the DOM changes.
-- [~] **Abstract WebSocket Communication**: Create a `NetworkManager` class that wraps the WebSocket instance, providing methods like `send(type, payload)` and handling connection/reconnection logic internally. (Note: The application does not currently use WebSockets.)
-- [x] **Modularize Managers**: Convert manager classes into true ES modules that do not create their own instances. Instantiation should be handled by a single top-level script (`main.js`).
-- [x] **Avoid `instanceof` Checks**: Replace `instanceof` checks (e.g., to see if an object is a `Mesh` or `Light`) with a component-based approach or by checking for properties/methods (duck typing).
+- [ ] **Centralized State Management**: The application state is currently scattered across various managers and DOM elements. Centralize it in a main `App` class or a dedicated state management object to improve predictability and simplify data flow.
+- [ ] **Externalize Configuration**: Move hardcoded values like the server port (`3000`), WebSocket URL, and history size into a separate configuration file or use environment variables.
+- [ ] **Consistent Module System**: The project mixes CommonJS (`require` in `server.js`) and ES Modules (`import`). Standardize on ES Modules by adding `"type": "module"` to `package.json` and updating `server.js` syntax.
+- [ ] **Comprehensive Error Handling**: Add `try...catch` blocks for operations that can fail, such as `localStorage` access, WebSocket connections, and data parsing.
+- [ ] **Use a Logger**: Replace all `console.log()` calls with a proper logging library (e.g., `loglevel` on the frontend) that allows for different log levels (debug, info, warn, error).
+- [ ] **Add JSDoc Comments**: Document all classes and public methods using JSDoc comments. This will improve code clarity and enable automatic documentation generation.
+- [ ] **Define Constants**: Create a `constants.js` file for "magic strings" like event names (`'object-added'`), object types (`'box'`), and UI IDs to prevent typos and improve maintainability.
+- [ ] **State Machine for Application Modes**: Implement a finite state machine (FSM) to manage application modes (e.g., `IDLE`, `TRANSFORMING_OBJECT`, `EDITING_MATERIAL`) instead of using boolean flags.
+- [ ] **Service Locator Pattern**: As an alternative to DI, implement a Service Locator to provide access to shared services like managers, reducing the need for global variables. (Note: The current DI implementation is clean and effective, so this is not a priority.)
+- [ ] **Single Responsibility Principle**: Break down large manager classes. For example, `ObjectManager` could be split into `ObjectFactory`, `ObjectSelector`, and `ObjectPropertyUpdater`.
+- [ ] **Command Pattern for History**: Refactor `History.js` to use the Command pattern. Each action (add, remove, transform) becomes a command object with `execute()` and `undo()` methods, simplifying the history logic.
+- [ ] **Data-Oriented Design for Properties**: Instead of storing properties directly on Three.js objects, maintain a separate data structure (e.g., a map of UUIDs to property objects). This separates app state from view state. (Note: The current approach of using `userData` is sufficient for now and this would be a major refactoring for little benefit at this stage.)
+- [ ] **Create a Core `Engine` Class**: Encapsulate the `renderer`, `scene`, and `camera` setup and the animation loop inside a main `Engine` class to abstract Three.js boilerplate from `main.js`.
+- [ ] **Decouple UI from Logic**: `SceneGraph.js` currently mixes logic with direct DOM manipulation. Refactor it to emit events like `sceneGraphNeedsUpdate` with data, and have a separate `UIRenderer` class handle the DOM changes.
+- [ ] **Abstract WebSocket Communication**: Create a `NetworkManager` class that wraps the WebSocket instance, providing methods like `send(type, payload)` and handling connection/reconnection logic internally. (Note: The application does not currently use WebSockets.)
+- [ ] **Modularize Managers**: Convert manager classes into true ES modules that do not create their own instances. Instantiation should be handled by a single top-level script (`main.js`).
+- [ ] **Avoid `instanceof` Checks**: Replace `instanceof` checks (e.g., to see if an object is a `Mesh` or `Light`) with a component-based approach or by checking for properties/methods (duck typing).
 
 ### II. Backend (`src/backend/server.js`)
 
-- [x] **Robust File Paths**: Use `path.join(__dirname, ...)` to construct the static file path. This prevents path issues across different operating systems.
-- [x] **Add Security Middleware**: Use `helmet` in your Express server to set secure HTTP headers and protect against common web vulnerabilities.
-- [x] **Enable CORS**: Implement the `cors` middleware to handle cross-origin requests, which will be necessary if the API and frontend are served on different ports or domains.
-- [~] **Handle WebSocket Errors**: Add an `'error'` event listener to each WebSocket connection to log errors and prevent the server from crashing due to unhandled exceptions. (Note: The application does not currently use WebSockets.)
-- [x] **Use Environment Variables for Port**: Read the server port from `process.env.PORT` with a fallback to `3000` to make deployment easier.
-- [~] **Refactor WebSocket Broadcasting**: The current broadcast iterates through all clients. For better performance, consider implementing a room-based system if you need to send messages to specific client groups. (Note: The application does not currently use WebSockets.)
-- [x] **Graceful Server Shutdown**: Implement logic to gracefully shut down the server, closing all WebSocket connections and saving any necessary state.
-- [x] **Structured Logging**: Log server events as structured JSON objects instead of plain text for easier querying and analysis in log management systems.
-- [~] **Implement WebSocket Heartbeat**: Add a ping/pong mechanism to detect and close dead WebSocket connections. (Note: The application does not currently use WebSockets.)
-- [x] **Add a Health Check Endpoint**: Create a simple HTTP endpoint (e.g., `/healthz`) that returns a `200 OK` status, useful for deployment environments.
-- [~] **WebSocket Message Versioning**: Include a version number in your WebSocket message protocol to allow for backward-compatible changes in the future. (Note: The application does not currently use WebSockets.)
-- [x] **Centralized Error Handling in Express**: Use a dedicated Express error-handling middleware to catch all unhandled route errors.
+- [ ] **Robust File Paths**: Use `path.join(__dirname, ...)` to construct the static file path. This prevents path issues across different operating systems.
+- [ ] **Add Security Middleware**: Use `helmet` in your Express server to set secure HTTP headers and protect against common web vulnerabilities.
+- [ ] **Enable CORS**: Implement the `cors` middleware to handle cross-origin requests, which will be necessary if the API and frontend are served on different ports or domains.
+- [ ] **Handle WebSocket Errors**: Add an `'error'` event listener to each WebSocket connection to log errors and prevent the server from crashing due to unhandled exceptions. (Note: The application does not currently use WebSockets.)
+- [ ] **Use Environment Variables for Port**: Read the server port from `process.env.PORT` with a fallback to `3000` to make deployment easier.
+- [ ] **Refactor WebSocket Broadcasting**: The current broadcast iterates through all clients. For better performance, consider implementing a room-based system if you need to send messages to specific client groups. (Note: The application does not currently use WebSockets.)
+- [ ] **Graceful Server Shutdown**: Implement logic to gracefully shut down the server, closing all WebSocket connections and saving any necessary state.
+- [ ] **Structured Logging**: Log server events as structured JSON objects instead of plain text for easier querying and analysis in log management systems.
+- [ ] **Implement WebSocket Heartbeat**: Add a ping/pong mechanism to detect and close dead WebSocket connections. (Note: The application does not currently use WebSockets.)
+- [ ] **Add a Health Check Endpoint**: Create a simple HTTP endpoint (e.g., `/healthz`) that returns a `200 OK` status, useful for deployment environments.
+- [ ] **WebSocket Message Versioning**: Include a version number in your WebSocket message protocol to allow for backward-compatible changes in the future. (Note: The application does not currently use WebSockets.)
+- [ ] **Centralized Error Handling in Express**: Use a dedicated Express error-handling middleware to catch all unhandled route errors.
 
 ### III. Frontend - JavaScript & Logic
 
-- [~] **Refactor WebSocket Message Handling**: The large `if/else if` block in `main.js`'s `ws.onmessage` handler is inefficient. Refactor it into a `switch` statement or, even better, a handler map object (`const messageHandlers = { 'type': handlerFunc, ... }`). (Note: The application does not currently use WebSockets.)
-- [x] **Create an Input Manager**: Centralize all mouse and keyboard event listeners (`mousedown`, `keyup`, etc.) into a dedicated `InputManager` class instead of attaching them directly to the `window` or `document` in `main.js`.
-- [x] **Leverage Modern JavaScript**: Use modern ES6+ features like optional chaining (`?.`), nullish coalescing (`??`), and `async/await` to write more concise and readable code.
-- [x] **Implement Placeholder Files**: The files `PhysicsManager.js` and `ShaderEditor.js` are empty. Either implement their functionality or remove them from the project.
-- [x] **Cache and Reuse Materials**: In `ObjectManager`, instead of creating a `new THREE.MeshStandardMaterial()` every time, cache materials based on their properties and reuse them to reduce draw calls and improve performance.
-- [x] **Improve `Pointer.js` Decoupling**: While `Pointer.js` uses custom events (good!), it still seems to rely on global state. Refactor it to receive necessary state (like the list of selectable objects) via its methods.
+- [ ] **Refactor WebSocket Message Handling**: The large `if/else if` block in `main.js`'s `ws.onmessage` handler is inefficient. Refactor it into a `switch` statement or, even better, a handler map object (`const messageHandlers = { 'type': handlerFunc, ... }`). (Note: The application does not currently use WebSockets.)
+- [ ] **Create an Input Manager**: Centralize all mouse and keyboard event listeners (`mousedown`, `keyup`, etc.) into a dedicated `InputManager` class instead of attaching them directly to the `window` or `document` in `main.js`.
+- [ ] **Leverage Modern JavaScript**: Use modern ES6+ features like optional chaining (`?.`), nullish coalescing (`??`), and `async/await` to write more concise and readable code.
+- [ ] **Implement Placeholder Files**: The files `PhysicsManager.js` and `ShaderEditor.js` are empty. Either implement their functionality or remove them from the project.
+- [ ] **Cache and Reuse Materials**: In `ObjectManager`, instead of creating a `new THREE.MeshStandardMaterial()` every time, cache materials based on their properties and reuse them to reduce draw calls and improve performance.
+- [ ] **Improve `Pointer.js` Decoupling**: While `Pointer.js` uses custom events (good!), it still seems to rely on global state. Refactor it to receive necessary state (like the list of selectable objects) via its methods.
 - [ ] **Clean up `main.js` Event Listeners**: Organize all UI event listeners from `main.js` into a separate `UIMediator` or similar class that handles interactions between the DOM and the 3D scene managers.
 - [ ] **Use Class Private Fields**: Adopt `#privateField` syntax for class properties and methods that are not meant to be accessed from outside the class.
 - [ ] **Avoid Default Exports**: Prefer named exports to improve discoverability and refactoring.
