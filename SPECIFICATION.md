@@ -51,20 +51,20 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
 *   **1.1.3. Centralized State Management**
     *   *Context*: Application state (e.g., "is user dragging?", "current color") is scattered across DOM elements and Manager instance properties.
     *   **Action Items**:
-        *   [ ] **Create `StateManager` class**:
-            *   [ ] Define initial state schema: `{ selection: [], toolMode: 'select', clipboard: null, isDragging: false, sceneDirty: false }`.
-            *   [ ] use `Proxy` or a simple setter pattern to detect changes.
-        *   [ ] **Implement State Accessors**:
-            *   [ ] `getState()`: Returns a read-only copy (frozen) of the state.
-            *   [ ] `setState(partialState)`: Merges updates and notifies listeners.
-            *   [ ] `subscribe(key, callback)`: specific listener for property changes.
-        *   [ ] **Refactor Consumers**:
-            *   [ ] **ObjectManager**: When selecting, call `stateManager.setState({ selection: [obj] })` instead of setting `this.selected`.
-            *   [ ] **PropertiesPanel**: Subscribe to `selection` changes to auto-update the UI.
+        *   [x] **Create `StateManager` class**:
+            *   [x] Define initial state schema: `{ selection: [], toolMode: 'select', clipboard: null, isDragging: false, sceneDirty: false }`.
+            *   [x] use `Proxy` or a simple setter pattern to detect changes.
+        *   [x] **Implement State Accessors**:
+            *   [x] `getState()`: Returns a read-only copy (frozen) of the state.
+            *   [x] `setState(partialState)`: Merges updates and notifies listeners.
+            *   [x] `subscribe(key, callback)`: specific listener for property changes.
+        *   [x] **Refactor Consumers**:
+            *   [x] **ObjectManager**: When selecting, call `stateManager.setState({ selection: [obj] })` instead of setting `this.selected`.
+            *   [x] **PropertiesPanel**: Subscribe to `selection` changes to auto-update the UI.
     *   **Verification & Testing**:
-        *   [ ] **Unit Test**: Test `setState` merges correctly and fires callbacks.
-        *   [ ] **Unit Test**: Test that subscribers to irrelevant keys are *not* fired.
-        *   [ ] **Integration**: Change selection in 3D view -> Verify Properties Panel updates.
+        *   [x] **Unit Test**: Test `setState` merges correctly and fires callbacks.
+        *   [x] **Unit Test**: Test that subscribers to irrelevant keys are *not* fired.
+        *   [x] **Integration**: Change selection in 3D view -> Verify Properties Panel updates.
 
 ### 1.2. Code Quality & Standards
 **Goal**: Enforce consistent coding standards, documentation, and type safety to prevent regression.

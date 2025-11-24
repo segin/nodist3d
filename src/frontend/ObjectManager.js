@@ -3,13 +3,28 @@ import { Events } from './constants.js';
 import { PrimitiveFactory } from './PrimitiveFactory.js';
 
 export class ObjectManager {
-    constructor(scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater) {
+    constructor(scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater, stateManager) {
         this.scene = scene;
         this.eventBus = eventBus;
         this.physicsManager = physicsManager;
         this.primitiveFactory = primitiveFactory;
         this.objectFactory = objectFactory;
         this.objectPropertyUpdater = objectPropertyUpdater;
+        this.stateManager = stateManager;
+    }
+
+    selectObject(object) {
+        if (this.stateManager) {
+            this.stateManager.setState({ selection: [object] });
+        }
+        this.eventBus.publish(Events.OBJECT_SELECTED, object);
+    }
+
+    deselectObject() {
+        if (this.stateManager) {
+            this.stateManager.setState({ selection: [] });
+        }
+        this.eventBus.publish(Events.OBJECT_DESELECTED);
     }
 
     addPrimitive(type, options) {
