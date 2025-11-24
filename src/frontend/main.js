@@ -4,6 +4,7 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import { GUI } from 'dat.gui';
 import { SceneStorage } from './SceneStorage.js';
 import { ServiceContainer } from './utils/ServiceContainer.js';
+import { StateManager } from './StateManager.js';
 import EventBus from './EventBus.js';
 import { ObjectManager } from './ObjectManager.js';
 import { SceneManager } from './SceneManager.js';
@@ -23,6 +24,9 @@ class App {
 
         // Register Core Services
         this.container.register('EventBus', EventBus);
+
+        this.stateManager = new StateManager();
+        this.container.register('StateManager', this.stateManager);
 
         // Initialize Three.js Core
         this.scene = new THREE.Scene();
@@ -66,14 +70,15 @@ class App {
         );
         this.container.register('SceneManager', this.sceneManager);
 
-        // ObjectManager: needs scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater
+        // ObjectManager: needs scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater, stateManager
         this.objectManager = new ObjectManager(
             this.scene,
             EventBus,
             this.physicsManager,
             this.primitiveFactory,
             this.objectFactory,
-            this.objectPropertyUpdater
+            this.objectPropertyUpdater,
+            this.stateManager
         );
         this.container.register('ObjectManager', this.objectManager);
 
@@ -450,6 +455,17 @@ class App {
         // Properties panel (initially hidden)
         this.propertiesFolder = this.gui.addFolder('Properties');
         this.propertiesFolder.close();
+
+        // Subscribe to state changes for properties panel updates
+        if (this.stateManager) {
+            this.stateManager.subscribe('selection', (selection) => {
+                if (selection && selection.length > 0) {
+                    this.updatePropertiesPanel(selection[0]);
+                } else {
+                    this.clearPropertiesPanel();
+                }
+            });
+        }
     }
 
     setupLighting() {
@@ -712,6 +728,11 @@ class App {
 
     // Object manipulation methods
     selectObject(object) {
+        // Use ObjectManager to handle selection logic, which now uses StateManager
+        if (this.objectManager) {
+            this.objectManager.selectObject(object);
+        }
+
         this.selectedObject = object;
         this.transformControls.attach(object);
         
@@ -721,21 +742,19 @@ class App {
         });
         object.material.emissive.setHex(0x444444);
         
-        // Update properties panel
-        this.updatePropertiesPanel(object);
-        
         // Update scene graph highlighting
         this.updateSceneGraph();
     }
 
     deselectObject() {
+        if (this.objectManager) {
+            this.objectManager.deselectObject();
+        }
+
         if (this.selectedObject) {
             this.selectedObject.material.emissive.setHex(0x000000);
             this.selectedObject = null;
             this.transformControls.detach();
-            
-            // Clear properties panel
-            this.clearPropertiesPanel();
         }
     }
 
