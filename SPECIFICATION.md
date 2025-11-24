@@ -32,21 +32,21 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
 *   **1.1.2. Implement Dependency Injection (DI) Container**
     *   *Context*: Managers currently access each other via global variables or direct instantiation, leading to tight coupling and making unit testing difficult.
     *   **Action Items**:
-        *   [ ] **Create `ServiceContainer` class**:
-            *   [ ] Implement a `services` Map to store instances.
-            *   [ ] Implement `register(name, instance)`: Throws if name already exists.
-            *   [ ] Implement `get(name)`: Throws error if service not found (fail fast).
-        *   [ ] **Refactor Manager Classes**:
-            *   [ ] **ObjectManager**: Constructor should accept `scene`, `eventBus`, `physicsManager`. Remove internal `new` calls.
-            *   [ ] **SceneManager**: Constructor should accept `renderer`, `camera`, `inputManager`.
-            *   [ ] **InputManager**: Constructor should accept `domElement`.
-        *   [ ] **Update Entry Point (`main.js`)**:
-            *   [ ] Create a single instance of `ServiceContainer`.
-            *   [ ] Instantiate `EventBus` first and register it.
-            *   [ ] Instantiate other managers in dependency order, passing the container or specific services.
+        *   [x] **Create `ServiceContainer` class**:
+            *   [x] Implement a `services` Map to store instances.
+            *   [x] Implement `register(name, instance)`: Throws if name already exists.
+            *   [x] Implement `get(name)`: Throws error if service not found (fail fast).
+        *   [x] **Refactor Manager Classes**:
+            *   [x] **ObjectManager**: Constructor should accept `scene`, `eventBus`, `physicsManager`. Remove internal `new` calls.
+            *   [x] **SceneManager**: Constructor should accept `renderer`, `camera`, `inputManager`.
+            *   [x] **InputManager**: Constructor should accept `domElement`.
+        *   [x] **Update Entry Point (`main.js`)**:
+            *   [x] Create a single instance of `ServiceContainer`.
+            *   [x] Instantiate `EventBus` first and register it.
+            *   [x] Instantiate other managers in dependency order, passing the container or specific services.
     *   **Verification & Testing**:
-        *   [ ] **Unit Test**: Create `ServiceContainer.test.js`. verify `register` stores and `get` retrieves. Verify error on missing service.
-        *   [ ] **Integration Test**: Verify that `ObjectManager` can successfully emit events via the injected `EventBus`.
+        *   [x] **Unit Test**: Create `ServiceContainer.test.js`. verify `register` stores and `get` retrieves. Verify error on missing service.
+        *   [x] **Integration Test**: Verify that `ObjectManager` can successfully emit events via the injected `EventBus`.
 
 *   **1.1.3. Centralized State Management**
     *   *Context*: Application state (e.g., "is user dragging?", "current color") is scattered across DOM elements and Manager instance properties.

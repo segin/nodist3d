@@ -1,17 +1,25 @@
 
-
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'three';
 
 export class SceneManager {
-    constructor(canvas) {
-        this.canvas = canvas;
-        this.scene = new global.THREE.Scene();
-        this.renderer = new global.THREE.WebGLRenderer({ canvas: this.canvas, powerPreference: "high-performance" });
-        this.camera = new global.THREE.PerspectiveCamera(75, 2, 0.1, 5);
-        this.camera.position.z = 2;
+    constructor(renderer, camera, inputManager, scene) {
+        this.renderer = renderer;
+        this.camera = camera;
+        this.inputManager = inputManager;
+        // If scene is provided, use it; otherwise creating one might conflict if main.js also creates one.
+        // Assuming we should accept it as per standard DI pattern for shared resources.
+        this.scene = scene;
+        this.canvas = renderer.domElement;
+
+        if (!this.scene) {
+             // Fallback if not provided, though usually should be injected
+             console.warn("Scene not injected into SceneManager, creating new one.");
+             this.scene = new THREE.Scene();
+        }
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.controls.enableDamping = true; // an animation loop is required when damping is enabled
+        this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.25;
         this.controls.screenSpacePanning = true;
         this.controls.enableZoom = true;
@@ -22,12 +30,15 @@ export class SceneManager {
         this.initialCameraPosition = this.camera.position.clone();
         this.initialControlsTarget = this.controls.target.clone();
 
-        const gridHelper = new global.THREE.GridHelper(10, 10);
+        const gridHelper = new THREE.GridHelper(10, 10);
         this.scene.add(gridHelper);
 
-        const axesHelper = new global.THREE.AxesHelper(5);
+        const axesHelper = new THREE.AxesHelper(5);
         this.scene.add(axesHelper);
 
+        // Removing global listener if InputManager handles it,
+        // or keeping it if it's specific to scene resizing.
+        // Spec doesn't mention removing it.
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
         this.onWindowResize();
     }
@@ -48,5 +59,6 @@ export class SceneManager {
 
     render() {
         this.renderer.render(this.scene, this.camera);
+        this.controls.update();
     }
 }
