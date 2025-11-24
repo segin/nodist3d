@@ -20,13 +20,13 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
             *   [x] Replace all `require` calls with static `import` statements where possible.
             *   [x] For conditional imports, use `await import()`.
             *   [x] Replace `__dirname` (undefined in ESM) with `import { fileURLToPath } from 'url'; import { dirname } from 'path'; const __dirname = dirname(fileURLToPath(import.meta.url));`.
-        *   [ ] **Refactor Frontend Imports**:
+        *   [x] **Refactor Frontend Imports**:
             *   [x] Audit all frontend files (`src/frontend/**/*.js`).
             *   [x] Ensure all local imports include the `.js` extension (e.g., `import { x } from './utils.js'`), which is mandatory for browser-native ESM.
             *   [x] Verify that `three` and other dependencies are imported via their ESM entry points or mapped correctly if using an import map.
     *   **Verification & Testing**:
         *   [x] Run `npm start` and ensure the server boots without "require is not defined" errors.
-        *   [ ] Open the browser application and check the console for "Module not found" errors.
+        *   [x] Open the browser application and check the console for "Module not found" errors.
         *   [x] Run `npm test` (after updating test config) to ensure the test runner handles ESM correctly.
 
 *   **1.1.2. Implement Dependency Injection (DI) Container**
