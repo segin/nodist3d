@@ -1,9 +1,13 @@
 import { Events } from './constants.js';
 
 export class InputManager {
-    constructor(eventBus) {
+    constructor(eventBus, domElement) {
         this.eventBus = eventBus;
-        window.addEventListener('keydown', this.onKeyDown.bind(this));
+        this.domElement = domElement || window; // Fallback to window if not provided
+        // Spec says "Constructor should accept domElement".
+        // Usually we attach listeners to domElement (like canvas) for mouse, but for keydown usually window/document.
+        // However, to be specific:
+        (this.domElement.ownerDocument || window).addEventListener('keydown', this.onKeyDown.bind(this));
     }
 
     onKeyDown(event) {

@@ -3,15 +3,63 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { GUI } from 'dat.gui';
 import { SceneStorage } from './SceneStorage.js';
+import { ServiceContainer } from './utils/ServiceContainer.js';
+import EventBus from './EventBus.js';
+import { ObjectManager } from './ObjectManager.js';
+import { SceneManager } from './SceneManager.js';
+import { InputManager } from './InputManager.js';
+import { PhysicsManager } from './PhysicsManager.js';
 
 /**
  * Simple 3D modeling application with basic primitives and transform controls
  */
 class App {
     constructor() {
+        // Initialize Service Container
+        this.container = new ServiceContainer();
+
+        // Register Core Services
+        this.container.register('EventBus', EventBus);
+
+        // Initialize Three.js Core
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
+
+        // Register Three.js Core objects (optional but good for DI)
+        this.container.register('Scene', this.scene);
+        this.container.register('Camera', this.camera);
+        this.container.register('Renderer', this.renderer);
+
+        // Initialize Managers in dependency order
+
+        // InputManager: needs domElement (renderer.domElement)
+        // Note: We should set up renderer size and append to DOM first.
+        this.initRenderer();
+        this.inputManager = new InputManager(EventBus, this.renderer.domElement);
+        this.container.register('InputManager', this.inputManager);
+
+        // PhysicsManager: needs scene
+        this.physicsManager = new PhysicsManager(this.scene);
+        this.container.register('PhysicsManager', this.physicsManager);
+
+        // SceneManager: needs renderer, camera, inputManager, scene
+        this.sceneManager = new SceneManager(
+            this.renderer,
+            this.camera,
+            this.inputManager,
+            this.scene
+        );
+        this.container.register('SceneManager', this.sceneManager);
+
+        // ObjectManager: needs scene, eventBus, physicsManager
+        this.objectManager = new ObjectManager(
+            this.scene,
+            EventBus,
+            this.physicsManager
+        );
+        this.container.register('ObjectManager', this.objectManager);
+
         this.selectedObject = null;
         this.objects = [];
         
@@ -20,7 +68,8 @@ class App {
         this.historyIndex = -1;
         this.maxHistorySize = 50;
         
-        this.init();
+        // Continue initialization
+        this.initRemaining();
         this.setupControls();
         this.setupGUI();
         this.setupLighting();
@@ -31,7 +80,7 @@ class App {
         this.saveState('Initial state');
     }
 
-    init() {
+    initRenderer() {
         // Setup renderer
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -43,21 +92,28 @@ class App {
         this.camera.position.set(5, 5, 5);
         this.camera.lookAt(0, 0, 0);
 
-        // Setup scene graph UI
-        this.setupSceneGraph();
-
-        // Initialize scene storage
-        this.sceneStorage = new SceneStorage(this.scene, null); // EventBus not needed for basic save/load
-
         // Handle window resize
         window.addEventListener('resize', () => {
             this.camera.aspect = window.innerWidth / window.innerHeight;
             this.camera.updateProjectionMatrix();
             this.renderer.setSize(window.innerWidth, window.innerHeight);
         });
+    }
+
+    initRemaining() {
+        // Setup scene graph UI
+        this.setupSceneGraph();
+
+        // Initialize scene storage
+        this.sceneStorage = new SceneStorage(this.scene, null); // EventBus not needed for basic save/load
 
         // Mobile touch optimizations
         this.setupMobileOptimizations();
+    }
+
+    // Backward compatibility: init() logic split into initRenderer and initRemaining
+    init() {
+        // This method is effectively replaced by initRenderer and initRemaining called in constructor
     }
 
     setupSceneGraph() {
