@@ -9,6 +9,9 @@ import { ObjectManager } from './ObjectManager.js';
 import { SceneManager } from './SceneManager.js';
 import { InputManager } from './InputManager.js';
 import { PhysicsManager } from './PhysicsManager.js';
+import { PrimitiveFactory } from './PrimitiveFactory.js';
+import { ObjectFactory } from './ObjectFactory.js';
+import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
 
 /**
  * Simple 3D modeling application with basic primitives and transform controls
@@ -33,6 +36,17 @@ class App {
 
         // Initialize Managers in dependency order
 
+        // PrimitiveFactory
+        this.primitiveFactory = new PrimitiveFactory();
+        this.container.register('PrimitiveFactory', this.primitiveFactory);
+
+        // ObjectFactory & PropertyUpdater
+        this.objectFactory = new ObjectFactory(this.scene, this.primitiveFactory, EventBus);
+        this.container.register('ObjectFactory', this.objectFactory);
+
+        this.objectPropertyUpdater = new ObjectPropertyUpdater(this.primitiveFactory);
+        this.container.register('ObjectPropertyUpdater', this.objectPropertyUpdater);
+
         // InputManager: needs domElement (renderer.domElement)
         // Note: We should set up renderer size and append to DOM first.
         this.initRenderer();
@@ -52,11 +66,14 @@ class App {
         );
         this.container.register('SceneManager', this.sceneManager);
 
-        // ObjectManager: needs scene, eventBus, physicsManager
+        // ObjectManager: needs scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater
         this.objectManager = new ObjectManager(
             this.scene,
             EventBus,
-            this.physicsManager
+            this.physicsManager,
+            this.primitiveFactory,
+            this.objectFactory,
+            this.objectPropertyUpdater
         );
         this.container.register('ObjectManager', this.objectManager);
 
