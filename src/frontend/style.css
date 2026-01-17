@@ -61,6 +61,11 @@ body {
     background-color: #004085;
 }
 
+#ui button:focus-visible {
+    outline: 2px solid white;
+    box-shadow: 0 0 0 4px #0056b3;
+}
+
 /* Scene graph styling */
 #scene-graph {
     position: absolute;
@@ -106,6 +111,19 @@ body {
 
 #scene-graph li.selected {
     background-color: rgba(0, 123, 255, 0.3);
+}
+
+#scene-graph-panel li:focus-visible,
+#scene-graph li:focus-visible {
+    outline: 2px solid white;
+    box-shadow: 0 0 0 2px #0056b3;
+}
+
+#scene-graph-panel button:focus-visible,
+#scene-graph button:focus-visible {
+    outline: 2px solid white;
+    box-shadow: 0 0 0 2px #0056b3;
+    border-radius: 2px;
 }
 
 /* Mobile optimizations */

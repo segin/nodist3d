@@ -989,6 +989,7 @@ class App {
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
+            listItem.tabIndex = 0; // Make focusable
             listItem.style.cssText = `
                 padding: 5px;
                 margin: 2px 0;
@@ -996,8 +997,17 @@ class App {
                 border-radius: 3px;
                 cursor: pointer;
                 border: 1px solid #555;
+                outline: none;
             `;
             
+            // Keyboard selection
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
+
             // Object name and type
             const objectInfo = document.createElement('div');
             objectInfo.style.cssText = `
@@ -1024,6 +1034,8 @@ class App {
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
+            visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1036,12 +1048,17 @@ class App {
             visibilityBtn.onclick = (e) => {
                 e.stopPropagation();
                 object.visible = !object.visible;
+                const label = object.visible ? 'Hide object' : 'Show object';
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                visibilityBtn.title = label;
+                visibilityBtn.setAttribute('aria-label', label);
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+            deleteBtn.title = 'Delete object';
+            deleteBtn.setAttribute('aria-label', 'Delete object');
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
