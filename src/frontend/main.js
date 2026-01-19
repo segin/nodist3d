@@ -989,6 +989,7 @@ class App {
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
+            listItem.setAttribute('tabindex', '0'); // Make keyboard focusable
             listItem.style.cssText = `
                 padding: 5px;
                 margin: 2px 0;
@@ -997,6 +998,14 @@ class App {
                 cursor: pointer;
                 border: 1px solid #555;
             `;
+
+            // Keyboard selection support
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
             
             // Object name and type
             const objectInfo = document.createElement('div');
@@ -1024,6 +1033,7 @@ class App {
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.setAttribute('aria-label', `Toggle visibility for ${object.name || 'Object'}`);
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1042,6 +1052,7 @@ class App {
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name || 'Object'}`);
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
