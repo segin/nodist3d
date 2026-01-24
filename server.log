@@ -1,0 +1,9 @@
+
+> nodist3d@1.0.0 start
+> node src/backend/server.js
+
+Server listening at http://localhost:3000
+Error: ENOENT: no such file or directory, stat '/app/node_modules/three/build/three.min.js'
+Error: ENOENT: no such file or directory, stat '/app/node_modules/three/build/three.min.js'
+Error: ENOENT: no such file or directory, stat '/app/node_modules/three/build/three.min.js'
+Error: ENOENT: no such file or directory, stat '/app/node_modules/three/build/three.min.js'

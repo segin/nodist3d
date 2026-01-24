@@ -988,6 +988,7 @@ class App {
         
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
+            const objectNameText = object.name || `Object_${index + 1}`;
             const listItem = document.createElement('li');
             listItem.style.cssText = `
                 padding: 5px;
@@ -997,6 +998,15 @@ class App {
                 cursor: pointer;
                 border: 1px solid #555;
             `;
+            listItem.tabIndex = 0;
+            listItem.setAttribute('role', 'button');
+            listItem.setAttribute('aria-label', `Select ${objectNameText}`);
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
             
             // Object name and type
             const objectInfo = document.createElement('div');
@@ -1007,7 +1017,7 @@ class App {
             `;
             
             const objectName = document.createElement('span');
-            objectName.textContent = object.name || `Object_${index + 1}`;
+            objectName.textContent = objectNameText;
             objectName.style.cssText = `
                 font-weight: bold;
                 color: #fff;
@@ -1024,6 +1034,7 @@ class App {
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.setAttribute('aria-label', `Toggle visibility for ${objectNameText}`);
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1042,6 +1053,7 @@ class App {
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+            deleteBtn.setAttribute('aria-label', `Delete ${objectNameText}`);
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
