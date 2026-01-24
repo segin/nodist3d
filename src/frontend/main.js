@@ -1,3 +1,4 @@
+// @ts-check
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
@@ -18,6 +19,9 @@ import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
  * Simple 3D modeling application with basic primitives and transform controls
  */
 class App {
+    /**
+     * Initializes the application
+     */
     constructor() {
         // Initialize Service Container
         this.container = new ServiceContainer();
@@ -82,10 +86,13 @@ class App {
         );
         this.container.register('ObjectManager', this.objectManager);
 
+        /** @type {THREE.Object3D | null} */
         this.selectedObject = null;
+        /** @type {THREE.Object3D[]} */
         this.objects = [];
         
         // History system for undo/redo
+        /** @type {any[]} */
         this.history = [];
         this.historyIndex = -1;
         this.maxHistorySize = 50;
@@ -102,6 +109,9 @@ class App {
         this.saveState('Initial state');
     }
 
+    /**
+     * Initializes the renderer and camera
+     */
     initRenderer() {
         // Setup renderer
         this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -122,6 +132,9 @@ class App {
         });
     }
 
+    /**
+     * Initializes the rest of the application
+     */
     initRemaining() {
         // Setup scene graph UI
         this.setupSceneGraph();
@@ -138,6 +151,9 @@ class App {
         // This method is effectively replaced by initRenderer and initRemaining called in constructor
     }
 
+    /**
+     * Sets up the Scene Graph UI
+     */
     setupSceneGraph() {
         // Create scene graph panel
         this.sceneGraphPanel = document.createElement('div');
@@ -185,6 +201,9 @@ class App {
         this.updateSceneGraph();
     }
 
+    /**
+     * Sets up controls (orbit, transform, keyboard)
+     */
     setupControls() {
         // Orbit controls for camera
         this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -320,7 +339,8 @@ class App {
             });
             
             fileInput.addEventListener('change', (event) => {
-                const file = event.target.files[0];
+                // @ts-ignore
+                const file = /** @type {HTMLInputElement} */ (event.target).files[0];
                 if (file) {
                     this.loadScene(file);
                 }
@@ -328,6 +348,9 @@ class App {
         }
     }
 
+    /**
+     * Sets up optimizations for mobile devices
+     */
     setupMobileOptimizations() {
         // Detect mobile devices
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -345,6 +368,7 @@ class App {
 
             // Optimize orbit controls for touch
             this.orbitControls.enableKeys = false; // Disable keyboard on mobile
+            // @ts-ignore
             this.orbitControls.touches = {
                 ONE: THREE.TOUCH.ROTATE,
                 TWO: THREE.TOUCH.DOLLY_PAN
@@ -395,6 +419,10 @@ class App {
         }
     }
     
+    /**
+     * Handles touch events for object selection
+     * @param {Touch} touch
+     */
     handleTouch(touch) {
         const rect = this.renderer.domElement.getBoundingClientRect();
         const mouse = new THREE.Vector2();
@@ -412,6 +440,9 @@ class App {
         }
     }
 
+    /**
+     * Sets up the GUI
+     */
     setupGUI() {
         this.gui = new GUI();
         
@@ -468,6 +499,9 @@ class App {
         }
     }
 
+    /**
+     * Sets up the lighting
+     */
     setupLighting() {
         // Ambient light
         const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
@@ -482,6 +516,9 @@ class App {
         this.scene.add(directionalLight);
     }
 
+    /**
+     * Sets up helpers (grid, axes)
+     */
     setupHelpers() {
         // Grid helper
         const gridHelper = new THREE.GridHelper(10, 10);
@@ -727,6 +764,10 @@ class App {
     }
 
     // Object manipulation methods
+    /**
+     * Selects an object
+     * @param {THREE.Object3D} object
+     */
     selectObject(object) {
         // Use ObjectManager to handle selection logic, which now uses StateManager
         if (this.objectManager) {
@@ -738,26 +779,45 @@ class App {
         
         // Visual feedback
         this.objects.forEach(obj => {
-            obj.material.emissive.setHex(0x000000);
+            // @ts-ignore
+            if (obj.material && obj.material.emissive) {
+                // @ts-ignore
+                obj.material.emissive.setHex(0x000000);
+            }
         });
-        object.material.emissive.setHex(0x444444);
+        // @ts-ignore
+        if (object.material && object.material.emissive) {
+            // @ts-ignore
+            object.material.emissive.setHex(0x444444);
+        }
         
         // Update scene graph highlighting
         this.updateSceneGraph();
     }
 
+    /**
+     * Deselects the currently selected object
+     */
     deselectObject() {
         if (this.objectManager) {
             this.objectManager.deselectObject();
         }
 
         if (this.selectedObject) {
-            this.selectedObject.material.emissive.setHex(0x000000);
+            // @ts-ignore
+            if (this.selectedObject.material && this.selectedObject.material.emissive) {
+                // @ts-ignore
+                this.selectedObject.material.emissive.setHex(0x000000);
+            }
             this.selectedObject = null;
             this.transformControls.detach();
         }
     }
 
+    /**
+     * Updates the properties panel for the selected object
+     * @param {THREE.Object3D} object
+     */
     updatePropertiesPanel(object) {
         this.clearPropertiesPanel();
         
@@ -815,9 +875,11 @@ class App {
         // Add material properties
         const materialFolder = this.propertiesFolder.addFolder('Material');
         const materialColor = {
+            // @ts-ignore
             color: object.material.color.getHex()
         };
         materialFolder.addColor(materialColor, 'color').name('Color').onChange((value) => {
+            // @ts-ignore
             object.material.color.setHex(value);
         });
         
@@ -827,7 +889,12 @@ class App {
         this.propertiesFolder.open();
     }
 
+    /**
+     * Adds geometry-specific properties to the panel
+     * @param {THREE.Object3D} object
+     */
     addGeometryProperties(object) {
+        // @ts-ignore
         const geometry = object.geometry;
         const geometryFolder = this.propertiesFolder.addFolder('Geometry');
         
@@ -892,7 +959,13 @@ class App {
         }
     }
 
+    /**
+     * Extracts geometry parameters from a geometry object
+     * @param {THREE.BufferGeometry} geometry
+     * @returns {object}
+     */
     getGeometryParameters(geometry) {
+        // @ts-ignore
         const params = geometry.parameters || {};
         
         // Set default parameters if not available
@@ -935,6 +1008,11 @@ class App {
         }
     }
 
+    /**
+     * Rebuilds geometry with new parameters
+     * @param {THREE.Object3D} object
+     * @param {string} type
+     */
     rebuildGeometry(object, type) {
         const params = object.userData.geometryParams;
         let newGeometry;
@@ -961,27 +1039,38 @@ class App {
         }
         
         if (newGeometry) {
+            // @ts-ignore
             object.geometry.dispose();
+            // @ts-ignore
             object.geometry = newGeometry;
         }
     }
 
+    /**
+     * Clears the properties panel
+     */
     clearPropertiesPanel() {
         // Remove all controllers from the properties folder
+        // @ts-ignore
         const controllers = [...this.propertiesFolder.__controllers];
         controllers.forEach(controller => {
             this.propertiesFolder.remove(controller);
         });
         
         // Remove all subfolders
+        // @ts-ignore
         const folders = [...this.propertiesFolder.__folders];
         folders.forEach(folder => {
+            // @ts-ignore
             this.propertiesFolder.removeFolder(folder);
         });
         
         this.propertiesFolder.close();
     }
 
+    /**
+     * Updates the scene graph UI
+     */
     updateSceneGraph() {
         // Clear existing list
         this.objectsList.innerHTML = '';
@@ -1014,6 +1103,7 @@ class App {
             `;
             
             const objectType = document.createElement('span');
+            // @ts-ignore
             objectType.textContent = object.geometry.type.replace('Geometry', '');
             objectType.style.cssText = `
                 font-size: 10px;
@@ -1097,6 +1187,10 @@ class App {
         }
     }
 
+    /**
+     * Deletes an object
+     * @param {THREE.Object3D} object
+     */
     deleteObject(object) {
         if (object) {
             this.scene.remove(object);
@@ -1112,15 +1206,23 @@ class App {
         }
     }
 
+    /**
+     * Deletes the currently selected object
+     */
     deleteSelectedObject() {
         if (this.selectedObject) {
             this.deleteObject(this.selectedObject);
         }
     }
 
+    /**
+     * Duplicates the currently selected object
+     */
     duplicateSelectedObject() {
         if (this.selectedObject) {
+            // @ts-ignore
             const geometry = this.selectedObject.geometry.clone();
+            // @ts-ignore
             const material = this.selectedObject.material.clone();
             const mesh = new THREE.Mesh(geometry, material);
             
@@ -1149,6 +1251,10 @@ class App {
     }
 
     // History system methods
+    /**
+     * Saves the current state of the application
+     * @param {string} description
+     */
     saveState(description = 'Action') {
         // Create a snapshot of the current state
         const state = {
@@ -1156,12 +1262,15 @@ class App {
             timestamp: Date.now(),
             objects: this.objects.map(obj => ({
                 name: obj.name,
+                // @ts-ignore
                 type: obj.geometry.type,
                 position: obj.position.clone(),
                 rotation: obj.rotation.clone(),
                 scale: obj.scale.clone(),
                 material: {
+                    // @ts-ignore
                     color: obj.material.color.clone(),
+                    // @ts-ignore
                     emissive: obj.material.emissive.clone()
                 },
                 geometryParams: obj.userData.geometryParams ? {...obj.userData.geometryParams} : null,
@@ -1189,6 +1298,9 @@ class App {
         console.log(`State saved: ${description} (${this.historyIndex + 1}/${this.history.length})`);
     }
 
+    /**
+     * Undoes the last action
+     */
     undo() {
         if (this.historyIndex > 0) {
             this.historyIndex--;
@@ -1199,6 +1311,9 @@ class App {
         }
     }
 
+    /**
+     * Redoes the last undone action
+     */
     redo() {
         if (this.historyIndex < this.history.length - 1) {
             this.historyIndex++;
@@ -1209,16 +1324,23 @@ class App {
         }
     }
 
+    /**
+     * Restores the application state
+     * @param {object} state
+     */
     restoreState(state) {
         // Clear current scene
         this.objects.forEach(obj => {
             this.scene.remove(obj);
+            // @ts-ignore
             obj.geometry.dispose();
+            // @ts-ignore
             obj.material.dispose();
         });
         this.objects.length = 0;
         
         // Restore objects
+        // @ts-ignore
         state.objects.forEach(objData => {
             let geometry;
             
@@ -1277,7 +1399,9 @@ class App {
         
         // Restore selection
         this.deselectObject();
+        // @ts-ignore
         if (state.selectedObjectUuid) {
+            // @ts-ignore
             const selectedObj = this.objects.find(obj => obj.uuid === state.selectedObjectUuid);
             if (selectedObj) {
                 this.selectObject(selectedObj);
@@ -1287,6 +1411,9 @@ class App {
         this.updateSceneGraph();
     }
 
+    /**
+     * Toggles fullscreen mode
+     */
     toggleFullscreen() {
         if (!document.fullscreenElement) {
             // Enter fullscreen
@@ -1313,6 +1440,10 @@ class App {
         }
     }
 
+    /**
+     * Saves the current scene to local storage
+     * @returns {Promise<void>}
+     */
     async saveScene() {
         try {
             await this.sceneStorage.saveScene();
@@ -1323,6 +1454,11 @@ class App {
         }
     }
 
+    /**
+     * Loads a scene from a file
+     * @param {File} file
+     * @returns {Promise<void>}
+     */
     async loadScene(file) {
         try {
             await this.sceneStorage.loadScene(file);
@@ -1330,6 +1466,7 @@ class App {
             // Update the objects array to reflect the loaded scene
             this.objects = [];
             this.scene.traverse((child) => {
+                // @ts-ignore
                 if (child.isMesh) {
                     this.objects.push(child);
                 }
@@ -1343,6 +1480,9 @@ class App {
         }
     }
 
+    /**
+     * Animation loop
+     */
     animate() {
         requestAnimationFrame(() => this.animate());
         
