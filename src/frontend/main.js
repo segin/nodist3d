@@ -974,9 +974,17 @@ class App {
         });
         
         // Remove all subfolders
-        const folders = [...this.propertiesFolder.__folders];
-        folders.forEach(folder => {
-            this.propertiesFolder.removeFolder(folder);
+        // dat.gui __folders is an object, not an array in some versions, or this might be empty
+        // Convert to array if it is an object
+        const folders = this.propertiesFolder.__folders;
+        const folderArray = Array.isArray(folders) ? folders : Object.values(folders);
+
+        folderArray.forEach(folder => {
+            try {
+                this.propertiesFolder.removeFolder(folder);
+            } catch (e) {
+                console.warn('Could not remove folder:', e);
+            }
         });
         
         this.propertiesFolder.close();
@@ -997,6 +1005,22 @@ class App {
                 cursor: pointer;
                 border: 1px solid #555;
             `;
+
+            // UX: Add keyboard accessibility
+            listItem.setAttribute('tabindex', '0');
+            listItem.setAttribute('role', 'button');
+            listItem.setAttribute('aria-label', `Select ${object.name || 'Object ' + (index + 1)}`);
+            if (this.selectedObject === object) {
+                listItem.setAttribute('aria-selected', 'true');
+            }
+
+            // UX: Add keyboard support for selection
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
             
             // Object name and type
             const objectInfo = document.createElement('div');
@@ -1024,6 +1048,7 @@ class App {
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1037,11 +1062,13 @@ class App {
                 e.stopPropagation();
                 object.visible = !object.visible;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
