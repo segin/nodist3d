@@ -80,12 +80,18 @@ describe('Scene Graph/Outliner Functionality', () => {
             const element = {
                 tagName: tagName.toUpperCase(),
                 style: {},
-                appendChild: jest.fn(),
+                childNodes: [],
+                appendChild: jest.fn((child) => {
+                    element.childNodes.push(child);
+                    return child;
+                }),
                 textContent: '',
                 innerHTML: '',
                 onclick: null,
                 addEventListener: jest.fn(),
-                removeEventListener: jest.fn()
+                removeEventListener: jest.fn(),
+                setAttribute: jest.fn((name, value) => { element[name] = value; }),
+                getAttribute: jest.fn((name) => element[name])
             };
             
             // Add style.cssText property
@@ -119,6 +125,8 @@ describe('Scene Graph/Outliner Functionality', () => {
 
             updateSceneGraph() {
                 this.objectsList.innerHTML = '';
+                // Clear childNodes for mock environment since innerHTML setter doesn't do it
+                if (this.objectsList.childNodes) this.objectsList.childNodes.length = 0;
                 
                 this.objects.forEach((object, index) => {
                     const listItem = document.createElement('li');
@@ -132,7 +140,13 @@ describe('Scene Graph/Outliner Functionality', () => {
                     objectName.textContent = object.name || `Object_${index + 1}`;
                     objectType.textContent = object.geometry.type.replace('Geometry', '');
                     visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                    visibilityBtn.title = 'Toggle visibility';
+                    visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
+
                     deleteBtn.textContent = '🗑';
+                    deleteBtn.title = `Delete ${object.name}`;
+                    deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+
                     positionInfo.textContent = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
                     
                     // Mock event handlers
@@ -140,6 +154,7 @@ describe('Scene Graph/Outliner Functionality', () => {
                         e.stopPropagation();
                         object.visible = !object.visible;
                         visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                        visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
                     };
                     
                     deleteBtn.onclick = (e) => {
@@ -374,6 +389,44 @@ describe('Scene Graph/Outliner Functionality', () => {
             
             const displayName = obj.name || `Object_${app.objects.indexOf(obj) + 1}`;
             expect(displayName).toBe('Object_1');
+        });
+    });
+
+    describe('Accessibility', () => {
+        it('should have correct ARIA labels for buttons', () => {
+            app.addTestObject('A11yTestObject');
+
+            // Traverse DOM to find buttons
+            // List -> ListItem -> InfoDiv -> ButtonDiv -> Buttons
+            const listItem = app.objectsList.childNodes[0]; // First object
+            const infoDiv = listItem.childNodes[0];
+            const btnDiv = infoDiv.childNodes[2];
+
+            const visBtn = btnDiv.childNodes[0];
+            const delBtn = btnDiv.childNodes[1];
+
+            // Verify Visibility Button
+            expect(visBtn.setAttribute).toHaveBeenCalledWith('aria-label', 'Hide A11yTestObject');
+            expect(visBtn.title).toBe('Toggle visibility');
+
+            // Verify Delete Button
+            expect(delBtn.setAttribute).toHaveBeenCalledWith('aria-label', 'Delete A11yTestObject');
+            expect(delBtn.title).toBe('Delete A11yTestObject');
+        });
+
+        it('should update ARIA label when visibility changes', () => {
+            app.addTestObject('ToggleTestObject');
+            const listItem = app.objectsList.childNodes[0];
+            const visBtn = listItem.childNodes[0].childNodes[2].childNodes[0];
+
+            // Initial state
+            expect(visBtn.setAttribute).toHaveBeenCalledWith('aria-label', 'Hide ToggleTestObject');
+
+            // Click to toggle
+            visBtn.onclick({ stopPropagation: jest.fn() });
+
+            // Should be hidden now
+            expect(visBtn.setAttribute).toHaveBeenCalledWith('aria-label', 'Show ToggleTestObject');
         });
     });
 });
