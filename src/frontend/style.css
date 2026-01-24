@@ -108,6 +108,11 @@ body {
     background-color: rgba(0, 123, 255, 0.3);
 }
 
+#scene-graph li:focus-visible {
+    outline: 2px solid #007bff;
+    outline-offset: -2px;
+}
+
 /* Mobile optimizations */
 @media (max-width: 768px) {
     #ui {
