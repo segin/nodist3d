@@ -1023,7 +1023,10 @@ class App {
             
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
+            const visibilityLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.setAttribute('aria-label', visibilityLabel);
+            visibilityBtn.title = visibilityLabel;
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1037,11 +1040,17 @@ class App {
                 e.stopPropagation();
                 object.visible = !object.visible;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                const newLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
+                visibilityBtn.setAttribute('aria-label', newLabel);
+                visibilityBtn.title = newLabel;
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
+            const deleteLabel = 'Delete ' + (object.name || 'Object');
             deleteBtn.textContent = '🗑';
+            deleteBtn.setAttribute('aria-label', deleteLabel);
+            deleteBtn.title = deleteLabel;
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1056,9 +1065,17 @@ class App {
             };
             
             // Click to select
+            listItem.tabIndex = 0;
+            listItem.setAttribute('aria-label', 'Select ' + (object.name || 'Object'));
             listItem.onclick = () => {
                 this.selectObject(object);
             };
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
             
             objectInfo.appendChild(objectName);
             objectInfo.appendChild(objectType);
