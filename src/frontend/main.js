@@ -144,8 +144,8 @@ class App {
         this.sceneGraphPanel.id = 'scene-graph-panel';
         this.sceneGraphPanel.style.cssText = `
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 80px;
+            left: 10px;
             width: 250px;
             max-height: 400px;
             background: rgba(0, 0, 0, 0.8);
@@ -974,8 +974,9 @@ class App {
         });
         
         // Remove all subfolders
-        const folders = [...this.propertiesFolder.__folders];
-        folders.forEach(folder => {
+        const folders = this.propertiesFolder.__folders;
+        const folderArray = Array.isArray(folders) ? folders : Object.values(folders);
+        folderArray.forEach(folder => {
             this.propertiesFolder.removeFolder(folder);
         });
         
@@ -1024,6 +1025,7 @@ class App {
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${objectName.textContent}` : `Show ${objectName.textContent}`);
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1037,11 +1039,13 @@ class App {
                 e.stopPropagation();
                 object.visible = !object.visible;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${objectName.textContent}` : `Show ${objectName.textContent}`);
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+            deleteBtn.setAttribute('aria-label', `Delete ${objectName.textContent}`);
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1059,6 +1063,16 @@ class App {
             listItem.onclick = () => {
                 this.selectObject(object);
             };
+
+            // Keyboard support
+            listItem.setAttribute('tabindex', '0');
+            listItem.setAttribute('role', 'button');
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
             
             objectInfo.appendChild(objectName);
             objectInfo.appendChild(objectType);
