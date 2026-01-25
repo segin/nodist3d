@@ -1,3 +1,4 @@
+// @ts-check
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
@@ -204,7 +205,7 @@ class App {
                 this.saveState('Transform object');
             }
         });
-        this.scene.add(this.transformControls);
+        this.scene.add(/** @type {any} */ (this.transformControls));
 
         // Raycaster for object selection
         this.raycaster = new THREE.Raycaster();
@@ -287,19 +288,19 @@ class App {
         // Handle vendor-specific fullscreen events
         document.addEventListener('webkitfullscreenchange', () => {
             if (fullscreenButton) {
-                fullscreenButton.textContent = document.webkitFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+                fullscreenButton.textContent = /** @type {any} */ (document).webkitFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
             }
         });
         
         document.addEventListener('mozfullscreenchange', () => {
             if (fullscreenButton) {
-                fullscreenButton.textContent = document.mozFullScreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+                fullscreenButton.textContent = /** @type {any} */ (document).mozFullScreenElement ? 'Exit Fullscreen' : 'Fullscreen';
             }
         });
         
         document.addEventListener('MSFullscreenChange', () => {
             if (fullscreenButton) {
-                fullscreenButton.textContent = document.msFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+                fullscreenButton.textContent = /** @type {any} */ (document).msFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
             }
         });
 
@@ -320,7 +321,8 @@ class App {
             });
             
             fileInput.addEventListener('change', (event) => {
-                const file = event.target.files[0];
+                const target = /** @type {HTMLInputElement} */ (event.target);
+                const file = target.files[0];
                 if (file) {
                     this.loadScene(file);
                 }
@@ -344,6 +346,7 @@ class App {
             });
 
             // Optimize orbit controls for touch
+            // @ts-ignore
             this.orbitControls.enableKeys = false; // Disable keyboard on mobile
             this.orbitControls.touches = {
                 ONE: THREE.TOUCH.ROTATE,
@@ -1292,23 +1295,23 @@ class App {
             // Enter fullscreen
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen();
-            } else if (document.documentElement.webkitRequestFullscreen) {
-                document.documentElement.webkitRequestFullscreen();
-            } else if (document.documentElement.mozRequestFullScreen) {
-                document.documentElement.mozRequestFullScreen();
-            } else if (document.documentElement.msRequestFullscreen) {
-                document.documentElement.msRequestFullscreen();
+            } else if (/** @type {any} */ (document.documentElement).webkitRequestFullscreen) {
+                /** @type {any} */ (document.documentElement).webkitRequestFullscreen();
+            } else if (/** @type {any} */ (document.documentElement).mozRequestFullScreen) {
+                /** @type {any} */ (document.documentElement).mozRequestFullScreen();
+            } else if (/** @type {any} */ (document.documentElement).msRequestFullscreen) {
+                /** @type {any} */ (document.documentElement).msRequestFullscreen();
             }
         } else {
             // Exit fullscreen
             if (document.exitFullscreen) {
                 document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
+            } else if (/** @type {any} */ (document).webkitExitFullscreen) {
+                /** @type {any} */ (document).webkitExitFullscreen();
+            } else if (/** @type {any} */ (document).mozCancelFullScreen) {
+                /** @type {any} */ (document).mozCancelFullScreen();
+            } else if (/** @type {any} */ (document).msExitFullscreen) {
+                /** @type {any} */ (document).msExitFullscreen();
             }
         }
     }
@@ -1330,8 +1333,8 @@ class App {
             // Update the objects array to reflect the loaded scene
             this.objects = [];
             this.scene.traverse((child) => {
-                if (child.isMesh) {
-                    this.objects.push(child);
+                if (/** @type {any} */ (child).isMesh) {
+                    this.objects.push(/** @type {THREE.Mesh} */ (child));
                 }
             });
             this.updateSceneGraph();
