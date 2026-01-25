@@ -1,0 +1,46 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2022": true,
+    "jest": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:promise/recommended",
+    "plugin:unicorn/recommended",
+    "plugin:import/recommended",
+    "prettier"
+  ],
+  "plugins": [
+    "promise",
+    "unicorn",
+    "import"
+  ],
+  "rules": {
+    "eqeqeq": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "no-console": "warn",
+    "promise/always-return": "error",
+    "unicorn/filename-case": "off",
+    "unicorn/prevent-abbreviations": "off",
+    "import/no-unresolved": "off",
+    "unicorn/no-null": "off"
+  },
+  "overrides": [
+    {
+      "files": [
+        "*.cjs",
+        "tests/**/*.js"
+      ],
+      "rules": {
+        "unicorn/prefer-module": "off"
+      }
+    }
+  ]
+}
