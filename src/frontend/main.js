@@ -144,10 +144,10 @@ class App {
         this.sceneGraphPanel.id = 'scene-graph-panel';
         this.sceneGraphPanel.style.cssText = `
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 80px;
+            left: 10px;
             width: 250px;
-            max-height: 400px;
+            max-height: calc(100vh - 100px);
             background: rgba(0, 0, 0, 0.8);
             color: white;
             padding: 10px;
@@ -171,6 +171,8 @@ class App {
         
         // Create objects list
         this.objectsList = document.createElement('ul');
+        this.objectsList.setAttribute('role', 'listbox');
+        this.objectsList.setAttribute('aria-label', 'Scene Graph Objects');
         this.objectsList.style.cssText = `
             list-style: none;
             margin: 0;
@@ -974,8 +976,10 @@ class App {
         });
         
         // Remove all subfolders
-        const folders = [...this.propertiesFolder.__folders];
-        folders.forEach(folder => {
+        const folders = this.propertiesFolder.__folders;
+        const folderList = Array.isArray(folders) ? folders : Object.values(folders);
+
+        folderList.forEach(folder => {
             this.propertiesFolder.removeFolder(folder);
         });
         
@@ -989,21 +993,36 @@ class App {
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
+            listItem.tabIndex = 0;
+            listItem.setAttribute('role', 'option');
+            listItem.setAttribute('aria-selected', this.selectedObject === object ? 'true' : 'false');
+            listItem.setAttribute('aria-label', `${object.name || `Object_${index + 1}`}, ${object.geometry.type.replace('Geometry', '')}`);
+
             listItem.style.cssText = `
-                padding: 5px;
-                margin: 2px 0;
+                padding: 8px;
+                margin: 4px 0;
                 background: ${this.selectedObject === object ? '#444' : '#222'};
                 border-radius: 3px;
                 cursor: pointer;
                 border: 1px solid #555;
+                outline-offset: -2px;
             `;
             
+            // Add keyboard selection support
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
+
             // Object name and type
             const objectInfo = document.createElement('div');
             objectInfo.style.cssText = `
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+                pointer-events: none; /* Let clicks pass to listItem */
             `;
             
             const objectName = document.createElement('span');
@@ -1023,33 +1042,79 @@ class App {
             
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
-            visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            const isVisible = object.visible;
+            visibilityBtn.textContent = isVisible ? '👁' : '🚫';
+            visibilityBtn.setAttribute('aria-label', isVisible ? `Hide ${objectName.textContent}` : `Show ${objectName.textContent}`);
+            visibilityBtn.title = isVisible ? 'Hide Object' : 'Show Object';
+
             visibilityBtn.style.cssText = `
                 background: none;
-                border: none;
+                border: 1px solid transparent;
+                border-radius: 4px;
                 color: white;
                 cursor: pointer;
-                font-size: 12px;
-                padding: 2px 5px;
+                font-size: 16px;
+                padding: 8px;
                 margin: 0 5px;
+                min-width: 32px;
+                min-height: 32px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                pointer-events: auto; /* Re-enable pointer events */
             `;
+
+            // Add focus visual style
+            visibilityBtn.onfocus = () => visibilityBtn.style.borderColor = 'white';
+            visibilityBtn.onblur = () => visibilityBtn.style.borderColor = 'transparent';
+
             visibilityBtn.onclick = (e) => {
                 e.stopPropagation();
                 object.visible = !object.visible;
-                visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                // Update button state immediately without full redraw if possible,
+                // but main logic calls updateSceneGraph anyway.
+                // For now just let the redraw handle it, or update explicitly:
+                // visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                // But updateSceneGraph is called by caller usually?
+                // Wait, onclick in SEARCH block did `visibilityBtn.textContent = ...`
+                // But usually this modifies state and we should re-render or update attributes.
+                // The SEARCH block had:
+                // object.visible = !object.visible;
+                // visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+
+                // I will keep that logic but update ARIA too.
+                const newVisible = object.visible;
+                visibilityBtn.textContent = newVisible ? '👁' : '🚫';
+                visibilityBtn.setAttribute('aria-label', newVisible ? `Hide ${objectName.textContent}` : `Show ${objectName.textContent}`);
+                visibilityBtn.title = newVisible ? 'Hide Object' : 'Show Object';
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+            deleteBtn.setAttribute('aria-label', `Delete ${objectName.textContent}`);
+            deleteBtn.title = 'Delete Object';
+
             deleteBtn.style.cssText = `
                 background: none;
-                border: none;
+                border: 1px solid transparent;
+                border-radius: 4px;
                 color: #ff4444;
                 cursor: pointer;
-                font-size: 12px;
-                padding: 2px 5px;
+                font-size: 16px;
+                padding: 8px;
+                min-width: 32px;
+                min-height: 32px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                pointer-events: auto; /* Re-enable pointer events */
             `;
+
+            // Add focus visual style
+            deleteBtn.onfocus = () => deleteBtn.style.borderColor = '#ff4444';
+            deleteBtn.onblur = () => deleteBtn.style.borderColor = 'transparent';
+
             deleteBtn.onclick = (e) => {
                 e.stopPropagation();
                 this.deleteObject(object);

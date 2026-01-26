@@ -1,5 +1,10 @@
-import log from 'loglevel';
+// Access global log variable provided by loglevel script
+const log = window.log;
 
-log.setLevel('info'); // Set the default log level
+if (log) {
+    log.setLevel('info');
+} else {
+    console.error('loglevel not loaded');
+}
 
 export default log;
