@@ -139,47 +139,19 @@ class App {
     }
 
     setupSceneGraph() {
-        // Create scene graph panel
-        this.sceneGraphPanel = document.createElement('div');
-        this.sceneGraphPanel.id = 'scene-graph-panel';
-        this.sceneGraphPanel.style.cssText = `
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            width: 250px;
-            max-height: 400px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 12px;
-            overflow-y: auto;
-            z-index: 1000;
-        `;
+        // Use existing scene graph panel
+        this.sceneGraphPanel = document.getElementById('scene-graph');
+        this.sceneGraphPanel.innerHTML = '';
         
         // Create title
         const title = document.createElement('h3');
         title.textContent = 'Scene Graph';
-        title.style.cssText = `
-            margin: 0 0 10px 0;
-            padding: 0;
-            font-size: 14px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 5px;
-        `;
         
         // Create objects list
         this.objectsList = document.createElement('ul');
-        this.objectsList.style.cssText = `
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        `;
         
         this.sceneGraphPanel.appendChild(title);
         this.sceneGraphPanel.appendChild(this.objectsList);
-        document.body.appendChild(this.sceneGraphPanel);
         
         // Update initially
         this.updateSceneGraph();
@@ -989,14 +961,18 @@ class App {
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
-            listItem.style.cssText = `
-                padding: 5px;
-                margin: 2px 0;
-                background: ${this.selectedObject === object ? '#444' : '#222'};
-                border-radius: 3px;
-                cursor: pointer;
-                border: 1px solid #555;
-            `;
+            // Use CSS classes instead of inline styles
+            if (this.selectedObject === object) {
+                listItem.classList.add('selected');
+            }
+
+            // Accessibility attributes for the list item
+            listItem.tabIndex = 0;
+            listItem.setAttribute('role', 'button');
+            listItem.setAttribute('aria-label', `Select ${object.name || `Object_${index + 1}`}`);
+            if (this.selectedObject === object) {
+                listItem.setAttribute('aria-selected', 'true');
+            }
             
             // Object name and type
             const objectInfo = document.createElement('div');
@@ -1023,33 +999,27 @@ class App {
             
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
+            visibilityBtn.className = 'icon-btn';
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
-            visibilityBtn.style.cssText = `
-                background: none;
-                border: none;
-                color: white;
-                cursor: pointer;
-                font-size: 12px;
-                padding: 2px 5px;
-                margin: 0 5px;
-            `;
+            visibilityBtn.title = object.visible ? 'Hide Object' : 'Show Object';
+            visibilityBtn.setAttribute('aria-label', `${object.visible ? 'Hide' : 'Show'} ${object.name || `Object_${index + 1}`}`);
+
             visibilityBtn.onclick = (e) => {
                 e.stopPropagation();
                 object.visible = !object.visible;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                // Update title and aria-label
+                visibilityBtn.title = object.visible ? 'Hide Object' : 'Show Object';
+                visibilityBtn.setAttribute('aria-label', `${object.visible ? 'Hide' : 'Show'} ${object.name || `Object_${index + 1}`}`);
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'icon-btn';
             deleteBtn.textContent = '🗑';
-            deleteBtn.style.cssText = `
-                background: none;
-                border: none;
-                color: #ff4444;
-                cursor: pointer;
-                font-size: 12px;
-                padding: 2px 5px;
-            `;
+            deleteBtn.title = 'Delete Object';
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name || `Object_${index + 1}`}`);
+
             deleteBtn.onclick = (e) => {
                 e.stopPropagation();
                 this.deleteObject(object);
@@ -1060,6 +1030,14 @@ class App {
                 this.selectObject(object);
             };
             
+            // Keyboard navigation
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
+
             objectInfo.appendChild(objectName);
             objectInfo.appendChild(objectType);
             
