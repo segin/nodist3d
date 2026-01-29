@@ -355,7 +355,7 @@ class App {
             
             // Add touch-friendly selection using longer press
             let touchStartTime = 0;
-            let touchStart = { x: 0, y: 0 };
+            const touchStart = { x: 0, y: 0 };
             const touchSelectThreshold = 200; // milliseconds
             const touchMoveThreshold = 10; // pixels
 
