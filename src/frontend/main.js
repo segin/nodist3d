@@ -144,8 +144,8 @@ class App {
         this.sceneGraphPanel.id = 'scene-graph-panel';
         this.sceneGraphPanel.style.cssText = `
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 80px;
+            left: 10px;
             width: 250px;
             max-height: 400px;
             background: rgba(0, 0, 0, 0.8);
@@ -171,6 +171,8 @@ class App {
         
         // Create objects list
         this.objectsList = document.createElement('ul');
+        this.objectsList.setAttribute('role', 'listbox');
+        this.objectsList.setAttribute('aria-label', 'Scene objects');
         this.objectsList.style.cssText = `
             list-style: none;
             margin: 0;
@@ -974,7 +976,7 @@ class App {
         });
         
         // Remove all subfolders
-        const folders = [...this.propertiesFolder.__folders];
+        const folders = Object.values(this.propertiesFolder.__folders);
         folders.forEach(folder => {
             this.propertiesFolder.removeFolder(folder);
         });
@@ -998,6 +1000,19 @@ class App {
                 border: 1px solid #555;
             `;
             
+            // Accessibility: Focusable and Role
+            listItem.tabIndex = 0;
+            listItem.setAttribute('role', 'option');
+            listItem.setAttribute('aria-selected', this.selectedObject === object);
+
+            // Accessibility: Keyboard support
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
+
             // Object name and type
             const objectInfo = document.createElement('div');
             objectInfo.style.cssText = `
@@ -1024,6 +1039,11 @@ class App {
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+
+            // Accessibility: Labels and Tooltips
+            visibilityBtn.setAttribute('aria-label', `Toggle visibility of ${object.name}`);
+            visibilityBtn.title = `Toggle visibility of ${object.name}`;
+
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1042,6 +1062,11 @@ class App {
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+
+            // Accessibility: Labels and Tooltips
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+            deleteBtn.title = `Delete ${object.name}`;
+
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
