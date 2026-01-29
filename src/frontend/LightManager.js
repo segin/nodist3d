@@ -6,6 +6,7 @@ export class LightManager {
     constructor(scene, eventBus) {
         this.scene = scene;
         this.eventBus = eventBus;
+        /** @type {THREE.Light[]} */
         this.lights = [];
 
         // Add a default ambient light

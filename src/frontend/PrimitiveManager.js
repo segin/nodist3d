@@ -8,6 +8,11 @@ export class PrimitiveManager {
         this.scene = scene;
     }
 
+    /**
+     * @param {THREE.BufferGeometry} geometry
+     * @param {number} color
+     * @param {THREE.Side} [side]
+     */
     _createMesh(geometry, color, side = THREE.FrontSide) {
         const material = new THREE.MeshPhongMaterial({ color, side });
         const mesh = new THREE.Mesh(geometry, material);
@@ -170,7 +175,7 @@ export class PrimitiveManager {
                 const geometry = new TextGeometry(text, {
                     font: font,
                     size: 0.5,
-                    height: 0.2,
+                    depth: 0.2,
                     curveSegments: 12,
                     bevelEnabled: true,
                     bevelThickness: 0.03,

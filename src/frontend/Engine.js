@@ -1,16 +1,21 @@
-
-
+// @ts-check
+import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Clock } from 'three';
 
 export class Engine {
+    /**
+     * @param {HTMLCanvasElement} canvas
+     * @param {any} physicsManager
+     * @param {any} transformControls
+     */
     constructor(canvas, physicsManager, transformControls) {
         this.canvas = canvas;
         this.physicsManager = physicsManager;
         this.transformControls = transformControls;
-        this.scene = new global.THREE.Scene();
-        this.renderer = new global.THREE.WebGLRenderer({ canvas: this.canvas, powerPreference: "high-performance" });
-        this.camera = new global.THREE.PerspectiveCamera(75, 2, 0.1, 5);
+        this.scene = new THREE.Scene();
+        this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, powerPreference: "high-performance" });
+        this.camera = new THREE.PerspectiveCamera(75, 2, 0.1, 5);
         this.camera.position.z = 2;
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -25,10 +30,10 @@ export class Engine {
         this.initialCameraPosition = this.camera.position.clone();
         this.initialControlsTarget = this.controls.target.clone();
 
-        const gridHelper = new global.THREE.GridHelper(10, 10);
+        const gridHelper = new THREE.GridHelper(10, 10);
         this.scene.add(gridHelper);
 
-        const axesHelper = new global.THREE.AxesHelper(5);
+        const axesHelper = new THREE.AxesHelper(5);
         this.scene.add(axesHelper);
 
         this.clock = new Clock();

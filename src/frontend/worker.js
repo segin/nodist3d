@@ -1,4 +1,6 @@
+// @ts-check
 // src/frontend/worker.js
+// @ts-ignore
 importScripts('/modules/three.min.js');
 
 self.onmessage = function(event) {
@@ -14,6 +16,7 @@ self.onmessage = function(event) {
         }
     } else if (type === 'deserialize') {
         try {
+            // @ts-ignore
             const loader = new THREE.ObjectLoader();
             const scene = loader.parse(JSON.parse(data));
             self.postMessage({ type: 'deserialize_complete', data: scene });

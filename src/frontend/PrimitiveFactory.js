@@ -16,6 +16,11 @@ export class PrimitiveFactory {
         });
     }
 
+    /**
+     * @param {THREE.BufferGeometry} geometry
+     * @param {number} color
+     * @param {THREE.Side} [side]
+     */
     _createMesh(geometry, color, side = THREE.FrontSide) {
         const cacheKey = `${color}_${side}`;
         if (!this.materialCache[cacheKey]) {
@@ -33,7 +38,7 @@ export class PrimitiveFactory {
                     const geometry = new TextGeometry(options.text || "nodist3d", {
                         font: this.font,
                         size: options.size || 0.5,
-                        height: options.height || 0.2,
+                        depth: options.height || 0.2,
                         curveSegments: options.curveSegments || 12,
                         bevelEnabled: options.bevelEnabled || true,
                         bevelThickness: options.bevelThickness || 0.03,

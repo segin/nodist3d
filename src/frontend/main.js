@@ -1,3 +1,4 @@
+// @ts-check
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
@@ -82,10 +83,13 @@ class App {
         );
         this.container.register('ObjectManager', this.objectManager);
 
+        /** @type {SceneObject | null} */
         this.selectedObject = null;
+        /** @type {SceneObject[]} */
         this.objects = [];
         
         // History system for undo/redo
+        /** @type {SerializedScene[]} */
         this.history = [];
         this.historyIndex = -1;
         this.maxHistorySize = 50;
@@ -102,6 +106,9 @@ class App {
         this.saveState('Initial state');
     }
 
+    /**
+     * Initializes the renderer.
+     */
     initRenderer() {
         // Setup renderer
         this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -122,6 +129,9 @@ class App {
         });
     }
 
+    /**
+     * Initializes remaining components.
+     */
     initRemaining() {
         // Setup scene graph UI
         this.setupSceneGraph();
@@ -138,6 +148,9 @@ class App {
         // This method is effectively replaced by initRenderer and initRemaining called in constructor
     }
 
+    /**
+     * Sets up the scene graph UI.
+     */
     setupSceneGraph() {
         // Create scene graph panel
         this.sceneGraphPanel = document.createElement('div');
@@ -185,6 +198,9 @@ class App {
         this.updateSceneGraph();
     }
 
+    /**
+     * Sets up camera and transform controls.
+     */
     setupControls() {
         // Orbit controls for camera
         this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -196,7 +212,7 @@ class App {
         this.transformControls.addEventListener('change', () => {
             this.renderer.render(this.scene, this.camera);
         });
-        this.transformControls.addEventListener('dragging-changed', (event) => {
+        this.transformControls.addEventListener('dragging-changed', (/** @type {any} */ event) => {
             this.orbitControls.enabled = !event.value;
             
             // Save state when transform is completed
@@ -204,6 +220,7 @@ class App {
                 this.saveState('Transform object');
             }
         });
+        // @ts-ignore
         this.scene.add(this.transformControls);
 
         // Raycaster for object selection
@@ -220,7 +237,7 @@ class App {
             const intersects = this.raycaster.intersectObjects(this.objects);
             
             if (intersects.length > 0) {
-                this.selectObject(intersects[0].object);
+                this.selectObject(/** @type {any} */(intersects[0].object));
             } else {
                 this.deselectObject();
             }
@@ -320,7 +337,8 @@ class App {
             });
             
             fileInput.addEventListener('change', (event) => {
-                const file = event.target.files[0];
+                const target = /** @type {HTMLInputElement} */ (event.target);
+                const file = target.files ? target.files[0] : null;
                 if (file) {
                     this.loadScene(file);
                 }
@@ -328,6 +346,9 @@ class App {
         }
     }
 
+    /**
+     * Sets up mobile optimizations.
+     */
     setupMobileOptimizations() {
         // Detect mobile devices
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -344,7 +365,9 @@ class App {
             });
 
             // Optimize orbit controls for touch
+            // @ts-ignore - enableKeys is deprecated but still used here
             this.orbitControls.enableKeys = false; // Disable keyboard on mobile
+            // @ts-ignore - touches property existence
             this.orbitControls.touches = {
                 ONE: THREE.TOUCH.ROTATE,
                 TWO: THREE.TOUCH.DOLLY_PAN
@@ -395,6 +418,10 @@ class App {
         }
     }
     
+    /**
+     * Handles touch events for selection.
+     * @param {Touch} touch
+     */
     handleTouch(touch) {
         const rect = this.renderer.domElement.getBoundingClientRect();
         const mouse = new THREE.Vector2();
@@ -405,13 +432,16 @@ class App {
         const intersects = this.raycaster.intersectObjects(this.objects);
 
         if (intersects.length > 0) {
-            const selectedObject = intersects[0].object;
+            const selectedObject = /** @type {any} */ (intersects[0].object);
             this.selectObject(selectedObject);
         } else {
             this.deselectObject();
         }
     }
 
+    /**
+     * Sets up the DAT.GUI interface.
+     */
     setupGUI() {
         this.gui = new GUI();
         
@@ -468,6 +498,9 @@ class App {
         }
     }
 
+    /**
+     * Sets up scene lighting.
+     */
     setupLighting() {
         // Ambient light
         const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
@@ -482,6 +515,9 @@ class App {
         this.scene.add(directionalLight);
     }
 
+    /**
+     * Sets up helper objects (grid, axes).
+     */
     setupHelpers() {
         // Grid helper
         const gridHelper = new THREE.GridHelper(10, 10);
@@ -501,7 +537,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Box_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore - treat Mesh as SceneObject
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Box');
@@ -515,7 +553,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Sphere_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Sphere');
@@ -529,7 +569,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Cylinder_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Cylinder');
@@ -543,7 +585,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Cone_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Cone');
@@ -557,7 +601,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Torus_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Torus');
@@ -571,7 +617,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Plane_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Plane');
@@ -585,7 +633,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `TorusKnot_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Torus Knot');
@@ -599,7 +649,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Tetrahedron_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Tetrahedron');
@@ -613,7 +665,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Icosahedron_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Icosahedron');
@@ -627,7 +681,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Dodecahedron_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Dodecahedron');
@@ -641,7 +697,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Octahedron_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Octahedron');
@@ -661,7 +719,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Tube_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Tube');
@@ -720,13 +780,19 @@ class App {
         
         group.name = `Teapot_${this.objects.length + 1}`;
         this.scene.add(group);
+        // @ts-ignore
         this.objects.push(group);
+        // @ts-ignore
         this.selectObject(group);
         this.updateSceneGraph();
         this.saveState('Add Teapot');
     }
 
     // Object manipulation methods
+    /**
+     * Selects an object.
+     * @param {SceneObject} object
+     */
     selectObject(object) {
         // Use ObjectManager to handle selection logic, which now uses StateManager
         if (this.objectManager) {
@@ -738,26 +804,51 @@ class App {
         
         // Visual feedback
         this.objects.forEach(obj => {
-            obj.material.emissive.setHex(0x000000);
+            if (Array.isArray(obj.material)) {
+                // @ts-ignore
+                obj.material.forEach(m => m.emissive.setHex(0x000000));
+            } else {
+                // @ts-ignore
+                obj.material.emissive.setHex(0x000000);
+            }
         });
-        object.material.emissive.setHex(0x444444);
+        if (Array.isArray(object.material)) {
+            // @ts-ignore
+            object.material.forEach(m => m.emissive.setHex(0x444444));
+        } else {
+            // @ts-ignore
+            object.material.emissive.setHex(0x444444);
+        }
         
         // Update scene graph highlighting
         this.updateSceneGraph();
     }
 
+    /**
+     * Deselects the current object.
+     */
     deselectObject() {
         if (this.objectManager) {
             this.objectManager.deselectObject();
         }
 
         if (this.selectedObject) {
-            this.selectedObject.material.emissive.setHex(0x000000);
+            if (Array.isArray(this.selectedObject.material)) {
+                // @ts-ignore
+                this.selectedObject.material.forEach(m => m.emissive.setHex(0x000000));
+            } else {
+                // @ts-ignore
+                this.selectedObject.material.emissive.setHex(0x000000);
+            }
             this.selectedObject = null;
             this.transformControls.detach();
         }
     }
 
+    /**
+     * Updates the properties panel for the selected object.
+     * @param {SceneObject} object
+     */
     updatePropertiesPanel(object) {
         this.clearPropertiesPanel();
         
@@ -814,11 +905,19 @@ class App {
         
         // Add material properties
         const materialFolder = this.propertiesFolder.addFolder('Material');
+        const mat = Array.isArray(object.material) ? object.material[0] : object.material;
         const materialColor = {
-            color: object.material.color.getHex()
+            // @ts-ignore
+            color: mat.color.getHex()
         };
         materialFolder.addColor(materialColor, 'color').name('Color').onChange((value) => {
-            object.material.color.setHex(value);
+            if (Array.isArray(object.material)) {
+                // @ts-ignore
+                object.material.forEach(m => m.color.setHex(value));
+            } else {
+                // @ts-ignore
+                object.material.color.setHex(value);
+            }
         });
         
         // Add geometry-specific properties
@@ -827,6 +926,10 @@ class App {
         this.propertiesFolder.open();
     }
 
+    /**
+     * Adds geometry-specific properties to the GUI.
+     * @param {SceneObject} object
+     */
     addGeometryProperties(object) {
         const geometry = object.geometry;
         const geometryFolder = this.propertiesFolder.addFolder('Geometry');
@@ -892,7 +995,13 @@ class App {
         }
     }
 
+    /**
+     * Extracts parameters from geometry.
+     * @param {THREE.BufferGeometry} geometry
+     * @returns {any}
+     */
     getGeometryParameters(geometry) {
+        // @ts-ignore
         const params = geometry.parameters || {};
         
         // Set default parameters if not available
@@ -935,6 +1044,11 @@ class App {
         }
     }
 
+    /**
+     * Rebuilds geometry with new parameters.
+     * @param {SceneObject} object
+     * @param {string} type
+     */
     rebuildGeometry(object, type) {
         const params = object.userData.geometryParams;
         let newGeometry;
@@ -966,22 +1080,38 @@ class App {
         }
     }
 
+    /**
+     * Clears the properties panel.
+     */
     clearPropertiesPanel() {
         // Remove all controllers from the properties folder
+        // @ts-ignore - __controllers is internal
         const controllers = [...this.propertiesFolder.__controllers];
         controllers.forEach(controller => {
             this.propertiesFolder.remove(controller);
         });
         
         // Remove all subfolders
+        // @ts-ignore - __folders is internal
         const folders = [...this.propertiesFolder.__folders];
-        folders.forEach(folder => {
-            this.propertiesFolder.removeFolder(folder);
-        });
+        // @ts-ignore
+        if (typeof folders === 'object' && !Array.isArray(folders)) {
+             // dat.gui might store folders as object
+             Object.values(folders).forEach(folder => {
+                 this.propertiesFolder.removeFolder(folder);
+             });
+        } else if (Array.isArray(folders)) {
+             folders.forEach(folder => {
+                 this.propertiesFolder.removeFolder(folder);
+             });
+        }
         
         this.propertiesFolder.close();
     }
 
+    /**
+     * Updates the scene graph UI.
+     */
     updateSceneGraph() {
         // Clear existing list
         this.objectsList.innerHTML = '';
@@ -1097,6 +1227,10 @@ class App {
         }
     }
 
+    /**
+     * Deletes an object.
+     * @param {SceneObject} object
+     */
     deleteObject(object) {
         if (object) {
             this.scene.remove(object);
@@ -1112,15 +1246,23 @@ class App {
         }
     }
 
+    /**
+     * Deletes the currently selected object.
+     */
     deleteSelectedObject() {
         if (this.selectedObject) {
             this.deleteObject(this.selectedObject);
         }
     }
 
+    /**
+     * Duplicates the currently selected object.
+     */
     duplicateSelectedObject() {
         if (this.selectedObject) {
+            // @ts-ignore
             const geometry = this.selectedObject.geometry.clone();
+            // @ts-ignore
             const material = this.selectedObject.material.clone();
             const mesh = new THREE.Mesh(geometry, material);
             
@@ -1141,7 +1283,9 @@ class App {
             mesh.name = `${this.selectedObject.name}_copy`;
             
             this.scene.add(mesh);
+            // @ts-ignore
             this.objects.push(mesh);
+            // @ts-ignore
             this.selectObject(mesh);
             this.updateSceneGraph();
             this.saveState('Duplicate object');
@@ -1149,8 +1293,13 @@ class App {
     }
 
     // History system methods
+    /**
+     * Saves the current state for undo/redo.
+     * @param {string} description
+     */
     saveState(description = 'Action') {
         // Create a snapshot of the current state
+        /** @type {SerializedScene} */
         const state = {
             description: description,
             timestamp: Date.now(),
@@ -1161,8 +1310,10 @@ class App {
                 rotation: obj.rotation.clone(),
                 scale: obj.scale.clone(),
                 material: {
-                    color: obj.material.color.clone(),
-                    emissive: obj.material.emissive.clone()
+                    // @ts-ignore
+                    color: Array.isArray(obj.material) ? obj.material[0].color.clone() : obj.material.color.clone(),
+                    // @ts-ignore
+                    emissive: Array.isArray(obj.material) ? obj.material[0].emissive.clone() : obj.material.emissive.clone()
                 },
                 geometryParams: obj.userData.geometryParams ? {...obj.userData.geometryParams} : null,
                 visible: obj.visible,
@@ -1189,6 +1340,9 @@ class App {
         console.log(`State saved: ${description} (${this.historyIndex + 1}/${this.history.length})`);
     }
 
+    /**
+     * Undoes the last action.
+     */
     undo() {
         if (this.historyIndex > 0) {
             this.historyIndex--;
@@ -1199,6 +1353,9 @@ class App {
         }
     }
 
+    /**
+     * Redoes the last undone action.
+     */
     redo() {
         if (this.historyIndex < this.history.length - 1) {
             this.historyIndex++;
@@ -1209,12 +1366,20 @@ class App {
         }
     }
 
+    /**
+     * Restores the scene to a specific state.
+     * @param {SerializedScene} state
+     */
     restoreState(state) {
         // Clear current scene
         this.objects.forEach(obj => {
             this.scene.remove(obj);
             obj.geometry.dispose();
-            obj.material.dispose();
+            if (Array.isArray(obj.material)) {
+                obj.material.forEach(m => m.dispose());
+            } else {
+                obj.material.dispose();
+            }
         });
         this.objects.length = 0;
         
@@ -1272,6 +1437,7 @@ class App {
             mesh.userData.geometryParams = objData.geometryParams;
             
             this.scene.add(mesh);
+            // @ts-ignore
             this.objects.push(mesh);
         });
         
@@ -1287,6 +1453,9 @@ class App {
         this.updateSceneGraph();
     }
 
+    /**
+     * Toggles fullscreen mode.
+     */
     toggleFullscreen() {
         if (!document.fullscreenElement) {
             // Enter fullscreen
@@ -1313,6 +1482,9 @@ class App {
         }
     }
 
+    /**
+     * Saves the scene to a file.
+     */
     async saveScene() {
         try {
             await this.sceneStorage.saveScene();
@@ -1323,6 +1495,10 @@ class App {
         }
     }
 
+    /**
+     * Loads the scene from a file.
+     * @param {File} file
+     */
     async loadScene(file) {
         try {
             await this.sceneStorage.loadScene(file);
@@ -1330,7 +1506,9 @@ class App {
             // Update the objects array to reflect the loaded scene
             this.objects = [];
             this.scene.traverse((child) => {
+                // @ts-ignore
                 if (child.isMesh) {
+                    // @ts-ignore
                     this.objects.push(child);
                 }
             });
@@ -1343,6 +1521,9 @@ class App {
         }
     }
 
+    /**
+     * Animation loop.
+     */
     animate() {
         requestAnimationFrame(() => this.animate());
         
