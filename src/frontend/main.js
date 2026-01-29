@@ -144,8 +144,8 @@ class App {
         this.sceneGraphPanel.id = 'scene-graph-panel';
         this.sceneGraphPanel.style.cssText = `
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 80px;
+            left: 10px;
             width: 250px;
             max-height: 400px;
             background: rgba(0, 0, 0, 0.8);
@@ -171,6 +171,8 @@ class App {
         
         // Create objects list
         this.objectsList = document.createElement('ul');
+        this.objectsList.setAttribute('role', 'listbox');
+        this.objectsList.setAttribute('aria-label', 'Scene objects');
         this.objectsList.style.cssText = `
             list-style: none;
             margin: 0;
@@ -983,12 +985,28 @@ class App {
     }
 
     updateSceneGraph() {
+        // Check if focus is currently within the list
+        const listHasFocus = this.objectsList.contains(document.activeElement);
+
         // Clear existing list
         this.objectsList.innerHTML = '';
         
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
+            listItem.setAttribute('role', 'option');
+            listItem.setAttribute('tabindex', '0');
+            listItem.setAttribute('aria-selected', this.selectedObject === object ? 'true' : 'false');
+            listItem.dataset.uuid = object.uuid;
+
+            // Handle keyboard selection
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
+
             listItem.style.cssText = `
                 padding: 5px;
                 margin: 2px 0;
@@ -1024,6 +1042,7 @@ class App {
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.setAttribute('aria-label', `Toggle visibility of ${object.name || `Object ${index + 1}`}`);
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1042,6 +1061,7 @@ class App {
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name || `Object ${index + 1}`}`);
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1082,6 +1102,14 @@ class App {
             
             this.objectsList.appendChild(listItem);
         });
+
+        // Restore focus if list was focused and we have a selected object
+        if (listHasFocus && this.selectedObject) {
+            const newItem = this.objectsList.querySelector(`[data-uuid="${this.selectedObject.uuid}"]`);
+            if (newItem) {
+                newItem.focus();
+            }
+        }
         
         // Add message if no objects
         if (this.objects.length === 0) {
