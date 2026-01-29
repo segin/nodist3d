@@ -1,4 +1,4 @@
-import { Scene } from 'three';
+import { Scene, Vector3, Quaternion, BufferGeometry, Mesh, MeshBasicMaterial } from 'three';
 import { PhysicsManager } from '../src/frontend/PhysicsManager.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
@@ -17,7 +17,20 @@ describe('PhysicsManager', () => {
         eventBus = EventBus;
         physicsManager = new PhysicsManager(scene);
         primitiveFactory = new PrimitiveFactory();
-        objectManager = new ObjectManager(scene, primitiveFactory, eventBus);
+
+        // Correct instantiation matching the signature:
+        // constructor(scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater, stateManager)
+        // We only need primitiveFactory working for addPrimitive, so we pass nulls for others.
+        // Actually, ObjectManager needs eventBus too.
+        objectManager = new ObjectManager(
+            scene,
+            eventBus,
+            null, // physicsManager (we are testing it separately, not integration here)
+            primitiveFactory,
+            null, // objectFactory
+            null, // objectPropertyUpdater
+            null  // stateManager
+        );
     });
 
     it('should add a box-shaped physics body to the world', () => {
@@ -87,7 +100,7 @@ describe('PhysicsManager', () => {
 
     it('should correctly orient the physics shape when the associated mesh is rotated', () => {
         const cube = objectManager.addPrimitive('Box');
-        cube.quaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+        cube.quaternion.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
         cube.updateMatrixWorld(); // Update the world matrix to reflect rotation
 
         const body = physicsManager.addBody(cube, 1, 'box');

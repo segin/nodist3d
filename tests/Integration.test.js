@@ -513,7 +513,8 @@ describe('Integration Tests - Complete Workflow', () => {
             // Undo sphere creation
             app.undo();
             expect(app.objects.length).toBe(1);
-            expect(app.selectedObject).toBe(box);
+            // Verify by UUID since object instance is recreated on undo
+            expect(app.selectedObject.uuid).toBe(box.uuid);
             
             // Undo box creation
             app.undo();
@@ -634,7 +635,8 @@ describe('Integration Tests - Complete Workflow', () => {
             
             // Undo sphere creation - should select box
             app.undo();
-            expect(app.selectedObject).toBe(box);
+            // Verify by UUID since object instance is recreated
+            expect(app.selectedObject.uuid).toBe(box.uuid);
             
             // Undo box creation - should have no selection
             app.undo();

@@ -7,10 +7,17 @@ import { JSDOM } from 'jsdom';
 jest.mock('three', () => {
     const mockElement = { createElement: jest.fn(() => ({ tagName: 'CANVAS' })) };
     
+    const mockVector3 = {
+        x: 0, y: 0, z: 0,
+        clone: jest.fn(() => ({ x: 0, y: 0, z: 0 })),
+        copy: jest.fn(),
+        set: jest.fn()
+    };
+
     const mockMesh = {
-        position: { x: 0, y: 0, z: 0, copy: jest.fn() },
-        rotation: { x: 0, y: 0, z: 0, copy: jest.fn() },
-        scale: { x: 1, y: 1, z: 1, copy: jest.fn() },
+        position: { ...mockVector3 },
+        rotation: { ...mockVector3 },
+        scale: { x: 1, y: 1, z: 1, ...mockVector3 },
         material: {
             emissive: { setHex: jest.fn() },
             clone: jest.fn(() => ({ emissive: { setHex: jest.fn() } }))
@@ -21,12 +28,13 @@ jest.mock('three', () => {
     };
 
     return {
+        __esModule: true,
         Scene: jest.fn(() => ({
             add: jest.fn(),
             remove: jest.fn()
         })),
         PerspectiveCamera: jest.fn(() => ({
-            position: { set: jest.fn() },
+            position: { ...mockVector3 },
             lookAt: jest.fn(),
             aspect: 1,
             updateProjectionMatrix: jest.fn()
@@ -39,7 +47,8 @@ jest.mock('three', () => {
             domElement: { 
                 tagName: 'CANVAS',
                 addEventListener: jest.fn(),
-                removeEventListener: jest.fn()
+                removeEventListener: jest.fn(),
+                getBoundingClientRect: jest.fn(() => ({ left: 0, top: 0, width: 800, height: 600 }))
             }
         })),
         Mesh: jest.fn(() => mockMesh),
@@ -55,7 +64,7 @@ jest.mock('three', () => {
         })),
         AmbientLight: jest.fn(),
         DirectionalLight: jest.fn(() => ({
-            position: { set: jest.fn() },
+            position: { ...mockVector3 },
             castShadow: false,
             shadow: { mapSize: { width: 0, height: 0 } }
         })),
@@ -66,6 +75,7 @@ jest.mock('three', () => {
             intersectObjects: jest.fn(() => [])
         })),
         Vector2: jest.fn(),
+        Vector3: jest.fn(() => ({ ...mockVector3 })),
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide'
     };
@@ -73,6 +83,7 @@ jest.mock('three', () => {
 
 // Mock dat.gui
 jest.mock('dat.gui', () => ({
+    __esModule: true,
     GUI: jest.fn(() => ({
         addFolder: jest.fn(() => ({
             add: jest.fn(() => ({
@@ -105,35 +116,14 @@ jest.mock('dat.gui', () => ({
     }))
 }));
 
-// Mock OrbitControls
-jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
-    OrbitControls: jest.fn(() => ({
-        enableDamping: true,
-        dampingFactor: 0.05,
-        enabled: true,
-        update: jest.fn()
-    }))
-}));
-
-// Mock TransformControls
-jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
-    TransformControls: jest.fn(() => ({
-        addEventListener: jest.fn(),
-        setMode: jest.fn(),
-        attach: jest.fn(),
-        detach: jest.fn(),
-        dragging: false
-    }))
-}));
+// Mocks for three/examples/jsm/* are handled via moduleNameMapper in jest.config.cjs
+// pointing to tests/__mocks__/three-examples.js
 
 describe('Basic App Functionality', () => {
-    let dom;
-
     beforeEach(() => {
-        // Setup DOM
-        dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
-        global.document = dom.window.document;
-        global.window = dom.window;
+        // Setup DOM using existing global document
+        document.body.innerHTML = '<div id="scene-graph"></div><button id="fullscreen"></button><button id="save-scene"></button><button id="load-scene"></button><input type="file" id="file-input">';
+
         global.requestAnimationFrame = jest.fn();
         
         // Mock document.body.appendChild
@@ -141,38 +131,20 @@ describe('Basic App Functionality', () => {
         jest.spyOn(window, 'addEventListener').mockImplementation();
         
         // Mock document.createElement to return proper elements
-        jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
-            const element = {
-                tagName: tagName.toUpperCase(),
-                style: {},
-                appendChild: jest.fn(),
-                textContent: '',
-                innerHTML: '',
-                onclick: null,
-                addEventListener: jest.fn(),
-                removeEventListener: jest.fn()
-            };
-            
-            // Add style.cssText property
-            Object.defineProperty(element.style, 'cssText', {
-                set: jest.fn(),
-                get: jest.fn()
-            });
-            
-            return element;
-        });
-        
-        // Clear mocks
-        jest.clearAllMocks();
+        // Note: we don't need to replace the document, just spy on it
+        // But since we are modifying innerHTML, existing spies might be lost if we reset modules?
+        // No, spies on `document` persist until restore.
     });
 
     afterEach(() => {
-        if (dom) {
-            dom.window.close();
-        }
+        document.body.innerHTML = '';
+        jest.restoreAllMocks();
     });
 
     it('should create and initialize the App', () => {
+        // Verify DOM setup
+        expect(document.getElementById('scene-graph')).not.toBeNull();
+
         // Simulate DOM loaded
         const domContentLoadedCallbacks = [];
         document.addEventListener = jest.fn((event, callback) => {
@@ -190,6 +162,11 @@ describe('Basic App Functionality', () => {
 
         // Verify basic initialization happened
         expect(document.addEventListener).toHaveBeenCalledWith('DOMContentLoaded', expect.any(Function));
+
+        // Verify UX/Accessibility improvements
+        const sceneGraphList = document.querySelector('#scene-graph ul');
+        expect(sceneGraphList).not.toBeNull();
+        expect(sceneGraphList.getAttribute('role')).toBe('listbox');
     });
 
     it('should be able to add basic primitives', () => {

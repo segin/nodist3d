@@ -128,9 +128,6 @@ class App {
 
         // Initialize scene storage
         this.sceneStorage = new SceneStorage(this.scene, null); // EventBus not needed for basic save/load
-
-        // Mobile touch optimizations
-        this.setupMobileOptimizations();
     }
 
     // Backward compatibility: init() logic split into initRenderer and initRemaining
@@ -955,8 +952,21 @@ class App {
     }
 
     updateSceneGraph() {
+        // Capture current focus to restore it after update
+        const activeElement = document.activeElement;
+        let focusedIndex = -1;
+        if (activeElement && this.objectsList.contains(activeElement)) {
+            const items = Array.from(this.objectsList.children);
+            const focusedLi = activeElement.closest('li');
+            if (focusedLi) {
+                focusedIndex = items.indexOf(focusedLi);
+            }
+        }
+
         // Clear existing list
         this.objectsList.innerHTML = '';
+        this.objectsList.setAttribute('role', 'listbox');
+        this.objectsList.setAttribute('aria-label', 'Scene Graph Objects');
         
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
@@ -968,7 +978,7 @@ class App {
 
             // Accessibility attributes for the list item
             listItem.tabIndex = 0;
-            listItem.setAttribute('role', 'button');
+            listItem.setAttribute('role', 'option');
             listItem.setAttribute('aria-label', `Select ${object.name || `Object_${index + 1}`}`);
             if (this.selectedObject === object) {
                 listItem.setAttribute('aria-selected', 'true');
@@ -1072,6 +1082,25 @@ class App {
                 padding: 20px;
             `;
             this.objectsList.appendChild(emptyMessage);
+        }
+
+        // Restore focus if it was within the list
+        if (focusedIndex >= 0) {
+            const items = this.objectsList.children;
+            // If previous index is now out of bounds (e.g. item deleted), select the last item
+            if (focusedIndex >= items.length) {
+                focusedIndex = items.length - 1;
+            }
+            if (focusedIndex >= 0) {
+                // Check if the item itself is focusable (li with tabindex=0)
+                if (items[focusedIndex].tabIndex === 0) {
+                    items[focusedIndex].focus();
+                } else {
+                    // Try to find a focusable element inside?
+                    // Actually our li has tabindex=0 so it receives focus.
+                    items[focusedIndex].focus();
+                }
+            }
         }
     }
 

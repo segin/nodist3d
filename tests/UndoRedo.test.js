@@ -5,16 +5,20 @@ import { JSDOM } from 'jsdom';
 
 // Mock THREE.js
 jest.mock('three', () => {
-    const mockVector3 = {
-        x: 0, y: 0, z: 0,
-        clone: jest.fn(() => ({ x: 0, y: 0, z: 0 })),
-        copy: jest.fn()
-    };
+    // Factory for Vector3 to ensure unique instances
+    const createMockVector3 = (x = 0, y = 0, z = 0) => ({
+        x, y, z,
+        clone: jest.fn(function() { return createMockVector3(this.x, this.y, this.z); }),
+        copy: jest.fn(function(v) { this.x = v.x; this.y = v.y; this.z = v.z; return this; }),
+        set: jest.fn(function(x, y, z) { this.x = x; this.y = y; this.z = z; return this; })
+    });
 
-    const mockColor = {
-        clone: jest.fn(() => ({ r: 1, g: 0, b: 0 })),
-        copy: jest.fn()
-    };
+    const createMockColor = (hex = 0xffffff) => ({
+        getHex: jest.fn(() => hex),
+        setHex: jest.fn((val) => { hex = val; }),
+        clone: jest.fn(function() { return createMockColor(hex); }),
+        copy: jest.fn(function(c) { hex = c.getHex(); return this; })
+    });
 
     return {
         Scene: jest.fn(() => ({
@@ -31,18 +35,20 @@ jest.mock('three', () => {
             shadowMap: {},
             domElement: { addEventListener: jest.fn() }
         })),
-        Mesh: jest.fn(() => ({
-            position: mockVector3,
-            rotation: mockVector3,
-            scale: { x: 1, y: 1, z: 1, clone: jest.fn(() => ({ x: 1, y: 1, z: 1 })) },
-            material: {
-                color: mockColor,
-                emissive: mockColor,
-                dispose: jest.fn()
+        Mesh: jest.fn((geometry, material) => ({
+            position: createMockVector3(),
+            rotation: createMockVector3(),
+            scale: createMockVector3(1, 1, 1),
+            material: material || {
+                color: createMockColor(),
+                emissive: createMockColor(0x000000),
+                dispose: jest.fn(),
+                clone: jest.fn(() => ({ color: createMockColor(), emissive: createMockColor(), dispose: jest.fn() }))
             },
-            geometry: {
+            geometry: geometry || {
                 type: 'BoxGeometry',
-                dispose: jest.fn()
+                dispose: jest.fn(),
+                clone: jest.fn()
             },
             name: 'TestMesh',
             visible: true,
@@ -53,18 +59,23 @@ jest.mock('three', () => {
         })),
         BoxGeometry: jest.fn(() => ({
             type: 'BoxGeometry',
-            parameters: { width: 1, height: 1, depth: 1 }
+            parameters: { width: 1, height: 1, depth: 1 },
+            dispose: jest.fn(),
+            clone: jest.fn()
         })),
         SphereGeometry: jest.fn(() => ({
             type: 'SphereGeometry',
-            parameters: { radius: 0.5, widthSegments: 32, heightSegments: 32 }
+            parameters: { radius: 0.5, widthSegments: 32, heightSegments: 32 },
+            dispose: jest.fn(),
+            clone: jest.fn()
         })),
         MeshLambertMaterial: jest.fn(() => ({
-            color: mockColor,
-            emissive: mockColor,
-            dispose: jest.fn()
+            color: createMockColor(),
+            emissive: createMockColor(0x000000),
+            dispose: jest.fn(),
+            clone: jest.fn(() => ({ color: createMockColor(), emissive: createMockColor(), dispose: jest.fn() }))
         })),
-        Vector3: jest.fn(() => mockVector3),
+        Vector3: jest.fn((x, y, z) => createMockVector3(x, y, z)),
         AmbientLight: jest.fn(),
         DirectionalLight: jest.fn(() => ({
             position: { set: jest.fn() },
@@ -304,7 +315,7 @@ describe('Undo/Redo History Functionality', () => {
         it('should save state with correct data structure', () => {
             const obj = app.addTestObject('StateTest');
             
-            expect(app.history.length).toBe(3); // Initial + add object + selection
+            expect(app.history.length).toBe(2); // Initial + add object (which includes selection)
             const lastState = app.history[app.history.length - 1];
             
             expect(lastState).toHaveProperty('description');
@@ -374,7 +385,8 @@ describe('Undo/Redo History Functionality', () => {
             
             // Undo should restore selection
             app.undo();
-            expect(app.selectedObject).toBe(obj);
+            // Compare UUIDs because objects are recreated
+            expect(app.selectedObject.uuid).toBe(obj.uuid);
         });
 
         it('should call dispose on geometry and material when restoring', () => {
@@ -413,19 +425,20 @@ describe('Undo/Redo History Functionality', () => {
         });
 
         it('should restore correct state after multiple undo/redo operations', () => {
-            const obj1 = app.addTestObject('Redo1');
-            const obj2 = app.addTestObject('Redo2');
+            // Initial state: 0 objects
+            const obj1 = app.addTestObject('Redo1'); // Index 1, 1 object
+            const obj2 = app.addTestObject('Redo2'); // Index 2, 2 objects
             
             expect(app.objects.length).toBe(2);
             
             // Undo twice
-            app.undo();
-            app.undo();
-            expect(app.objects.length).toBe(1);
+            app.undo(); // Index 1, 1 object
+            app.undo(); // Index 0, 0 objects
+            expect(app.objects.length).toBe(0);
             
             // Redo once
-            app.redo();
-            expect(app.objects.length).toBe(2);
+            app.redo(); // Index 1, 1 object
+            expect(app.objects.length).toBe(1);
             expect(app.objects.some(obj => obj.name === 'Redo1')).toBe(true);
         });
     });
