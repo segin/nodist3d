@@ -389,6 +389,9 @@ global.JSZip = jest.fn(() => ({
     file: jest.fn(),
     generateAsync: jest.fn().mockResolvedValue(''),
     loadAsync: jest.fn().mockResolvedValue({
+        file: jest.fn(() => ({
+            async: jest.fn().mockResolvedValue('{}')
+        })),
         files: {
             'scene.json': {
                 async: jest.fn().mockResolvedValue('{}')

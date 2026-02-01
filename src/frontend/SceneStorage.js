@@ -16,11 +16,14 @@ export class SceneStorage {
         
         // Serialize the scene using the worker
         const sceneJson = await new Promise((resolve, reject) => {
+            const originalOnMessage = this.worker.onmessage;
             this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
             this.worker.onmessage = (event) => {
                 if (event.data.type === 'serialize_complete') {
+                    this.worker.onmessage = originalOnMessage;
                     resolve(event.data.data);
                 } else if (event.data.type === 'error') {
+                    this.worker.onmessage = originalOnMessage;
                     reject(new Error(event.data.message + ': ' + event.data.error));
                 }
             };
@@ -75,11 +78,15 @@ export class SceneStorage {
 
     handleWorkerMessage(event) {
         if (event.data.type === 'deserialize_complete') {
-            const loadedScene = event.data.data;
+            const data = event.data.data;
+            const loader = new THREE.ObjectLoader();
+            const loadedScene = loader.parse(data);
+
             // Add loaded objects back to the scene
-            loadedScene.children.forEach(object => {
-                this.scene.add(object);
-            });
+            while (loadedScene.children.length > 0) {
+                this.scene.add(loadedScene.children[0]);
+            }
+
             if (this.loadPromiseResolve) {
                 this.loadPromiseResolve(loadedScene);
                 this.loadPromiseResolve = null;
