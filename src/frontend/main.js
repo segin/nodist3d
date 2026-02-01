@@ -32,6 +32,7 @@ class App {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.clock = new THREE.Clock();
 
         // Register Three.js Core objects (optional but good for DI)
         this.container.register('Scene', this.scene);
@@ -91,8 +92,8 @@ class App {
         this.maxHistorySize = 50;
         
         // Continue initialization
-        this.initRemaining();
         this.setupControls();
+        this.initRemaining();
         this.setupGUI();
         this.setupLighting();
         this.setupHelpers();
@@ -1345,6 +1346,11 @@ class App {
 
     animate() {
         requestAnimationFrame(() => this.animate());
+
+        const deltaTime = this.clock.getDelta();
+        if (this.physicsManager) {
+            this.physicsManager.update(deltaTime);
+        }
         
         this.orbitControls.update();
         this.renderer.render(this.scene, this.camera);

@@ -26,7 +26,10 @@ jest.mock('three', () => {
             remove: jest.fn()
         })),
         PerspectiveCamera: jest.fn(() => ({
-            position: { set: jest.fn() },
+            position: {
+                set: jest.fn(),
+                clone: jest.fn(() => ({ x: 5, y: 5, z: 5 }))
+            },
             lookAt: jest.fn(),
             aspect: 1,
             updateProjectionMatrix: jest.fn()
@@ -66,8 +69,15 @@ jest.mock('three', () => {
             intersectObjects: jest.fn(() => [])
         })),
         Vector2: jest.fn(),
+        Clock: jest.fn(() => ({
+            getDelta: jest.fn(() => 0.016)
+        })),
         PCFSoftShadowMap: 'PCFSoftShadowMap',
-        DoubleSide: 'DoubleSide'
+        DoubleSide: 'DoubleSide',
+        TOUCH: {
+            ROTATE: 0,
+            DOLLY_PAN: 1
+        }
     };
 });
 
@@ -111,7 +121,11 @@ jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
         enableDamping: true,
         dampingFactor: 0.05,
         enabled: true,
-        update: jest.fn()
+        update: jest.fn(),
+        target: {
+            clone: jest.fn(() => ({ x: 0, y: 0, z: 0 })),
+            copy: jest.fn()
+        }
     }))
 }));
 

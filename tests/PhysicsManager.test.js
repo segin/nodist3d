@@ -1,4 +1,4 @@
-import { Scene } from 'three';
+import { Scene, BufferGeometry, Mesh, MeshBasicMaterial, Quaternion, Vector3 } from 'three';
 import { PhysicsManager } from '../src/frontend/PhysicsManager.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
@@ -17,7 +17,10 @@ describe('PhysicsManager', () => {
         eventBus = EventBus;
         physicsManager = new PhysicsManager(scene);
         primitiveFactory = new PrimitiveFactory();
-        objectManager = new ObjectManager(scene, primitiveFactory, eventBus);
+
+        // Match ObjectManager constructor signature:
+        // (scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater, stateManager)
+        objectManager = new ObjectManager(scene, eventBus, physicsManager, primitiveFactory, null, null, null);
     });
 
     it('should add a box-shaped physics body to the world', () => {
@@ -177,6 +180,6 @@ describe('PhysicsManager', () => {
 
         physicsManager.update(deltaTime);
 
-        expect(stepSpy).toHaveBeenCalledWith(deltaTime);
+        expect(stepSpy).toHaveBeenCalledWith(1 / 60, deltaTime, 10);
     });
 });
