@@ -1,19 +1,40 @@
 import { GUI } from 'dat.gui';
+import * as THREE from 'three';
 
+/**
+ * Editor for creating and modifying shaders.
+ */
 export class ShaderEditor {
+    /**
+     * Creates an instance of ShaderEditor.
+     * @param {GUI} gui - The dat.GUI instance.
+     * @param {THREE.WebGLRenderer} renderer - The renderer.
+     * @param {THREE.Scene} scene - The scene.
+     * @param {THREE.Camera} camera - The camera.
+     * @param {any} eventBus - The event bus.
+     */
     constructor(gui, renderer, scene, camera, eventBus) {
         this.eventBus = eventBus;
         this.gui = gui;
         this.renderer = renderer;
         this.scene = scene;
         this.camera = camera;
+        /** @type {THREE.ShaderMaterial|null} */
         this.shaderMaterial = null;
+        /** @type {THREE.Mesh|null} */
+        this.shaderMesh = null;
         this.uniforms = {};
+        /** @type {GUI|null} */
         this.editorFolder = null;
+        /** @type {GUI|null} */
+        this.uniformsFolder = null;
 
         this.initGUI();
     }
 
+    /**
+     * Initializes the GUI folder for the shader editor.
+     */
     initGUI() {
         this.editorFolder = this.gui.addFolder('Shader Editor');
         this.editorFolder.add({
@@ -22,13 +43,22 @@ export class ShaderEditor {
         this.editorFolder.open();
     }
 
+    /**
+     * Creates a new shader material and applies it to a mesh.
+     * @returns {THREE.Mesh} The created mesh.
+     */
     createShader() {
         if (this.shaderMaterial) {
             this.shaderMaterial.dispose();
+        }
+        if (this.shaderMesh) {
             this.scene.remove(this.shaderMesh);
-            if (this.uniformsFolder) {
-                this.editorFolder.removeFolder(this.uniformsFolder);
-            }
+            if (this.shaderMesh.geometry) this.shaderMesh.geometry.dispose();
+        }
+        if (this.uniformsFolder) {
+            // @ts-ignore: dat.gui types might not have removeFolder correctly typed or editorFolder is possibly null
+            this.editorFolder.removeFolder(this.uniformsFolder);
+            this.uniformsFolder = null;
         }
 
         const vertexShader = `
@@ -46,36 +76,42 @@ export class ShaderEditor {
         this.uniforms = {};
 
         this.shaderMaterial = new THREE.ShaderMaterial({
-            vertexShader: this.vertexShader,
-            fragmentShader: this.fragmentShader,
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
             uniforms: this.uniforms,
         });
 
-        const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.shaderMaterial);
-        mesh.name = 'ShaderMesh';
-        this.scene.add(mesh);
-        this.eventBus.publish('objectAdded', mesh);
-        return mesh;
+        this.shaderMesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.shaderMaterial);
+        this.shaderMesh.name = 'ShaderMesh';
+        this.scene.add(this.shaderMesh);
+        this.eventBus.publish('objectAdded', this.shaderMesh);
 
         this.addShaderControls();
+
+        return this.shaderMesh;
     }
 
+    /**
+     * Adds controls for the shader uniforms and code.
+     */
     addShaderControls() {
+        if (!this.editorFolder || !this.shaderMaterial) return;
+
         if (this.uniformsFolder) {
             this.editorFolder.removeFolder(this.uniformsFolder);
         }
         this.uniformsFolder = this.editorFolder.addFolder('Uniforms');
 
         // Example: Add a color uniform
-        this.uniforms.myColor = { value: new global.THREE.Color(0xff0000) };
+        this.uniforms.myColor = { value: new THREE.Color(0xff0000) };
         this.uniformsFolder.addColor(this.uniforms.myColor, 'value').name('Color').onChange(() => {
-            this.shaderMaterial.needsUpdate = true;
+            if (this.shaderMaterial) this.shaderMaterial.needsUpdate = true;
         });
 
         // Example: Add a float uniform
         this.uniforms.myFloat = { value: 0.5 };
         this.uniformsFolder.add(this.uniforms.myFloat, 'value', 0, 1).name('Float').onChange(() => {
-            this.shaderMaterial.needsUpdate = true;
+            if (this.shaderMaterial) this.shaderMaterial.needsUpdate = true;
         });
 
         this.uniformsFolder.open();
@@ -87,13 +123,17 @@ export class ShaderEditor {
         };
 
         this.editorFolder.add(shaderCode, 'vertex').name('Vertex Shader').listen().onChange((value) => {
-            this.shaderMaterial.vertexShader = value;
-            this.shaderMaterial.needsUpdate = true;
+            if (this.shaderMaterial) {
+                this.shaderMaterial.vertexShader = value;
+                this.shaderMaterial.needsUpdate = true;
+            }
         });
 
         this.editorFolder.add(shaderCode, 'fragment').name('Fragment Shader').listen().onChange((value) => {
-            this.shaderMaterial.fragmentShader = value;
-            this.shaderMaterial.needsUpdate = true;
+            if (this.shaderMaterial) {
+                this.shaderMaterial.fragmentShader = value;
+                this.shaderMaterial.needsUpdate = true;
+            }
         });
     }
 }

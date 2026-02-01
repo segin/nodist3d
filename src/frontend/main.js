@@ -1,3 +1,4 @@
+// @ts-check
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
@@ -18,6 +19,9 @@ import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
  * Simple 3D modeling application with basic primitives and transform controls
  */
 class App {
+    /**
+     * Initializes the application.
+     */
     constructor() {
         // Initialize Service Container
         this.container = new ServiceContainer();
@@ -82,10 +86,13 @@ class App {
         );
         this.container.register('ObjectManager', this.objectManager);
 
+        /** @type {THREE.Object3D|null} */
         this.selectedObject = null;
+        /** @type {THREE.Object3D[]} */
         this.objects = [];
         
         // History system for undo/redo
+        /** @type {any[]} */
         this.history = [];
         this.historyIndex = -1;
         this.maxHistorySize = 50;
@@ -102,6 +109,9 @@ class App {
         this.saveState('Initial state');
     }
 
+    /**
+     * Initializes the renderer and camera.
+     */
     initRenderer() {
         // Setup renderer
         this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -122,6 +132,9 @@ class App {
         });
     }
 
+    /**
+     * Initializes remaining components like UI and storage.
+     */
     initRemaining() {
         // Setup scene graph UI
         this.setupSceneGraph();
@@ -133,11 +146,17 @@ class App {
         this.setupMobileOptimizations();
     }
 
-    // Backward compatibility: init() logic split into initRenderer and initRemaining
+    /**
+     * Backward compatibility initialization method.
+     * @deprecated Use constructor logic instead.
+     */
     init() {
         // This method is effectively replaced by initRenderer and initRemaining called in constructor
     }
 
+    /**
+     * Sets up the Scene Graph UI panel.
+     */
     setupSceneGraph() {
         // Create scene graph panel
         this.sceneGraphPanel = document.createElement('div');
@@ -185,6 +204,9 @@ class App {
         this.updateSceneGraph();
     }
 
+    /**
+     * Sets up camera and object controls (OrbitControls, TransformControls).
+     */
     setupControls() {
         // Orbit controls for camera
         this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -320,14 +342,20 @@ class App {
             });
             
             fileInput.addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (file) {
-                    this.loadScene(file);
+                const target = event.target;
+                if (target instanceof HTMLInputElement && target.files) {
+                    const file = target.files[0];
+                    if (file) {
+                        this.loadScene(file);
+                    }
                 }
             });
         }
     }
 
+    /**
+     * Sets up mobile-specific optimizations and touch controls.
+     */
     setupMobileOptimizations() {
         // Detect mobile devices
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -344,6 +372,7 @@ class App {
             });
 
             // Optimize orbit controls for touch
+            // @ts-ignore: enableKeys property is deprecated but used here
             this.orbitControls.enableKeys = false; // Disable keyboard on mobile
             this.orbitControls.touches = {
                 ONE: THREE.TOUCH.ROTATE,
@@ -395,6 +424,10 @@ class App {
         }
     }
     
+    /**
+     * Handles touch events for object selection.
+     * @param {Touch} touch - The touch object.
+     */
     handleTouch(touch) {
         const rect = this.renderer.domElement.getBoundingClientRect();
         const mouse = new THREE.Vector2();
@@ -412,6 +445,9 @@ class App {
         }
     }
 
+    /**
+     * Sets up the dat.GUI panel.
+     */
     setupGUI() {
         this.gui = new GUI();
         
@@ -468,6 +504,9 @@ class App {
         }
     }
 
+    /**
+     * Sets up lighting for the scene.
+     */
     setupLighting() {
         // Ambient light
         const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
@@ -482,6 +521,9 @@ class App {
         this.scene.add(directionalLight);
     }
 
+    /**
+     * Sets up helper objects (grid, axes).
+     */
     setupHelpers() {
         // Grid helper
         const gridHelper = new THREE.GridHelper(10, 10);
@@ -493,6 +535,8 @@ class App {
     }
 
     // Primitive creation methods
+
+    /** Adds a box to the scene. */
     addBox() {
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
@@ -507,6 +551,7 @@ class App {
         this.saveState('Add Box');
     }
 
+    /** Adds a sphere to the scene. */
     addSphere() {
         const geometry = new THREE.SphereGeometry(0.5, 32, 32);
         const material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
@@ -521,6 +566,7 @@ class App {
         this.saveState('Add Sphere');
     }
 
+    /** Adds a cylinder to the scene. */
     addCylinder() {
         const geometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 32);
         const material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
@@ -535,6 +581,7 @@ class App {
         this.saveState('Add Cylinder');
     }
 
+    /** Adds a cone to the scene. */
     addCone() {
         const geometry = new THREE.ConeGeometry(0.5, 1, 32);
         const material = new THREE.MeshLambertMaterial({ color: 0xffff00 });
@@ -549,6 +596,7 @@ class App {
         this.saveState('Add Cone');
     }
 
+    /** Adds a torus to the scene. */
     addTorus() {
         const geometry = new THREE.TorusGeometry(0.4, 0.2, 16, 100);
         const material = new THREE.MeshLambertMaterial({ color: 0xff00ff });
@@ -563,6 +611,7 @@ class App {
         this.saveState('Add Torus');
     }
 
+    /** Adds a plane to the scene. */
     addPlane() {
         const geometry = new THREE.PlaneGeometry(2, 2);
         const material = new THREE.MeshLambertMaterial({ color: 0x00ffff, side: THREE.DoubleSide });
@@ -577,6 +626,7 @@ class App {
         this.saveState('Add Plane');
     }
 
+    /** Adds a torus knot to the scene. */
     addTorusKnot() {
         const geometry = new THREE.TorusKnotGeometry(0.4, 0.15, 100, 16);
         const material = new THREE.MeshLambertMaterial({ color: 0x888888 });
@@ -591,6 +641,7 @@ class App {
         this.saveState('Add Torus Knot');
     }
 
+    /** Adds a tetrahedron to the scene. */
     addTetrahedron() {
         const geometry = new THREE.TetrahedronGeometry(0.6);
         const material = new THREE.MeshLambertMaterial({ color: 0x00aa00 });
@@ -605,6 +656,7 @@ class App {
         this.saveState('Add Tetrahedron');
     }
 
+    /** Adds a icosahedron to the scene. */
     addIcosahedron() {
         const geometry = new THREE.IcosahedronGeometry(0.6);
         const material = new THREE.MeshLambertMaterial({ color: 0xaa0000 });
@@ -619,6 +671,7 @@ class App {
         this.saveState('Add Icosahedron');
     }
 
+    /** Adds a dodecahedron to the scene. */
     addDodecahedron() {
         const geometry = new THREE.DodecahedronGeometry(0.6);
         const material = new THREE.MeshLambertMaterial({ color: 0x0000aa });
@@ -633,6 +686,7 @@ class App {
         this.saveState('Add Dodecahedron');
     }
 
+    /** Adds a octahedron to the scene. */
     addOctahedron() {
         const geometry = new THREE.OctahedronGeometry(0.6);
         const material = new THREE.MeshLambertMaterial({ color: 0xaa00aa });
@@ -647,6 +701,7 @@ class App {
         this.saveState('Add Octahedron');
     }
 
+    /** Adds a tube to the scene. */
     addTube() {
         const curve = new THREE.CatmullRomCurve3([
             new THREE.Vector3(-0.5, 0, 0),
@@ -667,6 +722,7 @@ class App {
         this.saveState('Add Tube');
     }
 
+    /** Adds a teapot to the scene. */
     addTeapot() {
         // Create a simple teapot-like shape using a sphere with a handle and spout
         const group = new THREE.Group();
@@ -727,6 +783,11 @@ class App {
     }
 
     // Object manipulation methods
+
+    /**
+     * Selects an object in the scene.
+     * @param {THREE.Object3D} object - The object to select.
+     */
     selectObject(object) {
         // Use ObjectManager to handle selection logic, which now uses StateManager
         if (this.objectManager) {
@@ -738,26 +799,46 @@ class App {
         
         // Visual feedback
         this.objects.forEach(obj => {
-            obj.material.emissive.setHex(0x000000);
+            // @ts-ignore: emissive property assumes MeshLambertMaterial or similar
+            if (obj.material && obj.material.emissive) {
+                // @ts-ignore
+                obj.material.emissive.setHex(0x000000);
+            }
         });
-        object.material.emissive.setHex(0x444444);
+
+        // @ts-ignore
+        if (object.material && object.material.emissive) {
+            // @ts-ignore
+            object.material.emissive.setHex(0x444444);
+        }
         
         // Update scene graph highlighting
         this.updateSceneGraph();
     }
 
+    /**
+     * Deselects the currently selected object.
+     */
     deselectObject() {
         if (this.objectManager) {
             this.objectManager.deselectObject();
         }
 
         if (this.selectedObject) {
-            this.selectedObject.material.emissive.setHex(0x000000);
+            // @ts-ignore
+            if (this.selectedObject.material && this.selectedObject.material.emissive) {
+                // @ts-ignore
+                this.selectedObject.material.emissive.setHex(0x000000);
+            }
             this.selectedObject = null;
             this.transformControls.detach();
         }
     }
 
+    /**
+     * Updates the properties panel for the selected object.
+     * @param {THREE.Object3D} object - The selected object.
+     */
     updatePropertiesPanel(object) {
         this.clearPropertiesPanel();
         
@@ -814,20 +895,33 @@ class App {
         
         // Add material properties
         const materialFolder = this.propertiesFolder.addFolder('Material');
-        const materialColor = {
-            color: object.material.color.getHex()
-        };
-        materialFolder.addColor(materialColor, 'color').name('Color').onChange((value) => {
-            object.material.color.setHex(value);
-        });
+        // @ts-ignore
+        if (object.material && object.material.color) {
+            const materialColor = {
+                // @ts-ignore
+                color: object.material.color.getHex()
+            };
+            materialFolder.addColor(materialColor, 'color').name('Color').onChange((value) => {
+                // @ts-ignore
+                object.material.color.setHex(value);
+            });
+        }
         
         // Add geometry-specific properties
-        this.addGeometryProperties(object);
+        // @ts-ignore
+        if (object.geometry) {
+            this.addGeometryProperties(object);
+        }
         
         this.propertiesFolder.open();
     }
 
+    /**
+     * Adds geometry-specific controls to the properties panel.
+     * @param {THREE.Object3D} object - The object with geometry.
+     */
     addGeometryProperties(object) {
+        // @ts-ignore
         const geometry = object.geometry;
         const geometryFolder = this.propertiesFolder.addFolder('Geometry');
         
@@ -892,11 +986,19 @@ class App {
         }
     }
 
+    /**
+     * Extracts parameters from geometry.
+     * @param {THREE.BufferGeometry} geometry - The geometry to extract parameters from.
+     * @returns {Object} The parameters.
+     */
     getGeometryParameters(geometry) {
+        // @ts-ignore
         const params = geometry.parameters || {};
+        // @ts-ignore
+        const type = geometry.type;
         
         // Set default parameters if not available
-        switch (geometry.type) {
+        switch (type) {
             case 'BoxGeometry':
                 return {
                     width: params.width || 1,
@@ -935,6 +1037,11 @@ class App {
         }
     }
 
+    /**
+     * Rebuilds the object's geometry with new parameters.
+     * @param {THREE.Object3D} object - The object to update.
+     * @param {string} type - The type of geometry ('box', 'sphere', etc.).
+     */
     rebuildGeometry(object, type) {
         const params = object.userData.geometryParams;
         let newGeometry;
@@ -961,11 +1068,16 @@ class App {
         }
         
         if (newGeometry) {
+            // @ts-ignore
             object.geometry.dispose();
+            // @ts-ignore
             object.geometry = newGeometry;
         }
     }
 
+    /**
+     * Clears the properties panel.
+     */
     clearPropertiesPanel() {
         // Remove all controllers from the properties folder
         const controllers = [...this.propertiesFolder.__controllers];
@@ -974,7 +1086,8 @@ class App {
         });
         
         // Remove all subfolders
-        const folders = [...this.propertiesFolder.__folders];
+        // @ts-ignore
+        const folders = Object.values(this.propertiesFolder.__folders || {});
         folders.forEach(folder => {
             this.propertiesFolder.removeFolder(folder);
         });
@@ -982,6 +1095,9 @@ class App {
         this.propertiesFolder.close();
     }
 
+    /**
+     * Updates the scene graph UI.
+     */
     updateSceneGraph() {
         // Clear existing list
         this.objectsList.innerHTML = '';
@@ -1014,6 +1130,7 @@ class App {
             `;
             
             const objectType = document.createElement('span');
+            // @ts-ignore
             objectType.textContent = object.geometry.type.replace('Geometry', '');
             objectType.style.cssText = `
                 font-size: 10px;
@@ -1097,6 +1214,10 @@ class App {
         }
     }
 
+    /**
+     * Deletes an object from the scene.
+     * @param {THREE.Object3D} object - The object to delete.
+     */
     deleteObject(object) {
         if (object) {
             this.scene.remove(object);
@@ -1112,15 +1233,23 @@ class App {
         }
     }
 
+    /**
+     * Deletes the currently selected object.
+     */
     deleteSelectedObject() {
         if (this.selectedObject) {
             this.deleteObject(this.selectedObject);
         }
     }
 
+    /**
+     * Duplicates the currently selected object.
+     */
     duplicateSelectedObject() {
         if (this.selectedObject) {
+            // @ts-ignore
             const geometry = this.selectedObject.geometry.clone();
+            // @ts-ignore
             const material = this.selectedObject.material.clone();
             const mesh = new THREE.Mesh(geometry, material);
             
@@ -1148,7 +1277,10 @@ class App {
         }
     }
 
-    // History system methods
+    /**
+     * Saves the current state to history.
+     * @param {string} description - The description of the action.
+     */
     saveState(description = 'Action') {
         // Create a snapshot of the current state
         const state = {
@@ -1156,12 +1288,15 @@ class App {
             timestamp: Date.now(),
             objects: this.objects.map(obj => ({
                 name: obj.name,
+                // @ts-ignore
                 type: obj.geometry.type,
                 position: obj.position.clone(),
                 rotation: obj.rotation.clone(),
                 scale: obj.scale.clone(),
                 material: {
+                    // @ts-ignore
                     color: obj.material.color.clone(),
+                    // @ts-ignore
                     emissive: obj.material.emissive.clone()
                 },
                 geometryParams: obj.userData.geometryParams ? {...obj.userData.geometryParams} : null,
@@ -1189,6 +1324,9 @@ class App {
         console.log(`State saved: ${description} (${this.historyIndex + 1}/${this.history.length})`);
     }
 
+    /**
+     * Undoes the last action.
+     */
     undo() {
         if (this.historyIndex > 0) {
             this.historyIndex--;
@@ -1199,6 +1337,9 @@ class App {
         }
     }
 
+    /**
+     * Redoes the last undone action.
+     */
     redo() {
         if (this.historyIndex < this.history.length - 1) {
             this.historyIndex++;
@@ -1209,11 +1350,17 @@ class App {
         }
     }
 
+    /**
+     * Restores the application state.
+     * @param {Object} state - The state object to restore.
+     */
     restoreState(state) {
         // Clear current scene
         this.objects.forEach(obj => {
             this.scene.remove(obj);
+            // @ts-ignore
             obj.geometry.dispose();
+            // @ts-ignore
             obj.material.dispose();
         });
         this.objects.length = 0;
@@ -1287,32 +1434,41 @@ class App {
         this.updateSceneGraph();
     }
 
+    /**
+     * Toggles fullscreen mode.
+     */
     toggleFullscreen() {
-        if (!document.fullscreenElement) {
+        const doc = document;
+        const docEl = document.documentElement;
+
+        if (!doc.fullscreenElement && !doc.webkitFullscreenElement && !doc.mozFullScreenElement && !doc.msFullscreenElement) {
             // Enter fullscreen
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            } else if (document.documentElement.webkitRequestFullscreen) {
-                document.documentElement.webkitRequestFullscreen();
-            } else if (document.documentElement.mozRequestFullScreen) {
-                document.documentElement.mozRequestFullScreen();
-            } else if (document.documentElement.msRequestFullscreen) {
-                document.documentElement.msRequestFullscreen();
+            if (docEl.requestFullscreen) {
+                docEl.requestFullscreen();
+            } else if (docEl.webkitRequestFullscreen) {
+                docEl.webkitRequestFullscreen();
+            } else if (docEl.mozRequestFullScreen) {
+                docEl.mozRequestFullScreen();
+            } else if (docEl.msRequestFullscreen) {
+                docEl.msRequestFullscreen();
             }
         } else {
             // Exit fullscreen
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
+            if (doc.exitFullscreen) {
+                doc.exitFullscreen();
+            } else if (doc.webkitExitFullscreen) {
+                doc.webkitExitFullscreen();
+            } else if (doc.mozCancelFullScreen) {
+                doc.mozCancelFullScreen();
+            } else if (doc.msExitFullscreen) {
+                doc.msExitFullscreen();
             }
         }
     }
 
+    /**
+     * Saves the current scene to a file.
+     */
     async saveScene() {
         try {
             await this.sceneStorage.saveScene();
@@ -1323,6 +1479,10 @@ class App {
         }
     }
 
+    /**
+     * Loads a scene from a file.
+     * @param {File} file - The file to load.
+     */
     async loadScene(file) {
         try {
             await this.sceneStorage.loadScene(file);
@@ -1330,7 +1490,9 @@ class App {
             // Update the objects array to reflect the loaded scene
             this.objects = [];
             this.scene.traverse((child) => {
+                // @ts-ignore
                 if (child.isMesh) {
+                    // @ts-ignore
                     this.objects.push(child);
                 }
             });
@@ -1343,6 +1505,9 @@ class App {
         }
     }
 
+    /**
+     * Animation loop.
+     */
     animate() {
         requestAnimationFrame(() => this.animate());
         
