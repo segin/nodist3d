@@ -26,7 +26,7 @@ jest.mock('three', () => {
             remove: jest.fn()
         })),
         PerspectiveCamera: jest.fn(() => ({
-            position: { set: jest.fn() },
+            position: { set: jest.fn(), clone: jest.fn(() => ({ copy: jest.fn() })) },
             lookAt: jest.fn(),
             aspect: 1,
             updateProjectionMatrix: jest.fn()
@@ -43,12 +43,14 @@ jest.mock('three', () => {
             }
         })),
         Mesh: jest.fn(() => mockMesh),
+        BufferGeometry: jest.fn(),
         BoxGeometry: jest.fn(),
         SphereGeometry: jest.fn(),
         CylinderGeometry: jest.fn(),
         ConeGeometry: jest.fn(),
         TorusGeometry: jest.fn(),
         PlaneGeometry: jest.fn(),
+        ExtrudeGeometry: jest.fn(),
         MeshLambertMaterial: jest.fn(() => ({
             emissive: { setHex: jest.fn() },
             clone: jest.fn(() => ({ emissive: { setHex: jest.fn() } }))
@@ -66,6 +68,17 @@ jest.mock('three', () => {
             intersectObjects: jest.fn(() => [])
         })),
         Vector2: jest.fn(),
+        Loader: class {
+            constructor() {
+                this.load = jest.fn();
+                this.parse = jest.fn();
+            }
+        },
+        FileLoader: class {
+            constructor() {
+                this.load = jest.fn();
+            }
+        },
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide'
     };
@@ -107,23 +120,28 @@ jest.mock('dat.gui', () => ({
 
 // Mock OrbitControls
 jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
-    OrbitControls: jest.fn(() => ({
-        enableDamping: true,
-        dampingFactor: 0.05,
-        enabled: true,
-        update: jest.fn()
-    }))
+    OrbitControls: class {
+        constructor() {
+            this.enableDamping = true;
+            this.dampingFactor = 0.05;
+            this.enabled = true;
+            this.update = jest.fn();
+            this.target = { clone: jest.fn(() => ({ copy: jest.fn() })) };
+        }
+    }
 }));
 
 // Mock TransformControls
 jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
-    TransformControls: jest.fn(() => ({
-        addEventListener: jest.fn(),
-        setMode: jest.fn(),
-        attach: jest.fn(),
-        detach: jest.fn(),
-        dragging: false
-    }))
+    TransformControls: class {
+        constructor() {
+            this.addEventListener = jest.fn();
+            this.setMode = jest.fn();
+            this.attach = jest.fn();
+            this.detach = jest.fn();
+            this.dragging = false;
+        }
+    }
 }));
 
 describe('Basic App Functionality', () => {

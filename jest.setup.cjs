@@ -55,10 +55,28 @@ const mockVector3 = {
         }
         return this;
     }),
+    add: jest.fn(function(v) {
+        this.x += v.x;
+        this.y += v.y;
+        this.z += v.z;
+        return this;
+    }),
+    sub: jest.fn(function(v) {
+        this.x -= v.x;
+        this.y -= v.y;
+        this.z -= v.z;
+        return this;
+    }),
     addVectors: jest.fn(function(a, b) {
         this.x = a.x + b.x;
         this.y = a.y + b.y;
         this.z = a.z + b.z;
+        return this;
+    }),
+    multiplyScalar: jest.fn(function(s) {
+        this.x *= s;
+        this.y *= s;
+        this.z *= s;
         return this;
     }),
     divideScalar: jest.fn(function(s) {
@@ -67,6 +85,8 @@ const mockVector3 = {
         this.z /= s;
         return this;
     }),
+    applyEuler: jest.fn(function() { return this; }),
+    applyQuaternion: jest.fn(function() { return this; }),
 };
 
 const mockQuaternion = {
@@ -275,6 +295,19 @@ const THREE = {
         fragmentShader: '',
         uniforms: {},
     })),
+    Loader: class {
+        constructor(manager) {
+            this.manager = manager;
+        }
+        load() {}
+        parse() {}
+    },
+    FileLoader: class {
+        constructor(manager) {
+            this.manager = manager;
+        }
+        load() {}
+    },
     TextureLoader: jest.fn().mockImplementation(() => ({
         load: jest.fn((url, onLoad) => {
             if (onLoad) onLoad(new THREE.Texture());
@@ -393,7 +426,13 @@ global.JSZip = jest.fn(() => ({
             'scene.json': {
                 async: jest.fn().mockResolvedValue('{}')
             }
-        }
+        },
+        file: jest.fn((name) => {
+            if (name === 'scene.json') {
+                return { async: jest.fn().mockResolvedValue('{}') };
+            }
+            return null;
+        })
     })
 }));
 

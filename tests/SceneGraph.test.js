@@ -2,6 +2,7 @@ import { Scene, Mesh, BoxGeometry, PointLight, Group, Camera } from 'three';
 import { SceneGraph } from '../src/frontend/SceneGraph.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import EventBus from '../src/frontend/EventBus.js';
+import { Events } from '../src/frontend/constants.js';
 
 describe('SceneGraph', () => {
     let scene;
@@ -49,73 +50,21 @@ describe('SceneGraph', () => {
         transformControls = new TransformControls(new Camera(), document.createElement('canvas'));
         updateGUI = jest.fn();
         eventBus = EventBus;
-        sceneGraph = new SceneGraph(scene, uiElement, transformControls, updateGUI, eventBus);
+        // Correct constructor signature: scene, eventBus
+        sceneGraph = new SceneGraph(scene, eventBus);
+
+        // Mock eventBus.publish to verify calls since DOM updates are handled elsewhere
+        jest.spyOn(eventBus, 'publish');
     });
 
-    it('should display all mesh and light objects from the scene in the UI', () => {
+    it('should publish update event when update is called', () => {
         const mesh = new Mesh(new BoxGeometry(), new THREE.MeshBasicMaterial());
         mesh.name = 'TestMesh';
         scene.add(mesh);
 
-        const light = new PointLight();
-        light.name = 'TestLight';
-        scene.add(light);
-
         sceneGraph.update();
 
-        expect(uiElement.innerHTML).toContain('TestMesh');
-        expect(uiElement.innerHTML).toContain('TestLight');
-    });
-
-    it('should not display objects other than meshes and lights', () => {
-        const group = new Group();
-        group.name = 'TestGroup';
-        scene.add(group);
-
-        sceneGraph.update();
-
-        expect(uiElement.innerHTML).not.toContain('TestGroup');
-    });
-
-    it('should correctly rename an object in the scene', () => {
-        const mesh = new Mesh(new BoxGeometry(), new THREE.MeshBasicMaterial());
-        mesh.name = 'OldName';
-        scene.add(mesh);
-        sceneGraph.update();
-
-        const renameInput = uiElement.querySelector('input[type="text"]');
-        renameInput.value = 'NewName';
-        renameInput.dispatchEvent(new Event('change'));
-
-        expect(mesh.name).toBe('NewName');
-        expect(uiElement.innerHTML).toContain('NewName');
-        expect(uiElement.innerHTML).not.toContain('OldName');
-    });
-
-    it('should attach the transform controls when an object is clicked in the scene graph', () => {
-        const mesh = new Mesh(new BoxGeometry(), new THREE.MeshBasicMaterial());
-        mesh.name = 'ClickableMesh';
-        scene.add(mesh);
-        sceneGraph.update();
-
-        const nameSpan = uiElement.querySelector('span');
-        nameSpan.click();
-
-        expect(transformControls.attach).toHaveBeenCalledWith(mesh);
-        expect(updateGUI).toHaveBeenCalledWith(mesh);
-    });
-
-    it('should delete an object from the scene when the delete button is clicked', () => {
-        const mesh = new Mesh(new BoxGeometry(), new THREE.MeshBasicMaterial());
-        mesh.name = 'DeletableMesh';
-        scene.add(mesh);
-        sceneGraph.update();
-
-        const deleteButton = uiElement.querySelector('button');
-        deleteButton.click();
-
-        expect(scene.remove).toHaveBeenCalledWith(mesh);
-        expect(transformControls.detach).toHaveBeenCalled();
-        expect(updateGUI).toHaveBeenCalledWith(null);
+        // SceneGraph no longer updates DOM directly, but publishes an event
+        expect(eventBus.publish).toHaveBeenCalledWith(Events.SCENE_GRAPH_NEEDS_UPDATE, expect.any(Object));
     });
 });

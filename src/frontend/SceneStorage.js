@@ -15,16 +15,26 @@ export class SceneStorage {
         const zip = new window.JSZip();
         
         // Serialize the scene using the worker
-        const sceneJson = await new Promise((resolve, reject) => {
-            this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
-            this.worker.onmessage = (event) => {
-                if (event.data.type === 'serialize_complete') {
-                    resolve(event.data.data);
-                } else if (event.data.type === 'error') {
-                    reject(new Error(event.data.message + ': ' + event.data.error));
-                }
-            };
-        });
+        let sceneJson;
+        try {
+            sceneJson = await new Promise((resolve, reject) => {
+                this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
+                this.worker.onmessage = (event) => {
+                    if (event.data.type === 'serialize_complete') {
+                        resolve(event.data.data);
+                    } else if (event.data.type === 'error') {
+                        reject(new Error(event.data.message + ': ' + event.data.error));
+                    }
+                };
+            });
+        } finally {
+            // Restore default message handler
+            this.worker.onmessage = this.handleWorkerMessage.bind(this);
+        }
+
+        if (!sceneJson) {
+             throw new Error('Serialization failed: Empty data received');
+        }
 
         zip.file('scene.json', sceneJson);
 

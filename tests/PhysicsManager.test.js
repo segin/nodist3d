@@ -1,4 +1,4 @@
-import { Scene } from 'three';
+import { Scene, BufferGeometry, Mesh, MeshBasicMaterial, Quaternion } from 'three';
 import { PhysicsManager } from '../src/frontend/PhysicsManager.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
@@ -17,7 +17,8 @@ describe('PhysicsManager', () => {
         eventBus = EventBus;
         physicsManager = new PhysicsManager(scene);
         primitiveFactory = new PrimitiveFactory();
-        objectManager = new ObjectManager(scene, primitiveFactory, eventBus);
+        // Correct constructor signature: scene, eventBus, physicsManager, primitiveFactory
+        objectManager = new ObjectManager(scene, eventBus, physicsManager, primitiveFactory);
     });
 
     it('should add a box-shaped physics body to the world', () => {

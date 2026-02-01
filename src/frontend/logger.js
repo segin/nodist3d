@@ -1,6 +1,11 @@
-const log = window.log;
+const log = (typeof window !== 'undefined' && window.log) ? window.log : {
+    info: console.log,
+    warn: console.warn,
+    error: console.error,
+    setLevel: () => {}
+};
 
-if (log) {
+if (log && log.setLevel) {
     log.setLevel('info');
 }
 

@@ -4,33 +4,48 @@ jest.mock('three', () => {
     const originalThree = jest.requireActual('three');
 
     // Helper to create a mock Vector3 with common methods
-    const createMockVector3 = (x = 0, y = 0, z = 0) => ({
-        x: x, y: y, z: z,
-        set: jest.fn(function(newX, newY, newZ) { this.x = newX; this.y = newY; this.z = newZ; return this; }),
-        clone: jest.fn(function() { return createMockVector3(this.x, this.y, this.z); }),
-        addScalar: jest.fn(function(s) { this.x += s; this.y += s; this.z += s; return this; }),
-        equals: jest.fn(function(v) { return this.x === v.x && this.y === v.y && this.z === v.z; }),
-        copy: jest.fn(function(v) { this.x = v.x; this.y = v.y; this.z = v.z; return this; }),
-        addVectors: jest.fn(function(v1, v2) { this.x = v1.x + v2.x; this.y = v1.y + v2.y; this.z = v1.z + v2.z; return this; }),
-        divideScalar: jest.fn(function(s) { this.x /= s; this.y /= s; this.z /= s; return this; }),
-        normalize: jest.fn(function() { return this; }),
+    const createMockVector3 = jest.fn(function(x = 0, y = 0, z = 0) {
+        const v = {
+            x: x, y: y, z: z,
+            set: jest.fn(function(newX, newY, newZ) { this.x = newX; this.y = newY; this.z = newZ; return this; }),
+            clone: jest.fn(function() { return new createMockVector3(this.x, this.y, this.z); }),
+            addScalar: jest.fn(function(s) { this.x += s; this.y += s; this.z += s; return this; }),
+            equals: jest.fn(function(v) { return this.x === v.x && this.y === v.y && this.z === v.z; }),
+            copy: jest.fn(function(v) { this.x = v.x; this.y = v.y; this.z = v.z; return this; }),
+            addVectors: jest.fn(function(v1, v2) { this.x = v1.x + v2.x; this.y = v1.y + v2.y; this.z = v1.z + v2.z; return this; }),
+            divideScalar: jest.fn(function(s) { this.x /= s; this.y /= s; this.z /= s; return this; }),
+            normalize: jest.fn(function() { return this; }),
+            add: jest.fn(function(v) { this.x += v.x; this.y += v.y; this.z += v.z; return this; }),
+            sub: jest.fn(function(v) { this.x -= v.x; this.y -= v.y; this.z -= v.z; return this; }),
+            applyEuler: jest.fn(function() { return this; }),
+            applyQuaternion: jest.fn(function() { return this; }),
+            multiplyScalar: jest.fn(function(s) { this.x *= s; this.y *= s; this.z *= s; return this; })
+        };
+        return v;
     });
 
     // Helper to create a mock Euler with common methods
-    const createMockEuler = (x = 0, y = 0, z = 0, order = 'XYZ') => ({
-        x: x, y: y, z: z, order: order,
-        set: jest.fn(function(newX, newY, newZ, newOrder) { this.x = newX; this.y = newY; this.z = newZ; this.order = newOrder; return this; }),
-        clone: jest.fn(function() { return createMockEuler(this.x, this.y, this.z, this.order); }),
-        equals: jest.fn(function(e) { return this.x === e.x && this.y === e.y && this.z === e.z && this.order === e.order; }),
-        copy: jest.fn(function(e) { this.x = e.x; this.y = e.y; this.z = e.z; this.order = e.order; return this; }),
+    const createMockEuler = jest.fn(function(x = 0, y = 0, z = 0, order = 'XYZ') {
+        const e = {
+            x: x, y: y, z: z, order: order,
+            set: jest.fn(function(newX, newY, newZ, newOrder) { this.x = newX; this.y = newY; this.z = newZ; this.order = newOrder; return this; }),
+            clone: jest.fn(function() { return new createMockEuler(this.x, this.y, this.z, this.order); }),
+            equals: jest.fn(function(e) { return this.x === e.x && this.y === e.y && this.z === e.z && this.order === e.order; }),
+            copy: jest.fn(function(e) { this.x = e.x; this.y = e.y; this.z = e.z; this.order = e.order; return this; })
+        };
+        return e;
     });
 
     // Helper to create a mock Quaternion with common methods
-    const createMockQuaternion = (x = 0, y = 0, z = 0, w = 1) => ({
-        x: x, y: y, z: z, w: w,
-        copy: jest.fn(function(q) { this.x = q.x; this.y = q.y; this.z = q.z; this.w = q.w; return this; }),
-        setFromAxisAngle: jest.fn(function(axis, angle) { return this; }),
-        equals: jest.fn(function(q) { return this.x === q.x && this.y === q.y && this.z === q.z && this.w === q.w; }),
+    const createMockQuaternion = jest.fn(function(x = 0, y = 0, z = 0, w = 1) {
+        const q = {
+            x: x, y: y, z: z, w: w,
+            copy: jest.fn(function(q) { this.x = q.x; this.y = q.y; this.z = q.z; this.w = q.w; return this; }),
+            setFromAxisAngle: jest.fn(function(axis, angle) { return this; }),
+            equals: jest.fn(function(q) { return this.x === q.x && this.y === q.y && this.z === q.z && this.w === q.w; }),
+            set: jest.fn(function(x, y, z, w) { this.x = x; this.y = y; this.z = z; this.w = w; return this; })
+        };
+        return q;
     });
 
     // Helper to create a mock Material with common properties and methods
@@ -64,10 +79,16 @@ jest.mock('three', () => {
         this.material = material;
         this.name = '';
         this.uuid = originalThree.MathUtils.generateUUID();
-        this.position = createMockVector3();
-        this.rotation = createMockEuler();
-        this.scale = createMockVector3(1, 1, 1);
-        this.parent = null;
+        this.position = new createMockVector3();
+        this.rotation = new createMockEuler();
+        this.scale = new createMockVector3(1, 1, 1);
+
+        Object.defineProperty(this, 'parent', {
+            value: null,
+            writable: true,
+            enumerable: false
+        });
+
         this.children = [];
         this.add = jest.fn(function(obj) { this.children.push(obj); obj.parent = this; });
         this.remove = jest.fn(function(obj) { this.children = this.children.filter(child => child !== obj); obj.parent = null; });
@@ -83,7 +104,7 @@ jest.mock('three', () => {
         this.updateMatrixWorld = jest.fn();
         this.userData = {};
         this.visible = true;
-        this.quaternion = createMockQuaternion();
+        this.quaternion = new createMockQuaternion();
     });
 
     // Mock Group
@@ -93,7 +114,14 @@ jest.mock('three', () => {
         this.children = [];
         this.add = jest.fn(function(obj) { this.children.push(obj); obj.parent = this; });
         this.remove = jest.fn(function(obj) { this.children = this.children.filter(child => child !== obj); obj.parent = null; });
-        this.position = createMockVector3();
+        this.position = new createMockVector3();
+
+        Object.defineProperty(this, 'parent', {
+            value: null,
+            writable: true,
+            enumerable: false
+        });
+
         this.name = '';
         this.uuid = originalThree.MathUtils.generateUUID();
         this.clone = jest.fn(function() {
@@ -116,9 +144,16 @@ jest.mock('three', () => {
         this.intensity = intensity;
         this.distance = distance;
         this.decay = decay;
-        this.position = createMockVector3();
+        this.position = new createMockVector3();
         this.name = '';
         this.uuid = originalThree.MathUtils.generateUUID();
+
+        Object.defineProperty(this, 'parent', {
+            value: null,
+            writable: true,
+            enumerable: false
+        });
+
         this.clone = jest.fn(function() { return new MockPointLight(this.color, this.intensity, this.distance, this.decay); });
     });
 
@@ -127,9 +162,16 @@ jest.mock('three', () => {
         this.isDirectionalLight = true;
         this.color = new originalThree.Color(color);
         this.intensity = intensity;
-        this.position = createMockVector3();
+        this.position = new createMockVector3();
         this.name = '';
         this.uuid = originalThree.MathUtils.generateUUID();
+
+        Object.defineProperty(this, 'parent', {
+            value: null,
+            writable: true,
+            enumerable: false
+        });
+
         this.clone = jest.fn(function() { return new MockDirectionalLight(this.color, this.intensity); });
     });
 
@@ -140,6 +182,13 @@ jest.mock('three', () => {
         this.intensity = intensity;
         this.name = '';
         this.uuid = originalThree.MathUtils.generateUUID();
+
+        Object.defineProperty(this, 'parent', {
+            value: null,
+            writable: true,
+            enumerable: false
+        });
+
         this.clone = jest.fn(function() { return new MockAmbientLight(this.color, this.intensity); });
         // AmbientLight does not have a position, ensure it's not added
     });
@@ -156,6 +205,12 @@ jest.mock('three', () => {
                 this.children.forEach(child => callback(child));
             });
             this.camera = new originalThree.PerspectiveCamera(); // Mock camera for scene
+
+            Object.defineProperty(this, 'parent', {
+                value: null,
+                writable: true,
+                enumerable: false
+            });
         }),
         WebGLRenderer: jest.fn().mockImplementation(() => ({
             domElement: { addEventListener: jest.fn(), removeEventListener: jest.fn(), getBoundingClientRect: () => ({ left: 0, top: 0, width: 100, height: 100 }), style: {} },
@@ -168,12 +223,19 @@ jest.mock('three', () => {
         })),
         PerspectiveCamera: jest.fn().mockImplementation(function() {
             this.isCamera = true;
-            this.position = createMockVector3();
-            this.rotation = createMockEuler();
-            this.quaternion = createMockQuaternion();
+            this.position = new createMockVector3();
+            this.rotation = new createMockEuler();
+            this.quaternion = new createMockQuaternion();
             this.matrix = new originalThree.Matrix4();
             this.matrixWorld = new originalThree.Matrix4();
             this.updateMatrixWorld = jest.fn();
+
+            Object.defineProperty(this, 'parent', {
+                value: null,
+                writable: true,
+                enumerable: false
+            });
+
             this.clone = jest.fn(function() { return new originalThree.PerspectiveCamera(); });
         }),
         ShaderMaterial: jest.fn().mockImplementation(() => ({
@@ -231,10 +293,16 @@ jest.mock('three', () => {
         Object3D: jest.fn().mockImplementation(function() {
             this.name = '';
             this.uuid = originalThree.MathUtils.generateUUID();
-            this.position = createMockVector3();
-            this.rotation = createMockEuler();
-            this.scale = createMockVector3(1,1,1);
-            this.parent = null;
+            this.position = new createMockVector3();
+            this.rotation = new createMockEuler();
+            this.scale = new createMockVector3(1,1,1);
+
+            Object.defineProperty(this, 'parent', {
+                value: null,
+                writable: true,
+                enumerable: false
+            });
+
             this.children = [];
             this.add = jest.fn(function(obj) { this.children.push(obj); obj.parent = this; });
             this.remove = jest.fn(function(obj) { this.children = this.children.filter(child => child !== obj); obj.parent = null; });
@@ -243,7 +311,7 @@ jest.mock('three', () => {
             this.updateMatrixWorld = jest.fn();
             this.userData = {};
             this.visible = true;
-            this.quaternion = createMockQuaternion();
+            this.quaternion = new createMockQuaternion();
         }),
         Texture: jest.fn().mockImplementation(() => ({
             dispose: jest.fn(),
@@ -265,6 +333,19 @@ jest.mock('three', () => {
         DoubleSide: originalThree.DoubleSide,
         MathUtils: {
             generateUUID: jest.fn(() => 'mock-uuid'),
+        },
+        Loader: class {
+            constructor(manager) {
+                this.manager = manager;
+            }
+            load() {}
+            parse() {}
+        },
+        FileLoader: class {
+            constructor(manager) {
+                this.manager = manager;
+            }
+            load() {}
         },
         ObjectLoader: jest.fn().mockImplementation(() => ({
             parse: jest.fn((json, onLoad) => {
