@@ -1,5 +1,7 @@
-import log from 'loglevel';
+const log = window.log;
 
-log.setLevel('info'); // Set the default log level
+if (log) {
+    log.setLevel('info');
+}
 
 export default log;

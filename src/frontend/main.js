@@ -144,8 +144,8 @@ class App {
         this.sceneGraphPanel.id = 'scene-graph-panel';
         this.sceneGraphPanel.style.cssText = `
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 80px;
+            left: 10px;
             width: 250px;
             max-height: 400px;
             background: rgba(0, 0, 0, 0.8);
@@ -974,7 +974,7 @@ class App {
         });
         
         // Remove all subfolders
-        const folders = [...this.propertiesFolder.__folders];
+        const folders = Object.values(this.propertiesFolder.__folders || {});
         folders.forEach(folder => {
             this.propertiesFolder.removeFolder(folder);
         });
@@ -1024,6 +1024,8 @@ class App {
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
+            visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1036,12 +1038,17 @@ class App {
             visibilityBtn.onclick = (e) => {
                 e.stopPropagation();
                 object.visible = !object.visible;
+                const label = object.visible ? 'Hide object' : 'Show object';
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                visibilityBtn.title = label;
+                visibilityBtn.setAttribute('aria-label', label);
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+            deleteBtn.title = 'Delete object';
+            deleteBtn.setAttribute('aria-label', 'Delete object');
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;

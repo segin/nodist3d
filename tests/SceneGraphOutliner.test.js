@@ -85,13 +85,21 @@ describe('Scene Graph/Outliner Functionality', () => {
                 innerHTML: '',
                 onclick: null,
                 addEventListener: jest.fn(),
-                removeEventListener: jest.fn()
+                removeEventListener: jest.fn(),
+                setAttribute: jest.fn(),
+                getAttribute: jest.fn((attr) => element[attr]),
+                title: ''
             };
             
             // Add style.cssText property
             Object.defineProperty(element.style, 'cssText', {
                 set: jest.fn(),
                 get: jest.fn()
+            });
+
+            // Handle setAttribute specifically for title and aria-label to support testing
+            element.setAttribute.mockImplementation((name, value) => {
+                element[name] = value;
             });
             
             return element;
@@ -131,15 +139,28 @@ describe('Scene Graph/Outliner Functionality', () => {
                     
                     objectName.textContent = object.name || `Object_${index + 1}`;
                     objectType.textContent = object.geometry.type.replace('Geometry', '');
+
+                    // Visibility button with accessibility attributes
                     visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                    const visLabel = object.visible ? 'Hide object' : 'Show object';
+                    visibilityBtn.title = visLabel;
+                    visibilityBtn.setAttribute('aria-label', visLabel);
+
+                    // Delete button with accessibility attributes
                     deleteBtn.textContent = '🗑';
+                    deleteBtn.title = 'Delete object';
+                    deleteBtn.setAttribute('aria-label', 'Delete object');
+
                     positionInfo.textContent = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
                     
                     // Mock event handlers
                     visibilityBtn.onclick = (e) => {
                         e.stopPropagation();
                         object.visible = !object.visible;
+                        const label = object.visible ? 'Hide object' : 'Show object';
                         visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                        visibilityBtn.title = label;
+                        visibilityBtn.setAttribute('aria-label', label);
                     };
                     
                     deleteBtn.onclick = (e) => {
@@ -374,6 +395,38 @@ describe('Scene Graph/Outliner Functionality', () => {
             
             const displayName = obj.name || `Object_${app.objects.indexOf(obj) + 1}`;
             expect(displayName).toBe('Object_1');
+        });
+    });
+
+    describe('Accessibility', () => {
+        it('should ensure visibility button has correct accessibility attributes', () => {
+             const obj = app.addTestObject('A11yBtnTest'); // Triggers updateSceneGraph
+
+             // Get all created elements from the mock results
+             const results = document.createElement.mock.results;
+             const buttons = results
+                .filter(r => r.type === 'return')
+                .map(r => r.value)
+                .filter(el => el.tagName === 'BUTTON');
+
+             // There should be at least 2 buttons created: visibility and delete
+             expect(buttons.length).toBeGreaterThanOrEqual(2);
+
+             const visBtn = buttons[buttons.length - 2];
+             const delBtn = buttons[buttons.length - 1];
+
+             // Check initial state (visible)
+             expect(visBtn.getAttribute('aria-label')).toBe('Hide object');
+             expect(visBtn.title).toBe('Hide object');
+
+             expect(delBtn.getAttribute('aria-label')).toBe('Delete object');
+             expect(delBtn.title).toBe('Delete object');
+
+             // Test toggling visibility
+             visBtn.onclick({ stopPropagation: jest.fn() });
+
+             expect(visBtn.getAttribute('aria-label')).toBe('Show object');
+             expect(visBtn.title).toBe('Show object');
         });
     });
 });
