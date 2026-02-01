@@ -17,7 +17,7 @@ import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
 /**
  * Simple 3D modeling application with basic primitives and transform controls
  */
-class App {
+export class App {
     constructor() {
         // Initialize Service Container
         this.container = new ServiceContainer();
@@ -91,8 +91,8 @@ class App {
         this.maxHistorySize = 50;
         
         // Continue initialization
-        this.initRemaining();
         this.setupControls();
+        this.initRemaining();
         this.setupGUI();
         this.setupLighting();
         this.setupHelpers();
@@ -144,8 +144,8 @@ class App {
         this.sceneGraphPanel.id = 'scene-graph-panel';
         this.sceneGraphPanel.style.cssText = `
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 80px;
+            left: 10px;
             width: 250px;
             max-height: 400px;
             background: rgba(0, 0, 0, 0.8);
@@ -176,6 +176,8 @@ class App {
             margin: 0;
             padding: 0;
         `;
+
+        this.sceneGraphMap = new Map();
         
         this.sceneGraphPanel.appendChild(title);
         this.sceneGraphPanel.appendChild(this.objectsList);
@@ -974,7 +976,7 @@ class App {
         });
         
         // Remove all subfolders
-        const folders = [...this.propertiesFolder.__folders];
+        const folders = Object.values(this.propertiesFolder.__folders || {});
         folders.forEach(folder => {
             this.propertiesFolder.removeFolder(folder);
         });
@@ -983,117 +985,188 @@ class App {
     }
 
     updateSceneGraph() {
-        // Clear existing list
-        this.objectsList.innerHTML = '';
+        if (!this.sceneGraphMap) {
+            this.sceneGraphMap = new Map();
+        }
+
+        const currentUuids = new Set();
         
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
-            const listItem = document.createElement('li');
-            listItem.style.cssText = `
-                padding: 5px;
-                margin: 2px 0;
-                background: ${this.selectedObject === object ? '#444' : '#222'};
-                border-radius: 3px;
-                cursor: pointer;
-                border: 1px solid #555;
-            `;
+            currentUuids.add(object.uuid);
             
-            // Object name and type
-            const objectInfo = document.createElement('div');
-            objectInfo.style.cssText = `
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            `;
+            let listItem = this.sceneGraphMap.get(object.uuid);
+            let objectInfo, objectName, objectType, visibilityBtn, deleteBtn, positionInfo;
             
-            const objectName = document.createElement('span');
-            objectName.textContent = object.name || `Object_${index + 1}`;
-            objectName.style.cssText = `
-                font-weight: bold;
-                color: #fff;
-            `;
+            if (!listItem) {
+                // Create new list item
+                listItem = document.createElement('li');
+                listItem.style.cssText = `
+                    padding: 5px;
+                    margin: 2px 0;
+                    border-radius: 3px;
+                    cursor: pointer;
+                    border: 1px solid #555;
+                `;
+                listItem.__cache = {};
+
+                objectInfo = document.createElement('div');
+                objectInfo.style.cssText = `
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                `;
+
+                objectName = document.createElement('span');
+                objectName.style.cssText = `
+                    font-weight: bold;
+                    color: #fff;
+                `;
+
+                objectType = document.createElement('span');
+                objectType.style.cssText = `
+                    font-size: 10px;
+                    color: #aaa;
+                    font-style: italic;
+                `;
+
+                const buttonContainer = document.createElement('div');
+
+                visibilityBtn = document.createElement('button');
+                visibilityBtn.style.cssText = `
+                    background: none;
+                    border: none;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 12px;
+                    padding: 2px 5px;
+                    margin: 0 5px;
+                `;
+
+                deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '🗑';
+                deleteBtn.style.cssText = `
+                    background: none;
+                    border: none;
+                    color: #ff4444;
+                    cursor: pointer;
+                    font-size: 12px;
+                    padding: 2px 5px;
+                `;
+
+                buttonContainer.appendChild(visibilityBtn);
+                buttonContainer.appendChild(deleteBtn);
+
+                objectInfo.appendChild(objectName);
+                objectInfo.appendChild(objectType);
+                objectInfo.appendChild(buttonContainer);
+
+                listItem.appendChild(objectInfo);
+
+                positionInfo = document.createElement('div');
+                positionInfo.style.cssText = `
+                    font-size: 10px;
+                    color: #999;
+                    margin-top: 3px;
+                `;
+                listItem.appendChild(positionInfo);
+
+                this.sceneGraphMap.set(object.uuid, listItem);
+            } else {
+                // Retrieve cached elements
+                objectInfo = listItem.firstChild;
+                objectName = objectInfo.children[0];
+                objectType = objectInfo.children[1];
+                const buttonContainer = objectInfo.children[2];
+                visibilityBtn = buttonContainer.children[0];
+                deleteBtn = buttonContainer.children[1];
+                positionInfo = listItem.lastChild;
+            }
             
-            const objectType = document.createElement('span');
-            objectType.textContent = object.geometry.type.replace('Geometry', '');
-            objectType.style.cssText = `
-                font-size: 10px;
-                color: #aaa;
-                font-style: italic;
-            `;
+            // Update styles and content with caching
+            const isSelected = this.selectedObject === object;
+            const bg = isSelected ? '#444' : '#222';
+            if (listItem.__cache.bg !== bg) {
+                listItem.style.background = bg;
+                listItem.__cache.bg = bg;
+            }
             
-            // Visibility toggle
-            const visibilityBtn = document.createElement('button');
-            visibilityBtn.textContent = object.visible ? '👁' : '🚫';
-            visibilityBtn.style.cssText = `
-                background: none;
-                border: none;
-                color: white;
-                cursor: pointer;
-                font-size: 12px;
-                padding: 2px 5px;
-                margin: 0 5px;
-            `;
+            const name = object.name || `Object_${index + 1}`;
+            if (listItem.__cache.name !== name) {
+                objectName.textContent = name;
+                listItem.__cache.name = name;
+            }
+
+            const type = object.geometry.type.replace('Geometry', '');
+            if (listItem.__cache.type !== type) {
+                objectType.textContent = type;
+                listItem.__cache.type = type;
+            }
+
+            const visText = object.visible ? '👁' : '🚫';
+            if (listItem.__cache.vis !== visText) {
+                visibilityBtn.textContent = visText;
+                listItem.__cache.vis = visText;
+            }
+
+            const posText = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
+            if (listItem.__cache.pos !== posText) {
+                positionInfo.textContent = posText;
+                listItem.__cache.pos = posText;
+            }
+
+            // Update event listeners
             visibilityBtn.onclick = (e) => {
                 e.stopPropagation();
                 object.visible = !object.visible;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                listItem.__cache.vis = visibilityBtn.textContent;
             };
             
-            // Delete button
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = '🗑';
-            deleteBtn.style.cssText = `
-                background: none;
-                border: none;
-                color: #ff4444;
-                cursor: pointer;
-                font-size: 12px;
-                padding: 2px 5px;
-            `;
             deleteBtn.onclick = (e) => {
                 e.stopPropagation();
                 this.deleteObject(object);
             };
             
-            // Click to select
             listItem.onclick = () => {
                 this.selectObject(object);
             };
             
-            objectInfo.appendChild(objectName);
-            objectInfo.appendChild(objectType);
-            
-            const buttonContainer = document.createElement('div');
-            buttonContainer.appendChild(visibilityBtn);
-            buttonContainer.appendChild(deleteBtn);
-            
-            objectInfo.appendChild(buttonContainer);
-            listItem.appendChild(objectInfo);
-            
-            // Add position info
-            const positionInfo = document.createElement('div');
-            positionInfo.style.cssText = `
-                font-size: 10px;
-                color: #999;
-                margin-top: 3px;
-            `;
-            positionInfo.textContent = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
-            listItem.appendChild(positionInfo);
-            
-            this.objectsList.appendChild(listItem);
+            // Ensure correct position in DOM
+            if (this.objectsList.children[index] !== listItem) {
+                this.objectsList.insertBefore(listItem, this.objectsList.children[index]);
+            }
         });
         
-        // Add message if no objects
+        // Remove items that are no longer in the scene
+        for (const [uuid, listItem] of this.sceneGraphMap.entries()) {
+            if (!currentUuids.has(uuid)) {
+                if (listItem.parentNode === this.objectsList) {
+                    this.objectsList.removeChild(listItem);
+                }
+                this.sceneGraphMap.delete(uuid);
+            }
+        }
+
+        // Handle empty message
+        const existingEmptyMsg = this.objectsList.querySelector('#empty-scene-msg');
         if (this.objects.length === 0) {
-            const emptyMessage = document.createElement('li');
-            emptyMessage.textContent = 'No objects in scene';
-            emptyMessage.style.cssText = `
-                color: #666;
-                font-style: italic;
-                text-align: center;
-                padding: 20px;
-            `;
-            this.objectsList.appendChild(emptyMessage);
+            if (!existingEmptyMsg) {
+                const emptyMessage = document.createElement('li');
+                emptyMessage.id = 'empty-scene-msg';
+                emptyMessage.textContent = 'No objects in scene';
+                emptyMessage.style.cssText = `
+                    color: #666;
+                    font-style: italic;
+                    text-align: center;
+                    padding: 20px;
+                `;
+                this.objectsList.appendChild(emptyMessage);
+            }
+        } else {
+            if (existingEmptyMsg) {
+                existingEmptyMsg.remove();
+            }
         }
     }
 
