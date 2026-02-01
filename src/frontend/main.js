@@ -17,7 +17,7 @@ import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
 /**
  * Simple 3D modeling application with basic primitives and transform controls
  */
-class App {
+export class App {
     constructor() {
         // Initialize Service Container
         this.container = new ServiceContainer();
@@ -91,8 +91,8 @@ class App {
         this.maxHistorySize = 50;
         
         // Continue initialization
-        this.initRemaining();
         this.setupControls();
+        this.initRemaining();
         this.setupGUI();
         this.setupLighting();
         this.setupHelpers();
@@ -171,6 +171,7 @@ class App {
         
         // Create objects list
         this.objectsList = document.createElement('ul');
+        this.objectsList.setAttribute('role', 'listbox');
         this.objectsList.style.cssText = `
             list-style: none;
             margin: 0;
@@ -989,6 +990,17 @@ class App {
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
+            listItem.setAttribute('role', 'option');
+            listItem.setAttribute('tabindex', '0');
+            listItem.setAttribute('aria-selected', this.selectedObject === object);
+
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
+
             listItem.style.cssText = `
                 padding: 5px;
                 margin: 2px 0;
@@ -1024,6 +1036,8 @@ class App {
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+            visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1037,11 +1051,15 @@ class App {
                 e.stopPropagation();
                 object.visible = !object.visible;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+                visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+            deleteBtn.setAttribute('aria-label', 'Delete object');
+            deleteBtn.setAttribute('title', 'Delete object');
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;

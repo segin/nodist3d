@@ -26,7 +26,7 @@ jest.mock('three', () => {
             remove: jest.fn()
         })),
         PerspectiveCamera: jest.fn(() => ({
-            position: { set: jest.fn() },
+            position: { set: jest.fn(), clone: jest.fn() },
             lookAt: jest.fn(),
             aspect: 1,
             updateProjectionMatrix: jest.fn()
@@ -67,7 +67,8 @@ jest.mock('three', () => {
         })),
         Vector2: jest.fn(),
         PCFSoftShadowMap: 'PCFSoftShadowMap',
-        DoubleSide: 'DoubleSide'
+        DoubleSide: 'DoubleSide',
+        TOUCH: { ROTATE: 1, DOLLY_PAN: 2 }
     };
 });
 
@@ -111,7 +112,8 @@ jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
         enableDamping: true,
         dampingFactor: 0.05,
         enabled: true,
-        update: jest.fn()
+        update: jest.fn(),
+        target: { clone: jest.fn() }
     }))
 }));
 
@@ -124,6 +126,23 @@ jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
         detach: jest.fn(),
         dragging: false
     }))
+}));
+
+// Mock TeapotGeometry
+jest.mock('three/examples/jsm/geometries/TeapotGeometry.js', () => ({
+    TeapotGeometry: jest.fn()
+}));
+
+// Mock FontLoader
+jest.mock('three/examples/jsm/loaders/FontLoader.js', () => ({
+    FontLoader: jest.fn(() => ({
+        load: jest.fn()
+    }))
+}));
+
+// Mock TextGeometry
+jest.mock('three/examples/jsm/geometries/TextGeometry.js', () => ({
+    TextGeometry: jest.fn()
 }));
 
 describe('Basic App Functionality', () => {
@@ -150,7 +169,9 @@ describe('Basic App Functionality', () => {
                 innerHTML: '',
                 onclick: null,
                 addEventListener: jest.fn(),
-                removeEventListener: jest.fn()
+                removeEventListener: jest.fn(),
+                setAttribute: jest.fn(),
+                getAttribute: jest.fn()
             };
             
             // Add style.cssText property
