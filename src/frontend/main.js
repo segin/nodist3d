@@ -91,8 +91,8 @@ class App {
         this.maxHistorySize = 50;
         
         // Continue initialization
-        this.initRemaining();
         this.setupControls();
+        this.initRemaining();
         this.setupGUI();
         this.setupLighting();
         this.setupHelpers();
@@ -144,8 +144,8 @@ class App {
         this.sceneGraphPanel.id = 'scene-graph-panel';
         this.sceneGraphPanel.style.cssText = `
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 80px;
+            left: 10px;
             width: 250px;
             max-height: 400px;
             background: rgba(0, 0, 0, 0.8);
@@ -171,12 +171,14 @@ class App {
         
         // Create objects list
         this.objectsList = document.createElement('ul');
+        this.objectsList.setAttribute('role', 'listbox');
         this.objectsList.style.cssText = `
             list-style: none;
             margin: 0;
             padding: 0;
         `;
         
+        this.sceneGraphPanel.setAttribute('aria-label', 'Scene Graph');
         this.sceneGraphPanel.appendChild(title);
         this.sceneGraphPanel.appendChild(this.objectsList);
         document.body.appendChild(this.sceneGraphPanel);
@@ -974,7 +976,7 @@ class App {
         });
         
         // Remove all subfolders
-        const folders = [...this.propertiesFolder.__folders];
+        const folders = Object.values(this.propertiesFolder.__folders || {});
         folders.forEach(folder => {
             this.propertiesFolder.removeFolder(folder);
         });
@@ -989,6 +991,11 @@ class App {
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
+            listItem.className = 'scene-graph-item';
+            listItem.tabIndex = 0;
+            listItem.setAttribute('role', 'option');
+            listItem.setAttribute('aria-selected', this.selectedObject === object);
+
             listItem.style.cssText = `
                 padding: 5px;
                 margin: 2px 0;
@@ -1024,6 +1031,7 @@ class App {
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.setAttribute('aria-label', `Toggle visibility for ${object.name || `Object ${index + 1}`}`);
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1042,6 +1050,7 @@ class App {
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name || `Object ${index + 1}`}`);
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1060,6 +1069,14 @@ class App {
                 this.selectObject(object);
             };
             
+            // Keyboard selection
+            listItem.onkeydown = (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            };
+
             objectInfo.appendChild(objectName);
             objectInfo.appendChild(objectType);
             
