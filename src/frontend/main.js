@@ -17,7 +17,7 @@ import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
 /**
  * Simple 3D modeling application with basic primitives and transform controls
  */
-class App {
+export class App {
     constructor() {
         // Initialize Service Container
         this.container = new ServiceContainer();
@@ -974,7 +974,7 @@ class App {
         });
         
         // Remove all subfolders
-        const folders = [...this.propertiesFolder.__folders];
+        const folders = Object.values(this.propertiesFolder.__folders || {});
         folders.forEach(folder => {
             this.propertiesFolder.removeFolder(folder);
         });
@@ -983,117 +983,185 @@ class App {
     }
 
     updateSceneGraph() {
-        // Clear existing list
-        this.objectsList.innerHTML = '';
+        if (!this.sceneGraphItemMap) this.sceneGraphItemMap = new Map();
+
+        const visited = new Set();
         
-        // Add each object to the scene graph
+        // Add or update each object in the scene graph
         this.objects.forEach((object, index) => {
-            const listItem = document.createElement('li');
-            listItem.style.cssText = `
-                padding: 5px;
-                margin: 2px 0;
-                background: ${this.selectedObject === object ? '#444' : '#222'};
-                border-radius: 3px;
-                cursor: pointer;
-                border: 1px solid #555;
-            `;
+            visited.add(object.uuid);
             
-            // Object name and type
-            const objectInfo = document.createElement('div');
-            objectInfo.style.cssText = `
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            `;
+            let listItem = this.sceneGraphItemMap.get(object.uuid);
+            const isSelected = this.selectedObject === object;
+            const backgroundColor = isSelected ? '#444' : '#222';
             
-            const objectName = document.createElement('span');
-            objectName.textContent = object.name || `Object_${index + 1}`;
-            objectName.style.cssText = `
-                font-weight: bold;
-                color: #fff;
-            `;
-            
-            const objectType = document.createElement('span');
-            objectType.textContent = object.geometry.type.replace('Geometry', '');
-            objectType.style.cssText = `
-                font-size: 10px;
-                color: #aaa;
-                font-style: italic;
-            `;
-            
-            // Visibility toggle
-            const visibilityBtn = document.createElement('button');
-            visibilityBtn.textContent = object.visible ? '👁' : '🚫';
-            visibilityBtn.style.cssText = `
-                background: none;
-                border: none;
-                color: white;
-                cursor: pointer;
-                font-size: 12px;
-                padding: 2px 5px;
-                margin: 0 5px;
-            `;
-            visibilityBtn.onclick = (e) => {
-                e.stopPropagation();
-                object.visible = !object.visible;
-                visibilityBtn.textContent = object.visible ? '👁' : '🚫';
-            };
-            
-            // Delete button
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = '🗑';
-            deleteBtn.style.cssText = `
-                background: none;
-                border: none;
-                color: #ff4444;
-                cursor: pointer;
-                font-size: 12px;
-                padding: 2px 5px;
-            `;
-            deleteBtn.onclick = (e) => {
-                e.stopPropagation();
-                this.deleteObject(object);
-            };
-            
-            // Click to select
-            listItem.onclick = () => {
-                this.selectObject(object);
-            };
-            
-            objectInfo.appendChild(objectName);
-            objectInfo.appendChild(objectType);
-            
-            const buttonContainer = document.createElement('div');
-            buttonContainer.appendChild(visibilityBtn);
-            buttonContainer.appendChild(deleteBtn);
-            
-            objectInfo.appendChild(buttonContainer);
-            listItem.appendChild(objectInfo);
-            
-            // Add position info
-            const positionInfo = document.createElement('div');
-            positionInfo.style.cssText = `
-                font-size: 10px;
-                color: #999;
-                margin-top: 3px;
-            `;
-            positionInfo.textContent = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
-            listItem.appendChild(positionInfo);
-            
-            this.objectsList.appendChild(listItem);
+            if (!listItem) {
+                // Create new list item
+                listItem = document.createElement('li');
+                listItem.style.cssText = `
+                    padding: 5px;
+                    margin: 2px 0;
+                    background: ${backgroundColor};
+                    border-radius: 3px;
+                    cursor: pointer;
+                    border: 1px solid #555;
+                `;
+
+                // Object name and type container
+                const objectInfo = document.createElement('div');
+                objectInfo.style.cssText = `
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                `;
+
+                const objectName = document.createElement('span');
+                objectName.className = 'object-name';
+                objectName.style.cssText = `
+                    font-weight: bold;
+                    color: #fff;
+                `;
+
+                const objectType = document.createElement('span');
+                objectType.className = 'object-type';
+                objectType.style.cssText = `
+                    font-size: 10px;
+                    color: #aaa;
+                    font-style: italic;
+                `;
+
+                // Visibility toggle
+                const visibilityBtn = document.createElement('button');
+                visibilityBtn.className = 'visibility-btn';
+                visibilityBtn.style.cssText = `
+                    background: none;
+                    border: none;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 12px;
+                    padding: 2px 5px;
+                    margin: 0 5px;
+                `;
+
+                // Delete button
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '🗑';
+                deleteBtn.style.cssText = `
+                    background: none;
+                    border: none;
+                    color: #ff4444;
+                    cursor: pointer;
+                    font-size: 12px;
+                    padding: 2px 5px;
+                `;
+
+                // Position info
+                const positionInfo = document.createElement('div');
+                positionInfo.className = 'position-info';
+                positionInfo.style.cssText = `
+                    font-size: 10px;
+                    color: #999;
+                    margin-top: 3px;
+                `;
+
+                // Build structure
+                const buttonContainer = document.createElement('div');
+                buttonContainer.appendChild(visibilityBtn);
+                buttonContainer.appendChild(deleteBtn);
+
+                objectInfo.appendChild(objectName);
+                objectInfo.appendChild(objectType);
+                objectInfo.appendChild(buttonContainer);
+
+                listItem.appendChild(objectInfo);
+                listItem.appendChild(positionInfo);
+
+                // Attach Event Listeners
+                visibilityBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    object.visible = !object.visible;
+                    visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                };
+
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    this.deleteObject(object);
+                };
+
+                listItem.onclick = () => {
+                    this.selectObject(object);
+                };
+
+                this.sceneGraphItemMap.set(object.uuid, listItem);
+                this.objectsList.appendChild(listItem);
+            } else {
+                // Ensure correct order in DOM
+                this.objectsList.appendChild(listItem);
+            }
+
+            // Update Dynamic Properties
+            if (listItem.style.background !== (isSelected ? 'rgb(68, 68, 68)' : 'rgb(34, 34, 34)') &&
+                listItem.style.background !== backgroundColor) {
+                 listItem.style.background = backgroundColor;
+            }
+
+            const nameSpan = listItem.querySelector('.object-name');
+            const newName = object.name || `Object_${index + 1}`;
+            if (nameSpan.textContent !== newName) {
+                nameSpan.textContent = newName;
+            }
+
+            const typeSpan = listItem.querySelector('.object-type');
+            const newType = object.geometry.type.replace('Geometry', '');
+            if (typeSpan.textContent !== newType) {
+                typeSpan.textContent = newType;
+            }
+
+            const visBtn = listItem.querySelector('.visibility-btn');
+            const visText = object.visible ? '👁' : '🚫';
+            if (visBtn.textContent !== visText) {
+                visBtn.textContent = visText;
+            }
+
+            const posInfo = listItem.querySelector('.position-info');
+            const newPosText = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
+            if (posInfo.textContent !== newPosText) {
+                posInfo.textContent = newPosText;
+            }
         });
         
+        // Remove deleted objects
+        for (const [uuid, element] of this.sceneGraphItemMap) {
+            if (!visited.has(uuid)) {
+                if (element.parentNode === this.objectsList) {
+                    this.objectsList.removeChild(element);
+                }
+                this.sceneGraphItemMap.delete(uuid);
+            }
+        }
+
         // Add message if no objects
         if (this.objects.length === 0) {
-            const emptyMessage = document.createElement('li');
-            emptyMessage.textContent = 'No objects in scene';
-            emptyMessage.style.cssText = `
-                color: #666;
-                font-style: italic;
-                text-align: center;
-                padding: 20px;
-            `;
-            this.objectsList.appendChild(emptyMessage);
+            let emptyMessage = document.getElementById('scene-graph-empty-message');
+            if (!emptyMessage) {
+                emptyMessage = document.createElement('li');
+                emptyMessage.id = 'scene-graph-empty-message';
+                emptyMessage.textContent = 'No objects in scene';
+                emptyMessage.style.cssText = `
+                    color: #666;
+                    font-style: italic;
+                    text-align: center;
+                    padding: 20px;
+                `;
+                this.objectsList.appendChild(emptyMessage);
+            } else {
+                this.objectsList.appendChild(emptyMessage);
+            }
+        } else {
+            const emptyMessage = document.getElementById('scene-graph-empty-message');
+            if (emptyMessage && emptyMessage.parentNode === this.objectsList) {
+                this.objectsList.removeChild(emptyMessage);
+            }
         }
     }
 
