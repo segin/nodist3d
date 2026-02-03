@@ -7,7 +7,14 @@ self.onmessage = function(event) {
     if (type === 'serialize') {
         // Assuming 'data' is a THREE.Scene object or a serializable representation
         try {
-            const json = JSON.stringify(data);
+            const json = JSON.stringify(data, (key, value) => {
+                // Convert TypedArrays to standard Arrays for JSON compatibility
+                // This allows passing TypedArrays from the main thread (optimization)
+                if (ArrayBuffer.isView(value) && !(value instanceof DataView)) {
+                    return Array.from(value);
+                }
+                return value;
+            });
             self.postMessage({ type: 'serialize_complete', data: json });
         } catch (error) {
             self.postMessage({ type: 'error', message: 'Serialization failed', error: error.message });
