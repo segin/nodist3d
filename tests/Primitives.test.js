@@ -61,6 +61,11 @@ jest.mock('three', () => ({
         emissive: { setHex: jest.fn() },
         dispose: jest.fn()
     })),
+    MeshPhongMaterial: jest.fn(() => ({
+        color: { setHex: jest.fn() },
+        emissive: { setHex: jest.fn() },
+        dispose: jest.fn()
+    })),
     // Curve for tube geometry
     CatmullRomCurve3: jest.fn(() => ({})),
     Vector3: jest.fn((x, y, z) => ({ x: x || 0, y: y || 0, z: z || 0 })),
@@ -159,7 +164,7 @@ describe('3D Primitives Functionality', () => {
             addBox() {
                 const THREE = require('three');
                 const geometry = new THREE.BoxGeometry(1, 1, 1);
-                const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+                const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
@@ -175,7 +180,7 @@ describe('3D Primitives Functionality', () => {
             addSphere() {
                 const THREE = require('three');
                 const geometry = new THREE.SphereGeometry(0.5, 32, 32);
-                const material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+                const material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
@@ -191,7 +196,7 @@ describe('3D Primitives Functionality', () => {
             addCylinder() {
                 const THREE = require('three');
                 const geometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 32);
-                const material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+                const material = new THREE.MeshPhongMaterial({ color: 0x0000ff });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
@@ -207,7 +212,7 @@ describe('3D Primitives Functionality', () => {
             addCone() {
                 const THREE = require('three');
                 const geometry = new THREE.ConeGeometry(0.5, 1, 32);
-                const material = new THREE.MeshLambertMaterial({ color: 0xffff00 });
+                const material = new THREE.MeshPhongMaterial({ color: 0xffff00 });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
@@ -223,7 +228,7 @@ describe('3D Primitives Functionality', () => {
             addTorus() {
                 const THREE = require('three');
                 const geometry = new THREE.TorusGeometry(0.4, 0.2, 16, 100);
-                const material = new THREE.MeshLambertMaterial({ color: 0xff00ff });
+                const material = new THREE.MeshPhongMaterial({ color: 0xff00ff });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
@@ -239,7 +244,7 @@ describe('3D Primitives Functionality', () => {
             addTorusKnot() {
                 const THREE = require('three');
                 const geometry = new THREE.TorusKnotGeometry(0.4, 0.15, 100, 16);
-                const material = new THREE.MeshLambertMaterial({ color: 0x888888 });
+                const material = new THREE.MeshPhongMaterial({ color: 0x888888 });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
@@ -255,7 +260,7 @@ describe('3D Primitives Functionality', () => {
             addTetrahedron() {
                 const THREE = require('three');
                 const geometry = new THREE.TetrahedronGeometry(0.6);
-                const material = new THREE.MeshLambertMaterial({ color: 0x00aa00 });
+                const material = new THREE.MeshPhongMaterial({ color: 0x00aa00 });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
@@ -271,7 +276,7 @@ describe('3D Primitives Functionality', () => {
             addIcosahedron() {
                 const THREE = require('three');
                 const geometry = new THREE.IcosahedronGeometry(0.6);
-                const material = new THREE.MeshLambertMaterial({ color: 0xaa0000 });
+                const material = new THREE.MeshPhongMaterial({ color: 0xaa0000 });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
@@ -287,7 +292,7 @@ describe('3D Primitives Functionality', () => {
             addDodecahedron() {
                 const THREE = require('three');
                 const geometry = new THREE.DodecahedronGeometry(0.6);
-                const material = new THREE.MeshLambertMaterial({ color: 0x0000aa });
+                const material = new THREE.MeshPhongMaterial({ color: 0x0000aa });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
@@ -303,7 +308,7 @@ describe('3D Primitives Functionality', () => {
             addOctahedron() {
                 const THREE = require('three');
                 const geometry = new THREE.OctahedronGeometry(0.6);
-                const material = new THREE.MeshLambertMaterial({ color: 0xaa00aa });
+                const material = new THREE.MeshPhongMaterial({ color: 0xaa00aa });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
@@ -319,7 +324,7 @@ describe('3D Primitives Functionality', () => {
             addPlane() {
                 const THREE = require('three');
                 const geometry = new THREE.PlaneGeometry(2, 2);
-                const material = new THREE.MeshLambertMaterial({ color: 0x00ffff, side: THREE.DoubleSide });
+                const material = new THREE.MeshPhongMaterial({ color: 0x00ffff, side: THREE.DoubleSide });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
@@ -341,7 +346,7 @@ describe('3D Primitives Functionality', () => {
                     new THREE.Vector3(0, -0.5, 0)
                 ]);
                 const geometry = new THREE.TubeGeometry(curve, 20, 0.1, 8, false);
-                const material = new THREE.MeshLambertMaterial({ color: 0xaaaa00 });
+                const material = new THREE.MeshPhongMaterial({ color: 0xaaaa00 });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
@@ -517,7 +522,7 @@ describe('3D Primitives Functionality', () => {
             app.addPlane();
             
             expect(THREE.PlaneGeometry).toHaveBeenCalledWith(2, 2);
-            expect(THREE.MeshLambertMaterial).toHaveBeenCalledWith({ color: 0x00ffff, side: THREE.DoubleSide });
+            expect(THREE.MeshPhongMaterial).toHaveBeenCalledWith({ color: 0x00ffff, side: THREE.DoubleSide });
         });
 
         it('should create Tube with curve and correct parameters', () => {
@@ -559,18 +564,19 @@ describe('3D Primitives Functionality', () => {
             const THREE = require('three');
             
             app.addBox();
-            expect(THREE.MeshLambertMaterial).toHaveBeenCalledWith({ color: 0x00ff00 });
+            expect(THREE.MeshPhongMaterial).toHaveBeenCalledWith({ color: 0x00ff00 });
             
             app.addSphere();
-            expect(THREE.MeshLambertMaterial).toHaveBeenCalledWith({ color: 0xff0000 });
+            expect(THREE.MeshPhongMaterial).toHaveBeenCalledWith({ color: 0xff0000 });
             
             app.addCylinder();
-            expect(THREE.MeshLambertMaterial).toHaveBeenCalledWith({ color: 0x0000ff });
+            expect(THREE.MeshPhongMaterial).toHaveBeenCalledWith({ color: 0x0000ff });
         });
 
         it('should create materials for all primitive types', () => {
             const THREE = require('three');
-            const materialCalls = THREE.MeshLambertMaterial.mock.calls.length;
+            const lambertCalls = THREE.MeshLambertMaterial.mock.calls.length;
+            const phongCalls = THREE.MeshPhongMaterial.mock.calls.length;
             
             // Add all primitives
             app.addBox();
@@ -587,8 +593,11 @@ describe('3D Primitives Functionality', () => {
             app.addTube();
             app.addTeapot();
             
-            // Should have created materials for all primitives (teapot creates multiple materials)
-            expect(THREE.MeshLambertMaterial.mock.calls.length).toBeGreaterThan(materialCalls + 12);
+            // Should have created materials for all primitives
+            // Teapot (5 components) uses MeshLambertMaterial
+            expect(THREE.MeshLambertMaterial.mock.calls.length).toBeGreaterThan(lambertCalls);
+            // All other 12 primitives use MeshPhongMaterial
+            expect(THREE.MeshPhongMaterial.mock.calls.length).toBeGreaterThanOrEqual(phongCalls + 12);
         });
     });
 

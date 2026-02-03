@@ -231,6 +231,8 @@ const THREE = {
     WebGLRenderer: jest.fn(() => ({
         domElement: dom.window.document.createElement('canvas'),
         setSize: jest.fn(),
+        setPixelRatio: jest.fn(),
+        shadowMap: { enabled: false, type: null },
         render: jest.fn(),
         dispose: jest.fn(),
     })),

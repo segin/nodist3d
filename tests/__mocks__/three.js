@@ -4,6 +4,8 @@ module.exports = {
   ...THREE,
   WebGLRenderer: jest.fn().mockReturnValue({
     setSize: jest.fn(),
+    setPixelRatio: jest.fn(),
+    shadowMap: { enabled: false, type: null },
     render: jest.fn(),
     domElement: document.createElement('div'),
   }),

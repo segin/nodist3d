@@ -9,6 +9,6 @@ module.exports = {
     '^.+\.js$': 'babel-jest',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!three/examples/jsm/)'
+    'node_modules/(?!.*three)'
   ],
 };

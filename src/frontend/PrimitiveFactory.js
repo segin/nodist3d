@@ -85,7 +85,7 @@ export class PrimitiveFactory {
                 mesh = this._createMesh(geometry, color);
                 break;
             case 'Tetrahedron':
-                geometry = new THREE.IcosahedronGeometry(options.radius || 0.7, 0);
+                geometry = new THREE.TetrahedronGeometry(options.radius || 0.7, options.detail || 0);
                 color = options.color || 0x00ff00;
                 mesh = this._createMesh(geometry, color);
                 break;
@@ -110,7 +110,7 @@ export class PrimitiveFactory {
                 mesh = this._createMesh(geometry, color, THREE.DoubleSide);
                 break;
             case 'Tube':
-                const path = new THREE.CatmullRomCurve3([
+                const path = options.path || new THREE.CatmullRomCurve3([
                     new THREE.Vector3(-1, -1, 0),
                     new THREE.Vector3(-0.5, 1, 0),
                     new THREE.Vector3(0.5, -1, 0),
