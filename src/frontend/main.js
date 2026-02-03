@@ -91,8 +91,8 @@ class App {
         this.maxHistorySize = 50;
         
         // Continue initialization
-        this.initRemaining();
         this.setupControls();
+        this.initRemaining();
         this.setupGUI();
         this.setupLighting();
         this.setupHelpers();
@@ -144,8 +144,8 @@ class App {
         this.sceneGraphPanel.id = 'scene-graph-panel';
         this.sceneGraphPanel.style.cssText = `
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 70px;
+            left: 10px;
             width: 250px;
             max-height: 400px;
             background: rgba(0, 0, 0, 0.8);
@@ -989,6 +989,9 @@ class App {
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
+            listItem.setAttribute('aria-label', `Select ${object.name || `Object ${index + 1}`}`);
+            listItem.setAttribute('role', 'button');
+            listItem.tabIndex = 0;
             listItem.style.cssText = `
                 padding: 5px;
                 margin: 2px 0;
@@ -1023,32 +1026,42 @@ class App {
             
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
+            const visibilityState = object.visible ? 'Hide' : 'Show';
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.title = `${visibilityState} object`;
+            visibilityBtn.setAttribute('aria-label', `${visibilityState} ${object.name || 'object'}`);
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
                 color: white;
                 cursor: pointer;
                 font-size: 12px;
-                padding: 2px 5px;
+                padding: 5px 8px;
                 margin: 0 5px;
+                min-width: 24px;
             `;
             visibilityBtn.onclick = (e) => {
                 e.stopPropagation();
                 object.visible = !object.visible;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                const newState = object.visible ? 'Hide' : 'Show';
+                visibilityBtn.title = `${newState} object`;
+                visibilityBtn.setAttribute('aria-label', `${newState} ${object.name || 'object'}`);
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+            deleteBtn.title = 'Delete object';
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name || 'object'}`);
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
                 color: #ff4444;
                 cursor: pointer;
                 font-size: 12px;
-                padding: 2px 5px;
+                padding: 5px 8px;
+                min-width: 24px;
             `;
             deleteBtn.onclick = (e) => {
                 e.stopPropagation();

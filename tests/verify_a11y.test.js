@@ -1,29 +1,37 @@
 /**
- * Tests for the main App class
+ * Verification test for Accessibility
  */
 import { JSDOM } from 'jsdom';
 
 // Mock THREE.js
 jest.mock('three', () => {
     const mockElement = { createElement: jest.fn(() => ({ tagName: 'CANVAS' })) };
-    
+
     const mockMesh = {
-        position: { x: 0, y: 0, z: 0, copy: jest.fn() },
-        rotation: { x: 0, y: 0, z: 0, copy: jest.fn() },
-        scale: { x: 1, y: 1, z: 1, copy: jest.fn() },
+        position: { x: 0, y: 0, z: 0, copy: jest.fn(), clone: jest.fn(() => ({ copy: jest.fn() })) },
+        rotation: { x: 0, y: 0, z: 0, copy: jest.fn(), clone: jest.fn(() => ({ copy: jest.fn() })) },
+        scale: { x: 1, y: 1, z: 1, copy: jest.fn(), clone: jest.fn(() => ({ copy: jest.fn() })) },
         material: {
-            emissive: { setHex: jest.fn() },
-            clone: jest.fn(() => ({ emissive: { setHex: jest.fn() } }))
+            emissive: { setHex: jest.fn(), clone: jest.fn() },
+            color: { clone: jest.fn(() => ({ getHex: jest.fn() })), getHex: jest.fn() },
+            clone: jest.fn(() => ({ emissive: { setHex: jest.fn(), clone: jest.fn() }, color: { clone: jest.fn(), getHex: jest.fn() } }))
         },
-        geometry: { clone: jest.fn() },
+        geometry: {
+            type: 'BoxGeometry',
+            clone: jest.fn(),
+            dispose: jest.fn()
+        },
         castShadow: false,
-        receiveShadow: false
+        receiveShadow: false,
+        visible: true,
+        userData: {}
     };
 
     return {
         Scene: jest.fn(() => ({
             add: jest.fn(),
-            remove: jest.fn()
+            remove: jest.fn(),
+            traverse: jest.fn()
         })),
         PerspectiveCamera: jest.fn(() => ({
             position: {
@@ -39,22 +47,20 @@ jest.mock('three', () => {
             setPixelRatio: jest.fn(),
             render: jest.fn(),
             shadowMap: { enabled: false, type: null },
-            domElement: { 
-                tagName: 'CANVAS',
-                addEventListener: jest.fn(),
-                removeEventListener: jest.fn()
-            }
+            get domElement() { return global.document.createElement('canvas'); }
         })),
         Mesh: jest.fn(() => mockMesh),
-        BoxGeometry: jest.fn(),
-        SphereGeometry: jest.fn(),
-        CylinderGeometry: jest.fn(),
-        ConeGeometry: jest.fn(),
-        TorusGeometry: jest.fn(),
-        PlaneGeometry: jest.fn(),
+        BoxGeometry: jest.fn(() => ({ type: 'BoxGeometry', parameters: {} })),
+        SphereGeometry: jest.fn(() => ({ type: 'SphereGeometry', parameters: {} })),
+        CylinderGeometry: jest.fn(() => ({ type: 'CylinderGeometry', parameters: {} })),
+        ConeGeometry: jest.fn(() => ({ type: 'ConeGeometry', parameters: {} })),
+        TorusGeometry: jest.fn(() => ({ type: 'TorusGeometry', parameters: {} })),
+        PlaneGeometry: jest.fn(() => ({ type: 'PlaneGeometry', parameters: {} })),
         MeshLambertMaterial: jest.fn(() => ({
-            emissive: { setHex: jest.fn() },
-            clone: jest.fn(() => ({ emissive: { setHex: jest.fn() } }))
+            emissive: { setHex: jest.fn(), copy: jest.fn() },
+            clone: jest.fn(() => ({ emissive: { setHex: jest.fn() } })),
+            dispose: jest.fn(),
+            color: { getHex: jest.fn(), setHex: jest.fn(), clone: jest.fn() }
         })),
         AmbientLight: jest.fn(),
         DirectionalLight: jest.fn(() => ({
@@ -69,20 +75,28 @@ jest.mock('three', () => {
             intersectObjects: jest.fn(() => [])
         })),
         Vector2: jest.fn(),
+        Vector3: jest.fn(), // Needed for clone
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide',
         TOUCH: { ROTATE: 0, DOLLY_PAN: 1 }
     };
 });
 
+let appInstance;
+
 // Mock dat.gui
 jest.mock('dat.gui', () => ({
     GUI: jest.fn(() => ({
         addFolder: jest.fn(() => ({
-            add: jest.fn(() => ({
-                name: jest.fn(() => ({ onChange: jest.fn() })),
-                onChange: jest.fn()
-            })),
+            add: jest.fn((target, prop) => {
+                if (target && target.addBox) {
+                    appInstance = target;
+                }
+                return {
+                    name: jest.fn(() => ({ onChange: jest.fn() })),
+                    onChange: jest.fn()
+                };
+            }),
             addFolder: jest.fn(() => ({
                 add: jest.fn(() => ({
                     name: jest.fn(() => ({ onChange: jest.fn() })),
@@ -151,45 +165,24 @@ jest.mock('three/examples/jsm/geometries/TextGeometry.js', () => ({
     TextGeometry: jest.fn()
 }), { virtual: true });
 
-describe('Basic App Functionality', () => {
+describe('Accessibility Verification', () => {
     let dom;
 
     beforeEach(() => {
-        // Setup DOM
+        // Setup JSDOM with real DOM behavior
         dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
         global.document = dom.window.document;
         global.window = dom.window;
+        global.navigator = dom.window.navigator;
         global.requestAnimationFrame = jest.fn();
-        
-        // Mock document.body.appendChild
-        jest.spyOn(document.body, 'appendChild').mockImplementation();
+        global.HTMLElement = dom.window.HTMLElement; // Important for instanceof checks
+
+        // We do NOT mock document.createElement or appendChild
+        // because we want to inspect the real DOM nodes created by main.js
+
         jest.spyOn(window, 'addEventListener').mockImplementation();
-        
-        // Mock document.createElement to return proper elements
-        jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
-            const element = {
-                tagName: tagName.toUpperCase(),
-                style: {},
-                appendChild: jest.fn(),
-                textContent: '',
-                innerHTML: '',
-                onclick: null,
-                addEventListener: jest.fn(),
-                removeEventListener: jest.fn(),
-                setAttribute: jest.fn(),
-                title: ''
-            };
-            
-            // Add style.cssText property
-            Object.defineProperty(element.style, 'cssText', {
-                set: jest.fn(),
-                get: jest.fn()
-            });
-            
-            return element;
-        });
-        
-        // Clear mocks
+
+        appInstance = null;
         jest.clearAllMocks();
     });
 
@@ -199,7 +192,7 @@ describe('Basic App Functionality', () => {
         }
     });
 
-    it('should create and initialize the App', () => {
+    it('should create scene graph buttons with accessibility attributes', () => {
         // Simulate DOM loaded
         const domContentLoadedCallbacks = [];
         document.addEventListener = jest.fn((event, callback) => {
@@ -215,45 +208,40 @@ describe('Basic App Functionality', () => {
         // Execute the callback
         domContentLoadedCallbacks.forEach(callback => callback());
 
-        // Verify basic initialization happened
-        expect(document.addEventListener).toHaveBeenCalledWith('DOMContentLoaded', expect.any(Function));
-    });
+        expect(appInstance).toBeDefined();
 
-    it('should be able to add basic primitives', () => {
-        const THREE = require('three');
-        
-        // Create a simple App-like class for testing
-        class TestApp {
-            constructor() {
-                this.scene = new THREE.Scene();
-                this.objects = [];
-                this.selectedObject = null;
-                this.transformControls = { attach: jest.fn(), setMode: jest.fn() };
-            }
+        // Add a box to populate scene graph
+        appInstance.addBox();
 
-            addBox() {
-                const geometry = new THREE.BoxGeometry(1, 1, 1);
-                const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
-                const mesh = new THREE.Mesh(geometry, material);
-                this.scene.add(mesh);
-                this.objects.push(mesh);
-                this.selectObject(mesh);
-            }
+        // Find the scene graph panel
+        const panel = document.getElementById('scene-graph-panel');
+        expect(panel).not.toBeNull();
 
-            selectObject(object) {
-                this.selectedObject = object;
-                this.transformControls.attach(object);
-            }
-        }
+        // Find the list items
+        const listItems = panel.querySelectorAll('li');
+        // There should be 1 item (the box)
+        // Note: The "No objects in scene" item should be gone or replaced.
+        // wait, addBox pushes to this.objects and calls updateSceneGraph.
 
-        const app = new TestApp();
-        
-        // Test adding a box
-        app.addBox();
-        
-        expect(app.objects.length).toBe(1);
-        expect(app.selectedObject).toBe(app.objects[0]);
-        expect(app.scene.add).toHaveBeenCalledWith(app.objects[0]);
-        expect(app.transformControls.attach).toHaveBeenCalledWith(app.objects[0]);
+        // In our mock, THREE.Mesh returns a mock object.
+        // The App logic pushes this mock object to this.objects.
+
+        expect(listItems.length).toBeGreaterThan(0);
+
+        const firstItem = listItems[0];
+
+        // Check for buttons inside
+        const buttons = firstItem.querySelectorAll('button');
+        expect(buttons.length).toBe(2); // Visibility and Delete
+
+        const visibilityBtn = buttons[0];
+        const deleteBtn = buttons[1];
+
+        // Assert Accessibility Attributes (Expect failure initially)
+        expect(visibilityBtn.getAttribute('aria-label')).toBeTruthy();
+        expect(visibilityBtn.getAttribute('title')).toBeTruthy();
+
+        expect(deleteBtn.getAttribute('aria-label')).toBeTruthy();
+        expect(deleteBtn.getAttribute('title')).toBeTruthy();
     });
 });
