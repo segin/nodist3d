@@ -17,7 +17,7 @@ import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
 /**
  * Simple 3D modeling application with basic primitives and transform controls
  */
-class App {
+export class App {
     constructor() {
         // Initialize Service Container
         this.container = new ServiceContainer();
@@ -91,8 +91,8 @@ class App {
         this.maxHistorySize = 50;
         
         // Continue initialization
-        this.initRemaining();
         this.setupControls();
+        this.initRemaining();
         this.setupGUI();
         this.setupLighting();
         this.setupHelpers();
@@ -144,8 +144,8 @@ class App {
         this.sceneGraphPanel.id = 'scene-graph-panel';
         this.sceneGraphPanel.style.cssText = `
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 70px;
+            left: 10px;
             width: 250px;
             max-height: 400px;
             background: rgba(0, 0, 0, 0.8);
@@ -974,7 +974,8 @@ class App {
         });
         
         // Remove all subfolders
-        const folders = [...this.propertiesFolder.__folders];
+        // dat.gui stores folders as an object map, so convert to array
+        const folders = Object.values(this.propertiesFolder.__folders);
         folders.forEach(folder => {
             this.propertiesFolder.removeFolder(folder);
         });
@@ -997,6 +998,9 @@ class App {
                 cursor: pointer;
                 border: 1px solid #555;
             `;
+            listItem.setAttribute('tabindex', '0');
+            listItem.setAttribute('role', 'button');
+            listItem.setAttribute('aria-label', `Select ${object.name || `Object_${index + 1}`}`);
             
             // Object name and type
             const objectInfo = document.createElement('div');
@@ -1024,6 +1028,8 @@ class App {
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.setAttribute('aria-label', `Toggle visibility for ${object.name || `Object_${index + 1}`}`);
+            visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1037,11 +1043,14 @@ class App {
                 e.stopPropagation();
                 object.visible = !object.visible;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name || `Object_${index + 1}`}`);
+            deleteBtn.setAttribute('title', 'Delete object');
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1059,6 +1068,14 @@ class App {
             listItem.onclick = () => {
                 this.selectObject(object);
             };
+
+            // Keyboard support for selection
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
             
             objectInfo.appendChild(objectName);
             objectInfo.appendChild(objectType);
