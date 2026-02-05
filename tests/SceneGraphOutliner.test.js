@@ -84,6 +84,9 @@ describe('Scene Graph/Outliner Functionality', () => {
                 textContent: '',
                 innerHTML: '',
                 onclick: null,
+                attributes: {},
+                setAttribute: jest.fn((name, value) => { element.attributes[name] = value; }),
+                getAttribute: jest.fn((name) => element.attributes[name]),
                 addEventListener: jest.fn(),
                 removeEventListener: jest.fn()
             };
@@ -122,6 +125,9 @@ describe('Scene Graph/Outliner Functionality', () => {
                 
                 this.objects.forEach((object, index) => {
                     const listItem = document.createElement('li');
+                    listItem.setAttribute('role', 'button');
+                    listItem.setAttribute('tabindex', '0');
+
                     const objectInfo = document.createElement('div');
                     const objectName = document.createElement('span');
                     const objectType = document.createElement('span');
@@ -131,15 +137,25 @@ describe('Scene Graph/Outliner Functionality', () => {
                     
                     objectName.textContent = object.name || `Object_${index + 1}`;
                     objectType.textContent = object.geometry.type.replace('Geometry', '');
+
                     visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                    visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+                    visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
+
                     deleteBtn.textContent = '🗑';
+                    deleteBtn.setAttribute('aria-label', 'Delete object');
+                    deleteBtn.setAttribute('title', 'Delete object');
+
                     positionInfo.textContent = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
                     
                     // Mock event handlers
                     visibilityBtn.onclick = (e) => {
                         e.stopPropagation();
                         object.visible = !object.visible;
+                        const label = object.visible ? 'Hide object' : 'Show object';
                         visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                        visibilityBtn.setAttribute('aria-label', label);
+                        visibilityBtn.setAttribute('title', label);
                     };
                     
                     deleteBtn.onclick = (e) => {
@@ -149,6 +165,13 @@ describe('Scene Graph/Outliner Functionality', () => {
                     
                     listItem.onclick = () => {
                         this.selectObject(object);
+                    };
+
+                    listItem.onkeydown = (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            this.selectObject(object);
+                        }
                     };
                     
                     const buttonContainer = document.createElement('div');
@@ -374,6 +397,82 @@ describe('Scene Graph/Outliner Functionality', () => {
             
             const displayName = obj.name || `Object_${app.objects.indexOf(obj) + 1}`;
             expect(displayName).toBe('Object_1');
+        });
+    });
+
+    describe('Accessibility', () => {
+        it('should have accessible list items with role and tabindex', () => {
+            app.addTestObject('A11yTest');
+
+            const appendCalls = app.objectsList.appendChild.mock.calls;
+            const listItem = appendCalls[appendCalls.length - 1][0];
+
+            expect(listItem.getAttribute('role')).toBe('button');
+            expect(listItem.getAttribute('tabindex')).toBe('0');
+        });
+
+        it('should support keyboard selection (Enter/Space)', () => {
+            const obj = app.addTestObject('KeyboardTest');
+            const selectSpy = jest.spyOn(app, 'selectObject');
+
+            const appendCalls = app.objectsList.appendChild.mock.calls;
+            const listItem = appendCalls[appendCalls.length - 1][0];
+
+            // Simulate Enter key
+            listItem.onkeydown({ key: 'Enter', preventDefault: jest.fn() });
+            expect(selectSpy).toHaveBeenCalledWith(obj);
+
+            selectSpy.mockClear();
+
+            // Simulate Space key
+            listItem.onkeydown({ key: ' ', preventDefault: jest.fn() });
+            expect(selectSpy).toHaveBeenCalledWith(obj);
+        });
+
+        it('should have accessible buttons with aria-labels', () => {
+            app.addTestObject('ButtonA11yTest');
+
+            // Trace the structure: listItem -> objectInfo -> buttonContainer -> buttons
+            const appendCalls = app.objectsList.appendChild.mock.calls;
+            const listItem = appendCalls[appendCalls.length - 1][0];
+
+            // listItem.appendChild(objectInfo)
+            const objectInfo = listItem.appendChild.mock.calls[0][0];
+
+            // objectInfo.appendChild(buttonContainer) (last call)
+            const infoAppendCalls = objectInfo.appendChild.mock.calls;
+            const buttonContainer = infoAppendCalls[infoAppendCalls.length - 1][0];
+
+            // buttonContainer.appendChild(visibilityBtn), buttonContainer.appendChild(deleteBtn)
+            const btnCalls = buttonContainer.appendChild.mock.calls;
+            const visibilityBtn = btnCalls[0][0];
+            const deleteBtn = btnCalls[1][0];
+
+            expect(visibilityBtn.getAttribute('aria-label')).toBe('Hide object');
+            expect(deleteBtn.getAttribute('aria-label')).toBe('Delete object');
+        });
+
+        it('should update visibility button aria-label on toggle', () => {
+             const obj = app.addTestObject('ToggleTest');
+
+             // Get visibility button
+             const appendCalls = app.objectsList.appendChild.mock.calls;
+             const listItem = appendCalls[appendCalls.length - 1][0];
+             const objectInfo = listItem.appendChild.mock.calls[0][0];
+             const infoAppendCalls = objectInfo.appendChild.mock.calls;
+             const buttonContainer = infoAppendCalls[infoAppendCalls.length - 1][0];
+             const visibilityBtn = buttonContainer.appendChild.mock.calls[0][0];
+
+             // Initial state
+             expect(visibilityBtn.getAttribute('aria-label')).toBe('Hide object');
+
+             // Toggle
+             visibilityBtn.onclick({ stopPropagation: jest.fn() });
+             expect(visibilityBtn.getAttribute('aria-label')).toBe('Show object');
+
+             // Toggle back
+             visibilityBtn.onclick({ stopPropagation: jest.fn() });
+             expect(visibilityBtn.getAttribute('aria-label')).toBe('Hide object');
         });
     });
 });

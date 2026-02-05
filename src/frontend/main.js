@@ -989,6 +989,8 @@ class App {
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
+            listItem.setAttribute('role', 'button');
+            listItem.setAttribute('tabindex', '0');
             listItem.style.cssText = `
                 padding: 5px;
                 margin: 2px 0;
@@ -1024,6 +1026,8 @@ class App {
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+            visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1036,12 +1040,17 @@ class App {
             visibilityBtn.onclick = (e) => {
                 e.stopPropagation();
                 object.visible = !object.visible;
+                const label = object.visible ? 'Hide object' : 'Show object';
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                visibilityBtn.setAttribute('aria-label', label);
+                visibilityBtn.setAttribute('title', label);
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+            deleteBtn.setAttribute('aria-label', 'Delete object');
+            deleteBtn.setAttribute('title', 'Delete object');
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1058,6 +1067,14 @@ class App {
             // Click to select
             listItem.onclick = () => {
                 this.selectObject(object);
+            };
+
+            // Keyboard navigation
+            listItem.onkeydown = (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
             };
             
             objectInfo.appendChild(objectName);
