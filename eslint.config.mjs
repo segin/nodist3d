@@ -1,4 +1,15 @@
 <<<<<<< HEAD
+import globals from "globals";
+import pluginJs from "@eslint/js";
+import pluginPromise from "eslint-plugin-promise";
+import pluginUnicorn from "eslint-plugin-unicorn";
+import eslintConfigPrettier from "eslint-config-prettier";
+
+export default [
+  {
+    files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
+=======
+<<<<<<< HEAD
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import promise from 'eslint-plugin-promise';
@@ -50,10 +61,41 @@ import prettier from 'eslint-config-prettier';
 export default [
 >>>>>>> master
   {
+>>>>>>> master
     languageOptions: {
       globals: {
         ...globals.browser,
         ...globals.node,
+<<<<<<< HEAD
+        ...globals.es2021
+      },
+      ecmaVersion: 2022,
+      sourceType: "module"
+    },
+    plugins: {
+      promise: pluginPromise,
+      unicorn: pluginUnicorn,
+    },
+    rules: {
+      "eqeqeq": "error",
+      "no-var": "error",
+      "prefer-const": "error",
+      "no-console": "warn",
+      "promise/always-return": "error",
+    }
+  },
+  {
+    files: ["tests/**/*.js", "**/*.test.js", "**/*.spec.js"],
+    languageOptions: {
+      globals: {
+        ...globals.jest
+      }
+    }
+  },
+  pluginJs.configs.recommended,
+  pluginPromise.configs["flat/recommended"],
+  eslintConfigPrettier,
+=======
         ...globals.jest,
 <<<<<<< HEAD
 =======
@@ -154,6 +196,7 @@ export default [
   {
     ignores: ['node_modules/', 'dist/', 'coverage/', 'reference/'],
   },
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 ];

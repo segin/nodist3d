@@ -5,16 +5,23 @@
   "main": "src/backend/server.js",
   "scripts": {
     "start": "node src/backend/server.js",
+<<<<<<< HEAD
+    "lint": "eslint .",
+    "test": "jest --config jest.config.cjs",
+=======
     "test": "jest --config jest.config.cjs",
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
 >>>>>>> master
     "lint": "eslint .",
+>>>>>>> master
     "prepare": "husky"
   },
   "lint-staged": {
     "*.js": "eslint --fix"
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 =======
@@ -27,6 +34,7 @@
 =======
     "lint": "eslint .",
     "format": "prettier --write ."
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -55,10 +63,20 @@
   "devDependencies": {
     "@babel/preset-env": "^7.27.2",
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
     "@eslint/js": "^9.39.2",
     "babel-jest": "^30.0.2",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
+<<<<<<< HEAD
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-unicorn": "^62.0.0",
+    "globals": "^17.3.0",
+    "husky": "^9.1.7",
+=======
 =======
 <<<<<<< HEAD
     "@types/dat.gui": "^0.7.13",
@@ -97,6 +115,7 @@
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
     "jest": "^29.7.0",
     "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^30.2.0",
@@ -105,17 +124,20 @@
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
-    "supertest": "^7.0.0",
-    "typescript": "^5.9.3"
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 =======
 <<<<<<< HEAD
     "supertest": "^7.0.0",
     "typescript": "^5.9.3"
 =======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    "supertest": "^7.0.0",
+    "typescript": "^5.9.3"
+=======
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

@@ -72,6 +72,11 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
 *   **1.2.1. Linting and Formatting Setup**
     *   **Action Items**:
 <<<<<<< HEAD
+        *   [x] **Install Tools**: `npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn eslint-plugin-import`.
+        *   [x] **Configure ESLint (`.eslintrc.json`)**:
+            *   [x] `env`: `{ browser: true, node: true, es2022: true }`.
+=======
+<<<<<<< HEAD
         *   [x] **Install Tools**: `pnpm add -D eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn`.
         *   [x] **Configure ESLint (`eslint.config.mjs`)**:
             *   [x] `env`: `{ browser: true, node: true, es2022: true }`.
@@ -91,10 +96,14 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
             *   [x] `env`: `{ browser: true, node: true, es2022: true }`.
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             *   [x] `rules`: Enforce `eqeqeq`, `no-var`, `prefer-const`, `no-console` (warn), `promise/always-return`.
         *   [x] **Configure Prettier (`.prettierrc`)**:
             *   [x] `{ "semi": true, "singleQuote": true, "tabWidth": 2, "printWidth": 100 }`.
         *   [x] **Setup Husky**:
+<<<<<<< HEAD
+            *   [x] `npx husky install`.
+=======
 <<<<<<< HEAD
             *   [x] `pnpm exec husky init`.
 =======
@@ -104,14 +113,19 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
             *   [x] `npx husky install`.
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             *   [x] Add `pre-commit` hook: `npx lint-staged`.
             *   [x] Configure `lint-staged` in package.json to run `eslint --fix` on `*.js` files.
     *   **Verification & Testing**:
         *   [x] Deliberately introduce a lint error (e.g., `var x = 1;`). Verify commit fails.
 <<<<<<< HEAD
+        *   [x] Run `npm run lint`. Verify it catches issues.
+=======
+<<<<<<< HEAD
         *   [x] Run `pnpm lint`. Verify it catches issues.
 =======
         *   [x] Run `npm run lint`. Verify it catches issues.
+>>>>>>> master
 >>>>>>> master
 
 *   **1.2.2. Documentation & Type Safety**
