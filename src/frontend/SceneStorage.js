@@ -1,20 +1,34 @@
+// @ts-check
 // JSZip will be loaded globally from CDN
 import * as THREE from 'three';
 import log from './logger.js';
 
 export class SceneStorage {
+    /**
+     * @param {THREE.Scene} scene
+     * @param {any} eventBus
+     */
     constructor(scene, eventBus) {
         this.eventBus = eventBus;
         this.scene = scene;
         this.worker = new Worker('./worker.js');
+<<<<<<< HEAD
         this.worker.onmessage = this.handleWorkerMessage.bind(this);
+        /** @type {((value: any) => void) | null} */
+=======
+        this.boundHandleWorkerMessage = this.handleWorkerMessage.bind(this);
+        this.worker.onmessage = this.boundHandleWorkerMessage;
+>>>>>>> master
         this.loadPromiseResolve = null;
+        this.savePromiseResolve = null;
+        this.savePromiseReject = null;
     }
 
     async saveScene() {
         const zip = new window.JSZip();
         
         // Serialize the scene using the worker
+<<<<<<< HEAD
         let sceneJson;
         try {
             sceneJson = await new Promise((resolve, reject) => {
@@ -35,6 +49,50 @@ export class SceneStorage {
         if (!sceneJson) {
              throw new Error('Serialization failed: Empty data received');
         }
+=======
+        const sceneJson = await new Promise((resolve, reject) => {
+<<<<<<< HEAD
+            this.savePromiseResolve = resolve;
+            this.savePromiseReject = reject;
+            this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
+=======
+            // OPTIMIZATION: Patch BufferAttribute.toJSON to return TypedArrays directly
+            // instead of converting to standard Arrays (which is slow).
+            const originalToJSON = THREE.BufferAttribute.prototype.toJSON;
+            THREE.BufferAttribute.prototype.toJSON = function () {
+                return {
+                    itemSize: this.itemSize,
+                    type: this.array.constructor.name,
+                    array: this.array, // Keep as TypedArray
+                    normalized: this.normalized
+                };
+            };
+
+            let data;
+            try {
+                data = this.scene.toJSON();
+            } finally {
+                // Restore original toJSON
+                THREE.BufferAttribute.prototype.toJSON = originalToJSON;
+            }
+
+            this.worker.onmessage = (event) => {
+                if (event.data.type === 'serialize_complete') {
+                    resolve(event.data.data);
+                } else if (event.data.type === 'error') {
+                    reject(new Error(event.data.message + ': ' + event.data.error));
+                }
+            };
+
+            // Send data to worker. We do NOT transfer buffers because that would detach them
+            // from the main thread, breaking the live scene. Structured cloning (default)
+            // copies the buffers, which is fast enough and safe.
+            this.worker.postMessage({ type: 'serialize', data: data });
+        }).finally(() => {
+            this.worker.onmessage = this.boundHandleWorkerMessage;
+>>>>>>> master
+        });
+>>>>>>> master
 
         zip.file('scene.json', sceneJson);
 
@@ -47,6 +105,9 @@ export class SceneStorage {
         URL.revokeObjectURL(url);
     }
 
+    /**
+     * @param {File} file
+     */
     async loadScene(file) {
         try {
             const zip = new window.JSZip();
@@ -61,11 +122,16 @@ export class SceneStorage {
             while(this.scene.children.length > 0){
                 const object = this.scene.children[0];
                 this.scene.remove(object);
+                // @ts-ignore
                 if (object.geometry) object.geometry.dispose();
+                // @ts-ignore
                 if (object.material) {
+                    // @ts-ignore
                     if (Array.isArray(object.material)) {
+                        // @ts-ignore
                         object.material.forEach(material => material.dispose());
                     } else {
+                        // @ts-ignore
                         object.material.dispose();
                     }
                 }
@@ -83,10 +149,14 @@ export class SceneStorage {
         }
     }
 
+    /**
+     * @param {MessageEvent} event
+     */
     handleWorkerMessage(event) {
         if (event.data.type === 'deserialize_complete') {
             const loadedScene = event.data.data;
             // Add loaded objects back to the scene
+            // @ts-ignore
             loadedScene.children.forEach(object => {
                 this.scene.add(object);
             });
@@ -94,11 +164,22 @@ export class SceneStorage {
                 this.loadPromiseResolve(loadedScene);
                 this.loadPromiseResolve = null;
             }
+        } else if (event.data.type === 'serialize_complete') {
+            if (this.savePromiseResolve) {
+                this.savePromiseResolve(event.data.data);
+                this.savePromiseResolve = null;
+                this.savePromiseReject = null;
+            }
         } else if (event.data.type === 'error') {
             log.error('Worker error:', event.data.message, event.data.error);
             if (this.loadPromiseResolve) {
-                this.loadPromiseResolve(null); // Resolve with null or reject the promise
+                this.loadPromiseResolve(null);
                 this.loadPromiseResolve = null;
+            }
+            if (this.savePromiseReject) {
+                this.savePromiseReject(new Error(event.data.message + ': ' + event.data.error));
+                this.savePromiseResolve = null;
+                this.savePromiseReject = null;
             }
         }
     }
