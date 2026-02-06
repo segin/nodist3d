@@ -63,10 +63,16 @@
   "devDependencies": {
     "@babel/preset-env": "^7.27.2",
 <<<<<<< HEAD
+    "@types/dat.gui": "^0.7.13",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.1.0",
+=======
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 >>>>>>> master
     "@eslint/js": "^9.39.2",
+>>>>>>> master
     "babel-jest": "^30.0.2",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
@@ -122,6 +128,10 @@
     "lint-staged": "^16.2.7",
     "node-fetch": "^2.7.0",
 <<<<<<< HEAD
+    "supertest": "^7.0.0",
+    "typescript": "^5.9.3"
+=======
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 =======
@@ -143,6 +153,7 @@
 >>>>>>> master
     "prettier": "^3.8.1",
     "supertest": "^7.0.0"
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
   }

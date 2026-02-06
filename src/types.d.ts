@@ -1,3 +1,20 @@
+<<<<<<< HEAD
+/**
+ * Global type definitions
+ */
+
+import { Object3D } from 'three';
+
+declare global {
+    // JSZip is loaded globally via script tag
+    var JSZip: any;
+
+    interface Window {
+        JSZip: any;
+    }
+
+    interface SceneObject extends Object3D {
+=======
 
 <<<<<<< HEAD
 type SceneObject = import('three').Object3D & {
@@ -63,12 +80,31 @@ declare global {
 =======
     interface SceneObject extends THREE.Mesh {
 >>>>>>> master
+>>>>>>> master
         userData: {
             geometryParams?: any;
             [key: string]: any;
         };
     }
 
+<<<<<<< HEAD
+    interface SerializedScene {
+        metadata: {
+            version: number;
+            type: string;
+            generator: string;
+        };
+        geometries: any[];
+        materials: any[];
+        object: any;
+    }
+
+    interface ManagerInterface {
+        // Basic interface for managers
+    }
+
+    // Vendor-specific Fullscreen API extensions
+=======
 <<<<<<< HEAD
 =======
     interface SerializedMaterial {
@@ -109,6 +145,7 @@ declare global {
         update?(deltaTime: number): void;
     }
 
+>>>>>>> master
     interface Document {
         webkitFullscreenElement?: Element;
         mozFullScreenElement?: Element;
@@ -122,9 +159,14 @@ declare global {
         webkitRequestFullscreen?: () => Promise<void>;
         mozRequestFullScreen?: () => Promise<void>;
         msRequestFullscreen?: () => Promise<void>;
+<<<<<<< HEAD
+    }
+}
+=======
 =======
         update?(): void;
 >>>>>>> master
     }
 }
+>>>>>>> master
 >>>>>>> master
