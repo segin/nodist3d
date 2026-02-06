@@ -5,7 +5,39 @@
   "main": "src/backend/server.js",
   "scripts": {
     "start": "node src/backend/server.js",
-    "test": "jest --config jest.config.cjs"
+<<<<<<< HEAD
+    "lint": "eslint .",
+    "test": "jest --config jest.config.cjs",
+=======
+    "test": "jest --config jest.config.cjs",
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
+    "lint": "eslint .",
+>>>>>>> master
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.js": "eslint --fix"
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+<<<<<<< HEAD
+    "prepare": "husky",
+    "lint": "eslint src/**/*.js"
+  },
+  "lint-staged": {
+    "**/*.js": "eslint --fix"
+=======
+    "lint": "eslint .",
+    "format": "prettier --write ."
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
   },
   "keywords": [
     "3d",
@@ -30,11 +62,99 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.27.2",
+<<<<<<< HEAD
+    "@types/dat.gui": "^0.7.13",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.1.0",
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
+    "@eslint/js": "^9.39.2",
+>>>>>>> master
     "babel-jest": "^30.0.2",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+<<<<<<< HEAD
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-unicorn": "^62.0.0",
+    "globals": "^17.3.0",
+    "husky": "^9.1.7",
+=======
+=======
+<<<<<<< HEAD
+    "@types/dat.gui": "^0.7.13",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.1.0",
+    "@types/three": "^0.182.0",
+=======
+    "@eslint/js": "^9.39.2",
+>>>>>>> master
+    "babel-jest": "^30.0.2",
+<<<<<<< HEAD
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+>>>>>>> master
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-unicorn": "^62.0.0",
+    "globals": "^17.2.0",
+    "husky": "^9.1.7",
+<<<<<<< HEAD
+=======
+=======
+<<<<<<< HEAD
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-unicorn": "^62.0.0",
+    "globals": "^17.1.0",
+    "husky": "^9.1.7",
+=======
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-unicorn": "^54.0.0",
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
     "jest": "^29.7.0",
     "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^30.2.0",
+    "lint-staged": "^16.2.7",
     "node-fetch": "^2.7.0",
+<<<<<<< HEAD
+    "supertest": "^7.0.0",
+    "typescript": "^5.9.3"
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    "supertest": "^7.0.0",
+    "typescript": "^5.9.3"
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    "supertest": "^7.0.0",
+    "typescript": "^5.9.3"
+=======
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+    "prettier": "^3.8.1",
     "supertest": "^7.0.0"
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
   }
 }

@@ -40,6 +40,12 @@ const mockVector3 = {
         this.z = v.z;
         return this;
     }),
+    add: jest.fn(function(v) {
+        this.x += v.x;
+        this.y += v.y;
+        this.z += v.z;
+        return this;
+    }),
     sub: jest.fn(function(v) {
         this.x -= v.x;
         this.y -= v.y;
@@ -47,12 +53,24 @@ const mockVector3 = {
         return this;
     }),
     normalize: jest.fn(function() {
-        const length = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        const length = Math.hypot(this.x, this.y, this.z);
         if (length > 0) {
             this.x /= length;
             this.y /= length;
             this.z /= length;
         }
+        return this;
+    }),
+    add: jest.fn(function(v) {
+        this.x += v.x;
+        this.y += v.y;
+        this.z += v.z;
+        return this;
+    }),
+    sub: jest.fn(function(v) {
+        this.x -= v.x;
+        this.y -= v.y;
+        this.z -= v.z;
         return this;
     }),
     addVectors: jest.fn(function(a, b) {
@@ -61,12 +79,20 @@ const mockVector3 = {
         this.z = a.z + b.z;
         return this;
     }),
+    multiplyScalar: jest.fn(function(s) {
+        this.x *= s;
+        this.y *= s;
+        this.z *= s;
+        return this;
+    }),
     divideScalar: jest.fn(function(s) {
         this.x /= s;
         this.y /= s;
         this.z /= s;
         return this;
     }),
+    applyEuler: jest.fn(function() { return this; }),
+    applyQuaternion: jest.fn(function() { return this; }),
 };
 
 const mockQuaternion = {
@@ -275,6 +301,19 @@ const THREE = {
         fragmentShader: '',
         uniforms: {},
     })),
+    Loader: class {
+        constructor(manager) {
+            this.manager = manager;
+        }
+        load() {}
+        parse() {}
+    },
+    FileLoader: class {
+        constructor(manager) {
+            this.manager = manager;
+        }
+        load() {}
+    },
     TextureLoader: jest.fn().mockImplementation(() => ({
         load: jest.fn((url, onLoad) => {
             if (onLoad) onLoad(new THREE.Texture());
@@ -327,52 +366,29 @@ const THREE = {
 
 global.THREE = THREE;
 
-jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
-    OrbitControls: jest.fn().mockImplementation(() => ({
-        enableDamping: false,
-        dampingFactor: 0.25,
-        screenSpacePanning: false,
-        enableZoom: false,
-        minDistance: 0,
-        maxDistance: Infinity,
-        maxPolarAngle: Math.PI,
-        update: jest.fn(),
-        target: { clone: jest.fn(() => ({...mockVector3})) }
-    }))
-}));
+// Mocks for three/examples/jsm/* are handled via moduleNameMapper in jest.config.cjs
+// pointing to tests/__mocks__/three-examples.js
 
-jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
-    TransformControls: jest.fn().mockImplementation(() => ({
-        ...mockObject3D,
-        setMode: jest.fn(),
-        attach: jest.fn(),
-        detach: jest.fn(),
-        translationSnap: null,
-        rotationSnap: null,
-        scaleSnap: null
-    }))
-}));
+const createChainableMock = () => {
+    const obj = {};
+    obj.name = jest.fn(() => obj);
+    obj.listen = jest.fn(() => obj);
+    obj.onChange = jest.fn(() => obj);
+    obj.step = jest.fn(() => obj);
+    obj.min = jest.fn(() => obj);
+    obj.max = jest.fn(() => obj);
+    return obj;
+};
 
 jest.mock('dat.gui', () => ({
     GUI: jest.fn().mockImplementation(() => ({
         addFolder: jest.fn(() => ({
-            add: jest.fn(() => ({
-                name: jest.fn(),
-                onChange: jest.fn()
-            })),
-            addColor: jest.fn(() => ({
-                name: jest.fn(),
-                onChange: jest.fn()
-            })),
+            add: jest.fn(() => createChainableMock()),
+            addColor: jest.fn(() => createChainableMock()),
             open: jest.fn(),
             removeFolder: jest.fn()
         })),
-        add: jest.fn(() => ({
-            name: jest.fn(),
-            listen: jest.fn(() => ({
-                onChange: jest.fn()
-            }))
-        }))
+        add: jest.fn(() => createChainableMock())
     }))
 }));
 
@@ -393,7 +409,13 @@ global.JSZip = jest.fn(() => ({
             'scene.json': {
                 async: jest.fn().mockResolvedValue('{}')
             }
-        }
+        },
+        file: jest.fn((name) => {
+            if (name === 'scene.json') {
+                return { async: jest.fn().mockResolvedValue('{}') };
+            }
+            return null;
+        })
     })
 }));
 
@@ -404,6 +426,7 @@ global.Worker = class {
   }
 
   postMessage(msg) {
-    this.onmessage(msg);
+    // Wrap the message in an event-like object with a 'data' property
+    this.onmessage({ data: msg });
   }
 };
