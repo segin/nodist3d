@@ -44,7 +44,8 @@ export class PhysicsManager {
     }
 
     update(deltaTime) {
-        this.world.step(deltaTime); // Update physics world
+        // Use a fixed time step of 1/60 seconds, with a maximum of 10 substeps to catch up
+        this.world.step(1 / 60, deltaTime, 10);
 
         for (const item of this.bodies) {
             item.mesh.position.copy(item.body.position);
