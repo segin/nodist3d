@@ -1049,6 +1049,12 @@ export class App {
             
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
+<<<<<<< HEAD
+            const visibilityLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
+            visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.setAttribute('aria-label', visibilityLabel);
+            visibilityBtn.title = visibilityLabel;
+=======
             visibilityBtn.className = 'icon-btn';
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
 <<<<<<< HEAD
@@ -1062,6 +1068,7 @@ export class App {
             visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
 >>>>>>> master
             visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
+>>>>>>> master
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1077,6 +1084,11 @@ export class App {
                 object.visible = !object.visible;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
 <<<<<<< HEAD
+                const newLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
+                visibilityBtn.setAttribute('aria-label', newLabel);
+                visibilityBtn.title = newLabel;
+=======
+<<<<<<< HEAD
                 visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
 =======
 <<<<<<< HEAD
@@ -1091,10 +1103,17 @@ export class App {
                 visibilityBtn.setAttribute('aria-label', `${action} ${object.name}`);
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
+<<<<<<< HEAD
+            const deleteLabel = 'Delete ' + (object.name || 'Object');
+            deleteBtn.textContent = '🗑';
+            deleteBtn.setAttribute('aria-label', deleteLabel);
+            deleteBtn.title = deleteLabel;
+=======
             deleteBtn.className = 'icon-btn';
             deleteBtn.textContent = '🗑';
 <<<<<<< HEAD
@@ -1108,6 +1127,7 @@ export class App {
             deleteBtn.title = 'Delete object';
 >>>>>>> master
             deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+>>>>>>> master
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1123,9 +1143,17 @@ export class App {
             };
             
             // Click to select
+            listItem.tabIndex = 0;
+            listItem.setAttribute('aria-label', 'Select ' + (object.name || 'Object'));
             listItem.onclick = () => {
                 this.selectObject(object);
             };
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
             
             // Keyboard navigation
             listItem.addEventListener('keydown', (e) => {
