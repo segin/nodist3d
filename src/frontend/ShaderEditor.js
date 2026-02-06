@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // @ts-check
+=======
+import * as THREE from 'three';
+>>>>>>> master
 import { GUI } from 'dat.gui';
 import * as THREE from 'three';
 
@@ -70,6 +74,19 @@ export class ShaderEditor {
             uniforms: this.uniforms,
         });
 
+<<<<<<< HEAD
+        this.shaderMesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.shaderMaterial);
+        this.shaderMesh.name = 'ShaderMesh';
+        this.scene.add(this.shaderMesh);
+
+        if (this.eventBus) {
+            this.eventBus.publish('objectAdded', this.shaderMesh);
+        }
+
+        this.addShaderControls();
+
+        return this.shaderMesh;
+=======
         const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.shaderMaterial);
         mesh.name = 'ShaderMesh';
         this.shaderMesh = mesh;
@@ -77,7 +94,13 @@ export class ShaderEditor {
         this.eventBus.publish('objectAdded', mesh);
 
         this.addShaderControls();
+<<<<<<< HEAD
         return mesh;
+=======
+
+        return mesh;
+>>>>>>> master
+>>>>>>> master
     }
 
     addShaderControls() {
@@ -89,9 +112,13 @@ export class ShaderEditor {
         this.uniformsFolder = this.editorFolder.addFolder('Uniforms');
 
         // Example: Add a color uniform
+<<<<<<< HEAD
         // @ts-ignore
         this.uniforms.myColor = { value: new THREE.Color(0xff0000) };
         // @ts-ignore
+=======
+        this.uniforms.myColor = { value: new THREE.Color(0xff0000) };
+>>>>>>> master
         this.uniformsFolder.addColor(this.uniforms.myColor, 'value').name('Color').onChange(() => {
             // @ts-ignore
             this.shaderMaterial.needsUpdate = true;
