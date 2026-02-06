@@ -2450,6 +2450,9 @@ export class App {
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
 <<<<<<< HEAD
+            listItem.tabIndex = 0; // Make focusable
+=======
+<<<<<<< HEAD
             listItem.setAttribute('role', 'option');
             listItem.setAttribute('tabindex', '0');
             listItem.setAttribute('aria-selected', this.selectedObject === object);
@@ -2479,6 +2482,7 @@ export class App {
             listItem.setAttribute('aria-label', `Select ${object.name || 'Object ' + (index + 1)}`);
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             listItem.style.cssText = `
 >>>>>>> master
                 padding: 5px;
@@ -2487,6 +2491,7 @@ export class App {
                 border-radius: 3px;
                 cursor: pointer;
                 border: 1px solid #555;
+                outline: none;
             `;
 <<<<<<< HEAD
 
@@ -2516,12 +2521,16 @@ export class App {
 >>>>>>> master
 >>>>>>> master
             
+<<<<<<< HEAD
+            // Keyboard selection
+=======
             // Accessibility: Focusable and Role
             listItem.tabIndex = 0;
             listItem.setAttribute('role', 'option');
             listItem.setAttribute('aria-selected', this.selectedObject === object);
 
             // Accessibility: Keyboard support
+>>>>>>> master
             listItem.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
@@ -2699,6 +2708,10 @@ export class App {
             visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
 =======
 <<<<<<< HEAD
+            visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
+            visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+=======
+<<<<<<< HEAD
             visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
             visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
 =======
@@ -2737,6 +2750,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             visibilityBtn.style.cssText = `
 >>>>>>> master
                 background: none;
@@ -2766,6 +2780,10 @@ export class App {
                 object.visible = !object.visible;
                 const label = object.visible ? 'Hide object' : 'Show object';
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+                visibilityBtn.title = label;
+                visibilityBtn.setAttribute('aria-label', label);
+=======
 <<<<<<< HEAD
                 listItem.__cache.vis = visibilityBtn.textContent;
             };
@@ -2806,6 +2824,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             };
             
             // Delete button
@@ -2813,6 +2832,10 @@ export class App {
 <<<<<<< HEAD
             const deleteLabel = 'Delete ' + (object.name || 'Object');
             deleteBtn.textContent = '🗑';
+<<<<<<< HEAD
+            deleteBtn.title = 'Delete object';
+            deleteBtn.setAttribute('aria-label', 'Delete object');
+=======
 <<<<<<< HEAD
             deleteBtn.title = 'Delete object';
             deleteBtn.setAttribute('aria-label', 'Delete object');
@@ -2850,6 +2873,7 @@ export class App {
             deleteBtn.title = 'Delete object';
 >>>>>>> master
             deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
