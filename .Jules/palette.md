@@ -1,4 +1,9 @@
 <<<<<<< HEAD
+## 2026-01-26 - Scene Graph Accessibility & Positioning
+**Learning:** `dat.gui` typically occupies the top-right corner (z-index ~1000). Placing other high-z-index panels (like Scene Graph) at `top: 10px; right: 10px` causes critical interaction blocking, not just visual overlap. Moving essential panels to the left (`top: 80px; left: 10px`) effectively separates controls and content list.
+**Action:** Always check default positioning of third-party UI libraries before placing custom panels. Use `Object.values()` when iterating over `dat.gui` internals (`__folders`) as they can be objects.
+=======
+<<<<<<< HEAD
 ## 2024-05-23 - Scene Graph Accessibility & Layout
 **Learning:** Hardcoded absolute positioning (e.g., `top: 10px; right: 10px`) often conflicts with default library positions (like `dat.gui` default top-right), causing UI overlap.
 **Action:** Always verify UI component positioning against known 3rd-party overlays. Prefer flex/grid layouts or explicit non-overlapping zones (e.g., Left vs Right sidebar).
@@ -33,6 +38,7 @@
 ## 2026-01-28 - Dynamic UI Accessibility & Layout
 **Learning:** Dynamic UI components (like the Scene Graph) generated in `main.js` were ignoring CSS classes and missing accessibility attributes (ARIA labels, titles), leading to hardcoded styles and poor a11y. Also, fixed positioning caused overlap with `dat.gui`.
 **Action:** Always target existing DOM elements for containers, use CSS classes instead of inline styles, and explicitly add ARIA attributes when creating elements dynamically. Ensure overlay positions don't conflict with library-generated UI.
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

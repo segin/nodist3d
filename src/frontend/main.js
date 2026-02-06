@@ -197,6 +197,9 @@ export class App {
         // Create objects list
         this.objectsList = document.createElement('ul');
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
         this.objectsList.setAttribute('role', 'listbox');
         this.objectsList.setAttribute('aria-label', 'Scene objects');
         this.objectsList.style.cssText = `
@@ -1078,10 +1081,14 @@ export class App {
         
         // Remove all subfolders
 <<<<<<< HEAD
+        const folders = Object.values(this.propertiesFolder.__folders);
+=======
+<<<<<<< HEAD
         // @ts-ignore
         const folders = [...this.propertiesFolder.__folders];
 =======
         const folders = Object.values(this.propertiesFolder.__folders || {});
+>>>>>>> master
 >>>>>>> master
         folders.forEach(folder => {
             // @ts-ignore
@@ -1169,6 +1176,19 @@ export class App {
 >>>>>>> master
 >>>>>>> master
             
+            // Accessibility: Focusable and Role
+            listItem.tabIndex = 0;
+            listItem.setAttribute('role', 'option');
+            listItem.setAttribute('aria-selected', this.selectedObject === object);
+
+            // Accessibility: Keyboard support
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
+
             // Object name and type
             const objectInfo = document.createElement('div');
             objectInfo.style.cssText = `
@@ -1199,6 +1219,13 @@ export class App {
             const visibilityLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
 <<<<<<< HEAD
+
+            // Accessibility: Labels and Tooltips
+            visibilityBtn.setAttribute('aria-label', `Toggle visibility of ${object.name}`);
+            visibilityBtn.title = `Toggle visibility of ${object.name}`;
+
+=======
+<<<<<<< HEAD
             visibilityBtn.setAttribute('aria-label', `Toggle visibility of ${object.name || `Object ${index + 1}`}`);
 =======
 <<<<<<< HEAD
@@ -1220,6 +1247,7 @@ export class App {
             visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
 >>>>>>> master
             visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -1270,6 +1298,13 @@ export class App {
             const deleteLabel = 'Delete ' + (object.name || 'Object');
             deleteBtn.textContent = '🗑';
 <<<<<<< HEAD
+
+            // Accessibility: Labels and Tooltips
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+            deleteBtn.title = `Delete ${object.name}`;
+
+=======
+<<<<<<< HEAD
             deleteBtn.setAttribute('aria-label', `Delete ${object.name || `Object ${index + 1}`}`);
 =======
 <<<<<<< HEAD
@@ -1291,6 +1326,7 @@ export class App {
             deleteBtn.title = 'Delete object';
 >>>>>>> master
             deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

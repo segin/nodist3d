@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+// Access global log instance from window (loaded via script tag)
+=======
+<<<<<<< HEAD
 // Access global loglevel instance
 =======
 <<<<<<< HEAD
@@ -22,13 +25,18 @@ const log = {
 // Access global log instance from window (loaded via script tag)
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
 const log = window.log;
 
 if (log) {
     log.setLevel('info'); // Set the default log level
 } else {
 <<<<<<< HEAD
+    console.error('loglevel not loaded!');
+=======
+<<<<<<< HEAD
     console.error('loglevel not loaded globally');
+>>>>>>> master
 }
 
 export default log || console; // Fallback to console if log is missing
