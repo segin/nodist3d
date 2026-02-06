@@ -139,47 +139,22 @@ class App {
     }
 
     setupSceneGraph() {
-        // Create scene graph panel
-        this.sceneGraphPanel = document.createElement('div');
-        this.sceneGraphPanel.id = 'scene-graph-panel';
-        this.sceneGraphPanel.style.cssText = `
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            width: 250px;
-            max-height: 400px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 12px;
-            overflow-y: auto;
-            z-index: 1000;
-        `;
+        // Use existing scene graph panel from DOM
+        this.sceneGraphPanel = document.getElementById('scene-graph');
+        if (!this.sceneGraphPanel) {
+            console.error('Scene graph panel element not found!');
+            return;
+        }
         
         // Create title
         const title = document.createElement('h3');
         title.textContent = 'Scene Graph';
-        title.style.cssText = `
-            margin: 0 0 10px 0;
-            padding: 0;
-            font-size: 14px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 5px;
-        `;
         
         // Create objects list
         this.objectsList = document.createElement('ul');
-        this.objectsList.style.cssText = `
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        `;
         
         this.sceneGraphPanel.appendChild(title);
         this.sceneGraphPanel.appendChild(this.objectsList);
-        document.body.appendChild(this.sceneGraphPanel);
         
         // Update initially
         this.updateSceneGraph();
@@ -989,14 +964,10 @@ class App {
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
-            listItem.style.cssText = `
-                padding: 5px;
-                margin: 2px 0;
-                background: ${this.selectedObject === object ? '#444' : '#222'};
-                border-radius: 3px;
-                cursor: pointer;
-                border: 1px solid #555;
-            `;
+            // Use CSS class for selection state
+            if (this.selectedObject === object) {
+                listItem.classList.add('selected');
+            }
             
             // Object name and type
             const objectInfo = document.createElement('div');
@@ -1024,6 +995,8 @@ class App {
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
+            visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1037,11 +1010,18 @@ class App {
                 e.stopPropagation();
                 object.visible = !object.visible;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+
+                // Update accessibility attributes
+                const action = object.visible ? 'Hide' : 'Show';
+                visibilityBtn.title = `${action} object`;
+                visibilityBtn.setAttribute('aria-label', `${action} ${object.name}`);
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
+            deleteBtn.title = 'Delete object';
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
