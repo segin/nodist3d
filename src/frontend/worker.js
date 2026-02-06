@@ -21,10 +21,17 @@ self.onmessage = function (event) {
     if (type === 'serialize') {
         // Assuming 'data' is a THREE.Scene object or a serializable representation
         try {
+<<<<<<< HEAD
+            const json = JSON.stringify(data, (key, value) => {
+                // Convert TypedArrays to standard Arrays for JSON compatibility
+                // This allows passing TypedArrays from the main thread (optimization)
+                if (ArrayBuffer.isView(value) && !(value instanceof DataView)) {
+=======
             // We use a custom replacer to convert TypedArrays (transferred from main thread)
             // back to regular arrays for standard JSON serialization.
             const json = JSON.stringify(data, (key, value) => {
                 if (value && value.buffer instanceof ArrayBuffer && value.byteLength !== undefined) {
+>>>>>>> master
                     return Array.from(value);
                 }
                 return value;
