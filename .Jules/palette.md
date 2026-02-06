@@ -1,4 +1,9 @@
 <<<<<<< HEAD
+## 2026-02-05 - Accessibility in Scene Graph
+**Learning:** Scene graph list items need `role="button"` and `tabindex="0"` for keyboard accessibility, plus `keydown` handlers. Icon-only buttons (visibility/delete) need dynamic `aria-label` updates.
+**Action:** Always verify keyboard navigation for interactive list items.
+=======
+<<<<<<< HEAD
 ## 2026-02-04 - UI Overlay Conflicts
 **Learning:** Custom UI panels positioned at `top: 10px; right: 10px` conflict with default `dat.gui` positioning, blocking interaction on mobile and desktop.
 **Action:** Always check default positioning of third-party UI libraries when placing custom panels. Prefer left-side or distinct coordinates.
@@ -83,6 +88,7 @@
 ## 2026-01-28 - Dynamic UI Accessibility & Layout
 **Learning:** Dynamic UI components (like the Scene Graph) generated in `main.js` were ignoring CSS classes and missing accessibility attributes (ARIA labels, titles), leading to hardcoded styles and poor a11y. Also, fixed positioning caused overlap with `dat.gui`.
 **Action:** Always target existing DOM elements for containers, use CSS classes instead of inline styles, and explicitly add ARIA attributes when creating elements dynamically. Ensure overlay positions don't conflict with library-generated UI.
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
