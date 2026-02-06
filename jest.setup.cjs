@@ -22,6 +22,7 @@ global.console.error = jest.fn();
 global.console.warn = jest.fn();
 
 const mockVector3 = {
+<<<<<<< HEAD
   x: 0,
   y: 0,
   z: 0,
@@ -67,6 +68,79 @@ const mockVector3 = {
     this.z /= s;
     return this;
   }),
+=======
+    x: 0,
+    y: 0,
+    z: 0,
+    set: jest.fn(function(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        return this;
+    }),
+    clone: jest.fn(function() {
+        return { ...this };
+    }),
+    copy: jest.fn(function(v) {
+        this.x = v.x;
+        this.y = v.y;
+        this.z = v.z;
+        return this;
+    }),
+    add: jest.fn(function(v) {
+        this.x += v.x;
+        this.y += v.y;
+        this.z += v.z;
+        return this;
+    }),
+    sub: jest.fn(function(v) {
+        this.x -= v.x;
+        this.y -= v.y;
+        this.z -= v.z;
+        return this;
+    }),
+    normalize: jest.fn(function() {
+        const length = Math.hypot(this.x, this.y, this.z);
+        if (length > 0) {
+            this.x /= length;
+            this.y /= length;
+            this.z /= length;
+        }
+        return this;
+    }),
+    add: jest.fn(function(v) {
+        this.x += v.x;
+        this.y += v.y;
+        this.z += v.z;
+        return this;
+    }),
+    sub: jest.fn(function(v) {
+        this.x -= v.x;
+        this.y -= v.y;
+        this.z -= v.z;
+        return this;
+    }),
+    addVectors: jest.fn(function(a, b) {
+        this.x = a.x + b.x;
+        this.y = a.y + b.y;
+        this.z = a.z + b.z;
+        return this;
+    }),
+    multiplyScalar: jest.fn(function(s) {
+        this.x *= s;
+        this.y *= s;
+        this.z *= s;
+        return this;
+    }),
+    divideScalar: jest.fn(function(s) {
+        this.x /= s;
+        this.y /= s;
+        this.z /= s;
+        return this;
+    }),
+    applyEuler: jest.fn(function() { return this; }),
+    applyQuaternion: jest.fn(function() { return this; }),
+>>>>>>> master
 };
 
 const mockQuaternion = {
@@ -212,9 +286,71 @@ const THREE = {
       this._value = value;
       return this;
     }),
+<<<<<<< HEAD
     setHex: jest.fn(function (value) {
       this._value = value;
       return this;
+=======
+    BoxGeometry: jest.fn(() => ({ ...mockGeometry })),
+    SphereGeometry: jest.fn(() => ({ ...mockGeometry })),
+    CylinderGeometry: jest.fn(() => ({ ...mockGeometry })),
+    PlaneGeometry: jest.fn(() => ({ ...mockGeometry })),
+    TorusGeometry: jest.fn(() => ({ ...mockGeometry })),
+    TeapotGeometry: jest.fn(() => ({ ...mockGeometry })),
+    TextGeometry: jest.fn(() => ({ ...mockGeometry })),
+    MeshBasicMaterial: jest.fn(() => ({ ...mockMaterial })),
+    MeshStandardMaterial: jest.fn(() => ({ ...mockMaterial })),
+    MeshPhongMaterial: jest.fn(() => ({ ...mockMaterial })),
+    ShaderMaterial: jest.fn(() => ({
+        ...mockMaterial,
+        vertexShader: '',
+        fragmentShader: '',
+        uniforms: {},
+    })),
+    Loader: class {
+        constructor(manager) {
+            this.manager = manager;
+        }
+        load() {}
+        parse() {}
+    },
+    FileLoader: class {
+        constructor(manager) {
+            this.manager = manager;
+        }
+        load() {}
+    },
+    TextureLoader: jest.fn().mockImplementation(() => ({
+        load: jest.fn((url, onLoad) => {
+            if (onLoad) onLoad(new THREE.Texture());
+        }),
+    })),
+    ObjectLoader: jest.fn().mockImplementation(() => ({
+        parse: jest.fn((data, onLoad) => {
+            if (onLoad) onLoad(new THREE.Scene());
+        }),
+    })),
+    Texture: jest.fn(() => ({
+        dispose: jest.fn(),
+    })),
+    FontLoader: jest.fn().mockImplementation(() => ({
+        load: jest.fn((url, onLoad) => {
+            if (onLoad) onLoad(new THREE.Font());
+        }),
+    })),
+    Font: jest.fn(() => ({
+        type: 'Font',
+    })),
+    DirectionalLight: jest.fn(() => {
+        const light = {
+            ...mockObject3D,
+            isDirectionalLight: true,
+            color: { set: jest.fn() },
+            intensity: 1,
+        };
+        light.position = new THREE.Vector3(); // Ensure position is a Vector3 instance
+        return light;
+>>>>>>> master
     }),
   })),
   Scene: jest.fn(() => {
@@ -349,6 +485,7 @@ const THREE = {
 
 global.THREE = THREE;
 
+<<<<<<< HEAD
 jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
   OrbitControls: jest.fn().mockImplementation(() => ({
     enableDamping: false,
@@ -396,6 +533,32 @@ jest.mock('dat.gui', () => ({
       })),
     })),
   })),
+=======
+// Mocks for three/examples/jsm/* are handled via moduleNameMapper in jest.config.cjs
+// pointing to tests/__mocks__/three-examples.js
+
+const createChainableMock = () => {
+    const obj = {};
+    obj.name = jest.fn(() => obj);
+    obj.listen = jest.fn(() => obj);
+    obj.onChange = jest.fn(() => obj);
+    obj.step = jest.fn(() => obj);
+    obj.min = jest.fn(() => obj);
+    obj.max = jest.fn(() => obj);
+    return obj;
+};
+
+jest.mock('dat.gui', () => ({
+    GUI: jest.fn().mockImplementation(() => ({
+        addFolder: jest.fn(() => ({
+            add: jest.fn(() => createChainableMock()),
+            addColor: jest.fn(() => createChainableMock()),
+            open: jest.fn(),
+            removeFolder: jest.fn()
+        })),
+        add: jest.fn(() => createChainableMock())
+    }))
+>>>>>>> master
 }));
 
 global.URL.revokeObjectURL = jest.fn();
@@ -408,6 +571,7 @@ global.FileReader = jest.fn(() => ({
 }));
 
 global.JSZip = jest.fn(() => ({
+<<<<<<< HEAD
   file: jest.fn(),
   generateAsync: jest.fn().mockResolvedValue(''),
   loadAsync: jest.fn().mockResolvedValue({
@@ -417,6 +581,23 @@ global.JSZip = jest.fn(() => ({
       },
     },
   }),
+=======
+    file: jest.fn(),
+    generateAsync: jest.fn().mockResolvedValue(''),
+    loadAsync: jest.fn().mockResolvedValue({
+        files: {
+            'scene.json': {
+                async: jest.fn().mockResolvedValue('{}')
+            }
+        },
+        file: jest.fn((name) => {
+            if (name === 'scene.json') {
+                return { async: jest.fn().mockResolvedValue('{}') };
+            }
+            return null;
+        })
+    })
+>>>>>>> master
 }));
 
 global.Worker = class {
@@ -426,6 +607,7 @@ global.Worker = class {
   }
 
   postMessage(msg) {
-    this.onmessage(msg);
+    // Wrap the message in an event-like object with a 'data' property
+    this.onmessage({ data: msg });
   }
 };

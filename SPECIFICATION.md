@@ -71,6 +71,7 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
 
 **Goal**: Enforce consistent coding standards, documentation, and type safety to prevent regression.
 
+<<<<<<< HEAD
 - **1.2.1. Linting and Formatting Setup**
   - **Action Items**:
     - [x] **Install Tools**: `npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn eslint-plugin-import`.
@@ -100,6 +101,80 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
       - [ ] Create `src/types.d.ts` to define global interfaces like `SceneObject`, `SerializedScene`, `ManagerInterface`.
   - **Verification & Testing**:
     - [ ] Run `npx tsc`. Expect zero errors in checked files.
+=======
+*   **1.2.1. Linting and Formatting Setup**
+    *   **Action Items**:
+<<<<<<< HEAD
+        *   [x] **Install Tools**: `npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn eslint-plugin-import`.
+        *   [x] **Configure ESLint (`.eslintrc.json`)**:
+            *   [x] `env`: `{ browser: true, node: true, es2022: true }`.
+=======
+<<<<<<< HEAD
+        *   [x] **Install Tools**: `pnpm add -D eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn`.
+        *   [x] **Configure ESLint (`eslint.config.mjs`)**:
+            *   [x] `env`: `{ browser: true, node: true, es2022: true }`.
+=======
+<<<<<<< HEAD
+        *   [x] **Install Tools**: `pnpm add -D eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn eslint-plugin-import husky lint-staged globals @eslint/js`.
+        *   [x] **Configure ESLint (`eslint.config.js` - Flat Config)**:
+            *   [x] `env`: `{ browser: true, node: true, es2022: true }` via `globals`.
+=======
+<<<<<<< HEAD
+        *   [x] **Install Tools**: `npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn`.
+        *   [x] **Configure ESLint (`eslint.config.mjs`)**:
+=======
+        *   [x] **Install Tools**: `npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn eslint-plugin-import`.
+        *   [x] **Configure ESLint (`.eslintrc.json`)**:
+>>>>>>> master
+            *   [x] `env`: `{ browser: true, node: true, es2022: true }`.
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+            *   [x] `rules`: Enforce `eqeqeq`, `no-var`, `prefer-const`, `no-console` (warn), `promise/always-return`.
+        *   [x] **Configure Prettier (`.prettierrc`)**:
+            *   [x] `{ "semi": true, "singleQuote": true, "tabWidth": 2, "printWidth": 100 }`.
+        *   [x] **Setup Husky**:
+<<<<<<< HEAD
+            *   [x] `npx husky install`.
+=======
+<<<<<<< HEAD
+            *   [x] `pnpm exec husky init`.
+=======
+<<<<<<< HEAD
+            *   [x] `pnpm exec husky init`.
+=======
+            *   [x] `npx husky install`.
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+            *   [x] Add `pre-commit` hook: `npx lint-staged`.
+            *   [x] Configure `lint-staged` in package.json to run `eslint --fix` on `*.js` files.
+    *   **Verification & Testing**:
+        *   [x] Deliberately introduce a lint error (e.g., `var x = 1;`). Verify commit fails.
+<<<<<<< HEAD
+        *   [x] Run `npm run lint`. Verify it catches issues.
+=======
+<<<<<<< HEAD
+        *   [x] Run `pnpm lint`. Verify it catches issues.
+=======
+        *   [x] Run `npm run lint`. Verify it catches issues.
+>>>>>>> master
+>>>>>>> master
+
+*   **1.2.2. Documentation & Type Safety**
+    *   **Action Items**:
+        *   [ ] **JSDoc Implementation**:
+            *   [ ] Go through every file in `src/`.
+            *   [x] Add `/** ... */` blocks to every class, method, and exported function.
+            *   [x] Explicitly define `@param {Type} name` and `@returns {Type}`.
+        *   [x] **TypeScript Migration (Phase 1)**:
+            *   [x] Create `tsconfig.json` with `{ "allowJs": true, "checkJs": true, "noEmit": true }`.
+            *   [x] Add `// @ts-check` to the top of `main.js` and `ObjectManager.js`.
+            *   [x] Fix all resulting type errors (mostly by adding JSDoc).
+            *   [x] Create `src/types.d.ts` to define global interfaces like `SceneObject`, `SerializedScene`, `ManagerInterface`.
+    *   **Verification & Testing**:
+        *   [x] Run `npx tsc`. Expect zero errors in checked files.
+>>>>>>> master
 
 ### 1.3. Error Handling & Logging
 

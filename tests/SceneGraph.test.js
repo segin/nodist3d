@@ -2,6 +2,7 @@ import { Scene, Mesh, BoxGeometry, PointLight, Group, Camera } from 'three';
 import { SceneGraph } from '../src/frontend/SceneGraph.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import EventBus from '../src/frontend/EventBus.js';
+import { Events } from '../src/frontend/constants.js';
 
 describe('SceneGraph', () => {
   let scene;
@@ -41,6 +42,7 @@ describe('SceneGraph', () => {
 
     uiElement = createMockElement();
 
+<<<<<<< HEAD
     // Mock document.createElement to return elements with a style property
     jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
       return createMockElement();
@@ -119,3 +121,33 @@ describe('SceneGraph', () => {
     expect(updateGUI).toHaveBeenCalledWith(null);
   });
 });
+=======
+        uiElement = createMockElement();
+
+        // Mock document.createElement to return elements with a style property
+        jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+            return createMockElement();
+        });
+
+        transformControls = new TransformControls(new Camera(), document.createElement('canvas'));
+        updateGUI = jest.fn();
+        eventBus = EventBus;
+        // Correct constructor signature: scene, eventBus
+        sceneGraph = new SceneGraph(scene, eventBus);
+
+        // Mock eventBus.publish to verify calls since DOM updates are handled elsewhere
+        jest.spyOn(eventBus, 'publish');
+    });
+
+    it('should publish update event when update is called', () => {
+        const mesh = new Mesh(new BoxGeometry(), new THREE.MeshBasicMaterial());
+        mesh.name = 'TestMesh';
+        scene.add(mesh);
+
+        sceneGraph.update();
+
+        // SceneGraph no longer updates DOM directly, but publishes an event
+        expect(eventBus.publish).toHaveBeenCalledWith(Events.SCENE_GRAPH_NEEDS_UPDATE, expect.any(Object));
+    });
+});
+>>>>>>> master
