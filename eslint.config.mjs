@@ -1,4 +1,14 @@
 <<<<<<< HEAD
+import js from '@eslint/js';
+import prettier from 'eslint-config-prettier';
+import promise from 'eslint-plugin-promise';
+import unicorn from 'eslint-plugin-unicorn';
+import globals from 'globals';
+
+export default [
+  js.configs.recommended,
+=======
+<<<<<<< HEAD
 import js from "@eslint/js";
 import globals from "globals";
 import unicorn from "eslint-plugin-unicorn";
@@ -38,18 +48,28 @@ import unicorn from 'eslint-plugin-unicorn';
 import prettier from 'eslint-config-prettier';
 
 export default [
+>>>>>>> master
   {
     languageOptions: {
       globals: {
         ...globals.browser,
         ...globals.node,
         ...globals.jest,
+<<<<<<< HEAD
+=======
         THREE: 'readonly',
         JSZip: 'readonly',
+>>>>>>> master
       },
       ecmaVersion: 2022,
       sourceType: 'module',
     },
+<<<<<<< HEAD
+    plugins: {
+      promise,
+      unicorn,
+    },
+=======
   },
   {
     files: ['src/frontend/worker.js'],
@@ -64,12 +84,19 @@ export default [
   unicorn.configs['flat/recommended'],
   prettier,
   {
+>>>>>>> master
     rules: {
       'eqeqeq': 'error',
       'no-var': 'error',
       'prefer-const': 'error',
       'no-console': 'warn',
       'promise/always-return': 'error',
+<<<<<<< HEAD
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    },
+  },
+  prettier,
+=======
 
       'no-unused-vars': 'warn',
       'no-case-declarations': 'off',
@@ -127,5 +154,6 @@ export default [
   {
     ignores: ['node_modules/', 'dist/', 'coverage/', 'reference/'],
   },
+>>>>>>> master
 >>>>>>> master
 ];

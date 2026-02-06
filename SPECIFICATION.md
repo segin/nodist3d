@@ -72,6 +72,11 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
 *   **1.2.1. Linting and Formatting Setup**
     *   **Action Items**:
 <<<<<<< HEAD
+        *   [x] **Install Tools**: `pnpm add -D eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn`.
+        *   [x] **Configure ESLint (`eslint.config.mjs`)**:
+            *   [x] `env`: `{ browser: true, node: true, es2022: true }`.
+=======
+<<<<<<< HEAD
         *   [x] **Install Tools**: `pnpm add -D eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn eslint-plugin-import husky lint-staged globals @eslint/js`.
         *   [x] **Configure ESLint (`eslint.config.js` - Flat Config)**:
             *   [x] `env`: `{ browser: true, node: true, es2022: true }` via `globals`.
@@ -85,6 +90,7 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
 >>>>>>> master
             *   [x] `env`: `{ browser: true, node: true, es2022: true }`.
 >>>>>>> master
+>>>>>>> master
             *   [x] `rules`: Enforce `eqeqeq`, `no-var`, `prefer-const`, `no-console` (warn), `promise/always-return`.
         *   [x] **Configure Prettier (`.prettierrc`)**:
             *   [x] `{ "semi": true, "singleQuote": true, "tabWidth": 2, "printWidth": 100 }`.
@@ -92,13 +98,21 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
 <<<<<<< HEAD
             *   [x] `pnpm exec husky init`.
 =======
+<<<<<<< HEAD
+            *   [x] `pnpm exec husky init`.
+=======
             *   [x] `npx husky install`.
+>>>>>>> master
 >>>>>>> master
             *   [x] Add `pre-commit` hook: `npx lint-staged`.
             *   [x] Configure `lint-staged` in package.json to run `eslint --fix` on `*.js` files.
     *   **Verification & Testing**:
         *   [x] Deliberately introduce a lint error (e.g., `var x = 1;`). Verify commit fails.
+<<<<<<< HEAD
+        *   [x] Run `pnpm lint`. Verify it catches issues.
+=======
         *   [x] Run `npm run lint`. Verify it catches issues.
+>>>>>>> master
 
 *   **1.2.2. Documentation & Type Safety**
     *   **Action Items**:
