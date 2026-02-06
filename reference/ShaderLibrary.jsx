@@ -14,36 +14,39 @@ const ShaderLibrary = () => {
     standard: {
       name: 'Standard PBR',
       description: 'Physically based rendering with metallic workflow',
-      material: () => new THREE.MeshStandardMaterial({
-        color: 0x4488ff,
-        metalness: 0.5,
-        roughness: 0.3
-      })
+      material: () =>
+        new THREE.MeshStandardMaterial({
+          color: 0x4488ff,
+          metalness: 0.5,
+          roughness: 0.3,
+        }),
     },
     wireframe: {
       name: 'Wireframe',
       description: 'Shows polygon edges',
-      material: () => new THREE.MeshBasicMaterial({
-        color: 0x00ff00,
-        wireframe: true
-      })
+      material: () =>
+        new THREE.MeshBasicMaterial({
+          color: 0x00ff00,
+          wireframe: true,
+        }),
     },
     normal: {
       name: 'Normal Map',
       description: 'Visualizes surface normals as RGB colors',
-      material: () => new THREE.MeshNormalMaterial()
+      material: () => new THREE.MeshNormalMaterial(),
     },
     depth: {
       name: 'Depth',
       description: 'Shows distance from camera',
-      material: () => new THREE.MeshDepthMaterial()
+      material: () => new THREE.MeshDepthMaterial(),
     },
     matcap: {
       name: 'MatCap',
       description: 'Material capture - fast preview rendering',
-      material: () => new THREE.MeshMatcapMaterial({
-        color: 0xffffff
-      })
+      material: () =>
+        new THREE.MeshMatcapMaterial({
+          color: 0xffffff,
+        }),
     },
     uvChecker: {
       name: 'UV Checker',
@@ -62,60 +65,66 @@ const ShaderLibrary = () => {
         }
         const texture = new THREE.CanvasTexture(canvas);
         return new THREE.MeshBasicMaterial({ map: texture });
-      }
+      },
     },
     clay: {
       name: 'Clay',
       description: 'Matte clay-like appearance for form study',
-      material: () => new THREE.MeshStandardMaterial({
-        color: 0xcccccc,
-        metalness: 0,
-        roughness: 1
-      })
+      material: () =>
+        new THREE.MeshStandardMaterial({
+          color: 0xcccccc,
+          metalness: 0,
+          roughness: 1,
+        }),
     },
     xray: {
       name: 'X-Ray',
       description: 'Transparent view showing internal structure',
-      material: () => new THREE.MeshPhongMaterial({
-        color: 0x00ffff,
-        transparent: true,
-        opacity: 0.3,
-        side: THREE.DoubleSide
-      })
+      material: () =>
+        new THREE.MeshPhongMaterial({
+          color: 0x00ffff,
+          transparent: true,
+          opacity: 0.3,
+          side: THREE.DoubleSide,
+        }),
     },
     flat: {
       name: 'Flat Shaded',
       description: 'Shows faceted polygon surfaces',
-      material: () => new THREE.MeshPhongMaterial({
-        color: 0xff6633,
-        flatShading: true
-      })
+      material: () =>
+        new THREE.MeshPhongMaterial({
+          color: 0xff6633,
+          flatShading: true,
+        }),
     },
     ambient: {
       name: 'Ambient Occlusion',
       description: 'Simulates soft shadowing in crevices',
-      material: () => new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-        metalness: 0,
-        roughness: 1
-      })
+      material: () =>
+        new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          metalness: 0,
+          roughness: 1,
+        }),
     },
     emissive: {
       name: 'Emissive',
       description: 'Self-illuminated material',
-      material: () => new THREE.MeshStandardMaterial({
-        color: 0x000000,
-        emissive: 0xff00ff,
-        emissiveIntensity: 1
-      })
+      material: () =>
+        new THREE.MeshStandardMaterial({
+          color: 0x000000,
+          emissive: 0xff00ff,
+          emissiveIntensity: 1,
+        }),
     },
     vertexColor: {
       name: 'Vertex Color',
       description: 'Shows per-vertex color data',
-      material: () => new THREE.MeshBasicMaterial({
-        vertexColors: true
-      })
-    }
+      material: () =>
+        new THREE.MeshBasicMaterial({
+          vertexColors: true,
+        }),
+    },
   };
 
   useEffect(() => {
@@ -131,7 +140,7 @@ const ShaderLibrary = () => {
       50,
       canvasRef.current.clientWidth / canvasRef.current.clientHeight,
       0.1,
-      1000
+      1000,
     );
     camera.position.set(0, 1, 4);
     camera.lookAt(0, 0, 0);
@@ -140,7 +149,7 @@ const ShaderLibrary = () => {
     // Renderer
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
-      antialias: true
+      antialias: true,
     });
     renderer.setSize(canvasRef.current.clientWidth, canvasRef.current.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -243,18 +252,11 @@ const ShaderLibrary = () => {
       {/* Viewport */}
       <div className="flex-1 flex flex-col">
         <div className="bg-gray-800 px-6 py-4 border-b border-gray-700">
-          <h1 className="text-2xl font-bold text-blue-400">
-            {shaders[activeShader].name}
-          </h1>
-          <p className="text-gray-400 mt-1">
-            {shaders[activeShader].description}
-          </p>
+          <h1 className="text-2xl font-bold text-blue-400">{shaders[activeShader].name}</h1>
+          <p className="text-gray-400 mt-1">{shaders[activeShader].description}</p>
         </div>
         <div className="flex-1 relative">
-          <canvas
-            ref={canvasRef}
-            className="w-full h-full"
-          />
+          <canvas ref={canvasRef} className="w-full h-full" />
         </div>
         <div className="bg-gray-800 px-6 py-3 border-t border-gray-700 text-sm text-gray-400">
           <div className="flex justify-between">

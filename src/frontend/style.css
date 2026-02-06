@@ -69,7 +69,7 @@ body {
     background-color: rgba(0, 0, 0, 0.7);
     border-radius: 8px;
     padding: 10px;
-    max-width: 300px;
+    width: 250px;
     max-height: 400px;
     overflow-y: auto;
     backdrop-filter: blur(10px);

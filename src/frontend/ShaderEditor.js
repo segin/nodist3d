@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { GUI } from 'dat.gui';
 import * as THREE from 'three';
 
@@ -52,6 +53,7 @@ export class ShaderEditor {
             uniforms: this.uniforms,
         });
 
+<<<<<<< HEAD
         this.shaderMesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.shaderMaterial);
         this.shaderMesh.name = 'ShaderMesh';
         this.scene.add(this.shaderMesh);
@@ -63,6 +65,16 @@ export class ShaderEditor {
         this.addShaderControls();
 
         return this.shaderMesh;
+=======
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.shaderMaterial);
+        mesh.name = 'ShaderMesh';
+        this.scene.add(mesh);
+        this.eventBus.publish('objectAdded', mesh);
+
+        this.addShaderControls();
+
+        return mesh;
+>>>>>>> master
     }
 
     addShaderControls() {

@@ -53,7 +53,7 @@ const mockVector3 = {
         return this;
     }),
     normalize: jest.fn(function() {
-        const length = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        const length = Math.hypot(this.x, this.y, this.z);
         if (length > 0) {
             this.x /= length;
             this.y /= length;
@@ -336,26 +336,26 @@ global.THREE = THREE;
 // Mocks for three/examples/jsm/* are handled via moduleNameMapper in jest.config.cjs
 // pointing to tests/__mocks__/three-examples.js
 
+const createChainableMock = () => {
+    const obj = {};
+    obj.name = jest.fn(() => obj);
+    obj.listen = jest.fn(() => obj);
+    obj.onChange = jest.fn(() => obj);
+    obj.step = jest.fn(() => obj);
+    obj.min = jest.fn(() => obj);
+    obj.max = jest.fn(() => obj);
+    return obj;
+};
+
 jest.mock('dat.gui', () => ({
     GUI: jest.fn().mockImplementation(() => ({
         addFolder: jest.fn(() => ({
-            add: jest.fn(() => ({
-                name: jest.fn(),
-                onChange: jest.fn()
-            })),
-            addColor: jest.fn(() => ({
-                name: jest.fn(),
-                onChange: jest.fn()
-            })),
+            add: jest.fn(() => createChainableMock()),
+            addColor: jest.fn(() => createChainableMock()),
             open: jest.fn(),
             removeFolder: jest.fn()
         })),
-        add: jest.fn(() => ({
-            name: jest.fn(),
-            listen: jest.fn(() => ({
-                onChange: jest.fn()
-            }))
-        }))
+        add: jest.fn(() => createChainableMock())
     }))
 }));
 

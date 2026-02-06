@@ -1,9 +1,41 @@
+<<<<<<< HEAD
 import { Scene, Vector3, Quaternion, BufferGeometry, Mesh, MeshBasicMaterial } from 'three';
+=======
+import { Scene, Mesh, BoxGeometry, SphereGeometry, CylinderGeometry, MeshBasicMaterial, Vector3, Quaternion, BufferGeometry } from 'three';
+>>>>>>> master
 import { PhysicsManager } from '../src/frontend/PhysicsManager.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
 import EventBus from '../src/frontend/EventBus.js';
 import * as CANNON from 'cannon-es';
+
+// Mock PrimitiveFactory to avoid issues with three/examples/jsm imports
+jest.mock('../src/frontend/PrimitiveFactory.js', () => {
+    const THREE = require('three');
+    return {
+        PrimitiveFactory: jest.fn().mockImplementation(() => {
+            return {
+                createPrimitive: jest.fn((type) => {
+                    let geometry;
+                    if (type === 'Box') {
+                        geometry = new THREE.BoxGeometry(1, 1, 1);
+                        geometry.parameters = { width: 1, height: 1, depth: 1 };
+                    } else if (type === 'Sphere') {
+                        geometry = new THREE.SphereGeometry(0.5);
+                        geometry.parameters = { radius: 0.5 };
+                    } else if (type === 'Cylinder') {
+                        geometry = new THREE.CylinderGeometry(0.5, 0.5, 1);
+                        geometry.parameters = { radiusTop: 0.5, radiusBottom: 0.5, height: 1, radialSegments: 8 };
+                    } else {
+                        geometry = new THREE.BoxGeometry(1, 1, 1);
+                        geometry.parameters = { width: 1, height: 1, depth: 1 };
+                    }
+                    return new THREE.Mesh(geometry, new THREE.MeshBasicMaterial());
+                })
+            };
+        })
+    };
+});
 
 describe('PhysicsManager', () => {
     let scene;
@@ -17,6 +49,7 @@ describe('PhysicsManager', () => {
         eventBus = EventBus;
         physicsManager = new PhysicsManager(scene);
         primitiveFactory = new PrimitiveFactory();
+<<<<<<< HEAD
 
         // Correct instantiation matching the signature:
         // constructor(scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater, stateManager)
@@ -31,6 +64,10 @@ describe('PhysicsManager', () => {
             null, // objectPropertyUpdater
             null  // stateManager
         );
+=======
+        // constructor(scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater, stateManager)
+        objectManager = new ObjectManager(scene, eventBus, physicsManager, primitiveFactory);
+>>>>>>> master
     });
 
     it('should add a box-shaped physics body to the world', () => {
@@ -190,6 +227,6 @@ describe('PhysicsManager', () => {
 
         physicsManager.update(deltaTime);
 
-        expect(stepSpy).toHaveBeenCalledWith(deltaTime);
+        expect(stepSpy).toHaveBeenCalledWith(1 / 60, deltaTime, 10);
     });
 });

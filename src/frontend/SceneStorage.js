@@ -7,7 +7,8 @@ export class SceneStorage {
         this.eventBus = eventBus;
         this.scene = scene;
         this.worker = new Worker('./worker.js');
-        this.worker.onmessage = this.handleWorkerMessage.bind(this);
+        this.boundHandleWorkerMessage = this.handleWorkerMessage.bind(this);
+        this.worker.onmessage = this.boundHandleWorkerMessage;
         this.loadPromiseResolve = null;
         this.savePromiseResolve = null;
         this.savePromiseReject = null;
@@ -18,9 +19,46 @@ export class SceneStorage {
         
         // Serialize the scene using the worker
         const sceneJson = await new Promise((resolve, reject) => {
+<<<<<<< HEAD
             this.savePromiseResolve = resolve;
             this.savePromiseReject = reject;
             this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
+=======
+            // OPTIMIZATION: Patch BufferAttribute.toJSON to return TypedArrays directly
+            // instead of converting to standard Arrays (which is slow).
+            const originalToJSON = THREE.BufferAttribute.prototype.toJSON;
+            THREE.BufferAttribute.prototype.toJSON = function () {
+                return {
+                    itemSize: this.itemSize,
+                    type: this.array.constructor.name,
+                    array: this.array, // Keep as TypedArray
+                    normalized: this.normalized
+                };
+            };
+
+            let data;
+            try {
+                data = this.scene.toJSON();
+            } finally {
+                // Restore original toJSON
+                THREE.BufferAttribute.prototype.toJSON = originalToJSON;
+            }
+
+            this.worker.onmessage = (event) => {
+                if (event.data.type === 'serialize_complete') {
+                    resolve(event.data.data);
+                } else if (event.data.type === 'error') {
+                    reject(new Error(event.data.message + ': ' + event.data.error));
+                }
+            };
+
+            // Send data to worker. We do NOT transfer buffers because that would detach them
+            // from the main thread, breaking the live scene. Structured cloning (default)
+            // copies the buffers, which is fast enough and safe.
+            this.worker.postMessage({ type: 'serialize', data: data });
+        }).finally(() => {
+            this.worker.onmessage = this.boundHandleWorkerMessage;
+>>>>>>> master
         });
 
         zip.file('scene.json', sceneJson);
