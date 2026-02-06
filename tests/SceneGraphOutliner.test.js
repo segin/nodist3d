@@ -63,6 +63,46 @@ jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
 describe('Scene Graph/Outliner Functionality', () => {
   let dom, app;
 
+<<<<<<< HEAD
+    beforeEach(() => {
+        // Setup DOM
+        dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+        global.document = dom.window.document;
+        global.window = dom.window;
+        global.requestAnimationFrame = jest.fn();
+        global.console.log = jest.fn(); // Suppress console.log
+        
+        // Mock document methods
+        jest.spyOn(document.body, 'appendChild').mockImplementation();
+        jest.spyOn(window, 'addEventListener').mockImplementation();
+        
+        // Mock createElement to return proper elements
+        jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+            const element = {
+                tagName: tagName.toUpperCase(),
+                style: {},
+                childNodes: [],
+                appendChild: jest.fn((child) => {
+                    element.childNodes.push(child);
+                    return child;
+                }),
+                textContent: '',
+                innerHTML: '',
+                onclick: null,
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn(),
+                setAttribute: jest.fn((name, value) => { element[name] = value; }),
+                getAttribute: jest.fn((name) => element[name])
+            };
+            
+            // Add style.cssText property
+            Object.defineProperty(element.style, 'cssText', {
+                set: jest.fn(),
+                get: jest.fn()
+            });
+            
+            return element;
+=======
   beforeEach(() => {
     // Setup DOM
     dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
@@ -162,12 +202,119 @@ describe('Scene Graph/Outliner Functionality', () => {
           listItem.appendChild(objectInfo);
           listItem.appendChild(positionInfo);
           this.objectsList.appendChild(listItem);
+>>>>>>> master
         });
 
+<<<<<<< HEAD
+            setupSceneGraph() {
+                this.sceneGraphPanel = document.createElement('div');
+                this.objectsList = document.createElement('ul');
+                this.sceneGraphPanel.appendChild(document.createElement('h3'));
+                this.sceneGraphPanel.appendChild(this.objectsList);
+                document.body.appendChild(this.sceneGraphPanel);
+                this.updateSceneGraph();
+            }
+
+            updateSceneGraph() {
+                this.objectsList.innerHTML = '';
+                // Clear childNodes for mock environment since innerHTML setter doesn't do it
+                if (this.objectsList.childNodes) this.objectsList.childNodes.length = 0;
+                
+                this.objects.forEach((object, index) => {
+                    const listItem = document.createElement('li');
+                    const objectInfo = document.createElement('div');
+                    const objectName = document.createElement('span');
+                    const objectType = document.createElement('span');
+                    const visibilityBtn = document.createElement('button');
+                    const deleteBtn = document.createElement('button');
+                    const positionInfo = document.createElement('div');
+                    
+                    objectName.textContent = object.name || `Object_${index + 1}`;
+                    objectType.textContent = object.geometry.type.replace('Geometry', '');
+                    visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                    visibilityBtn.title = 'Toggle visibility';
+                    visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
+
+                    deleteBtn.textContent = '🗑';
+                    deleteBtn.title = `Delete ${object.name}`;
+                    deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+
+                    positionInfo.textContent = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
+                    
+                    // Mock event handlers
+                    visibilityBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        object.visible = !object.visible;
+                        visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                        visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
+                    };
+                    
+                    deleteBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        this.deleteObject(object);
+                    };
+                    
+                    listItem.onclick = () => {
+                        this.selectObject(object);
+                    };
+                    
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.appendChild(visibilityBtn);
+                    buttonContainer.appendChild(deleteBtn);
+                    
+                    objectInfo.appendChild(objectName);
+                    objectInfo.appendChild(objectType);
+                    objectInfo.appendChild(buttonContainer);
+                    
+                    listItem.appendChild(objectInfo);
+                    listItem.appendChild(positionInfo);
+                    this.objectsList.appendChild(listItem);
+                });
+                
+                if (this.objects.length === 0) {
+                    const emptyMessage = document.createElement('li');
+                    emptyMessage.textContent = 'No objects in scene';
+                    this.objectsList.appendChild(emptyMessage);
+                }
+            }
+
+            selectObject(object) {
+                this.selectedObject = object;
+                this.updateSceneGraph();
+            }
+
+            deleteObject(object) {
+                const index = this.objects.indexOf(object);
+                if (index > -1) {
+                    this.objects.splice(index, 1);
+                    this.scene.remove(object);
+                }
+                if (this.selectedObject === object) {
+                    this.selectedObject = null;
+                }
+                this.updateSceneGraph();
+            }
+
+            addTestObject(name = 'TestObject') {
+                const THREE = require('three');
+                const object = {
+                    name: name,
+                    position: { x: Math.random(), y: Math.random(), z: Math.random(), toFixed: (n) => '1.00' },
+                    geometry: { type: 'BoxGeometry' },
+                    visible: true,
+                    uuid: `test-uuid-${Date.now()}`
+                };
+                this.objects.push(object);
+                this.scene.add(object);
+                this.updateSceneGraph();
+                return object;
+            }
+=======
         if (this.objects.length === 0) {
           const emptyMessage = document.createElement('li');
           emptyMessage.textContent = 'No objects in scene';
           this.objectsList.appendChild(emptyMessage);
+>>>>>>> master
         }
       }
 
@@ -289,6 +436,47 @@ describe('Scene Graph/Outliner Functionality', () => {
 
       expect(app.selectedObject).toBeNull();
     });
+<<<<<<< HEAD
+
+    describe('Accessibility', () => {
+        it('should have correct ARIA labels for buttons', () => {
+            app.addTestObject('A11yTestObject');
+
+            // Traverse DOM to find buttons
+            // List -> ListItem -> InfoDiv -> ButtonDiv -> Buttons
+            const listItem = app.objectsList.childNodes[0]; // First object
+            const infoDiv = listItem.childNodes[0];
+            const btnDiv = infoDiv.childNodes[2];
+
+            const visBtn = btnDiv.childNodes[0];
+            const delBtn = btnDiv.childNodes[1];
+
+            // Verify Visibility Button
+            expect(visBtn.setAttribute).toHaveBeenCalledWith('aria-label', 'Hide A11yTestObject');
+            expect(visBtn.title).toBe('Toggle visibility');
+
+            // Verify Delete Button
+            expect(delBtn.setAttribute).toHaveBeenCalledWith('aria-label', 'Delete A11yTestObject');
+            expect(delBtn.title).toBe('Delete A11yTestObject');
+        });
+
+        it('should update ARIA label when visibility changes', () => {
+            app.addTestObject('ToggleTestObject');
+            const listItem = app.objectsList.childNodes[0];
+            const visBtn = listItem.childNodes[0].childNodes[2].childNodes[0];
+
+            // Initial state
+            expect(visBtn.setAttribute).toHaveBeenCalledWith('aria-label', 'Hide ToggleTestObject');
+
+            // Click to toggle
+            visBtn.onclick({ stopPropagation: jest.fn() });
+
+            // Should be hidden now
+            expect(visBtn.setAttribute).toHaveBeenCalledWith('aria-label', 'Show ToggleTestObject');
+        });
+    });
+});
+=======
   });
 
   describe('Visibility Toggle', () => {
@@ -387,3 +575,4 @@ describe('Scene Graph/Outliner Functionality', () => {
     });
   });
 });
+>>>>>>> master

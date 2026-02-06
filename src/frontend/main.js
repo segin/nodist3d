@@ -138,6 +138,26 @@ export class App {
 
     setupSceneGraph() {
 <<<<<<< HEAD
+        // Create scene graph panel
+        this.sceneGraphPanel = document.createElement('div');
+        this.sceneGraphPanel.id = 'scene-graph-panel';
+        this.sceneGraphPanel.style.cssText = `
+            position: fixed;
+            top: 80px;
+            left: 10px;
+            width: 250px;
+            max-height: 400px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-y: auto;
+            z-index: 1000;
+        `;
+=======
+<<<<<<< HEAD
         // Use existing scene graph panel
         this.sceneGraphPanel = document.getElementById('scene-graph');
         this.sceneGraphPanel.innerHTML = '';
@@ -148,6 +168,7 @@ export class App {
             console.error('Scene graph panel element not found!');
             return;
         }
+>>>>>>> master
 >>>>>>> master
         
         // Create title
@@ -955,7 +976,7 @@ export class App {
         });
         
         // Remove all subfolders
-        const folders = [...this.propertiesFolder.__folders];
+        const folders = Object.values(this.propertiesFolder.__folders || {});
         folders.forEach(folder => {
             this.propertiesFolder.removeFolder(folder);
         });
@@ -1031,11 +1052,15 @@ export class App {
             visibilityBtn.className = 'icon-btn';
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
 <<<<<<< HEAD
+            visibilityBtn.title = 'Toggle visibility';
+=======
+<<<<<<< HEAD
             visibilityBtn.title = object.visible ? 'Hide Object' : 'Show Object';
             visibilityBtn.setAttribute('aria-label', `${object.visible ? 'Hide' : 'Show'} ${object.name || `Object_${index + 1}`}`);
 
 =======
             visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
+>>>>>>> master
             visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
             visibilityBtn.style.cssText = `
                 background: none;
@@ -1052,6 +1077,9 @@ export class App {
                 object.visible = !object.visible;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
 <<<<<<< HEAD
+                visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
+=======
+<<<<<<< HEAD
                 // Update title and aria-label
                 visibilityBtn.title = object.visible ? 'Hide Object' : 'Show Object';
                 visibilityBtn.setAttribute('aria-label', `${object.visible ? 'Hide' : 'Show'} ${object.name || `Object_${index + 1}`}`);
@@ -1062,6 +1090,7 @@ export class App {
                 visibilityBtn.title = `${action} object`;
                 visibilityBtn.setAttribute('aria-label', `${action} ${object.name}`);
 >>>>>>> master
+>>>>>>> master
             };
             
             // Delete button
@@ -1069,11 +1098,15 @@ export class App {
             deleteBtn.className = 'icon-btn';
             deleteBtn.textContent = '🗑';
 <<<<<<< HEAD
+            deleteBtn.title = `Delete ${object.name}`;
+=======
+<<<<<<< HEAD
             deleteBtn.title = 'Delete Object';
             deleteBtn.setAttribute('aria-label', `Delete ${object.name || `Object_${index + 1}`}`);
 
 =======
             deleteBtn.title = 'Delete object';
+>>>>>>> master
             deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
             deleteBtn.style.cssText = `
                 background: none;
