@@ -17,7 +17,7 @@ import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
 /**
  * Simple 3D modeling application with basic primitives and transform controls
  */
-class App {
+export class App {
     constructor() {
         // Initialize Service Container
         this.container = new ServiceContainer();
@@ -1189,72 +1189,120 @@ class App {
         }
     }
 
+    createGeometryFromData(objData) {
+        const params = objData.geometryParams || {};
+        switch (objData.type) {
+            case 'BoxGeometry':
+                return new THREE.BoxGeometry(params.width || 1, params.height || 1, params.depth || 1);
+            case 'SphereGeometry':
+                return new THREE.SphereGeometry(params.radius || 0.5, params.widthSegments || 32, params.heightSegments || 32);
+            case 'CylinderGeometry':
+                return new THREE.CylinderGeometry(params.radiusTop || 0.5, params.radiusBottom || 0.5, params.height || 1, 32);
+            case 'ConeGeometry':
+                return new THREE.ConeGeometry(params.radius || 0.5, params.height || 1, 32);
+            case 'TorusGeometry':
+                return new THREE.TorusGeometry(params.radius || 0.4, params.tube || 0.2, 16, 100);
+            case 'PlaneGeometry':
+                return new THREE.PlaneGeometry(params.width || 2, params.height || 2);
+            default:
+                return new THREE.BoxGeometry(1, 1, 1);
+        }
+    }
+
     restoreState(state) {
-        // Clear current scene
+        // Track current objects by UUID for easy lookup
+        const currentObjectsMap = new Map();
         this.objects.forEach(obj => {
+            currentObjectsMap.set(obj.uuid, obj);
+        });
+        
+        const newObjects = [];
+
+        // Process objects from state
+        state.objects.forEach(objData => {
+            let object = currentObjectsMap.get(objData.uuid);
+            
+            if (object) {
+                // UPDATE existing object
+                if (object.name !== objData.name) object.name = objData.name;
+                object.position.copy(objData.position);
+                object.rotation.copy(objData.rotation);
+                object.scale.copy(objData.scale);
+                object.visible = objData.visible;
+
+                // Update material
+                if (object.material.color.getHex() !== objData.material.color.getHex()) {
+                    object.material.color.set(objData.material.color);
+                }
+                if (object.material.emissive.getHex() !== objData.material.emissive.getHex()) {
+                    object.material.emissive.set(objData.material.emissive);
+                }
+
+                // Check if geometry update is needed
+                const currentParams = object.userData.geometryParams;
+                const newParams = objData.geometryParams;
+
+                let geometryNeedsUpdate = false;
+                if (!currentParams && newParams) geometryNeedsUpdate = true;
+                else if (currentParams && !newParams) geometryNeedsUpdate = true;
+                else if (currentParams && newParams) {
+                    // Compare keys
+                    for (const key in newParams) {
+                        if (currentParams[key] !== newParams[key]) {
+                            geometryNeedsUpdate = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (geometryNeedsUpdate) {
+                     object.userData.geometryParams = newParams ? {...newParams} : null;
+                     const newGeometry = this.createGeometryFromData(objData);
+                     object.geometry.dispose();
+                     object.geometry = newGeometry;
+                }
+
+                newObjects.push(object);
+                // Remove from map so we know what's left to delete
+                currentObjectsMap.delete(objData.uuid);
+
+            } else {
+                // CREATE new object
+                const geometry = this.createGeometryFromData(objData);
+
+                // Recreate material
+                const material = new THREE.MeshLambertMaterial({
+                    color: objData.material.color,
+                    side: objData.type === 'PlaneGeometry' ? THREE.DoubleSide : THREE.FrontSide
+                });
+                material.emissive.set(objData.material.emissive);
+
+                // Create mesh
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.name = objData.name;
+                mesh.position.copy(objData.position);
+                mesh.rotation.copy(objData.rotation);
+                mesh.scale.copy(objData.scale);
+                mesh.visible = objData.visible;
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                mesh.uuid = objData.uuid;
+                mesh.userData.geometryParams = objData.geometryParams;
+
+                this.scene.add(mesh);
+                newObjects.push(mesh);
+            }
+        });
+        
+        // DELETE removed objects
+        currentObjectsMap.forEach(obj => {
             this.scene.remove(obj);
             obj.geometry.dispose();
             obj.material.dispose();
         });
-        this.objects.length = 0;
-        
-        // Restore objects
-        state.objects.forEach(objData => {
-            let geometry;
-            
-            // Recreate geometry based on type
-            switch (objData.type) {
-                case 'BoxGeometry':
-                    const params = objData.geometryParams || { width: 1, height: 1, depth: 1 };
-                    geometry = new THREE.BoxGeometry(params.width, params.height, params.depth);
-                    break;
-                case 'SphereGeometry':
-                    const sphereParams = objData.geometryParams || { radius: 0.5, widthSegments: 32, heightSegments: 32 };
-                    geometry = new THREE.SphereGeometry(sphereParams.radius, sphereParams.widthSegments, sphereParams.heightSegments);
-                    break;
-                case 'CylinderGeometry':
-                    const cylinderParams = objData.geometryParams || { radiusTop: 0.5, radiusBottom: 0.5, height: 1 };
-                    geometry = new THREE.CylinderGeometry(cylinderParams.radiusTop, cylinderParams.radiusBottom, cylinderParams.height, 32);
-                    break;
-                case 'ConeGeometry':
-                    const coneParams = objData.geometryParams || { radius: 0.5, height: 1 };
-                    geometry = new THREE.ConeGeometry(coneParams.radius, coneParams.height, 32);
-                    break;
-                case 'TorusGeometry':
-                    const torusParams = objData.geometryParams || { radius: 0.4, tube: 0.2 };
-                    geometry = new THREE.TorusGeometry(torusParams.radius, torusParams.tube, 16, 100);
-                    break;
-                case 'PlaneGeometry':
-                    const planeParams = objData.geometryParams || { width: 2, height: 2 };
-                    geometry = new THREE.PlaneGeometry(planeParams.width, planeParams.height);
-                    break;
-                default:
-                    geometry = new THREE.BoxGeometry(1, 1, 1);
-            }
-            
-            // Recreate material
-            const material = new THREE.MeshLambertMaterial({ 
-                color: objData.material.color,
-                side: objData.type === 'PlaneGeometry' ? THREE.DoubleSide : THREE.FrontSide
-            });
-            material.emissive.copy(objData.material.emissive);
-            
-            // Create mesh
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.name = objData.name;
-            mesh.position.copy(objData.position);
-            mesh.rotation.copy(objData.rotation);
-            mesh.scale.copy(objData.scale);
-            mesh.visible = objData.visible;
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
-            mesh.uuid = objData.uuid;
-            mesh.userData.geometryParams = objData.geometryParams;
-            
-            this.scene.add(mesh);
-            this.objects.push(mesh);
-        });
-        
+
+        this.objects = newObjects;
+
         // Restore selection
         this.deselectObject();
         if (state.selectedObjectUuid) {
