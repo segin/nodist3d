@@ -63,13 +63,13 @@ body {
 
 /* Scene graph styling */
 #scene-graph {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    position: fixed;
+    top: 80px;
+    left: 10px;
     background-color: rgba(0, 0, 0, 0.7);
     border-radius: 8px;
     padding: 10px;
-    max-width: 300px;
+    width: 250px;
     max-height: 400px;
     overflow-y: auto;
     backdrop-filter: blur(10px);
@@ -108,6 +108,33 @@ body {
     background-color: rgba(0, 123, 255, 0.3);
 }
 
+#scene-graph li:focus-visible {
+    outline: 2px solid #007bff;
+    outline-offset: -2px;
+}
+
+<<<<<<< HEAD
+=======
+#scene-graph .icon-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 5px;
+    margin: 0 5px;
+    border-radius: 4px;
+}
+
+#scene-graph .icon-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+#scene-graph .icon-btn:focus-visible {
+    outline: 2px solid #007bff;
+}
+
+>>>>>>> master
 /* Mobile optimizations */
 @media (max-width: 768px) {
     #ui {
@@ -259,4 +286,9 @@ body {
     #scene-graph::-webkit-scrollbar-thumb:hover {
         background: rgba(255, 255, 255, 0.5);
     }
+}
+/* Accessibility focus styles for dynamically created scene graph panel */
+#scene-graph-panel li:focus-visible {
+    outline: 2px solid #007bff;
+    outline-offset: -2px;
 }

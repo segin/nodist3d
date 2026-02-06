@@ -1,0 +1,16 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+{ "semi": true, "singleQuote": true, "tabWidth": 2, "printWidth": 100 }
+=======
+>>>>>>> master
+{
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "printWidth": 100
+}
+<<<<<<< HEAD
+=======
+>>>>>>> master
+>>>>>>> master
