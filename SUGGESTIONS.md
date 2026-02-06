@@ -3,7 +3,9 @@
 This document provides a detailed list of over 300 suggested improvements for the nodist3d repository. The suggestions are categorized to cover architecture, backend, frontend logic, UI/UX, testing, tooling, and many advanced concepts.
 
 ---
+
 ## Part 1: Original 211 Suggestions
+
 ---
 
 ### I. Architecture & General Improvements
@@ -158,7 +160,7 @@ This document provides a detailed list of over 300 suggested improvements for th
 - [ ] **Generate Documentation from JSDoc**: Use a tool like `JSDoc` or `TypeDoc` to automatically generate an HTML documentation website from your code comments.
 - [ ] **Set up Project Boards**: Use GitHub Projects or a similar tool to organize tasks, track bugs, and plan future features.
 - [ ] **Create a `changelog.md`**: Maintain a log of changes, bug fixes, and new features for each version release.
-- [ ] **Add inline comments for complex logic**: Beyond JSDoc, add comments inside complex functions to explain *why* the code is written a certain way, not just *what* it does.
+- [ ] **Add inline comments for complex logic**: Beyond JSDoc, add comments inside complex functions to explain _why_ the code is written a certain way, not just _what_ it does.
 - [ ] **Document Build and Deployment Steps**: Add a section to the `README.md` that clearly explains how to build the project for production and deploy it.
 
 ### XI. TypeScript Migration & Static Analysis
