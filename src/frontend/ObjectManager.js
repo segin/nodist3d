@@ -1,4 +1,5 @@
 
+// @ts-check
 import { Events } from './constants.js';
 import { PrimitiveFactory } from './PrimitiveFactory.js';
 
