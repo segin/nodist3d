@@ -22,12 +22,16 @@ import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
 export class App {
 =======
 <<<<<<< HEAD
+export class App {
+=======
+<<<<<<< HEAD
 class App {
     /**
      * Initializes the application
      */
 =======
 export class App {
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
     constructor() {
@@ -237,7 +241,12 @@ export class App {
             margin: 0;
             padding: 0;
         `;
+<<<<<<< HEAD
+
+        this.sceneGraphMap = new Map();
 =======
+=======
+>>>>>>> master
 >>>>>>> master
         
         this.sceneGraphPanel.appendChild(title);
@@ -1253,6 +1262,9 @@ export class App {
         const folders = Object.values(this.propertiesFolder.__folders || {});
 =======
 <<<<<<< HEAD
+        const folders = Object.values(this.propertiesFolder.__folders || {});
+=======
+<<<<<<< HEAD
         // @ts-ignore - __folders is internal
         const folders = [...this.propertiesFolder.__folders];
         // @ts-ignore
@@ -1278,6 +1290,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
         folders.forEach(folder => {
             // @ts-ignore
             this.propertiesFolder.removeFolder(folder);
@@ -1295,6 +1308,20 @@ export class App {
 >>>>>>> master
      */
     updateSceneGraph() {
+<<<<<<< HEAD
+        if (!this.sceneGraphMap) {
+            this.sceneGraphMap = new Map();
+        }
+
+        const currentUuids = new Set();
+        
+        // Add each object to the scene graph
+        this.objects.forEach((object, index) => {
+            currentUuids.add(object.uuid);
+            
+            let listItem = this.sceneGraphMap.get(object.uuid);
+            let objectInfo, objectName, objectType, visibilityBtn, deleteBtn, positionInfo;
+=======
 <<<<<<< HEAD
         // Check if focus is currently within the list
         const listHasFocus = this.objectsList.contains(document.activeElement);
@@ -1399,14 +1426,128 @@ export class App {
                 justify-content: space-between;
                 align-items: center;
             `;
+>>>>>>> master
             
-            const objectName = document.createElement('span');
-            objectName.textContent = object.name || `Object_${index + 1}`;
-            objectName.style.cssText = `
-                font-weight: bold;
-                color: #fff;
-            `;
+            if (!listItem) {
+                // Create new list item
+                listItem = document.createElement('li');
+                listItem.style.cssText = `
+                    padding: 5px;
+                    margin: 2px 0;
+                    border-radius: 3px;
+                    cursor: pointer;
+                    border: 1px solid #555;
+                `;
+                listItem.__cache = {};
+
+                objectInfo = document.createElement('div');
+                objectInfo.style.cssText = `
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                `;
+
+                objectName = document.createElement('span');
+                objectName.style.cssText = `
+                    font-weight: bold;
+                    color: #fff;
+                `;
+
+                objectType = document.createElement('span');
+                objectType.style.cssText = `
+                    font-size: 10px;
+                    color: #aaa;
+                    font-style: italic;
+                `;
+
+                const buttonContainer = document.createElement('div');
+
+                visibilityBtn = document.createElement('button');
+                visibilityBtn.style.cssText = `
+                    background: none;
+                    border: none;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 12px;
+                    padding: 2px 5px;
+                    margin: 0 5px;
+                `;
+
+                deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '🗑';
+                deleteBtn.style.cssText = `
+                    background: none;
+                    border: none;
+                    color: #ff4444;
+                    cursor: pointer;
+                    font-size: 12px;
+                    padding: 2px 5px;
+                `;
+
+                buttonContainer.appendChild(visibilityBtn);
+                buttonContainer.appendChild(deleteBtn);
+
+                objectInfo.appendChild(objectName);
+                objectInfo.appendChild(objectType);
+                objectInfo.appendChild(buttonContainer);
+
+                listItem.appendChild(objectInfo);
+
+                positionInfo = document.createElement('div');
+                positionInfo.style.cssText = `
+                    font-size: 10px;
+                    color: #999;
+                    margin-top: 3px;
+                `;
+                listItem.appendChild(positionInfo);
+
+                this.sceneGraphMap.set(object.uuid, listItem);
+            } else {
+                // Retrieve cached elements
+                objectInfo = listItem.firstChild;
+                objectName = objectInfo.children[0];
+                objectType = objectInfo.children[1];
+                const buttonContainer = objectInfo.children[2];
+                visibilityBtn = buttonContainer.children[0];
+                deleteBtn = buttonContainer.children[1];
+                positionInfo = listItem.lastChild;
+            }
             
+<<<<<<< HEAD
+            // Update styles and content with caching
+            const isSelected = this.selectedObject === object;
+            const bg = isSelected ? '#444' : '#222';
+            if (listItem.__cache.bg !== bg) {
+                listItem.style.background = bg;
+                listItem.__cache.bg = bg;
+            }
+            
+            const name = object.name || `Object_${index + 1}`;
+            if (listItem.__cache.name !== name) {
+                objectName.textContent = name;
+                listItem.__cache.name = name;
+            }
+
+            const type = object.geometry.type.replace('Geometry', '');
+            if (listItem.__cache.type !== type) {
+                objectType.textContent = type;
+                listItem.__cache.type = type;
+            }
+
+            const visText = object.visible ? '👁' : '🚫';
+            if (listItem.__cache.vis !== visText) {
+                visibilityBtn.textContent = visText;
+                listItem.__cache.vis = visText;
+            }
+
+            const posText = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
+            if (listItem.__cache.pos !== posText) {
+                positionInfo.textContent = posText;
+                listItem.__cache.pos = posText;
+            }
+
+            // Update event listeners
+=======
             const objectType = document.createElement('span');
             // @ts-ignore
             objectType.textContent = object.geometry.type.replace('Geometry', '');
@@ -1474,11 +1615,17 @@ export class App {
                 margin: 0 5px;
             `;
 >>>>>>> master
+>>>>>>> master
             visibilityBtn.onclick = (e) => {
                 e.stopPropagation();
                 object.visible = !object.visible;
                 const label = object.visible ? 'Hide object' : 'Show object';
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+                listItem.__cache.vis = visibilityBtn.textContent;
+            };
+            
+=======
 <<<<<<< HEAD
                 visibilityBtn.title = label;
                 visibilityBtn.setAttribute('aria-label', label);
@@ -1573,14 +1720,18 @@ export class App {
                 padding: 2px 5px;
             `;
 >>>>>>> master
+>>>>>>> master
             deleteBtn.onclick = (e) => {
                 e.stopPropagation();
                 this.deleteObject(object);
             };
             
+<<<<<<< HEAD
+=======
             // Click to select
             listItem.tabIndex = 0;
             listItem.setAttribute('aria-label', 'Select ' + (object.name || 'Object'));
+>>>>>>> master
             listItem.onclick = () => {
                 this.selectObject(object);
             };
@@ -1598,6 +1749,12 @@ export class App {
                 }
             });
             
+<<<<<<< HEAD
+            // Ensure correct position in DOM
+            if (this.objectsList.children[index] !== listItem) {
+                this.objectsList.insertBefore(listItem, this.objectsList.children[index]);
+            }
+=======
             // Keyboard navigation
             listItem.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -1627,6 +1784,7 @@ export class App {
             listItem.appendChild(positionInfo);
             
             this.objectsList.appendChild(listItem);
+>>>>>>> master
         });
 
         // Restore focus if list was focused and we have a selected object
@@ -1637,17 +1795,35 @@ export class App {
             }
         }
         
-        // Add message if no objects
+        // Remove items that are no longer in the scene
+        for (const [uuid, listItem] of this.sceneGraphMap.entries()) {
+            if (!currentUuids.has(uuid)) {
+                if (listItem.parentNode === this.objectsList) {
+                    this.objectsList.removeChild(listItem);
+                }
+                this.sceneGraphMap.delete(uuid);
+            }
+        }
+
+        // Handle empty message
+        const existingEmptyMsg = this.objectsList.querySelector('#empty-scene-msg');
         if (this.objects.length === 0) {
-            const emptyMessage = document.createElement('li');
-            emptyMessage.textContent = 'No objects in scene';
-            emptyMessage.style.cssText = `
-                color: #666;
-                font-style: italic;
-                text-align: center;
-                padding: 20px;
-            `;
-            this.objectsList.appendChild(emptyMessage);
+            if (!existingEmptyMsg) {
+                const emptyMessage = document.createElement('li');
+                emptyMessage.id = 'empty-scene-msg';
+                emptyMessage.textContent = 'No objects in scene';
+                emptyMessage.style.cssText = `
+                    color: #666;
+                    font-style: italic;
+                    text-align: center;
+                    padding: 20px;
+                `;
+                this.objectsList.appendChild(emptyMessage);
+            }
+        } else {
+            if (existingEmptyMsg) {
+                existingEmptyMsg.remove();
+            }
         }
 
         // Restore focus if it was within the list

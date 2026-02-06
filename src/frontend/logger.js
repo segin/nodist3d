@@ -1,10 +1,16 @@
 <<<<<<< HEAD
+// import log from 'loglevel';
+// Use global log object from script tag because ESM import fails for UMD build
+const log = window.log;
+=======
+<<<<<<< HEAD
 const log = (typeof window !== 'undefined' && window.log) ? window.log : {
     info: console.log,
     warn: console.warn,
     error: console.error,
     setLevel: () => {}
 };
+>>>>>>> master
 
 if (log && log.setLevel) {
     log.setLevel('info');
