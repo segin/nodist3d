@@ -25,6 +25,9 @@ export class App {
 export class App {
 =======
 <<<<<<< HEAD
+export class App {
+=======
+<<<<<<< HEAD
 class App {
 <<<<<<< HEAD
   constructor() {
@@ -40,6 +43,7 @@ class App {
      */
 =======
 export class App {
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -2361,6 +2365,9 @@ export class App {
         const folders = Object.values(this.propertiesFolder.__folders || {});
 =======
 <<<<<<< HEAD
+        const folders = Object.values(this.propertiesFolder.__folders || {});
+=======
+<<<<<<< HEAD
         // dat.gui __folders is an object, not an array in some versions, or this might be empty
         // Convert to array if it is an object
         const folders = this.propertiesFolder.__folders;
@@ -2412,6 +2419,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
         folders.forEach(folder => {
             // @ts-ignore
             this.propertiesFolder.removeFolder(folder);
@@ -2435,14 +2443,28 @@ export class App {
      */
     updateSceneGraph() {
 <<<<<<< HEAD
+        if (!this.sceneGraphItemMap) this.sceneGraphItemMap = new Map();
+
+        const visited = new Set();
+=======
+<<<<<<< HEAD
         if (!this.sceneGraphMap) {
             this.sceneGraphMap = new Map();
         }
 
         const currentUuids = new Set();
+>>>>>>> master
         
-        // Add each object to the scene graph
+        // Add or update each object in the scene graph
         this.objects.forEach((object, index) => {
+<<<<<<< HEAD
+            visited.add(object.uuid);
+            
+            let listItem = this.sceneGraphItemMap.get(object.uuid);
+            const isSelected = this.selectedObject === object;
+            const backgroundColor = isSelected ? '#444' : '#222';
+            
+=======
             currentUuids.add(object.uuid);
             
             let listItem = this.sceneGraphMap.get(object.uuid);
@@ -2640,41 +2662,68 @@ export class App {
 =======
 >>>>>>> master
             
+>>>>>>> master
             if (!listItem) {
                 // Create new list item
                 listItem = document.createElement('li');
                 listItem.style.cssText = `
                     padding: 5px;
                     margin: 2px 0;
+<<<<<<< HEAD
+                    background: ${backgroundColor};
+=======
+>>>>>>> master
                     border-radius: 3px;
                     cursor: pointer;
                     border: 1px solid #555;
                 `;
+<<<<<<< HEAD
+
+                // Object name and type container
+                const objectInfo = document.createElement('div');
+=======
                 listItem.__cache = {};
 
                 objectInfo = document.createElement('div');
+>>>>>>> master
                 objectInfo.style.cssText = `
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
                 `;
 
+<<<<<<< HEAD
+                const objectName = document.createElement('span');
+                objectName.className = 'object-name';
+=======
                 objectName = document.createElement('span');
+>>>>>>> master
                 objectName.style.cssText = `
                     font-weight: bold;
                     color: #fff;
                 `;
 
+<<<<<<< HEAD
+                const objectType = document.createElement('span');
+                objectType.className = 'object-type';
+=======
                 objectType = document.createElement('span');
+>>>>>>> master
                 objectType.style.cssText = `
                     font-size: 10px;
                     color: #aaa;
                     font-style: italic;
                 `;
 
+<<<<<<< HEAD
+                // Visibility toggle
+                const visibilityBtn = document.createElement('button');
+                visibilityBtn.className = 'visibility-btn';
+=======
                 const buttonContainer = document.createElement('div');
 
                 visibilityBtn = document.createElement('button');
+>>>>>>> master
                 visibilityBtn.style.cssText = `
                     background: none;
                     border: none;
@@ -2685,7 +2734,12 @@ export class App {
                     margin: 0 5px;
                 `;
 
+<<<<<<< HEAD
+                // Delete button
+                const deleteBtn = document.createElement('button');
+=======
                 deleteBtn = document.createElement('button');
+>>>>>>> master
                 deleteBtn.textContent = '🗑';
                 deleteBtn.style.cssText = `
                     background: none;
@@ -2696,6 +2750,20 @@ export class App {
                     padding: 2px 5px;
                 `;
 
+<<<<<<< HEAD
+                // Position info
+                const positionInfo = document.createElement('div');
+                positionInfo.className = 'position-info';
+                positionInfo.style.cssText = `
+                    font-size: 10px;
+                    color: #999;
+                    margin-top: 3px;
+                `;
+
+                // Build structure
+                const buttonContainer = document.createElement('div');
+=======
+>>>>>>> master
                 buttonContainer.appendChild(visibilityBtn);
                 buttonContainer.appendChild(deleteBtn);
 
@@ -2704,6 +2772,95 @@ export class App {
                 objectInfo.appendChild(buttonContainer);
 
                 listItem.appendChild(objectInfo);
+<<<<<<< HEAD
+                listItem.appendChild(positionInfo);
+
+                // Attach Event Listeners
+                visibilityBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    object.visible = !object.visible;
+                    visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                };
+
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    this.deleteObject(object);
+                };
+
+                listItem.onclick = () => {
+                    this.selectObject(object);
+                };
+
+                this.sceneGraphItemMap.set(object.uuid, listItem);
+                this.objectsList.appendChild(listItem);
+            } else {
+                // Ensure correct order in DOM
+                this.objectsList.appendChild(listItem);
+            }
+
+            // Update Dynamic Properties
+            if (listItem.style.background !== (isSelected ? 'rgb(68, 68, 68)' : 'rgb(34, 34, 34)') &&
+                listItem.style.background !== backgroundColor) {
+                 listItem.style.background = backgroundColor;
+            }
+
+            const nameSpan = listItem.querySelector('.object-name');
+            const newName = object.name || `Object_${index + 1}`;
+            if (nameSpan.textContent !== newName) {
+                nameSpan.textContent = newName;
+            }
+
+            const typeSpan = listItem.querySelector('.object-type');
+            const newType = object.geometry.type.replace('Geometry', '');
+            if (typeSpan.textContent !== newType) {
+                typeSpan.textContent = newType;
+            }
+
+            const visBtn = listItem.querySelector('.visibility-btn');
+            const visText = object.visible ? '👁' : '🚫';
+            if (visBtn.textContent !== visText) {
+                visBtn.textContent = visText;
+            }
+
+            const posInfo = listItem.querySelector('.position-info');
+            const newPosText = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
+            if (posInfo.textContent !== newPosText) {
+                posInfo.textContent = newPosText;
+            }
+        });
+        
+        // Remove deleted objects
+        for (const [uuid, element] of this.sceneGraphItemMap) {
+            if (!visited.has(uuid)) {
+                if (element.parentNode === this.objectsList) {
+                    this.objectsList.removeChild(element);
+                }
+                this.sceneGraphItemMap.delete(uuid);
+            }
+        }
+
+        // Add message if no objects
+        if (this.objects.length === 0) {
+            let emptyMessage = document.getElementById('scene-graph-empty-message');
+            if (!emptyMessage) {
+                emptyMessage = document.createElement('li');
+                emptyMessage.id = 'scene-graph-empty-message';
+                emptyMessage.textContent = 'No objects in scene';
+                emptyMessage.style.cssText = `
+                    color: #666;
+                    font-style: italic;
+                    text-align: center;
+                    padding: 20px;
+                `;
+                this.objectsList.appendChild(emptyMessage);
+            } else {
+                this.objectsList.appendChild(emptyMessage);
+            }
+        } else {
+            const emptyMessage = document.getElementById('scene-graph-empty-message');
+            if (emptyMessage && emptyMessage.parentNode === this.objectsList) {
+                this.objectsList.removeChild(emptyMessage);
+=======
 
                 positionInfo = document.createElement('div');
                 positionInfo.style.cssText = `
@@ -3131,6 +3288,7 @@ export class App {
             const newItem = this.objectsList.querySelector(`[data-uuid="${this.selectedObject.uuid}"]`);
             if (newItem) {
                 newItem.focus();
+>>>>>>> master
             }
         }
         

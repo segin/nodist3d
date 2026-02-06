@@ -1,7 +1,11 @@
 <<<<<<< HEAD
+const log = window.log;
+=======
+<<<<<<< HEAD
 // Use the global 'log' variable exposed by the loglevel script loaded in index.html
 // because the UMD build doesn't provide a proper default export for ESM.
 // Fallback to console if not loaded.
+>>>>>>> master
 
 const log = window.log || window.loglevel || {
     trace: console.trace,
