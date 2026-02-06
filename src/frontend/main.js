@@ -2353,6 +2353,19 @@ export class App {
         
         // Remove all subfolders
 <<<<<<< HEAD
+        // dat.gui __folders is an object, not an array in some versions, or this might be empty
+        // Convert to array if it is an object
+        const folders = this.propertiesFolder.__folders;
+        const folderArray = Array.isArray(folders) ? folders : Object.values(folders);
+
+        folderArray.forEach(folder => {
+            try {
+                this.propertiesFolder.removeFolder(folder);
+            } catch (e) {
+                console.warn('Could not remove folder:', e);
+            }
+=======
+<<<<<<< HEAD
         // @ts-ignore
         const folders = Object.values(this.propertiesFolder.__folders || {});
 =======
@@ -2393,6 +2406,7 @@ export class App {
         folders.forEach(folder => {
             // @ts-ignore
             this.propertiesFolder.removeFolder(folder);
+>>>>>>> master
         });
 >>>>>>> master
         
@@ -2499,6 +2513,18 @@ export class App {
                 outline: none;
             `;
 <<<<<<< HEAD
+
+            // UX: Add keyboard accessibility
+            listItem.setAttribute('tabindex', '0');
+            listItem.setAttribute('role', 'button');
+            listItem.setAttribute('aria-label', `Select ${object.name || 'Object ' + (index + 1)}`);
+            if (this.selectedObject === object) {
+                listItem.setAttribute('aria-selected', 'true');
+            }
+
+            // UX: Add keyboard support for selection
+=======
+<<<<<<< HEAD
             listItem.tabIndex = 0;
             listItem.setAttribute('role', 'button');
             listItem.setAttribute('aria-label', `Select ${objectNameText}`);
@@ -2507,12 +2533,15 @@ export class App {
 
             // Keyboard selection support
 >>>>>>> master
+>>>>>>> master
             listItem.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     this.selectObject(object);
                 }
             });
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 =======
@@ -2541,6 +2570,7 @@ export class App {
             if (this.selectedObject === object) {
                 listItem.classList.add('selected');
             }
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -2736,6 +2766,9 @@ export class App {
             const visibilityLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
 <<<<<<< HEAD
+            visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
+=======
+<<<<<<< HEAD
             visibilityBtn.setAttribute('aria-label', `Toggle visibility for ${objectNameText}`);
 =======
 <<<<<<< HEAD
@@ -2791,6 +2824,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             visibilityBtn.style.cssText = `
 >>>>>>> master
                 background: none;
@@ -2820,6 +2854,9 @@ export class App {
                 object.visible = !object.visible;
                 const label = object.visible ? 'Hide object' : 'Show object';
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+                visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
+=======
 <<<<<<< HEAD
                 visibilityBtn.title = label;
                 visibilityBtn.setAttribute('aria-label', label);
@@ -2865,6 +2902,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             };
             
             // Delete button
@@ -2872,6 +2910,9 @@ export class App {
 <<<<<<< HEAD
             const deleteLabel = 'Delete ' + (object.name || 'Object');
             deleteBtn.textContent = '🗑';
+<<<<<<< HEAD
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+=======
 <<<<<<< HEAD
             deleteBtn.setAttribute('aria-label', `Delete ${objectNameText}`);
 =======
@@ -2919,6 +2960,7 @@ export class App {
             deleteBtn.title = 'Delete object';
 >>>>>>> master
             deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

@@ -1,4 +1,11 @@
 <<<<<<< HEAD
+# Palette's Journal
+
+## 2024-05-22 - Accessibility in Dynamic Lists
+**Learning:** Dynamically generated lists (like Scene Graph) often lack keyboard accessibility. Interactive `li` elements need `tabindex="0"` and `keydown` handlers for Enter/Space to be usable by keyboard users.
+**Action:** When creating interactive lists in JS, always add `tabindex` and keyboard listeners immediately.
+=======
+<<<<<<< HEAD
 ## 2026-01-20 - Accessibility and App Stability
 **Learning:** The application relied on a UMD build of the `loglevel` library which fails in strict ESM environments (browser with `type="module"`) because `this` is undefined at the top level. This prevented the application from initializing.
 **Action:** Replaced `loglevel` dependency with a lightweight console wrapper in `src/frontend/logger.js` to ensure the app runs reliably in all ESM environments without a bundler.
@@ -51,6 +58,7 @@
 ## 2026-01-28 - Dynamic UI Accessibility & Layout
 **Learning:** Dynamic UI components (like the Scene Graph) generated in `main.js` were ignoring CSS classes and missing accessibility attributes (ARIA labels, titles), leading to hardcoded styles and poor a11y. Also, fixed positioning caused overlap with `dat.gui`.
 **Action:** Always target existing DOM elements for containers, use CSS classes instead of inline styles, and explicitly add ARIA attributes when creating elements dynamically. Ensure overlay positions don't conflict with library-generated UI.
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
