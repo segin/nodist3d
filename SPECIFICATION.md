@@ -77,13 +77,13 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
             *   [x] `rules`: Enforce `eqeqeq`, `no-var`, `prefer-const`, `no-console` (warn), `promise/always-return`.
         *   [x] **Configure Prettier (`.prettierrc`)**:
             *   [x] `{ "semi": true, "singleQuote": true, "tabWidth": 2, "printWidth": 100 }`.
-        *   [ ] **Setup Husky**:
-            *   [ ] `npx husky install`.
-            *   [ ] Add `pre-commit` hook: `npx lint-staged`.
-            *   [ ] Configure `lint-staged` in package.json to run `eslint --fix` on `*.js` files.
+        *   [x] **Setup Husky**:
+            *   [x] `npx husky install`.
+            *   [x] Add `pre-commit` hook: `npx lint-staged`.
+            *   [x] Configure `lint-staged` in package.json to run `eslint --fix` on `*.js` files.
     *   **Verification & Testing**:
-        *   [ ] Deliberately introduce a lint error (e.g., `var x = 1;`). Verify commit fails.
-        *   [ ] Run `npm run lint`. Verify it catches issues.
+        *   [x] Deliberately introduce a lint error (e.g., `var x = 1;`). Verify commit fails.
+        *   [x] Run `npm run lint`. Verify it catches issues.
 
 *   **1.2.2. Documentation & Type Safety**
     *   **Action Items**:
