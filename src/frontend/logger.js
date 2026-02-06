@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+// Simple console wrapper to replace broken loglevel UMD import
+=======
+<<<<<<< HEAD
 // import log from 'loglevel';
 // Use global log object from script tag because ESM import fails for UMD build
 const log = window.log;
@@ -26,12 +29,18 @@ if (log && log.setLevel) {
 =======
 <<<<<<< HEAD
 // Custom logger implementation to replace loglevel due to ESM issues
+>>>>>>> master
 const log = {
     trace: (...args) => console.trace(...args),
     debug: (...args) => console.debug(...args),
     info: (...args) => console.info(...args),
     warn: (...args) => console.warn(...args),
     error: (...args) => console.error(...args),
+<<<<<<< HEAD
+    setLevel: () => {},
+    getLogger: () => log
+};
+=======
     setLevel: (level) => {
         // No-op for now, or implement level filtering if needed
         console.log(`Logger level set to ${level} (not implemented)`);
@@ -44,6 +53,7 @@ const log = {
 >>>>>>> master
 >>>>>>> master
 const log = window.log;
+>>>>>>> master
 
 if (log) {
     log.setLevel('info'); // Set the default log level

@@ -1,4 +1,12 @@
 <<<<<<< HEAD
+## 2026-01-20 - Accessibility and App Stability
+**Learning:** The application relied on a UMD build of the `loglevel` library which fails in strict ESM environments (browser with `type="module"`) because `this` is undefined at the top level. This prevented the application from initializing.
+**Action:** Replaced `loglevel` dependency with a lightweight console wrapper in `src/frontend/logger.js` to ensure the app runs reliably in all ESM environments without a bundler.
+
+**Learning:** The Scene Graph panel is positioned at `top: 10px; right: 10px`, which directly overlaps with the default `dat.GUI` controls. This makes the UI cluttered and buttons hard to click.
+**Action:** In the future, the Scene Graph should be moved (e.g., to the left side or a different container) to avoid conflict with `dat.GUI`. For now, tests handle this by moving the panel or forcing clicks.
+=======
+<<<<<<< HEAD
 ## 2024-05-23 - [Scene Graph Accessibility]
 **Learning:** Dynamic lists created via `innerHTML` or `createElement` loop need explicit `role="listbox"`, `role="option"`, and `tabindex="0"` to be keyboard accessible. Icon-only toggle buttons need dynamic `aria-label` updates.
 **Action:** When implementing custom lists, always add keyboard event listeners (Enter/Space) and ensure state changes reflect in ARIA attributes.
@@ -43,6 +51,7 @@
 ## 2026-01-28 - Dynamic UI Accessibility & Layout
 **Learning:** Dynamic UI components (like the Scene Graph) generated in `main.js` were ignoring CSS classes and missing accessibility attributes (ARIA labels, titles), leading to hardcoded styles and poor a11y. Also, fixed positioning caused overlap with `dat.gui`.
 **Action:** Always target existing DOM elements for containers, use CSS classes instead of inline styles, and explicitly add ARIA attributes when creating elements dynamically. Ensure overlay positions don't conflict with library-generated UI.
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

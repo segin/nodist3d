@@ -2448,6 +2448,7 @@ export class App {
         
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
+            const objectNameText = object.name || `Object_${index + 1}`;
             const listItem = document.createElement('li');
 <<<<<<< HEAD
             listItem.setAttribute('tabindex', '0'); // Make keyboard focusable
@@ -2498,14 +2499,22 @@ export class App {
                 outline: none;
             `;
 <<<<<<< HEAD
+            listItem.tabIndex = 0;
+            listItem.setAttribute('role', 'button');
+            listItem.setAttribute('aria-label', `Select ${objectNameText}`);
+=======
+<<<<<<< HEAD
 
             // Keyboard selection support
+>>>>>>> master
             listItem.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     this.selectObject(object);
                 }
             });
+<<<<<<< HEAD
+=======
 =======
 <<<<<<< HEAD
 
@@ -2532,6 +2541,7 @@ export class App {
             if (this.selectedObject === object) {
                 listItem.classList.add('selected');
             }
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -2562,10 +2572,17 @@ export class App {
                 align-items: center;
             `;
 <<<<<<< HEAD
+            
+            const objectName = document.createElement('span');
+            objectName.textContent = objectNameText;
+            objectName.style.cssText = `
+=======
+<<<<<<< HEAD
 
       const objectName = document.createElement('span');
       objectName.textContent = object.name || `Object_${index + 1}`;
       objectName.style.cssText = `
+>>>>>>> master
                 font-weight: bold;
                 color: #fff;
             `;
@@ -2719,6 +2736,9 @@ export class App {
             const visibilityLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
 <<<<<<< HEAD
+            visibilityBtn.setAttribute('aria-label', `Toggle visibility for ${objectNameText}`);
+=======
+<<<<<<< HEAD
             visibilityBtn.setAttribute('aria-label', `Toggle visibility for ${object.name || 'Object'}`);
 =======
 <<<<<<< HEAD
@@ -2762,6 +2782,7 @@ export class App {
             visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
 >>>>>>> master
             visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -2852,6 +2873,9 @@ export class App {
             const deleteLabel = 'Delete ' + (object.name || 'Object');
             deleteBtn.textContent = '🗑';
 <<<<<<< HEAD
+            deleteBtn.setAttribute('aria-label', `Delete ${objectNameText}`);
+=======
+<<<<<<< HEAD
             deleteBtn.setAttribute('aria-label', `Delete ${object.name || 'Object'}`);
 =======
 <<<<<<< HEAD
@@ -2895,6 +2919,7 @@ export class App {
             deleteBtn.title = 'Delete object';
 >>>>>>> master
             deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
