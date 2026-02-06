@@ -1,0 +1,11 @@
+ID,Title,Severity,Estimated Effort,Status
+TEST-001,Fix Jest Worker Crashes (Circular JSON),Critical,Medium,Open
+SEC-001,Harden Content Security Policy (CSP),High,Low,Open
+MAINT-001,Refactor Monolithic App Class,High,High,Open
+TEST-002,Fix Unit Test Mocking Infrastructure,High,Medium,Open
+MAINT-002,Reduce Complexity in main.js,High,High,Open
+PERF-001,Optimize Scene Graph DOM Updates,Medium,Medium,Open
+PERF-002,Optimize State Restoration (Undo/Redo),Medium,High,Open
+SEC-002,Implement Rate Limiting,Medium,Low,Open
+MAINT-003,Refactor Primitive Creation (DRY),Medium,Low,Open
+MAINT-004,Establish Linting Standards,Medium,Low,Fixed
