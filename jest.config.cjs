@@ -6,9 +6,9 @@ module.exports = {
     '^three/examples/jsm/(.*)': '<rootDir>/node_modules/three/examples/jsm/$1'
   },
   transform: {
-    '^.+\.js$': 'babel-jest',
+    '^.+\\.js$': 'babel-jest',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!three/examples/jsm/)'
+    'node_modules/(?!.*three/examples/jsm)'
   ],
 };
