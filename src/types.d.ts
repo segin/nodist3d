@@ -2,23 +2,39 @@
 import * as THREE from 'three';
 
 declare global {
+<<<<<<< HEAD
     interface SceneObject extends THREE.Object3D {
+=======
+    interface SceneObject extends THREE.Mesh {
+>>>>>>> master
         userData: {
             geometryParams?: any;
             [key: string]: any;
         };
     }
 
+<<<<<<< HEAD
+=======
+    interface SerializedMaterial {
+        color: THREE.Color;
+        emissive: THREE.Color;
+    }
+
+>>>>>>> master
     interface SerializedObject {
         name: string;
         type: string;
         position: THREE.Vector3;
         rotation: THREE.Euler;
         scale: THREE.Vector3;
+<<<<<<< HEAD
         material: {
             color: THREE.Color;
             emissive: THREE.Color;
         };
+=======
+        material: SerializedMaterial;
+>>>>>>> master
         geometryParams: any;
         visible: boolean;
         uuid: string;
@@ -33,6 +49,7 @@ declare global {
 
     interface ManagerInterface {
         init?(): void;
+<<<<<<< HEAD
         update?(deltaTime: number): void;
     }
 
@@ -49,5 +66,8 @@ declare global {
         webkitRequestFullscreen?: () => Promise<void>;
         mozRequestFullScreen?: () => Promise<void>;
         msRequestFullscreen?: () => Promise<void>;
+=======
+        update?(): void;
+>>>>>>> master
     }
 }

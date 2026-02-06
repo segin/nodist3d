@@ -1,6 +1,10 @@
 // @ts-check
 
+<<<<<<< HEAD
 import * as THREE from 'three';
+=======
+// @ts-check
+>>>>>>> master
 import { Events } from './constants.js';
 import { PrimitiveFactory } from './PrimitiveFactory.js';
 
