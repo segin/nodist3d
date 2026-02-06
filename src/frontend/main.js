@@ -997,6 +997,9 @@ class App {
                 cursor: pointer;
                 border: 1px solid #555;
             `;
+            listItem.setAttribute('role', 'button');
+            listItem.setAttribute('tabindex', '0');
+            listItem.setAttribute('aria-label', `Select ${object.name || `Object_${index + 1}`}`);
             
             // Object name and type
             const objectInfo = document.createElement('div');
@@ -1023,7 +1026,10 @@ class App {
             
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
+            const visibilityLabel = object.visible ? `Hide ${object.name || 'object'}` : `Show ${object.name || 'object'}`;
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.setAttribute('aria-label', visibilityLabel);
+            visibilityBtn.title = visibilityLabel;
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1036,12 +1042,18 @@ class App {
             visibilityBtn.onclick = (e) => {
                 e.stopPropagation();
                 object.visible = !object.visible;
+                const newLabel = object.visible ? `Hide ${object.name || 'object'}` : `Show ${object.name || 'object'}`;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                visibilityBtn.setAttribute('aria-label', newLabel);
+                visibilityBtn.title = newLabel;
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
+            const deleteLabel = `Delete ${object.name || 'object'}`;
             deleteBtn.textContent = '🗑';
+            deleteBtn.setAttribute('aria-label', deleteLabel);
+            deleteBtn.title = deleteLabel;
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1059,6 +1071,14 @@ class App {
             listItem.onclick = () => {
                 this.selectObject(object);
             };
+
+            // Keyboard navigation
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
             
             objectInfo.appendChild(objectName);
             objectInfo.appendChild(objectType);
