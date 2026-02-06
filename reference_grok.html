@@ -1,26 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Web-based 3D Modeler</title>
     <style>
-        body { margin: 0; overflow: hidden; }
-        #ui {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 1;
-        }
-        #ui button, #ui input {
-            margin-right: 5px;
-            margin-bottom: 5px;
-        }
-        #fullscreen {
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      #ui {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1;
+      }
+      #ui button,
+      #ui input {
+        margin-right: 5px;
+        margin-bottom: 5px;
+      }
+      #fullscreen {
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
     </style>
     <script src="https://threejs.org/build/three.js"></script>
     <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
@@ -28,196 +32,205 @@
     <script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://threejs.org/examples/js/loaders/MTLLoader.js"></script>
     <script src="https://threejs.org/examples/js/loaders/GLTFLoader.js"></script>
-</head>
-<body>
+  </head>
+  <body>
     <div id="ui">
-        <button onclick="addPrimitive('box')">Add Box</button>
-        <button onclick="addPrimitive('sphere')">Add Sphere</button>
-        <button onclick="addPrimitive('cylinder')">Add Cylinder</button>
-        <button onclick="addPrimitive('cone')">Add Cone</button>
-        <button onclick="addPrimitive('torus')">Add Torus</button>
-        <button onclick="addPrimitive('extrude')">Add Extruded</button>
-        <input type="file" id="import-mesh" accept=".obj,.mtl,.gltf,.glb" multiple>
-        <button id="fullscreen">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm14 4h-3v3h-2v2h5v-5zm-3-9h-3v2h3v3h2V5h-2z" fill="black"/>
-            </svg>
-        </button>
+      <button onclick="addPrimitive('box')">Add Box</button>
+      <button onclick="addPrimitive('sphere')">Add Sphere</button>
+      <button onclick="addPrimitive('cylinder')">Add Cylinder</button>
+      <button onclick="addPrimitive('cone')">Add Cone</button>
+      <button onclick="addPrimitive('torus')">Add Torus</button>
+      <button onclick="addPrimitive('extrude')">Add Extruded</button>
+      <input type="file" id="import-mesh" accept=".obj,.mtl,.gltf,.glb" multiple />
+      <button id="fullscreen">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm14 4h-3v3h-2v2h5v-5zm-3-9h-3v2h3v3h2V5h-2z"
+            fill="black"
+          />
+        </svg>
+      </button>
     </div>
     <script>
-        let scene, camera, renderer, controls, transformControls;
-        let selectedObject = null;
+      let scene, camera, renderer, controls, transformControls;
+      let selectedObject = null;
 
-        function init() {
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xcccccc);
+      function init() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xcccccc);
 
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 5;
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-            scene.add(ambientLight);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
 
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-            directionalLight.position.set(5, 5, 5);
-            scene.add(directionalLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
 
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
 
-            transformControls = new THREE.TransformControls(camera, renderer.domElement);
-            transformControls.addEventListener('dragging-changed', function (event) {
-                controls.enabled = !event.value;
-            });
-            scene.add(transformControls);
+        transformControls = new THREE.TransformControls(camera, renderer.domElement);
+        transformControls.addEventListener('dragging-changed', function (event) {
+          controls.enabled = !event.value;
+        });
+        scene.add(transformControls);
 
-            // Grid helper
-            const grid = new THREE.GridHelper(10, 10);
-            scene.add(grid);
+        // Grid helper
+        const grid = new THREE.GridHelper(10, 10);
+        scene.add(grid);
 
-            // Handle mesh import
-            document.getElementById('import-mesh').addEventListener('change', handleFileImport);
+        // Handle mesh import
+        document.getElementById('import-mesh').addEventListener('change', handleFileImport);
 
-            // Handle fullscreen
-            document.getElementById('fullscreen').addEventListener('click', toggleFullscreen);
+        // Handle fullscreen
+        document.getElementById('fullscreen').addEventListener('click', toggleFullscreen);
 
-            // Handle selection
-            renderer.domElement.addEventListener('pointerdown', onPointerDown);
+        // Handle selection
+        renderer.domElement.addEventListener('pointerdown', onPointerDown);
 
-            // Resize handler
-            window.addEventListener('resize', onWindowResize);
+        // Resize handler
+        window.addEventListener('resize', onWindowResize);
 
-            animate();
+        animate();
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      function addPrimitive(type) {
+        let geometry;
+        switch (type) {
+          case 'box':
+            geometry = new THREE.BoxGeometry(1, 1, 1);
+            break;
+          case 'sphere':
+            geometry = new THREE.SphereGeometry(0.5, 32, 32);
+            break;
+          case 'cylinder':
+            geometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 32);
+            break;
+          case 'cone':
+            geometry = new THREE.ConeGeometry(0.5, 1, 32);
+            break;
+          case 'torus':
+            geometry = new THREE.TorusGeometry(0.5, 0.2, 16, 100);
+            break;
+          case 'extrude':
+            const shape = new THREE.Shape();
+            shape.moveTo(-0.5, -0.5);
+            shape.lineTo(0.5, -0.5);
+            shape.lineTo(0.5, 0.5);
+            shape.lineTo(-0.5, 0.5);
+
+            // Optional hole
+            const hole = new THREE.Path();
+            hole.moveTo(-0.3, -0.3);
+            hole.lineTo(0.3, -0.3);
+            hole.lineTo(0.3, 0.3);
+            hole.lineTo(-0.3, 0.3);
+            shape.holes.push(hole);
+
+            const extrudeSettings = {
+              steps: 1,
+              depth: 0.2,
+              bevelEnabled: false,
+            };
+            geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            break;
         }
+        const material = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff });
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+      }
 
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
+      function handleFileImport(event) {
+        const files = event.target.files;
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const reader = new FileReader();
+          const extension = file.name.split('.').pop().toLowerCase();
+
+          if (extension === 'obj') {
+            reader.onload = (e) => {
+              const loader = new THREE.OBJLoader();
+              const object = loader.parse(e.target.result);
+              scene.add(object);
+            };
+            reader.readAsText(file);
+          } else if (extension === 'mtl') {
+            // MTL is material, typically paired with OBJ, but for simplicity, skip standalone
+          } else if (extension === 'gltf' || extension === 'glb') {
+            reader.onload = (e) => {
+              const loader = new THREE.GLTFLoader();
+              loader.parse(e.target.result, '', (gltf) => {
+                scene.add(gltf.scene);
+              });
+            };
+            reader.readAsArrayBuffer(file);
+          }
         }
+      }
 
-        function addPrimitive(type) {
-            let geometry;
-            switch (type) {
-                case 'box':
-                    geometry = new THREE.BoxGeometry(1, 1, 1);
-                    break;
-                case 'sphere':
-                    geometry = new THREE.SphereGeometry(0.5, 32, 32);
-                    break;
-                case 'cylinder':
-                    geometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 32);
-                    break;
-                case 'cone':
-                    geometry = new THREE.ConeGeometry(0.5, 1, 32);
-                    break;
-                case 'torus':
-                    geometry = new THREE.TorusGeometry(0.5, 0.2, 16, 100);
-                    break;
-                case 'extrude':
-                    const shape = new THREE.Shape();
-                    shape.moveTo(-0.5, -0.5);
-                    shape.lineTo(0.5, -0.5);
-                    shape.lineTo(0.5, 0.5);
-                    shape.lineTo(-0.5, 0.5);
-
-                    // Optional hole
-                    const hole = new THREE.Path();
-                    hole.moveTo(-0.3, -0.3);
-                    hole.lineTo(0.3, -0.3);
-                    hole.lineTo(0.3, 0.3);
-                    hole.lineTo(-0.3, 0.3);
-                    shape.holes.push(hole);
-
-                    const extrudeSettings = {
-                        steps: 1,
-                        depth: 0.2,
-                        bevelEnabled: false,
-                    };
-                    geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-                    break;
-            }
-            const material = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff });
-            const mesh = new THREE.Mesh(geometry, material);
-            scene.add(mesh);
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          }
         }
+      }
 
-        function handleFileImport(event) {
-            const files = event.target.files;
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const reader = new FileReader();
-                const extension = file.name.split('.').pop().toLowerCase();
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
 
-                if (extension === 'obj') {
-                    reader.onload = (e) => {
-                        const loader = new THREE.OBJLoader();
-                        const object = loader.parse(e.target.result);
-                        scene.add(object);
-                    };
-                    reader.readAsText(file);
-                } else if (extension === 'mtl') {
-                    // MTL is material, typically paired with OBJ, but for simplicity, skip standalone
-                } else if (extension === 'gltf' || extension === 'glb') {
-                    reader.onload = (e) => {
-                        const loader = new THREE.GLTFLoader();
-                        loader.parse(e.target.result, '', (gltf) => {
-                            scene.add(gltf.scene);
-                        });
-                    };
-                    reader.readAsArrayBuffer(file);
-                }
-            }
+      function onPointerDown(event) {
+        const mouse = new THREE.Vector2();
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(mouse, camera);
+
+        const intersects = raycaster.intersectObjects(scene.children, true);
+
+        if (intersects.length > 0) {
+          const object = intersects[0].object;
+          if (selectedObject) {
+            transformControls.detach();
+          }
+          if (object instanceof THREE.Mesh) {
+            selectedObject = object;
+            transformControls.attach(selectedObject);
+          }
+        } else {
+          if (selectedObject) {
+            transformControls.detach();
+            selectedObject = null;
+          }
         }
+      }
 
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function onPointerDown(event) {
-            const mouse = new THREE.Vector2();
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(mouse, camera);
-
-            const intersects = raycaster.intersectObjects(scene.children, true);
-
-            if (intersects.length > 0) {
-                const object = intersects[0].object;
-                if (selectedObject) {
-                    transformControls.detach();
-                }
-                if (object instanceof THREE.Mesh) {
-                    selectedObject = object;
-                    transformControls.attach(selectedObject);
-                }
-            } else {
-                if (selectedObject) {
-                    transformControls.detach();
-                    selectedObject = null;
-                }
-            }
-        }
-
-        init();
+      init();
     </script>
-</body>
+  </body>
 </html>
