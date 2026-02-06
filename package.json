@@ -6,11 +6,16 @@
   "scripts": {
     "start": "node src/backend/server.js",
     "test": "jest --config jest.config.cjs",
+<<<<<<< HEAD
     "prepare": "husky",
     "lint": "eslint src/**/*.js"
   },
   "lint-staged": {
     "**/*.js": "eslint --fix"
+=======
+    "lint": "eslint .",
+    "format": "prettier --write ."
+>>>>>>> master
   },
   "keywords": [
     "3d",
@@ -37,18 +42,34 @@
     "@babel/preset-env": "^7.27.2",
     "@eslint/js": "^9.39.2",
     "babel-jest": "^30.0.2",
+<<<<<<< HEAD
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-promise": "^7.2.1",
     "eslint-plugin-unicorn": "^62.0.0",
     "globals": "^17.1.0",
     "husky": "^9.1.7",
+=======
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-unicorn": "^54.0.0",
+>>>>>>> master
     "jest": "^29.7.0",
     "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^30.2.0",
     "lint-staged": "^16.2.7",
     "node-fetch": "^2.7.0",
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    "supertest": "^7.0.0",
+    "typescript": "^5.9.3"
+=======
+>>>>>>> master
     "prettier": "^3.8.1",
     "supertest": "^7.0.0"
+>>>>>>> master
   }
 }
