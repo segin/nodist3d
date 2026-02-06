@@ -6,14 +6,11 @@
     "jest": true
   },
   "parserOptions": {
-    "ecmaVersion": 2022,
+    "ecmaVersion": "latest",
     "sourceType": "module"
   },
   "extends": [
     "eslint:recommended",
-    "plugin:promise/recommended",
-    "plugin:unicorn/recommended",
-    "plugin:import/recommended",
     "prettier"
   ],
   "plugins": [
@@ -26,21 +23,6 @@
     "no-var": "error",
     "prefer-const": "error",
     "no-console": "warn",
-    "promise/always-return": "error",
-    "unicorn/filename-case": "off",
-    "unicorn/prevent-abbreviations": "off",
-    "import/no-unresolved": "off",
-    "unicorn/no-null": "off"
-  },
-  "overrides": [
-    {
-      "files": [
-        "*.cjs",
-        "tests/**/*.js"
-      ],
-      "rules": {
-        "unicorn/prefer-module": "off"
-      }
-    }
-  ]
+    "promise/always-return": "error"
+  }
 }
