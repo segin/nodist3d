@@ -37,6 +37,9 @@ export class App {
 export class App {
 =======
 <<<<<<< HEAD
+export class App {
+=======
+<<<<<<< HEAD
 class App {
 <<<<<<< HEAD
   constructor() {
@@ -52,6 +55,7 @@ class App {
      */
 =======
 export class App {
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -309,7 +313,11 @@ export class App {
 <<<<<<< HEAD
             top: 70px;
 =======
+<<<<<<< HEAD
+            top: 70px;
+=======
             top: 80px;
+>>>>>>> master
 >>>>>>> master
             left: 10px;
             width: 250px;
@@ -2354,6 +2362,10 @@ export class App {
         
         // Remove all subfolders
 <<<<<<< HEAD
+        // dat.gui stores folders as an object map, so convert to array
+        const folders = Object.values(this.propertiesFolder.__folders);
+=======
+<<<<<<< HEAD
         const folders = Object.values(this.propertiesFolder.__folders || {});
 =======
 <<<<<<< HEAD
@@ -2405,6 +2417,7 @@ export class App {
         const folders = [...this.propertiesFolder.__folders];
 =======
         const folders = Object.values(this.propertiesFolder.__folders || {});
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -2550,6 +2563,11 @@ export class App {
                 outline: none;
             `;
 <<<<<<< HEAD
+            listItem.setAttribute('tabindex', '0');
+            listItem.setAttribute('role', 'button');
+            listItem.setAttribute('aria-label', `Select ${object.name || `Object_${index + 1}`}`);
+=======
+<<<<<<< HEAD
 
             // UX: Add keyboard accessibility
             listItem.setAttribute('tabindex', '0');
@@ -2607,6 +2625,7 @@ export class App {
             if (this.selectedObject === object) {
                 listItem.classList.add('selected');
             }
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -2937,6 +2956,10 @@ export class App {
 <<<<<<< HEAD
             const visibilityState = object.visible ? 'Hide' : 'Show';
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+            visibilityBtn.setAttribute('aria-label', `Toggle visibility for ${object.name || `Object_${index + 1}`}`);
+            visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
+=======
             visibilityBtn.title = `${visibilityState} object`;
             visibilityBtn.setAttribute('aria-label', `${visibilityState} ${object.name || 'object'}`);
 =======
@@ -3008,6 +3031,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             visibilityBtn.style.cssText = `
 >>>>>>> master
                 background: none;
@@ -3038,6 +3062,9 @@ export class App {
                 object.visible = !object.visible;
                 const label = object.visible ? 'Hide object' : 'Show object';
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+                visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
+=======
 <<<<<<< HEAD
                 const newState = object.visible ? 'Hide' : 'Show';
                 visibilityBtn.title = `${newState} object`;
@@ -3093,6 +3120,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             };
             
             // Delete button
@@ -3100,6 +3128,10 @@ export class App {
 <<<<<<< HEAD
             const deleteLabel = 'Delete ' + (object.name || 'Object');
             deleteBtn.textContent = '🗑';
+<<<<<<< HEAD
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name || `Object_${index + 1}`}`);
+            deleteBtn.setAttribute('title', 'Delete object');
+=======
 <<<<<<< HEAD
             deleteBtn.title = 'Delete object';
             deleteBtn.setAttribute('aria-label', `Delete ${object.name || 'object'}`);
@@ -3169,6 +3201,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             deleteBtn.style.cssText = `
 >>>>>>> master
                 background: none;
@@ -3221,13 +3254,19 @@ export class App {
                 this.selectObject(object);
             };
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
 
             // Keyboard support for selection
             listItem.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
+<<<<<<< HEAD
+=======
 =======
             listItem.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+>>>>>>> master
 >>>>>>> master
                     e.preventDefault();
                     this.selectObject(object);

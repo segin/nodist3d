@@ -1,4 +1,13 @@
 <<<<<<< HEAD
+## 2026-02-04 - UI Overlay Conflicts
+**Learning:** Custom UI panels positioned at `top: 10px; right: 10px` conflict with default `dat.gui` positioning, blocking interaction on mobile and desktop.
+**Action:** Always check default positioning of third-party UI libraries when placing custom panels. Prefer left-side or distinct coordinates.
+
+## 2026-02-04 - Dynamic List Accessibility
+**Learning:** Dynamically created list items (`ul > li`) need explicit `tabindex="0"`, `role="button"`, and `keydown` handlers (Enter/Space) to match native button behavior.
+**Action:** Encapsulate this logic in the item creation loop to ensure all future items inherit accessibility.
+=======
+<<<<<<< HEAD
 ## 2026-02-03 - Scene Graph Accessibility & Layout
 **Learning:** `dat.gui` and custom UI panels positioned absolutely/fixed can easily overlap.
 **Action:** Always check default positions of third-party UI libs when adding custom panels. Use `left`/`top` for custom panels if `dat.gui` uses `right`/`top`.
@@ -74,6 +83,7 @@
 ## 2026-01-28 - Dynamic UI Accessibility & Layout
 **Learning:** Dynamic UI components (like the Scene Graph) generated in `main.js` were ignoring CSS classes and missing accessibility attributes (ARIA labels, titles), leading to hardcoded styles and poor a11y. Also, fixed positioning caused overlap with `dat.gui`.
 **Action:** Always target existing DOM elements for containers, use CSS classes instead of inline styles, and explicitly add ARIA attributes when creating elements dynamically. Ensure overlay positions don't conflict with library-generated UI.
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
