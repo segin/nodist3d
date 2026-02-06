@@ -28,6 +28,9 @@ export class App {
 export class App {
 =======
 <<<<<<< HEAD
+export class App {
+=======
+<<<<<<< HEAD
 class App {
 <<<<<<< HEAD
   constructor() {
@@ -43,6 +46,7 @@ class App {
      */
 =======
 export class App {
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -3779,6 +3783,28 @@ export class App {
     }
 
 <<<<<<< HEAD
+    createGeometryFromData(type, params) {
+        switch (type) {
+            case 'BoxGeometry':
+                const boxParams = params || { width: 1, height: 1, depth: 1 };
+                return new THREE.BoxGeometry(boxParams.width, boxParams.height, boxParams.depth);
+            case 'SphereGeometry':
+                const sphereParams = params || { radius: 0.5, widthSegments: 32, heightSegments: 32 };
+                return new THREE.SphereGeometry(sphereParams.radius, sphereParams.widthSegments, sphereParams.heightSegments);
+            case 'CylinderGeometry':
+                const cylinderParams = params || { radiusTop: 0.5, radiusBottom: 0.5, height: 1 };
+                return new THREE.CylinderGeometry(cylinderParams.radiusTop, cylinderParams.radiusBottom, cylinderParams.height, 32);
+            case 'ConeGeometry':
+                const coneParams = params || { radius: 0.5, height: 1 };
+                return new THREE.ConeGeometry(coneParams.radius, coneParams.height, 32);
+            case 'TorusGeometry':
+                const torusParams = params || { radius: 0.4, tube: 0.2 };
+                return new THREE.TorusGeometry(torusParams.radius, torusParams.tube, 16, 100);
+            case 'PlaneGeometry':
+                const planeParams = params || { width: 2, height: 2 };
+                return new THREE.PlaneGeometry(planeParams.width, planeParams.height);
+=======
+<<<<<<< HEAD
     /**
      * Restores the application state.
      * @param {Object} state - The state object to restore.
@@ -3811,11 +3837,79 @@ export class App {
                 return new THREE.TorusGeometry(params.radius || 0.4, params.tube || 0.2, 16, 100);
             case 'PlaneGeometry':
                 return new THREE.PlaneGeometry(params.width || 2, params.height || 2);
+>>>>>>> master
             default:
                 return new THREE.BoxGeometry(1, 1, 1);
         }
     }
 
+<<<<<<< HEAD
+    restoreState(state) {
+        const currentObjectsMap = new Map();
+        this.objects.forEach(obj => currentObjectsMap.set(obj.uuid, obj));
+
+        const newObjects = [];
+        
+        state.objects.forEach(objData => {
+            let mesh = currentObjectsMap.get(objData.uuid);
+            
+            if (mesh) {
+                // Reuse existing mesh
+                currentObjectsMap.delete(objData.uuid);
+
+                mesh.name = objData.name;
+                mesh.position.copy(objData.position);
+                mesh.rotation.copy(objData.rotation);
+                mesh.scale.copy(objData.scale);
+                mesh.visible = objData.visible;
+
+                if (mesh.material.color.getHex() !== objData.material.color.getHex()) {
+                    mesh.material.color.copy(objData.material.color);
+                }
+                if (mesh.material.emissive.getHex() !== objData.material.emissive.getHex()) {
+                    mesh.material.emissive.copy(objData.material.emissive);
+                }
+
+                const currentParams = mesh.userData.geometryParams;
+                const newParams = objData.geometryParams;
+                const paramsChanged = JSON.stringify(currentParams) !== JSON.stringify(newParams);
+
+                if (paramsChanged || mesh.geometry.type !== objData.type) {
+                     mesh.geometry.dispose();
+                     mesh.geometry = this.createGeometryFromData(objData.type, newParams);
+                     mesh.userData.geometryParams = newParams ? {...newParams} : null;
+                }
+
+                newObjects.push(mesh);
+            } else {
+                // Create new mesh
+                const geometry = this.createGeometryFromData(objData.type, objData.geometryParams);
+
+                const material = new THREE.MeshLambertMaterial({
+                    color: objData.material.color,
+                    side: objData.type === 'PlaneGeometry' ? THREE.DoubleSide : THREE.FrontSide
+                });
+                material.emissive.copy(objData.material.emissive);
+
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.name = objData.name;
+                mesh.position.copy(objData.position);
+                mesh.rotation.copy(objData.rotation);
+                mesh.scale.copy(objData.scale);
+                mesh.visible = objData.visible;
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                mesh.uuid = objData.uuid;
+                mesh.userData.geometryParams = objData.geometryParams;
+
+                this.scene.add(mesh);
+                newObjects.push(mesh);
+            }
+        });
+        
+        // Remove unused objects
+        currentObjectsMap.forEach(obj => {
+=======
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -3824,6 +3918,7 @@ export class App {
         const currentObjectsMap = new Map();
         this.objects.forEach(obj => {
 <<<<<<< HEAD
+>>>>>>> master
             this.scene.remove(obj);
             // @ts-ignore
             obj.geometry.dispose();
@@ -3833,6 +3928,11 @@ export class App {
             currentObjectsMap.set(obj.uuid, obj);
 >>>>>>> master
         });
+<<<<<<< HEAD
+
+        this.objects = newObjects;
+
+=======
         
         const newObjects = [];
 
@@ -3994,6 +4094,7 @@ export class App {
 
         this.objects = newObjects;
 
+>>>>>>> master
 >>>>>>> master
         // Restore selection
         this.deselectObject();
