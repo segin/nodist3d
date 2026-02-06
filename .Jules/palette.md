@@ -1,4 +1,15 @@
 <<<<<<< HEAD
+## 2026-02-03 - Scene Graph Accessibility & Layout
+**Learning:** `dat.gui` and custom UI panels positioned absolutely/fixed can easily overlap.
+**Action:** Always check default positions of third-party UI libs when adding custom panels. Use `left`/`top` for custom panels if `dat.gui` uses `right`/`top`.
+
+**Learning:** `style.cssText` in `main.js` makes components hard to style via CSS classes.
+**Action:** Prefer `classList.add()` and external CSS over inline styles for better maintainability and mobile responsiveness.
+
+**Learning:** ESM `importmap` fails with UMD modules lacking default exports (like `loglevel`).
+**Action:** Use global script tags for UMD dependencies or ensure a proper ESM build is available.
+=======
+<<<<<<< HEAD
 ## 2026-02-02 - Scene Graph Accessibility & Layout
 **Learning:** Overlapping UI panels (Scene Graph vs Dat.GUI) block interaction and fail accessibility checks. Manual inline styles in JS made this hard to spot until runtime verification.
 **Action:** Always verify UI positioning prevents overlap, especially when using libraries with default positions (Dat.GUI). Use distinct screen areas for different control groups.
@@ -63,6 +74,7 @@
 ## 2026-01-28 - Dynamic UI Accessibility & Layout
 **Learning:** Dynamic UI components (like the Scene Graph) generated in `main.js` were ignoring CSS classes and missing accessibility attributes (ARIA labels, titles), leading to hardcoded styles and poor a11y. Also, fixed positioning caused overlap with `dat.gui`.
 **Action:** Always target existing DOM elements for containers, use CSS classes instead of inline styles, and explicitly add ARIA attributes when creating elements dynamically. Ensure overlay positions don't conflict with library-generated UI.
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

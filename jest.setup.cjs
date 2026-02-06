@@ -16,6 +16,16 @@ global.window = dom.window;
 global.navigator = dom.window.navigator;
 global.self = global.window;
 
+// Mock loglevel
+global.window.log = {
+    setLevel: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn(),
+    trace: jest.fn(),
+};
+
 // Mock console.error and console.warn to prevent them from cluttering test output
 // and to allow checking if they were called in tests.
 global.console.error = jest.fn();

@@ -306,7 +306,11 @@ export class App {
         this.sceneGraphPanel.style.cssText = `
 >>>>>>> master
             position: fixed;
+<<<<<<< HEAD
+            top: 70px;
+=======
             top: 80px;
+>>>>>>> master
             left: 10px;
             width: 250px;
             max-height: 400px;
@@ -2484,6 +2488,11 @@ export class App {
             const objectNameText = object.name || `Object_${index + 1}`;
             const listItem = document.createElement('li');
 <<<<<<< HEAD
+            listItem.setAttribute('aria-label', `Select ${object.name || `Object ${index + 1}`}`);
+            listItem.setAttribute('role', 'button');
+            listItem.tabIndex = 0;
+=======
+<<<<<<< HEAD
             listItem.className = 'scene-graph-item';
             listItem.tabIndex = 0;
             listItem.setAttribute('role', 'option');
@@ -2524,6 +2533,7 @@ export class App {
             listItem.tabIndex = 0;
             listItem.role = 'button';
             listItem.setAttribute('aria-label', `Select ${object.name || 'Object ' + (index + 1)}`);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -2925,6 +2935,12 @@ export class App {
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
 <<<<<<< HEAD
+            const visibilityState = object.visible ? 'Hide' : 'Show';
+            visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.title = `${visibilityState} object`;
+            visibilityBtn.setAttribute('aria-label', `${visibilityState} ${object.name || 'object'}`);
+=======
+<<<<<<< HEAD
             const visibilityLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
 <<<<<<< HEAD
@@ -2991,6 +3007,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             visibilityBtn.style.cssText = `
 >>>>>>> master
                 background: none;
@@ -2998,8 +3015,9 @@ export class App {
                 color: white;
                 cursor: pointer;
                 font-size: 12px;
-                padding: 2px 5px;
+                padding: 5px 8px;
                 margin: 0 5px;
+                min-width: 24px;
             `;
 <<<<<<< HEAD
       visibilityBtn.onclick = (e) => {
@@ -3020,6 +3038,11 @@ export class App {
                 object.visible = !object.visible;
                 const label = object.visible ? 'Hide object' : 'Show object';
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+                const newState = object.visible ? 'Hide' : 'Show';
+                visibilityBtn.title = `${newState} object`;
+                visibilityBtn.setAttribute('aria-label', `${newState} ${object.name || 'object'}`);
+=======
 <<<<<<< HEAD
                 visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
 =======
@@ -3069,6 +3092,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             };
             
             // Delete button
@@ -3076,6 +3100,10 @@ export class App {
 <<<<<<< HEAD
             const deleteLabel = 'Delete ' + (object.name || 'Object');
             deleteBtn.textContent = '🗑';
+<<<<<<< HEAD
+            deleteBtn.title = 'Delete object';
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name || 'object'}`);
+=======
 <<<<<<< HEAD
             deleteBtn.setAttribute('aria-label', `Delete ${object.name || `Object ${index + 1}`}`);
 =======
@@ -3140,6 +3168,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             deleteBtn.style.cssText = `
 >>>>>>> master
                 background: none;
@@ -3147,7 +3176,8 @@ export class App {
                 color: #ff4444;
                 cursor: pointer;
                 font-size: 12px;
-                padding: 2px 5px;
+                padding: 5px 8px;
+                min-width: 24px;
             `;
 <<<<<<< HEAD
       deleteBtn.onclick = (e) => {

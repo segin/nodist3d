@@ -40,6 +40,12 @@ jest.mock('three', () => {
         })),
         PerspectiveCamera: jest.fn(() => ({
 <<<<<<< HEAD
+            position: {
+                set: jest.fn(),
+                clone: jest.fn(() => ({ copy: jest.fn() }))
+            },
+=======
+<<<<<<< HEAD
         position: { set: jest.fn(), clone: jest.fn() },
 =======
 <<<<<<< HEAD
@@ -58,6 +64,7 @@ jest.mock('three', () => {
             position: { set: jest.fn(), clone: jest.fn() },
 =======
             position: { ...mockVector3 },
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -139,6 +146,9 @@ jest.mock('three', () => {
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide',
 <<<<<<< HEAD
+        TOUCH: { ROTATE: 0, DOLLY_PAN: 1 }
+=======
+<<<<<<< HEAD
         TOUCH: { ROTATE: 1, DOLLY_PAN: 2 }
 =======
         TOUCH: {
@@ -164,6 +174,7 @@ jest.mock('three', () => {
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide',
         TOUCH: { ROTATE: 1, DOLLY_PAN: 2 }
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
     };
@@ -336,6 +347,12 @@ jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
         enabled: true,
         update: jest.fn(),
 <<<<<<< HEAD
+        target: {
+            clone: jest.fn(() => ({ copy: jest.fn() })),
+            copy: jest.fn()
+        }
+=======
+<<<<<<< HEAD
         target: { clone: jest.fn(), copy: jest.fn() }
 =======
 <<<<<<< HEAD
@@ -348,6 +365,7 @@ jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
         }
 =======
         target: { clone: jest.fn() }
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -367,6 +385,23 @@ jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
     dragging: false,
   })),
 }));
+
+// Mock TeapotGeometry
+jest.mock('three/examples/jsm/geometries/TeapotGeometry.js', () => ({
+    TeapotGeometry: jest.fn()
+}), { virtual: true });
+
+// Mock FontLoader
+jest.mock('three/examples/jsm/loaders/FontLoader.js', () => ({
+    FontLoader: jest.fn(() => ({
+        load: jest.fn()
+    }))
+}), { virtual: true });
+
+// Mock TextGeometry
+jest.mock('three/examples/jsm/geometries/TextGeometry.js', () => ({
+    TextGeometry: jest.fn()
+}), { virtual: true });
 
 describe('Basic App Functionality', () => {
   let dom;
@@ -521,10 +556,15 @@ describe('Basic App Functionality', () => {
                 addEventListener: jest.fn(),
                 removeEventListener: jest.fn(),
 <<<<<<< HEAD
+                setAttribute: jest.fn(),
+                title: ''
+=======
+<<<<<<< HEAD
                 setAttribute: jest.fn()
 =======
                 setAttribute: jest.fn(),
                 getAttribute: jest.fn()
+>>>>>>> master
 >>>>>>> master
             };
             
