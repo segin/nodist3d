@@ -18,10 +18,27 @@ import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
 /**
  * Simple 3D modeling application with basic primitives and transform controls
  */
+<<<<<<< HEAD
+export class App {
+=======
+<<<<<<< HEAD
+export class App {
+=======
+<<<<<<< HEAD
 class App {
     /**
+<<<<<<< HEAD
      * Initializes the application.
      */
+=======
+     * Initializes the application
+     */
+=======
+export class App {
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
     constructor() {
         // Initialize Service Container
         this.container = new ServiceContainer();
@@ -86,6 +103,7 @@ class App {
         );
         this.container.register('ObjectManager', this.objectManager);
 
+<<<<<<< HEAD
         /** @type {THREE.Object3D|null} */
         this.selectedObject = null;
         /** @type {THREE.Object3D[]} */
@@ -93,13 +111,32 @@ class App {
         
         // History system for undo/redo
         /** @type {any[]} */
+=======
+<<<<<<< HEAD
+        /** @type {SceneObject | null} */
+        this.selectedObject = null;
+        /** @type {SceneObject[]} */
+        this.objects = [];
+        
+        // History system for undo/redo
+        /** @type {SerializedScene[]} */
+=======
+        /** @type {THREE.Object3D | null} */
+        this.selectedObject = null;
+        /** @type {THREE.Object3D[]} */
+        this.objects = [];
+        
+        // History system for undo/redo
+        /** @type {any[]} */
+>>>>>>> master
+>>>>>>> master
         this.history = [];
         this.historyIndex = -1;
         this.maxHistorySize = 50;
         
         // Continue initialization
-        this.initRemaining();
         this.setupControls();
+        this.initRemaining();
         this.setupGUI();
         this.setupLighting();
         this.setupHelpers();
@@ -110,7 +147,15 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Initializes the renderer and camera.
+=======
+<<<<<<< HEAD
+     * Initializes the renderer.
+=======
+     * Initializes the renderer and camera
+>>>>>>> master
+>>>>>>> master
      */
     initRenderer() {
         // Setup renderer
@@ -133,7 +178,15 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Initializes remaining components like UI and storage.
+=======
+<<<<<<< HEAD
+     * Initializes remaining components.
+=======
+     * Initializes the rest of the application
+>>>>>>> master
+>>>>>>> master
      */
     initRemaining() {
         // Setup scene graph UI
@@ -141,9 +194,6 @@ class App {
 
         // Initialize scene storage
         this.sceneStorage = new SceneStorage(this.scene, null); // EventBus not needed for basic save/load
-
-        // Mobile touch optimizations
-        this.setupMobileOptimizations();
     }
 
     /**
@@ -155,16 +205,25 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Sets up the Scene Graph UI panel.
+=======
+<<<<<<< HEAD
+     * Sets up the scene graph UI.
+=======
+     * Sets up the Scene Graph UI
+>>>>>>> master
+>>>>>>> master
      */
     setupSceneGraph() {
+<<<<<<< HEAD
         // Create scene graph panel
         this.sceneGraphPanel = document.createElement('div');
         this.sceneGraphPanel.id = 'scene-graph-panel';
         this.sceneGraphPanel.style.cssText = `
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 80px;
+            left: 10px;
             width: 250px;
             max-height: 400px;
             background: rgba(0, 0, 0, 0.8);
@@ -176,36 +235,67 @@ class App {
             overflow-y: auto;
             z-index: 1000;
         `;
+=======
+<<<<<<< HEAD
+        // Use existing scene graph panel
+        this.sceneGraphPanel = document.getElementById('scene-graph');
+        this.sceneGraphPanel.innerHTML = '';
+=======
+        // Use existing scene graph panel from DOM
+        this.sceneGraphPanel = document.getElementById('scene-graph');
+        if (!this.sceneGraphPanel) {
+            console.error('Scene graph panel element not found!');
+            return;
+        }
+>>>>>>> master
+>>>>>>> master
         
         // Create title
         const title = document.createElement('h3');
         title.textContent = 'Scene Graph';
-        title.style.cssText = `
-            margin: 0 0 10px 0;
-            padding: 0;
-            font-size: 14px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 5px;
-        `;
         
         // Create objects list
         this.objectsList = document.createElement('ul');
+<<<<<<< HEAD
+        this.objectsList.setAttribute('role', 'listbox');
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
+        this.objectsList.setAttribute('role', 'listbox');
+        this.objectsList.setAttribute('aria-label', 'Scene objects');
+>>>>>>> master
         this.objectsList.style.cssText = `
             list-style: none;
             margin: 0;
             padding: 0;
         `;
+<<<<<<< HEAD
+
+        this.sceneGraphMap = new Map();
+=======
+=======
+>>>>>>> master
+>>>>>>> master
         
         this.sceneGraphPanel.appendChild(title);
         this.sceneGraphPanel.appendChild(this.objectsList);
-        document.body.appendChild(this.sceneGraphPanel);
         
         // Update initially
         this.updateSceneGraph();
     }
 
     /**
+<<<<<<< HEAD
      * Sets up camera and object controls (OrbitControls, TransformControls).
+=======
+<<<<<<< HEAD
+     * Sets up camera and transform controls.
+=======
+     * Sets up controls (orbit, transform, keyboard)
+>>>>>>> master
+>>>>>>> master
      */
     setupControls() {
         // Orbit controls for camera
@@ -218,7 +308,7 @@ class App {
         this.transformControls.addEventListener('change', () => {
             this.renderer.render(this.scene, this.camera);
         });
-        this.transformControls.addEventListener('dragging-changed', (event) => {
+        this.transformControls.addEventListener('dragging-changed', (/** @type {any} */ event) => {
             this.orbitControls.enabled = !event.value;
             
             // Save state when transform is completed
@@ -226,7 +316,12 @@ class App {
                 this.saveState('Transform object');
             }
         });
+<<<<<<< HEAD
+        // @ts-ignore
         this.scene.add(this.transformControls);
+=======
+        this.scene.add(/** @type {any} */ (this.transformControls));
+>>>>>>> master
 
         // Raycaster for object selection
         this.raycaster = new THREE.Raycaster();
@@ -242,7 +337,7 @@ class App {
             const intersects = this.raycaster.intersectObjects(this.objects);
             
             if (intersects.length > 0) {
-                this.selectObject(intersects[0].object);
+                this.selectObject(/** @type {any} */(intersects[0].object));
             } else {
                 this.deselectObject();
             }
@@ -309,19 +404,19 @@ class App {
         // Handle vendor-specific fullscreen events
         document.addEventListener('webkitfullscreenchange', () => {
             if (fullscreenButton) {
-                fullscreenButton.textContent = document.webkitFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+                fullscreenButton.textContent = /** @type {any} */ (document).webkitFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
             }
         });
         
         document.addEventListener('mozfullscreenchange', () => {
             if (fullscreenButton) {
-                fullscreenButton.textContent = document.mozFullScreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+                fullscreenButton.textContent = /** @type {any} */ (document).mozFullScreenElement ? 'Exit Fullscreen' : 'Fullscreen';
             }
         });
         
         document.addEventListener('MSFullscreenChange', () => {
             if (fullscreenButton) {
-                fullscreenButton.textContent = document.msFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+                fullscreenButton.textContent = /** @type {any} */ (document).msFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
             }
         });
 
@@ -342,19 +437,44 @@ class App {
             });
             
             fileInput.addEventListener('change', (event) => {
+<<<<<<< HEAD
                 const target = event.target;
                 if (target instanceof HTMLInputElement && target.files) {
                     const file = target.files[0];
                     if (file) {
                         this.loadScene(file);
                     }
+=======
+<<<<<<< HEAD
+                const target = /** @type {HTMLInputElement} */ (event.target);
+                const file = target.files ? target.files[0] : null;
+=======
+<<<<<<< HEAD
+                // @ts-ignore
+                const file = /** @type {HTMLInputElement} */ (event.target).files[0];
+=======
+                const target = /** @type {HTMLInputElement} */ (event.target);
+                const file = target.files[0];
+>>>>>>> master
+>>>>>>> master
+                if (file) {
+                    this.loadScene(file);
+>>>>>>> master
                 }
             });
         }
     }
 
     /**
+<<<<<<< HEAD
      * Sets up mobile-specific optimizations and touch controls.
+=======
+<<<<<<< HEAD
+     * Sets up mobile optimizations.
+=======
+     * Sets up optimizations for mobile devices
+>>>>>>> master
+>>>>>>> master
      */
     setupMobileOptimizations() {
         // Detect mobile devices
@@ -372,8 +492,19 @@ class App {
             });
 
             // Optimize orbit controls for touch
+<<<<<<< HEAD
             // @ts-ignore: enableKeys property is deprecated but used here
+=======
+<<<<<<< HEAD
+            // @ts-ignore - enableKeys is deprecated but still used here
+>>>>>>> master
             this.orbitControls.enableKeys = false; // Disable keyboard on mobile
+            // @ts-ignore - touches property existence
+=======
+            // @ts-ignore
+            this.orbitControls.enableKeys = false; // Disable keyboard on mobile
+            // @ts-ignore
+>>>>>>> master
             this.orbitControls.touches = {
                 ONE: THREE.TOUCH.ROTATE,
                 TWO: THREE.TOUCH.DOLLY_PAN
@@ -384,7 +515,7 @@ class App {
             
             // Add touch-friendly selection using longer press
             let touchStartTime = 0;
-            let touchStart = { x: 0, y: 0 };
+            const touchStart = { x: 0, y: 0 };
             const touchSelectThreshold = 200; // milliseconds
             const touchMoveThreshold = 10; // pixels
 
@@ -425,8 +556,17 @@ class App {
     }
     
     /**
+<<<<<<< HEAD
      * Handles touch events for object selection.
      * @param {Touch} touch - The touch object.
+=======
+<<<<<<< HEAD
+     * Handles touch events for selection.
+=======
+     * Handles touch events for object selection
+>>>>>>> master
+     * @param {Touch} touch
+>>>>>>> master
      */
     handleTouch(touch) {
         const rect = this.renderer.domElement.getBoundingClientRect();
@@ -438,7 +578,7 @@ class App {
         const intersects = this.raycaster.intersectObjects(this.objects);
 
         if (intersects.length > 0) {
-            const selectedObject = intersects[0].object;
+            const selectedObject = /** @type {any} */ (intersects[0].object);
             this.selectObject(selectedObject);
         } else {
             this.deselectObject();
@@ -446,7 +586,15 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Sets up the dat.GUI panel.
+=======
+<<<<<<< HEAD
+     * Sets up the DAT.GUI interface.
+=======
+     * Sets up the GUI
+>>>>>>> master
+>>>>>>> master
      */
     setupGUI() {
         this.gui = new GUI();
@@ -505,7 +653,15 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Sets up lighting for the scene.
+=======
+<<<<<<< HEAD
+     * Sets up scene lighting.
+=======
+     * Sets up the lighting
+>>>>>>> master
+>>>>>>> master
      */
     setupLighting() {
         // Ambient light
@@ -522,7 +678,15 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Sets up helper objects (grid, axes).
+=======
+<<<<<<< HEAD
+     * Sets up helper objects (grid, axes).
+=======
+     * Sets up helpers (grid, axes)
+>>>>>>> master
+>>>>>>> master
      */
     setupHelpers() {
         // Grid helper
@@ -545,7 +709,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Box_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore - treat Mesh as SceneObject
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Box');
@@ -560,7 +726,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Sphere_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Sphere');
@@ -575,7 +743,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Cylinder_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Cylinder');
@@ -590,7 +760,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Cone_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Cone');
@@ -605,7 +777,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Torus_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Torus');
@@ -620,7 +794,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Plane_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Plane');
@@ -635,7 +811,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `TorusKnot_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Torus Knot');
@@ -650,7 +828,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Tetrahedron_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Tetrahedron');
@@ -665,7 +845,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Icosahedron_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Icosahedron');
@@ -680,7 +862,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Dodecahedron_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Dodecahedron');
@@ -695,7 +879,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Octahedron_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Octahedron');
@@ -716,7 +902,9 @@ class App {
         mesh.receiveShadow = true;
         mesh.name = `Tube_${this.objects.length + 1}`;
         this.scene.add(mesh);
+        // @ts-ignore
         this.objects.push(mesh);
+        // @ts-ignore
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState('Add Tube');
@@ -776,17 +964,30 @@ class App {
         
         group.name = `Teapot_${this.objects.length + 1}`;
         this.scene.add(group);
+        // @ts-ignore
         this.objects.push(group);
+        // @ts-ignore
         this.selectObject(group);
         this.updateSceneGraph();
         this.saveState('Add Teapot');
     }
 
     // Object manipulation methods
+<<<<<<< HEAD
 
     /**
      * Selects an object in the scene.
      * @param {THREE.Object3D} object - The object to select.
+=======
+    /**
+<<<<<<< HEAD
+     * Selects an object.
+     * @param {SceneObject} object
+=======
+     * Selects an object
+     * @param {THREE.Object3D} object
+>>>>>>> master
+>>>>>>> master
      */
     selectObject(object) {
         // Use ObjectManager to handle selection logic, which now uses StateManager
@@ -799,15 +1000,39 @@ class App {
         
         // Visual feedback
         this.objects.forEach(obj => {
+<<<<<<< HEAD
             // @ts-ignore: emissive property assumes MeshLambertMaterial or similar
             if (obj.material && obj.material.emissive) {
+=======
+<<<<<<< HEAD
+            if (Array.isArray(obj.material)) {
+                // @ts-ignore
+                obj.material.forEach(m => m.emissive.setHex(0x000000));
+            } else {
+=======
+            // @ts-ignore
+            if (obj.material && obj.material.emissive) {
+>>>>>>> master
+>>>>>>> master
                 // @ts-ignore
                 obj.material.emissive.setHex(0x000000);
             }
         });
+<<<<<<< HEAD
 
         // @ts-ignore
         if (object.material && object.material.emissive) {
+=======
+<<<<<<< HEAD
+        if (Array.isArray(object.material)) {
+            // @ts-ignore
+            object.material.forEach(m => m.emissive.setHex(0x444444));
+        } else {
+=======
+        // @ts-ignore
+        if (object.material && object.material.emissive) {
+>>>>>>> master
+>>>>>>> master
             // @ts-ignore
             object.material.emissive.setHex(0x444444);
         }
@@ -817,7 +1042,15 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Deselects the currently selected object.
+=======
+<<<<<<< HEAD
+     * Deselects the current object.
+=======
+     * Deselects the currently selected object
+>>>>>>> master
+>>>>>>> master
      */
     deselectObject() {
         if (this.objectManager) {
@@ -825,8 +1058,20 @@ class App {
         }
 
         if (this.selectedObject) {
+<<<<<<< HEAD
             // @ts-ignore
             if (this.selectedObject.material && this.selectedObject.material.emissive) {
+=======
+<<<<<<< HEAD
+            if (Array.isArray(this.selectedObject.material)) {
+                // @ts-ignore
+                this.selectedObject.material.forEach(m => m.emissive.setHex(0x000000));
+            } else {
+=======
+            // @ts-ignore
+            if (this.selectedObject.material && this.selectedObject.material.emissive) {
+>>>>>>> master
+>>>>>>> master
                 // @ts-ignore
                 this.selectedObject.material.emissive.setHex(0x000000);
             }
@@ -836,8 +1081,18 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Updates the properties panel for the selected object.
      * @param {THREE.Object3D} object - The selected object.
+=======
+<<<<<<< HEAD
+     * Updates the properties panel for the selected object.
+     * @param {SceneObject} object
+=======
+     * Updates the properties panel for the selected object
+     * @param {THREE.Object3D} object
+>>>>>>> master
+>>>>>>> master
      */
     updatePropertiesPanel(object) {
         this.clearPropertiesPanel();
@@ -895,6 +1150,7 @@ class App {
         
         // Add material properties
         const materialFolder = this.propertiesFolder.addFolder('Material');
+<<<<<<< HEAD
         // @ts-ignore
         if (object.material && object.material.color) {
             const materialColor = {
@@ -906,6 +1162,30 @@ class App {
                 object.material.color.setHex(value);
             });
         }
+=======
+        const mat = Array.isArray(object.material) ? object.material[0] : object.material;
+        const materialColor = {
+            // @ts-ignore
+<<<<<<< HEAD
+            color: mat.color.getHex()
+        };
+        materialFolder.addColor(materialColor, 'color').name('Color').onChange((value) => {
+            if (Array.isArray(object.material)) {
+                // @ts-ignore
+                object.material.forEach(m => m.color.setHex(value));
+            } else {
+                // @ts-ignore
+                object.material.color.setHex(value);
+            }
+=======
+            color: object.material.color.getHex()
+        };
+        materialFolder.addColor(materialColor, 'color').name('Color').onChange((value) => {
+            // @ts-ignore
+            object.material.color.setHex(value);
+>>>>>>> master
+        });
+>>>>>>> master
         
         // Add geometry-specific properties
         // @ts-ignore
@@ -917,8 +1197,18 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Adds geometry-specific controls to the properties panel.
      * @param {THREE.Object3D} object - The object with geometry.
+=======
+<<<<<<< HEAD
+     * Adds geometry-specific properties to the GUI.
+     * @param {SceneObject} object
+=======
+     * Adds geometry-specific properties to the panel
+     * @param {THREE.Object3D} object
+>>>>>>> master
+>>>>>>> master
      */
     addGeometryProperties(object) {
         // @ts-ignore
@@ -987,9 +1277,21 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Extracts parameters from geometry.
      * @param {THREE.BufferGeometry} geometry - The geometry to extract parameters from.
      * @returns {Object} The parameters.
+=======
+<<<<<<< HEAD
+     * Extracts parameters from geometry.
+     * @param {THREE.BufferGeometry} geometry
+     * @returns {any}
+=======
+     * Extracts geometry parameters from a geometry object
+     * @param {THREE.BufferGeometry} geometry
+     * @returns {object}
+>>>>>>> master
+>>>>>>> master
      */
     getGeometryParameters(geometry) {
         // @ts-ignore
@@ -1038,9 +1340,20 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Rebuilds the object's geometry with new parameters.
      * @param {THREE.Object3D} object - The object to update.
      * @param {string} type - The type of geometry ('box', 'sphere', etc.).
+=======
+<<<<<<< HEAD
+     * Rebuilds geometry with new parameters.
+     * @param {SceneObject} object
+=======
+     * Rebuilds geometry with new parameters
+     * @param {THREE.Object3D} object
+>>>>>>> master
+     * @param {string} type
+>>>>>>> master
      */
     rebuildGeometry(object, type) {
         const params = object.userData.geometryParams;
@@ -1076,35 +1389,155 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
      * Clears the properties panel.
      */
     clearPropertiesPanel() {
         // Remove all controllers from the properties folder
+        // @ts-ignore - __controllers is internal
+=======
+     * Clears the properties panel
+     */
+    clearPropertiesPanel() {
+        // Remove all controllers from the properties folder
+        // @ts-ignore
+>>>>>>> master
         const controllers = [...this.propertiesFolder.__controllers];
         controllers.forEach(controller => {
             this.propertiesFolder.remove(controller);
         });
         
         // Remove all subfolders
+<<<<<<< HEAD
         // @ts-ignore
         const folders = Object.values(this.propertiesFolder.__folders || {});
+=======
+<<<<<<< HEAD
+        const folders = Object.values(this.propertiesFolder.__folders || {});
+=======
+<<<<<<< HEAD
+        const folders = Object.values(this.propertiesFolder.__folders || {});
+=======
+<<<<<<< HEAD
+        // @ts-ignore - __folders is internal
+        const folders = [...this.propertiesFolder.__folders];
+        // @ts-ignore
+        if (typeof folders === 'object' && !Array.isArray(folders)) {
+             // dat.gui might store folders as object
+             Object.values(folders).forEach(folder => {
+                 this.propertiesFolder.removeFolder(folder);
+             });
+        } else if (Array.isArray(folders)) {
+             folders.forEach(folder => {
+                 this.propertiesFolder.removeFolder(folder);
+             });
+        }
+=======
+<<<<<<< HEAD
+        const folders = Object.values(this.propertiesFolder.__folders);
+=======
+<<<<<<< HEAD
+        // @ts-ignore
+        const folders = [...this.propertiesFolder.__folders];
+=======
+        const folders = Object.values(this.propertiesFolder.__folders || {});
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
         folders.forEach(folder => {
+            // @ts-ignore
             this.propertiesFolder.removeFolder(folder);
         });
+>>>>>>> master
         
         this.propertiesFolder.close();
     }
 
     /**
+<<<<<<< HEAD
      * Updates the scene graph UI.
+=======
+<<<<<<< HEAD
+     * Updates the scene graph UI.
+=======
+     * Updates the scene graph UI
+>>>>>>> master
+>>>>>>> master
      */
     updateSceneGraph() {
+<<<<<<< HEAD
+        if (!this.sceneGraphMap) {
+            this.sceneGraphMap = new Map();
+        }
+
+        const currentUuids = new Set();
+        
+        // Add each object to the scene graph
+        this.objects.forEach((object, index) => {
+            currentUuids.add(object.uuid);
+            
+            let listItem = this.sceneGraphMap.get(object.uuid);
+            let objectInfo, objectName, objectType, visibilityBtn, deleteBtn, positionInfo;
+=======
+<<<<<<< HEAD
+        // Check if focus is currently within the list
+        const listHasFocus = this.objectsList.contains(document.activeElement);
+=======
+        // Capture current focus to restore it after update
+        const activeElement = document.activeElement;
+        let focusedIndex = -1;
+        if (activeElement && this.objectsList.contains(activeElement)) {
+            const items = Array.from(this.objectsList.children);
+            const focusedLi = activeElement.closest('li');
+            if (focusedLi) {
+                focusedIndex = items.indexOf(focusedLi);
+            }
+        }
+>>>>>>> master
+
         // Clear existing list
         this.objectsList.innerHTML = '';
+        this.objectsList.setAttribute('role', 'listbox');
+        this.objectsList.setAttribute('aria-label', 'Scene Graph Objects');
         
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
+<<<<<<< HEAD
+            listItem.setAttribute('role', 'option');
+            listItem.setAttribute('tabindex', '0');
+            listItem.setAttribute('aria-selected', this.selectedObject === object);
+
+=======
+<<<<<<< HEAD
+            listItem.setAttribute('role', 'option');
+            listItem.setAttribute('tabindex', '0');
+            listItem.setAttribute('aria-selected', this.selectedObject === object ? 'true' : 'false');
+            listItem.dataset.uuid = object.uuid;
+
+            // Handle keyboard selection
+>>>>>>> master
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
+
+<<<<<<< HEAD
+=======
+=======
+<<<<<<< HEAD
+            listItem.tabIndex = 0;
+            listItem.role = 'button';
+            listItem.setAttribute('aria-label', `Select ${object.name || 'Object ' + (index + 1)}`);
+>>>>>>> master
+>>>>>>> master
             listItem.style.cssText = `
                 padding: 5px;
                 margin: 2px 0;
@@ -1113,7 +1546,41 @@ class App {
                 cursor: pointer;
                 border: 1px solid #555;
             `;
+=======
+<<<<<<< HEAD
+            // Use CSS classes instead of inline styles
+            if (this.selectedObject === object) {
+                listItem.classList.add('selected');
+            }
+
+            // Accessibility attributes for the list item
+            listItem.tabIndex = 0;
+            listItem.setAttribute('role', 'option');
+            listItem.setAttribute('aria-label', `Select ${object.name || `Object_${index + 1}`}`);
+            if (this.selectedObject === object) {
+                listItem.setAttribute('aria-selected', 'true');
+            }
+=======
+            // Use CSS class for selection state
+            if (this.selectedObject === object) {
+                listItem.classList.add('selected');
+            }
+>>>>>>> master
+>>>>>>> master
             
+            // Accessibility: Focusable and Role
+            listItem.tabIndex = 0;
+            listItem.setAttribute('role', 'option');
+            listItem.setAttribute('aria-selected', this.selectedObject === object);
+
+            // Accessibility: Keyboard support
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
+
             // Object name and type
             const objectInfo = document.createElement('div');
             objectInfo.style.cssText = `
@@ -1121,14 +1588,128 @@ class App {
                 justify-content: space-between;
                 align-items: center;
             `;
+>>>>>>> master
             
-            const objectName = document.createElement('span');
-            objectName.textContent = object.name || `Object_${index + 1}`;
-            objectName.style.cssText = `
-                font-weight: bold;
-                color: #fff;
-            `;
+            if (!listItem) {
+                // Create new list item
+                listItem = document.createElement('li');
+                listItem.style.cssText = `
+                    padding: 5px;
+                    margin: 2px 0;
+                    border-radius: 3px;
+                    cursor: pointer;
+                    border: 1px solid #555;
+                `;
+                listItem.__cache = {};
+
+                objectInfo = document.createElement('div');
+                objectInfo.style.cssText = `
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                `;
+
+                objectName = document.createElement('span');
+                objectName.style.cssText = `
+                    font-weight: bold;
+                    color: #fff;
+                `;
+
+                objectType = document.createElement('span');
+                objectType.style.cssText = `
+                    font-size: 10px;
+                    color: #aaa;
+                    font-style: italic;
+                `;
+
+                const buttonContainer = document.createElement('div');
+
+                visibilityBtn = document.createElement('button');
+                visibilityBtn.style.cssText = `
+                    background: none;
+                    border: none;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 12px;
+                    padding: 2px 5px;
+                    margin: 0 5px;
+                `;
+
+                deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '🗑';
+                deleteBtn.style.cssText = `
+                    background: none;
+                    border: none;
+                    color: #ff4444;
+                    cursor: pointer;
+                    font-size: 12px;
+                    padding: 2px 5px;
+                `;
+
+                buttonContainer.appendChild(visibilityBtn);
+                buttonContainer.appendChild(deleteBtn);
+
+                objectInfo.appendChild(objectName);
+                objectInfo.appendChild(objectType);
+                objectInfo.appendChild(buttonContainer);
+
+                listItem.appendChild(objectInfo);
+
+                positionInfo = document.createElement('div');
+                positionInfo.style.cssText = `
+                    font-size: 10px;
+                    color: #999;
+                    margin-top: 3px;
+                `;
+                listItem.appendChild(positionInfo);
+
+                this.sceneGraphMap.set(object.uuid, listItem);
+            } else {
+                // Retrieve cached elements
+                objectInfo = listItem.firstChild;
+                objectName = objectInfo.children[0];
+                objectType = objectInfo.children[1];
+                const buttonContainer = objectInfo.children[2];
+                visibilityBtn = buttonContainer.children[0];
+                deleteBtn = buttonContainer.children[1];
+                positionInfo = listItem.lastChild;
+            }
             
+<<<<<<< HEAD
+            // Update styles and content with caching
+            const isSelected = this.selectedObject === object;
+            const bg = isSelected ? '#444' : '#222';
+            if (listItem.__cache.bg !== bg) {
+                listItem.style.background = bg;
+                listItem.__cache.bg = bg;
+            }
+            
+            const name = object.name || `Object_${index + 1}`;
+            if (listItem.__cache.name !== name) {
+                objectName.textContent = name;
+                listItem.__cache.name = name;
+            }
+
+            const type = object.geometry.type.replace('Geometry', '');
+            if (listItem.__cache.type !== type) {
+                objectType.textContent = type;
+                listItem.__cache.type = type;
+            }
+
+            const visText = object.visible ? '👁' : '🚫';
+            if (listItem.__cache.vis !== visText) {
+                visibilityBtn.textContent = visText;
+                listItem.__cache.vis = visText;
+            }
+
+            const posText = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
+            if (listItem.__cache.pos !== posText) {
+                positionInfo.textContent = posText;
+                listItem.__cache.pos = posText;
+            }
+
+            // Update event listeners
+=======
             const objectType = document.createElement('span');
             // @ts-ignore
             objectType.textContent = object.geometry.type.replace('Geometry', '');
@@ -1140,7 +1721,52 @@ class App {
             
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
+<<<<<<< HEAD
+            const visibilityLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+            visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
+            visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+=======
+<<<<<<< HEAD
+            visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+            visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
+=======
+<<<<<<< HEAD
+
+            // Accessibility: Labels and Tooltips
+            visibilityBtn.setAttribute('aria-label', `Toggle visibility of ${object.name}`);
+            visibilityBtn.title = `Toggle visibility of ${object.name}`;
+
+=======
+<<<<<<< HEAD
+            visibilityBtn.setAttribute('aria-label', `Toggle visibility of ${object.name || `Object ${index + 1}`}`);
+=======
+<<<<<<< HEAD
+            visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+=======
+            visibilityBtn.setAttribute('aria-label', visibilityLabel);
+            visibilityBtn.title = visibilityLabel;
+=======
+            visibilityBtn.className = 'icon-btn';
+            visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+            visibilityBtn.title = 'Toggle visibility';
+=======
+<<<<<<< HEAD
+            visibilityBtn.title = object.visible ? 'Hide Object' : 'Show Object';
+            visibilityBtn.setAttribute('aria-label', `${object.visible ? 'Hide' : 'Show'} ${object.name || `Object_${index + 1}`}`);
+
+=======
+            visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
+>>>>>>> master
+            visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1150,15 +1776,103 @@ class App {
                 padding: 2px 5px;
                 margin: 0 5px;
             `;
+>>>>>>> master
+>>>>>>> master
             visibilityBtn.onclick = (e) => {
                 e.stopPropagation();
                 object.visible = !object.visible;
+                const label = object.visible ? 'Hide object' : 'Show object';
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+                listItem.__cache.vis = visibilityBtn.textContent;
+            };
+            
+=======
+<<<<<<< HEAD
+                visibilityBtn.title = label;
+                visibilityBtn.setAttribute('aria-label', label);
+=======
+<<<<<<< HEAD
+                visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+                visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
+=======
+<<<<<<< HEAD
+                visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+=======
+<<<<<<< HEAD
+                const newLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
+                visibilityBtn.setAttribute('aria-label', newLabel);
+                visibilityBtn.title = newLabel;
+=======
+<<<<<<< HEAD
+                visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
+=======
+<<<<<<< HEAD
+                // Update title and aria-label
+                visibilityBtn.title = object.visible ? 'Hide Object' : 'Show Object';
+                visibilityBtn.setAttribute('aria-label', `${object.visible ? 'Hide' : 'Show'} ${object.name || `Object_${index + 1}`}`);
+=======
+
+                // Update accessibility attributes
+                const action = object.visible ? 'Hide' : 'Show';
+                visibilityBtn.title = `${action} object`;
+                visibilityBtn.setAttribute('aria-label', `${action} ${object.name}`);
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
+<<<<<<< HEAD
+            const deleteLabel = 'Delete ' + (object.name || 'Object');
             deleteBtn.textContent = '🗑';
+<<<<<<< HEAD
+            deleteBtn.title = 'Delete object';
+            deleteBtn.setAttribute('aria-label', 'Delete object');
+=======
+<<<<<<< HEAD
+            deleteBtn.setAttribute('aria-label', 'Delete object');
+            deleteBtn.setAttribute('title', 'Delete object');
+=======
+<<<<<<< HEAD
+
+            // Accessibility: Labels and Tooltips
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+            deleteBtn.title = `Delete ${object.name}`;
+
+=======
+<<<<<<< HEAD
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name || `Object ${index + 1}`}`);
+=======
+<<<<<<< HEAD
+            deleteBtn.setAttribute('aria-label', 'Delete object');
+=======
+            deleteBtn.setAttribute('aria-label', deleteLabel);
+            deleteBtn.title = deleteLabel;
+=======
+            deleteBtn.className = 'icon-btn';
+            deleteBtn.textContent = '🗑';
+<<<<<<< HEAD
+            deleteBtn.title = `Delete ${object.name}`;
+=======
+<<<<<<< HEAD
+            deleteBtn.title = 'Delete Object';
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name || `Object_${index + 1}`}`);
+
+=======
+            deleteBtn.title = 'Delete object';
+>>>>>>> master
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
             deleteBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1167,16 +1881,50 @@ class App {
                 font-size: 12px;
                 padding: 2px 5px;
             `;
+>>>>>>> master
+>>>>>>> master
             deleteBtn.onclick = (e) => {
                 e.stopPropagation();
                 this.deleteObject(object);
             };
             
+<<<<<<< HEAD
+=======
             // Click to select
+            listItem.tabIndex = 0;
+            listItem.setAttribute('aria-label', 'Select ' + (object.name || 'Object'));
+>>>>>>> master
             listItem.onclick = () => {
                 this.selectObject(object);
             };
+<<<<<<< HEAD
+
+            // Keyboard support for selection
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+=======
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+>>>>>>> master
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
             
+<<<<<<< HEAD
+            // Ensure correct position in DOM
+            if (this.objectsList.children[index] !== listItem) {
+                this.objectsList.insertBefore(listItem, this.objectsList.children[index]);
+            }
+=======
+            // Keyboard navigation
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
+
             objectInfo.appendChild(objectName);
             objectInfo.appendChild(objectType);
             
@@ -1198,25 +1946,81 @@ class App {
             listItem.appendChild(positionInfo);
             
             this.objectsList.appendChild(listItem);
+>>>>>>> master
         });
+
+        // Restore focus if list was focused and we have a selected object
+        if (listHasFocus && this.selectedObject) {
+            const newItem = this.objectsList.querySelector(`[data-uuid="${this.selectedObject.uuid}"]`);
+            if (newItem) {
+                newItem.focus();
+            }
+        }
         
-        // Add message if no objects
+        // Remove items that are no longer in the scene
+        for (const [uuid, listItem] of this.sceneGraphMap.entries()) {
+            if (!currentUuids.has(uuid)) {
+                if (listItem.parentNode === this.objectsList) {
+                    this.objectsList.removeChild(listItem);
+                }
+                this.sceneGraphMap.delete(uuid);
+            }
+        }
+
+        // Handle empty message
+        const existingEmptyMsg = this.objectsList.querySelector('#empty-scene-msg');
         if (this.objects.length === 0) {
-            const emptyMessage = document.createElement('li');
-            emptyMessage.textContent = 'No objects in scene';
-            emptyMessage.style.cssText = `
-                color: #666;
-                font-style: italic;
-                text-align: center;
-                padding: 20px;
-            `;
-            this.objectsList.appendChild(emptyMessage);
+            if (!existingEmptyMsg) {
+                const emptyMessage = document.createElement('li');
+                emptyMessage.id = 'empty-scene-msg';
+                emptyMessage.textContent = 'No objects in scene';
+                emptyMessage.style.cssText = `
+                    color: #666;
+                    font-style: italic;
+                    text-align: center;
+                    padding: 20px;
+                `;
+                this.objectsList.appendChild(emptyMessage);
+            }
+        } else {
+            if (existingEmptyMsg) {
+                existingEmptyMsg.remove();
+            }
+        }
+
+        // Restore focus if it was within the list
+        if (focusedIndex >= 0) {
+            const items = this.objectsList.children;
+            // If previous index is now out of bounds (e.g. item deleted), select the last item
+            if (focusedIndex >= items.length) {
+                focusedIndex = items.length - 1;
+            }
+            if (focusedIndex >= 0) {
+                // Check if the item itself is focusable (li with tabindex=0)
+                if (items[focusedIndex].tabIndex === 0) {
+                    items[focusedIndex].focus();
+                } else {
+                    // Try to find a focusable element inside?
+                    // Actually our li has tabindex=0 so it receives focus.
+                    items[focusedIndex].focus();
+                }
+            }
         }
     }
 
     /**
+<<<<<<< HEAD
      * Deletes an object from the scene.
      * @param {THREE.Object3D} object - The object to delete.
+=======
+<<<<<<< HEAD
+     * Deletes an object.
+     * @param {SceneObject} object
+=======
+     * Deletes an object
+     * @param {THREE.Object3D} object
+>>>>>>> master
+>>>>>>> master
      */
     deleteObject(object) {
         if (object) {
@@ -1234,7 +2038,15 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Deletes the currently selected object.
+=======
+<<<<<<< HEAD
+     * Deletes the currently selected object.
+=======
+     * Deletes the currently selected object
+>>>>>>> master
+>>>>>>> master
      */
     deleteSelectedObject() {
         if (this.selectedObject) {
@@ -1243,7 +2055,15 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Duplicates the currently selected object.
+=======
+<<<<<<< HEAD
+     * Duplicates the currently selected object.
+=======
+     * Duplicates the currently selected object
+>>>>>>> master
+>>>>>>> master
      */
     duplicateSelectedObject() {
         if (this.selectedObject) {
@@ -1270,19 +2090,33 @@ class App {
             mesh.name = `${this.selectedObject.name}_copy`;
             
             this.scene.add(mesh);
+            // @ts-ignore
             this.objects.push(mesh);
+            // @ts-ignore
             this.selectObject(mesh);
             this.updateSceneGraph();
             this.saveState('Duplicate object');
         }
     }
 
+<<<<<<< HEAD
     /**
      * Saves the current state to history.
      * @param {string} description - The description of the action.
+=======
+    // History system methods
+    /**
+<<<<<<< HEAD
+     * Saves the current state for undo/redo.
+=======
+     * Saves the current state of the application
+>>>>>>> master
+     * @param {string} description
+>>>>>>> master
      */
     saveState(description = 'Action') {
         // Create a snapshot of the current state
+        /** @type {SerializedScene} */
         const state = {
             description: description,
             timestamp: Date.now(),
@@ -1295,9 +2129,18 @@ class App {
                 scale: obj.scale.clone(),
                 material: {
                     // @ts-ignore
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+                    color: Array.isArray(obj.material) ? obj.material[0].color.clone() : obj.material.color.clone(),
+                    // @ts-ignore
+                    emissive: Array.isArray(obj.material) ? obj.material[0].emissive.clone() : obj.material.emissive.clone()
+=======
+>>>>>>> master
                     color: obj.material.color.clone(),
                     // @ts-ignore
                     emissive: obj.material.emissive.clone()
+>>>>>>> master
                 },
                 geometryParams: obj.userData.geometryParams ? {...obj.userData.geometryParams} : null,
                 visible: obj.visible,
@@ -1325,7 +2168,15 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Undoes the last action.
+=======
+<<<<<<< HEAD
+     * Undoes the last action.
+=======
+     * Undoes the last action
+>>>>>>> master
+>>>>>>> master
      */
     undo() {
         if (this.historyIndex > 0) {
@@ -1338,7 +2189,15 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Redoes the last undone action.
+=======
+<<<<<<< HEAD
+     * Redoes the last undone action.
+=======
+     * Redoes the last undone action
+>>>>>>> master
+>>>>>>> master
      */
     redo() {
         if (this.historyIndex < this.history.length - 1) {
@@ -1350,22 +2209,161 @@ class App {
         }
     }
 
+<<<<<<< HEAD
     /**
      * Restores the application state.
      * @param {Object} state - The state object to restore.
      */
+=======
+<<<<<<< HEAD
+    /**
+     * Restores the scene to a specific state.
+     * @param {SerializedScene} state
+     */
+=======
+<<<<<<< HEAD
+    /**
+     * Restores the application state
+     * @param {object} state
+     */
+=======
+    createGeometryFromData(objData) {
+        const params = objData.geometryParams || {};
+        switch (objData.type) {
+            case 'BoxGeometry':
+                return new THREE.BoxGeometry(params.width || 1, params.height || 1, params.depth || 1);
+            case 'SphereGeometry':
+                return new THREE.SphereGeometry(params.radius || 0.5, params.widthSegments || 32, params.heightSegments || 32);
+            case 'CylinderGeometry':
+                return new THREE.CylinderGeometry(params.radiusTop || 0.5, params.radiusBottom || 0.5, params.height || 1, 32);
+            case 'ConeGeometry':
+                return new THREE.ConeGeometry(params.radius || 0.5, params.height || 1, 32);
+            case 'TorusGeometry':
+                return new THREE.TorusGeometry(params.radius || 0.4, params.tube || 0.2, 16, 100);
+            case 'PlaneGeometry':
+                return new THREE.PlaneGeometry(params.width || 2, params.height || 2);
+            default:
+                return new THREE.BoxGeometry(1, 1, 1);
+        }
+    }
+
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
     restoreState(state) {
-        // Clear current scene
+        // Track current objects by UUID for easy lookup
+        const currentObjectsMap = new Map();
         this.objects.forEach(obj => {
+<<<<<<< HEAD
             this.scene.remove(obj);
             // @ts-ignore
             obj.geometry.dispose();
             // @ts-ignore
             obj.material.dispose();
+=======
+            currentObjectsMap.set(obj.uuid, obj);
+>>>>>>> master
         });
+        
+        const newObjects = [];
+
+        // Process objects from state
+        state.objects.forEach(objData => {
+            let object = currentObjectsMap.get(objData.uuid);
+            
+            if (object) {
+                // UPDATE existing object
+                if (object.name !== objData.name) object.name = objData.name;
+                object.position.copy(objData.position);
+                object.rotation.copy(objData.rotation);
+                object.scale.copy(objData.scale);
+                object.visible = objData.visible;
+
+                // Update material
+                if (object.material.color.getHex() !== objData.material.color.getHex()) {
+                    object.material.color.set(objData.material.color);
+                }
+                if (object.material.emissive.getHex() !== objData.material.emissive.getHex()) {
+                    object.material.emissive.set(objData.material.emissive);
+                }
+
+                // Check if geometry update is needed
+                const currentParams = object.userData.geometryParams;
+                const newParams = objData.geometryParams;
+
+                let geometryNeedsUpdate = false;
+                if (!currentParams && newParams) geometryNeedsUpdate = true;
+                else if (currentParams && !newParams) geometryNeedsUpdate = true;
+                else if (currentParams && newParams) {
+                    // Compare keys
+                    for (const key in newParams) {
+                        if (currentParams[key] !== newParams[key]) {
+                            geometryNeedsUpdate = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (geometryNeedsUpdate) {
+                     object.userData.geometryParams = newParams ? {...newParams} : null;
+                     const newGeometry = this.createGeometryFromData(objData);
+                     object.geometry.dispose();
+                     object.geometry = newGeometry;
+                }
+
+                newObjects.push(object);
+                // Remove from map so we know what's left to delete
+                currentObjectsMap.delete(objData.uuid);
+
+            } else {
+                // CREATE new object
+                const geometry = this.createGeometryFromData(objData);
+
+                // Recreate material
+                const material = new THREE.MeshLambertMaterial({
+                    color: objData.material.color,
+                    side: objData.type === 'PlaneGeometry' ? THREE.DoubleSide : THREE.FrontSide
+                });
+                material.emissive.set(objData.material.emissive);
+
+                // Create mesh
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.name = objData.name;
+                mesh.position.copy(objData.position);
+                mesh.rotation.copy(objData.rotation);
+                mesh.scale.copy(objData.scale);
+                mesh.visible = objData.visible;
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                mesh.uuid = objData.uuid;
+                mesh.userData.geometryParams = objData.geometryParams;
+
+                this.scene.add(mesh);
+                newObjects.push(mesh);
+            }
+        });
+        
+        // DELETE removed objects
+        currentObjectsMap.forEach(obj => {
+            this.scene.remove(obj);
+            // @ts-ignore
+            obj.geometry.dispose();
+<<<<<<< HEAD
+            if (Array.isArray(obj.material)) {
+                obj.material.forEach(m => m.dispose());
+            } else {
+                obj.material.dispose();
+            }
+=======
+            // @ts-ignore
+            obj.material.dispose();
+>>>>>>> master
+        });
+<<<<<<< HEAD
         this.objects.length = 0;
         
         // Restore objects
+        // @ts-ignore
         state.objects.forEach(objData => {
             let geometry;
             
@@ -1419,12 +2417,20 @@ class App {
             mesh.userData.geometryParams = objData.geometryParams;
             
             this.scene.add(mesh);
+            // @ts-ignore
             this.objects.push(mesh);
         });
         
+=======
+
+        this.objects = newObjects;
+
+>>>>>>> master
         // Restore selection
         this.deselectObject();
+        // @ts-ignore
         if (state.selectedObjectUuid) {
+            // @ts-ignore
             const selectedObj = this.objects.find(obj => obj.uuid === state.selectedObjectUuid);
             if (selectedObj) {
                 this.selectObject(selectedObj);
@@ -1435,7 +2441,15 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Toggles fullscreen mode.
+=======
+<<<<<<< HEAD
+     * Toggles fullscreen mode.
+=======
+     * Toggles fullscreen mode
+>>>>>>> master
+>>>>>>> master
      */
     toggleFullscreen() {
         const doc = document;
@@ -1443,6 +2457,7 @@ class App {
 
         if (!doc.fullscreenElement && !doc.webkitFullscreenElement && !doc.mozFullScreenElement && !doc.msFullscreenElement) {
             // Enter fullscreen
+<<<<<<< HEAD
             if (docEl.requestFullscreen) {
                 docEl.requestFullscreen();
             } else if (docEl.webkitRequestFullscreen) {
@@ -1462,12 +2477,42 @@ class App {
                 doc.mozCancelFullScreen();
             } else if (doc.msExitFullscreen) {
                 doc.msExitFullscreen();
+=======
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (/** @type {any} */ (document.documentElement).webkitRequestFullscreen) {
+                /** @type {any} */ (document.documentElement).webkitRequestFullscreen();
+            } else if (/** @type {any} */ (document.documentElement).mozRequestFullScreen) {
+                /** @type {any} */ (document.documentElement).mozRequestFullScreen();
+            } else if (/** @type {any} */ (document.documentElement).msRequestFullscreen) {
+                /** @type {any} */ (document.documentElement).msRequestFullscreen();
+            }
+        } else {
+            // Exit fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (/** @type {any} */ (document).webkitExitFullscreen) {
+                /** @type {any} */ (document).webkitExitFullscreen();
+            } else if (/** @type {any} */ (document).mozCancelFullScreen) {
+                /** @type {any} */ (document).mozCancelFullScreen();
+            } else if (/** @type {any} */ (document).msExitFullscreen) {
+                /** @type {any} */ (document).msExitFullscreen();
+>>>>>>> master
             }
         }
     }
 
     /**
+<<<<<<< HEAD
      * Saves the current scene to a file.
+=======
+<<<<<<< HEAD
+     * Saves the scene to a file.
+=======
+     * Saves the current scene to local storage
+     * @returns {Promise<void>}
+>>>>>>> master
+>>>>>>> master
      */
     async saveScene() {
         try {
@@ -1480,8 +2525,19 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Loads a scene from a file.
      * @param {File} file - The file to load.
+=======
+<<<<<<< HEAD
+     * Loads the scene from a file.
+     * @param {File} file
+=======
+     * Loads a scene from a file
+     * @param {File} file
+     * @returns {Promise<void>}
+>>>>>>> master
+>>>>>>> master
      */
     async loadScene(file) {
         try {
@@ -1490,10 +2546,21 @@ class App {
             // Update the objects array to reflect the loaded scene
             this.objects = [];
             this.scene.traverse((child) => {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
+>>>>>>> master
                 // @ts-ignore
                 if (child.isMesh) {
                     // @ts-ignore
                     this.objects.push(child);
+=======
+                if (/** @type {any} */ (child).isMesh) {
+                    this.objects.push(/** @type {THREE.Mesh} */ (child));
+>>>>>>> master
                 }
             });
             this.updateSceneGraph();
@@ -1506,7 +2573,15 @@ class App {
     }
 
     /**
+<<<<<<< HEAD
      * Animation loop.
+=======
+<<<<<<< HEAD
+     * Animation loop.
+=======
+     * Animation loop
+>>>>>>> master
+>>>>>>> master
      */
     animate() {
         requestAnimationFrame(() => this.animate());
