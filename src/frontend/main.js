@@ -19,12 +19,16 @@ import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
  * Simple 3D modeling application with basic primitives and transform controls
  */
 <<<<<<< HEAD
+export class App {
+=======
+<<<<<<< HEAD
 class App {
     /**
      * Initializes the application
      */
 =======
 export class App {
+>>>>>>> master
 >>>>>>> master
     constructor() {
         // Initialize Service Container
@@ -112,8 +116,8 @@ export class App {
         this.maxHistorySize = 50;
         
         // Continue initialization
-        this.initRemaining();
         this.setupControls();
+        this.initRemaining();
         this.setupGUI();
         this.setupLighting();
         this.setupHelpers();
@@ -219,11 +223,15 @@ export class App {
         // Create objects list
         this.objectsList = document.createElement('ul');
 <<<<<<< HEAD
+        this.objectsList.setAttribute('role', 'listbox');
+=======
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 >>>>>>> master
         this.objectsList.setAttribute('role', 'listbox');
         this.objectsList.setAttribute('aria-label', 'Scene objects');
+>>>>>>> master
         this.objectsList.style.cssText = `
             list-style: none;
             margin: 0;
@@ -1310,10 +1318,17 @@ export class App {
 <<<<<<< HEAD
             listItem.setAttribute('role', 'option');
             listItem.setAttribute('tabindex', '0');
+            listItem.setAttribute('aria-selected', this.selectedObject === object);
+
+=======
+<<<<<<< HEAD
+            listItem.setAttribute('role', 'option');
+            listItem.setAttribute('tabindex', '0');
             listItem.setAttribute('aria-selected', this.selectedObject === object ? 'true' : 'false');
             listItem.dataset.uuid = object.uuid;
 
             // Handle keyboard selection
+>>>>>>> master
             listItem.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
@@ -1321,11 +1336,14 @@ export class App {
                 }
             });
 
+<<<<<<< HEAD
+=======
 =======
 <<<<<<< HEAD
             listItem.tabIndex = 0;
             listItem.role = 'button';
             listItem.setAttribute('aria-label', `Select ${object.name || 'Object ' + (index + 1)}`);
+>>>>>>> master
 >>>>>>> master
             listItem.style.cssText = `
                 padding: 5px;
@@ -1400,6 +1418,10 @@ export class App {
             const visibilityLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
 <<<<<<< HEAD
+            visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+            visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
+=======
+<<<<<<< HEAD
 
             // Accessibility: Labels and Tooltips
             visibilityBtn.setAttribute('aria-label', `Toggle visibility of ${object.name}`);
@@ -1432,6 +1454,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1446,6 +1469,10 @@ export class App {
                 e.stopPropagation();
                 object.visible = !object.visible;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+                visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+                visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
+=======
 <<<<<<< HEAD
                 visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
 =======
@@ -1471,6 +1498,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             };
             
             // Delete button
@@ -1478,6 +1506,10 @@ export class App {
 <<<<<<< HEAD
             const deleteLabel = 'Delete ' + (object.name || 'Object');
             deleteBtn.textContent = '🗑';
+<<<<<<< HEAD
+            deleteBtn.setAttribute('aria-label', 'Delete object');
+            deleteBtn.setAttribute('title', 'Delete object');
+=======
 <<<<<<< HEAD
 
             // Accessibility: Labels and Tooltips
@@ -1507,6 +1539,7 @@ export class App {
             deleteBtn.title = 'Delete object';
 >>>>>>> master
             deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

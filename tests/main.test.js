@@ -35,7 +35,11 @@ jest.mock('three', () => {
             remove: jest.fn()
         })),
         PerspectiveCamera: jest.fn(() => ({
+<<<<<<< HEAD
+            position: { set: jest.fn(), clone: jest.fn() },
+=======
             position: { ...mockVector3 },
+>>>>>>> master
             lookAt: jest.fn(),
             aspect: 1,
             updateProjectionMatrix: jest.fn()
@@ -78,7 +82,8 @@ jest.mock('three', () => {
         Vector2: jest.fn(),
         Vector3: jest.fn(() => ({ ...mockVector3 })),
         PCFSoftShadowMap: 'PCFSoftShadowMap',
-        DoubleSide: 'DoubleSide'
+        DoubleSide: 'DoubleSide',
+        TOUCH: { ROTATE: 1, DOLLY_PAN: 2 }
     };
 =======
   const mockElement = { createElement: jest.fn(() => ({ tagName: 'CANVAS' })) };
@@ -184,8 +189,49 @@ jest.mock('dat.gui', () => ({
     }))
 }));
 
+<<<<<<< HEAD
+// Mock OrbitControls
+jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
+    OrbitControls: jest.fn(() => ({
+        enableDamping: true,
+        dampingFactor: 0.05,
+        enabled: true,
+        update: jest.fn(),
+        target: { clone: jest.fn() }
+    }))
+}));
+
+// Mock TransformControls
+jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
+    TransformControls: jest.fn(() => ({
+        addEventListener: jest.fn(),
+        setMode: jest.fn(),
+        attach: jest.fn(),
+        detach: jest.fn(),
+        dragging: false
+    }))
+}));
+=======
 // Mocks for three/examples/jsm/* are handled via moduleNameMapper in jest.config.cjs
 // pointing to tests/__mocks__/three-examples.js
+>>>>>>> master
+
+// Mock TeapotGeometry
+jest.mock('three/examples/jsm/geometries/TeapotGeometry.js', () => ({
+    TeapotGeometry: jest.fn()
+}));
+
+// Mock FontLoader
+jest.mock('three/examples/jsm/loaders/FontLoader.js', () => ({
+    FontLoader: jest.fn(() => ({
+        load: jest.fn()
+    }))
+}));
+
+// Mock TextGeometry
+jest.mock('three/examples/jsm/geometries/TextGeometry.js', () => ({
+    TextGeometry: jest.fn()
+}));
 
 describe('Basic App Functionality', () => {
     beforeEach(() => {
@@ -199,9 +245,37 @@ describe('Basic App Functionality', () => {
         jest.spyOn(window, 'addEventListener').mockImplementation();
         
         // Mock document.createElement to return proper elements
+<<<<<<< HEAD
+        jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+            const element = {
+                tagName: tagName.toUpperCase(),
+                style: {},
+                appendChild: jest.fn(),
+                textContent: '',
+                innerHTML: '',
+                onclick: null,
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn(),
+                setAttribute: jest.fn(),
+                getAttribute: jest.fn()
+            };
+            
+            // Add style.cssText property
+            Object.defineProperty(element.style, 'cssText', {
+                set: jest.fn(),
+                get: jest.fn()
+            });
+            
+            return element;
+        });
+        
+        // Clear mocks
+        jest.clearAllMocks();
+=======
         // Note: we don't need to replace the document, just spy on it
         // But since we are modifying innerHTML, existing spies might be lost if we reset modules?
         // No, spies on `document` persist until restore.
+>>>>>>> master
     });
 
     afterEach(() => {
