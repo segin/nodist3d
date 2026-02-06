@@ -1,4 +1,9 @@
 <<<<<<< HEAD
+## 2026-02-02 - Scene Graph Accessibility & Layout
+**Learning:** Overlapping UI panels (Scene Graph vs Dat.GUI) block interaction and fail accessibility checks. Manual inline styles in JS made this hard to spot until runtime verification.
+**Action:** Always verify UI positioning prevents overlap, especially when using libraries with default positions (Dat.GUI). Use distinct screen areas for different control groups.
+=======
+<<<<<<< HEAD
 # Palette's Journal
 
 ## 2024-05-22 - Accessibility in Dynamic Lists
@@ -58,6 +63,7 @@
 ## 2026-01-28 - Dynamic UI Accessibility & Layout
 **Learning:** Dynamic UI components (like the Scene Graph) generated in `main.js` were ignoring CSS classes and missing accessibility attributes (ARIA labels, titles), leading to hardcoded styles and poor a11y. Also, fixed positioning caused overlap with `dat.gui`.
 **Action:** Always target existing DOM elements for containers, use CSS classes instead of inline styles, and explicitly add ARIA attributes when creating elements dynamically. Ensure overlay positions don't conflict with library-generated UI.
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

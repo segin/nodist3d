@@ -40,6 +40,9 @@ jest.mock('three', () => {
         })),
         PerspectiveCamera: jest.fn(() => ({
 <<<<<<< HEAD
+            position: { set: jest.fn(), clone: jest.fn() },
+=======
+<<<<<<< HEAD
             position: {
                 set: jest.fn(),
                 clone: jest.fn(() => ({ x: 5, y: 5, z: 5 }))
@@ -52,6 +55,7 @@ jest.mock('three', () => {
             position: { set: jest.fn(), clone: jest.fn() },
 =======
             position: { ...mockVector3 },
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -79,7 +83,21 @@ jest.mock('three', () => {
         ConeGeometry: jest.fn(),
         TorusGeometry: jest.fn(),
         PlaneGeometry: jest.fn(),
+<<<<<<< HEAD
+        BufferGeometry: jest.fn(),
         ExtrudeGeometry: jest.fn(),
+        LatheGeometry: jest.fn(),
+        Loader: jest.fn(),
+        FileLoader: jest.fn(() => ({
+            setPath: jest.fn(),
+            setRequestHeader: jest.fn(),
+            setWithCredentials: jest.fn(),
+            load: jest.fn(),
+        })),
+        ShapeGeometry: jest.fn(),
+=======
+        ExtrudeGeometry: jest.fn(),
+>>>>>>> master
         MeshLambertMaterial: jest.fn(() => ({
             emissive: { setHex: jest.fn() },
             clone: jest.fn(() => ({ emissive: { setHex: jest.fn() } }))
@@ -103,6 +121,9 @@ jest.mock('three', () => {
         })),
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide',
+<<<<<<< HEAD
+        TOUCH: { ROTATE: 1, DOLLY_PAN: 2 }
+=======
         TOUCH: {
             ROTATE: 0,
             DOLLY_PAN: 1
@@ -126,6 +147,7 @@ jest.mock('three', () => {
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide',
         TOUCH: { ROTATE: 1, DOLLY_PAN: 2 }
+>>>>>>> master
 >>>>>>> master
     };
 =======
@@ -297,12 +319,16 @@ jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
         enabled: true,
         update: jest.fn(),
 <<<<<<< HEAD
+        target: { clone: jest.fn(() => ({ copy: jest.fn() })) }
+=======
+<<<<<<< HEAD
         target: {
             clone: jest.fn(() => ({ x: 0, y: 0, z: 0 })),
             copy: jest.fn()
         }
 =======
         target: { clone: jest.fn() }
+>>>>>>> master
 >>>>>>> master
     }))
 >>>>>>> master
@@ -473,8 +499,12 @@ describe('Basic App Functionality', () => {
                 onclick: null,
                 addEventListener: jest.fn(),
                 removeEventListener: jest.fn(),
+<<<<<<< HEAD
+                setAttribute: jest.fn()
+=======
                 setAttribute: jest.fn(),
                 getAttribute: jest.fn()
+>>>>>>> master
             };
             
             // Add style.cssText property

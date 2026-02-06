@@ -345,11 +345,15 @@ export class App {
         this.objectsList.setAttribute('role', 'listbox');
 =======
 <<<<<<< HEAD
+        this.objectsList.setAttribute('role', 'listbox');
+=======
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 >>>>>>> master
         this.objectsList.setAttribute('role', 'listbox');
         this.objectsList.setAttribute('aria-label', 'Scene objects');
+>>>>>>> master
 >>>>>>> master
         this.objectsList.style.cssText = `
 >>>>>>> master
@@ -440,6 +444,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
         
+        this.sceneGraphPanel.setAttribute('aria-label', 'Scene Graph');
         this.sceneGraphPanel.appendChild(title);
         this.sceneGraphPanel.appendChild(this.objectsList);
         
@@ -2353,6 +2358,9 @@ export class App {
         
         // Remove all subfolders
 <<<<<<< HEAD
+        const folders = Object.values(this.propertiesFolder.__folders || {});
+=======
+<<<<<<< HEAD
         // dat.gui __folders is an object, not an array in some versions, or this might be empty
         // Convert to array if it is an object
         const folders = this.propertiesFolder.__folders;
@@ -2398,6 +2406,7 @@ export class App {
         const folders = [...this.propertiesFolder.__folders];
 =======
         const folders = Object.values(this.propertiesFolder.__folders || {});
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -2465,6 +2474,13 @@ export class App {
             const objectNameText = object.name || `Object_${index + 1}`;
             const listItem = document.createElement('li');
 <<<<<<< HEAD
+            listItem.className = 'scene-graph-item';
+            listItem.tabIndex = 0;
+            listItem.setAttribute('role', 'option');
+            listItem.setAttribute('aria-selected', this.selectedObject === object);
+
+=======
+<<<<<<< HEAD
             listItem.setAttribute('tabindex', '0'); // Make keyboard focusable
 =======
 <<<<<<< HEAD
@@ -2498,6 +2514,7 @@ export class App {
             listItem.tabIndex = 0;
             listItem.role = 'button';
             listItem.setAttribute('aria-label', `Select ${object.name || 'Object ' + (index + 1)}`);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -2766,6 +2783,9 @@ export class App {
             const visibilityLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
 <<<<<<< HEAD
+            visibilityBtn.setAttribute('aria-label', `Toggle visibility for ${object.name || `Object ${index + 1}`}`);
+=======
+<<<<<<< HEAD
             visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
 =======
 <<<<<<< HEAD
@@ -2815,6 +2835,7 @@ export class App {
             visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
 >>>>>>> master
             visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -2911,6 +2932,9 @@ export class App {
             const deleteLabel = 'Delete ' + (object.name || 'Object');
             deleteBtn.textContent = '🗑';
 <<<<<<< HEAD
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name || `Object ${index + 1}`}`);
+=======
+<<<<<<< HEAD
             deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
 =======
 <<<<<<< HEAD
@@ -2960,6 +2984,7 @@ export class App {
             deleteBtn.title = 'Delete object';
 >>>>>>> master
             deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -3035,6 +3060,10 @@ export class App {
             });
             
 <<<<<<< HEAD
+            // Keyboard selection
+            listItem.onkeydown = (e) => {
+=======
+<<<<<<< HEAD
             // Ensure correct position in DOM
             if (this.objectsList.children[index] !== listItem) {
                 this.objectsList.insertBefore(listItem, this.objectsList.children[index]);
@@ -3042,11 +3071,16 @@ export class App {
 =======
             // Keyboard navigation
             listItem.addEventListener('keydown', (e) => {
+>>>>>>> master
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     this.selectObject(object);
                 }
+<<<<<<< HEAD
+            };
+=======
             });
+>>>>>>> master
 
             objectInfo.appendChild(objectName);
             objectInfo.appendChild(objectType);
