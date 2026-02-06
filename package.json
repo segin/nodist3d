@@ -8,6 +8,11 @@
 <<<<<<< HEAD
     "lint": "eslint .",
     "test": "jest --config jest.config.cjs",
+    "prepare": "husky"
+=======
+<<<<<<< HEAD
+    "lint": "eslint .",
+    "test": "jest --config jest.config.cjs",
 =======
     "test": "jest --config jest.config.cjs",
 <<<<<<< HEAD
@@ -34,6 +39,7 @@
 =======
     "lint": "eslint .",
     "format": "prettier --write ."
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -77,11 +83,16 @@
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-promise": "^7.2.1",
     "eslint-plugin-unicorn": "^62.0.0",
     "globals": "^17.3.0",
     "husky": "^9.1.7",
+<<<<<<< HEAD
+=======
 =======
 =======
 <<<<<<< HEAD
@@ -122,11 +133,19 @@
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
     "jest": "^29.7.0",
     "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^30.2.0",
     "lint-staged": "^16.2.7",
     "node-fetch": "^2.7.0",
+<<<<<<< HEAD
+    "prettier": "^3.8.1",
+    "supertest": "^7.0.0"
+  },
+  "lint-staged": {
+    "*.{js,mjs,cjs}": "eslint --fix"
+=======
 <<<<<<< HEAD
     "supertest": "^7.0.0",
     "typescript": "^5.9.3"
@@ -153,6 +172,7 @@
 >>>>>>> master
     "prettier": "^3.8.1",
     "supertest": "^7.0.0"
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

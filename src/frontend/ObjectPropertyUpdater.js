@@ -3,6 +3,12 @@ import * as THREE from 'three';
 
 export class ObjectPropertyUpdater {
 <<<<<<< HEAD
+  constructor(primitiveFactory) {
+    this.primitiveFactory = primitiveFactory;
+  }
+
+=======
+<<<<<<< HEAD
     /**
      * @param {import('./PrimitiveFactory.js').PrimitiveFactory} primitiveFactory
      */
@@ -93,6 +99,7 @@ export class ObjectPropertyUpdater {
     this.primitiveFactory = primitiveFactory;
   }
 
+>>>>>>> master
   updateMaterial(object, newMaterialProperties) {
     if (object && object.material) {
       const materials = Array.isArray(object.material) ? object.material : [object.material];
@@ -103,6 +110,9 @@ export class ObjectPropertyUpdater {
               material.color.set(newMaterialProperties[prop]);
             } else {
               material[prop] = newMaterialProperties[prop];
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
             }
           }

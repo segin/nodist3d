@@ -6,6 +6,21 @@ import { JSDOM } from 'jsdom';
 // Mock THREE.js
 jest.mock('three', () => {
 <<<<<<< HEAD
+  const mockVector3 = {
+    x: 0,
+    y: 0,
+    z: 0,
+    clone: jest.fn(() => ({ x: 0, y: 0, z: 0 })),
+    copy: jest.fn(),
+  };
+
+  const mockColor = {
+    clone: jest.fn(() => ({ r: 1, g: 0, b: 0 })),
+    copy: jest.fn(),
+  };
+
+=======
+<<<<<<< HEAD
     // Factory for Vector3 to ensure unique instances
     const createMockVector3 = (x = 0, y = 0, z = 0) => ({
         x, y, z,
@@ -106,6 +121,7 @@ jest.mock('three', () => {
     copy: jest.fn(),
   };
 
+>>>>>>> master
   return {
     Scene: jest.fn(() => ({
       add: jest.fn(),
@@ -170,6 +186,9 @@ jest.mock('three', () => {
     DoubleSide: 'DoubleSide',
     FrontSide: 'FrontSide',
   };
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
 });
 
@@ -275,6 +294,130 @@ describe('Undo/Redo History Functionality', () => {
           this.historyIndex--;
         }
       }
+<<<<<<< HEAD
+
+      undo() {
+        if (this.historyIndex > 0) {
+          this.historyIndex--;
+          this.restoreState(this.history[this.historyIndex]);
+          return true;
+        }
+        return false;
+      }
+
+      redo() {
+        if (this.historyIndex < this.history.length - 1) {
+          this.historyIndex++;
+          this.restoreState(this.history[this.historyIndex]);
+          return true;
+        }
+        return false;
+      }
+
+      restoreState(state) {
+        // Clear current scene
+        this.objects.forEach((obj) => {
+          this.scene.remove(obj);
+          if (obj.geometry && obj.geometry.dispose) obj.geometry.dispose();
+          if (obj.material && obj.material.dispose) obj.material.dispose();
+        });
+        this.objects.length = 0;
+
+        // Restore objects
+        state.objects.forEach((objData) => {
+          const THREE = require('three');
+
+          // Create geometry based on type
+          let geometry;
+          switch (objData.type) {
+            case 'BoxGeometry':
+              geometry = new THREE.BoxGeometry();
+              break;
+            case 'SphereGeometry':
+              geometry = new THREE.SphereGeometry();
+              break;
+            default:
+              geometry = new THREE.BoxGeometry();
+          }
+
+          // Create material
+          const material = new THREE.MeshLambertMaterial();
+          material.color.copy(objData.material.color);
+          material.emissive.copy(objData.material.emissive);
+
+          // Create mesh
+          const mesh = new THREE.Mesh(geometry, material);
+          mesh.name = objData.name;
+          mesh.position.copy(objData.position);
+          mesh.rotation.copy(objData.rotation);
+          mesh.scale.copy(objData.scale);
+          mesh.visible = objData.visible;
+          mesh.uuid = objData.uuid;
+          mesh.userData.geometryParams = objData.geometryParams;
+
+          this.scene.add(mesh);
+          this.objects.push(mesh);
+        });
+
+        // Restore selection
+        this.selectedObject = null;
+        if (state.selectedObjectUuid) {
+          const selectedObj = this.objects.find((obj) => obj.uuid === state.selectedObjectUuid);
+          if (selectedObj) {
+            this.selectedObject = selectedObj;
+          }
+        }
+      }
+
+      addTestObject(name = 'TestObject') {
+        const THREE = require('three');
+        const mesh = new THREE.Mesh();
+        mesh.name = name;
+        mesh.uuid = `uuid-${name}-${Date.now()}`;
+
+        this.objects.push(mesh);
+        this.scene.add(mesh);
+        this.selectedObject = mesh;
+        this.saveState(`Add ${name}`);
+
+        return mesh;
+      }
+
+      deleteObject(object) {
+        const index = this.objects.indexOf(object);
+        if (index > -1) {
+          this.objects.splice(index, 1);
+          this.scene.remove(object);
+        }
+        if (this.selectedObject === object) {
+          this.selectedObject = null;
+        }
+        this.saveState('Delete object');
+      }
+    }
+
+    app = new TestApp();
+  });
+
+  afterEach(() => {
+    if (dom) {
+      dom.window.close();
+    }
+  });
+
+  describe('History State Management', () => {
+    it('should initialize with initial state', () => {
+      expect(app.history.length).toBe(1);
+      expect(app.historyIndex).toBe(0);
+      expect(app.history[0].description).toBe('Initial state');
+    });
+
+    it('should save state with correct data structure', () => {
+      const obj = app.addTestObject('StateTest');
+
+      expect(app.history.length).toBe(3); // Initial + add object + selection
+      const lastState = app.history[app.history.length - 1];
+=======
 
       undo() {
         if (this.historyIndex > 0) {
@@ -413,6 +556,7 @@ describe('Undo/Redo History Functionality', () => {
       expect(app.history.length).toBe(3); // Initial + add object + selection
       const lastState = app.history[app.history.length - 1];
 >>>>>>> master
+>>>>>>> master
 
       expect(lastState).toHaveProperty('description');
       expect(lastState).toHaveProperty('timestamp');
@@ -431,6 +575,10 @@ describe('Undo/Redo History Functionality', () => {
       app.saveState('State 3');
       app.saveState('State 4');
 
+<<<<<<< HEAD
+      expect(app.history.length).toBe(3);
+      expect(app.historyIndex).toBe(2);
+=======
 <<<<<<< HEAD
         it('should restore object selection state', () => {
             const obj = app.addTestObject('SelectionTest');
@@ -460,6 +608,7 @@ describe('Undo/Redo History Functionality', () => {
       expect(app.history.length).toBe(3);
       expect(app.historyIndex).toBe(2);
 >>>>>>> master
+>>>>>>> master
     });
 
     it('should remove future states when new action is performed', () => {
@@ -470,6 +619,8 @@ describe('Undo/Redo History Functionality', () => {
       app.undo();
       const historyLengthAfterUndo = app.history.length;
 
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
         it('should restore correct state after multiple undo/redo operations', () => {
             // Initial state: 0 objects
@@ -489,6 +640,7 @@ describe('Undo/Redo History Functionality', () => {
             expect(app.objects.some(obj => obj.name === 'Redo1')).toBe(true);
         });
 =======
+>>>>>>> master
       // Add new object (should remove future states)
       app.addTestObject('Object3');
 
@@ -507,6 +659,9 @@ describe('Undo/Redo History Functionality', () => {
 
       expect(undoResult).toBe(true);
       expect(app.objects.length).toBe(initialObjectCount);
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
     });
 
@@ -532,6 +687,9 @@ describe('Undo/Redo History Functionality', () => {
     });
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
+>>>>>>> master
 
     it('should call dispose on geometry and material when restoring', () => {
       const obj = app.addTestObject('DisposeTest');
@@ -669,5 +827,8 @@ describe('Undo/Redo History Functionality', () => {
       expect(app.historyIndex).toBe(initialIndex + 1);
     });
   });
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
 });

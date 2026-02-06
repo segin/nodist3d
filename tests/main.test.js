@@ -6,6 +6,10 @@ import { JSDOM } from 'jsdom';
 // Mock THREE.js
 jest.mock('three', () => {
 <<<<<<< HEAD
+  const mockElement = { createElement: jest.fn(() => ({ tagName: 'CANVAS' })) };
+
+=======
+<<<<<<< HEAD
     const mockElement = { createElement: jest.fn(() => ({ tagName: 'CANVAS' })) };
     
     const mockVector3 = {
@@ -127,6 +131,7 @@ jest.mock('three', () => {
 =======
   const mockElement = { createElement: jest.fn(() => ({ tagName: 'CANVAS' })) };
 
+>>>>>>> master
   const mockMesh = {
     position: { x: 0, y: 0, z: 0, copy: jest.fn() },
     rotation: { x: 0, y: 0, z: 0, copy: jest.fn() },
@@ -189,11 +194,46 @@ jest.mock('three', () => {
     PCFSoftShadowMap: 'PCFSoftShadowMap',
     DoubleSide: 'DoubleSide',
   };
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
 });
 
 // Mock dat.gui
 jest.mock('dat.gui', () => ({
+<<<<<<< HEAD
+  GUI: jest.fn(() => ({
+    addFolder: jest.fn(() => ({
+      add: jest.fn(() => ({
+        name: jest.fn(() => ({ onChange: jest.fn() })),
+        onChange: jest.fn(),
+      })),
+      addFolder: jest.fn(() => ({
+        add: jest.fn(() => ({
+          name: jest.fn(() => ({ onChange: jest.fn() })),
+          onChange: jest.fn(),
+        })),
+        addColor: jest.fn(() => ({
+          name: jest.fn(() => ({ onChange: jest.fn() })),
+          onChange: jest.fn(),
+        })),
+        open: jest.fn(),
+        close: jest.fn(),
+      })),
+      addColor: jest.fn(() => ({
+        name: jest.fn(() => ({ onChange: jest.fn() })),
+        onChange: jest.fn(),
+      })),
+      open: jest.fn(),
+      close: jest.fn(),
+      remove: jest.fn(),
+      removeFolder: jest.fn(),
+      __controllers: [],
+      __folders: [],
+    })),
+  })),
+=======
 <<<<<<< HEAD
     __esModule: true,
     GUI: jest.fn(() => ({
@@ -226,11 +266,20 @@ jest.mock('dat.gui', () => ({
             __folders: []
         }))
     }))
+>>>>>>> master
 }));
 
 <<<<<<< HEAD
 // Mock OrbitControls
 jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
+<<<<<<< HEAD
+  OrbitControls: jest.fn(() => ({
+    enableDamping: true,
+    dampingFactor: 0.05,
+    enabled: true,
+    update: jest.fn(),
+  })),
+=======
 <<<<<<< HEAD
     OrbitControls: class {
         constructor() {
@@ -257,10 +306,118 @@ jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
 >>>>>>> master
     }))
 >>>>>>> master
+>>>>>>> master
 }));
 
 // Mock TransformControls
 jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
+<<<<<<< HEAD
+  TransformControls: jest.fn(() => ({
+    addEventListener: jest.fn(),
+    setMode: jest.fn(),
+    attach: jest.fn(),
+    detach: jest.fn(),
+    dragging: false,
+  })),
+}));
+
+describe('Basic App Functionality', () => {
+  let dom;
+
+  beforeEach(() => {
+    // Setup DOM
+    dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+    global.document = dom.window.document;
+    global.window = dom.window;
+    global.requestAnimationFrame = jest.fn();
+
+    // Mock document.body.appendChild
+    jest.spyOn(document.body, 'appendChild').mockImplementation();
+    jest.spyOn(window, 'addEventListener').mockImplementation();
+
+    // Mock document.createElement to return proper elements
+    jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+      const element = {
+        tagName: tagName.toUpperCase(),
+        style: {},
+        appendChild: jest.fn(),
+        textContent: '',
+        innerHTML: '',
+        onclick: null,
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+      };
+
+      // Add style.cssText property
+      Object.defineProperty(element.style, 'cssText', {
+        set: jest.fn(),
+        get: jest.fn(),
+      });
+
+      return element;
+    });
+
+    // Clear mocks
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    if (dom) {
+      dom.window.close();
+    }
+  });
+
+  it('should create and initialize the App', () => {
+    // Simulate DOM loaded
+    const domContentLoadedCallbacks = [];
+    document.addEventListener = jest.fn((event, callback) => {
+      if (event === 'DOMContentLoaded') {
+        domContentLoadedCallbacks.push(callback);
+      }
+    });
+
+    // Import and execute the module
+    delete require.cache[require.resolve('../src/frontend/main.js')];
+    require('../src/frontend/main.js');
+
+    // Execute the callback
+    domContentLoadedCallbacks.forEach((callback) => callback());
+
+    // Verify basic initialization happened
+    expect(document.addEventListener).toHaveBeenCalledWith(
+      'DOMContentLoaded',
+      expect.any(Function),
+    );
+  });
+
+  it('should be able to add basic primitives', () => {
+    const THREE = require('three');
+
+    // Create a simple App-like class for testing
+    class TestApp {
+      constructor() {
+        this.scene = new THREE.Scene();
+        this.objects = [];
+        this.selectedObject = null;
+        this.transformControls = { attach: jest.fn(), setMode: jest.fn() };
+      }
+
+      addBox() {
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+        const mesh = new THREE.Mesh(geometry, material);
+        this.scene.add(mesh);
+        this.objects.push(mesh);
+        this.selectObject(mesh);
+      }
+
+      selectObject(object) {
+        this.selectedObject = object;
+        this.transformControls.attach(object);
+      }
+    }
+
+=======
     TransformControls: class {
         constructor() {
             this.addEventListener = jest.fn();
@@ -528,6 +685,7 @@ describe('Basic App Functionality', () => {
         expect(app.transformControls.attach).toHaveBeenCalledWith(app.objects[0]);
     });
 =======
+>>>>>>> master
     const app = new TestApp();
 
     // Test adding a box
@@ -538,5 +696,8 @@ describe('Basic App Functionality', () => {
     expect(app.scene.add).toHaveBeenCalledWith(app.objects[0]);
     expect(app.transformControls.attach).toHaveBeenCalledWith(app.objects[0]);
   });
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
 });

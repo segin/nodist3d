@@ -64,6 +64,8 @@ describe('Scene Graph/Outliner Functionality', () => {
   let dom, app;
 
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
     beforeEach(() => {
         // Setup DOM
         dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
@@ -119,6 +121,7 @@ describe('Scene Graph/Outliner Functionality', () => {
             
             return element;
 =======
+>>>>>>> master
   beforeEach(() => {
     // Setup DOM
     dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
@@ -126,6 +129,102 @@ describe('Scene Graph/Outliner Functionality', () => {
     global.window = dom.window;
     global.requestAnimationFrame = jest.fn();
     global.console.log = jest.fn(); // Suppress console.log
+<<<<<<< HEAD
+
+    // Mock document methods
+    jest.spyOn(document.body, 'appendChild').mockImplementation();
+    jest.spyOn(window, 'addEventListener').mockImplementation();
+
+    // Mock createElement to return proper elements
+    jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+      const element = {
+        tagName: tagName.toUpperCase(),
+        style: {},
+        appendChild: jest.fn(),
+        textContent: '',
+        innerHTML: '',
+        onclick: null,
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+      };
+
+      // Add style.cssText property
+      Object.defineProperty(element.style, 'cssText', {
+        set: jest.fn(),
+        get: jest.fn(),
+      });
+
+      return element;
+    });
+
+    jest.clearAllMocks();
+
+    // Create test app with scene graph functionality
+    class TestApp {
+      constructor() {
+        this.objects = [];
+        this.selectedObject = null;
+        this.scene = { add: jest.fn(), remove: jest.fn() };
+        this.setupSceneGraph();
+      }
+
+      setupSceneGraph() {
+        this.sceneGraphPanel = document.createElement('div');
+        this.objectsList = document.createElement('ul');
+        this.sceneGraphPanel.appendChild(document.createElement('h3'));
+        this.sceneGraphPanel.appendChild(this.objectsList);
+        document.body.appendChild(this.sceneGraphPanel);
+        this.updateSceneGraph();
+      }
+
+      updateSceneGraph() {
+        this.objectsList.innerHTML = '';
+
+        this.objects.forEach((object, index) => {
+          const listItem = document.createElement('li');
+          const objectInfo = document.createElement('div');
+          const objectName = document.createElement('span');
+          const objectType = document.createElement('span');
+          const visibilityBtn = document.createElement('button');
+          const deleteBtn = document.createElement('button');
+          const positionInfo = document.createElement('div');
+
+          objectName.textContent = object.name || `Object_${index + 1}`;
+          objectType.textContent = object.geometry.type.replace('Geometry', '');
+          visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+          deleteBtn.textContent = '🗑';
+          positionInfo.textContent = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
+
+          // Mock event handlers
+          visibilityBtn.onclick = (e) => {
+            e.stopPropagation();
+            object.visible = !object.visible;
+            visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+          };
+
+          deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            this.deleteObject(object);
+          };
+
+          listItem.onclick = () => {
+            this.selectObject(object);
+          };
+
+          const buttonContainer = document.createElement('div');
+          buttonContainer.appendChild(visibilityBtn);
+          buttonContainer.appendChild(deleteBtn);
+
+          objectInfo.appendChild(objectName);
+          objectInfo.appendChild(objectType);
+          objectInfo.appendChild(buttonContainer);
+
+          listItem.appendChild(objectInfo);
+          listItem.appendChild(positionInfo);
+          this.objectsList.appendChild(listItem);
+        });
+
+=======
 
     // Mock document methods
     jest.spyOn(document.body, 'appendChild').mockImplementation();
@@ -369,10 +468,14 @@ describe('Scene Graph/Outliner Functionality', () => {
                 return object;
             }
 =======
+>>>>>>> master
         if (this.objects.length === 0) {
           const emptyMessage = document.createElement('li');
           emptyMessage.textContent = 'No objects in scene';
           this.objectsList.appendChild(emptyMessage);
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
         }
       }
@@ -488,6 +591,15 @@ describe('Scene Graph/Outliner Functionality', () => {
     it('should clear selection when selected object is deleted', () => {
       const obj = app.addTestObject('WillBeDeleted');
       app.selectObject(obj);
+<<<<<<< HEAD
+
+      expect(app.selectedObject).toBe(obj);
+
+      app.deleteObject(obj);
+
+      expect(app.selectedObject).toBeNull();
+    });
+=======
 
       expect(app.selectedObject).toBe(obj);
 
@@ -571,6 +683,7 @@ describe('Scene Graph/Outliner Functionality', () => {
 =======
 });
 =======
+>>>>>>> master
   });
 
   describe('Visibility Toggle', () => {
@@ -669,5 +782,8 @@ describe('Scene Graph/Outliner Functionality', () => {
     });
   });
 });
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master

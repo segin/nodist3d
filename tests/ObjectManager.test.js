@@ -260,6 +260,10 @@ describe('ObjectManager', () => {
         expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('mock-url');
         done();
       });
+<<<<<<< HEAD
+      return null;
+=======
+>>>>>>> master
     });
   });
 
@@ -280,6 +284,10 @@ describe('ObjectManager', () => {
         expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('mock-url');
         done();
       });
+<<<<<<< HEAD
+      return null;
+=======
+>>>>>>> master
     });
   });
 
@@ -300,6 +308,10 @@ describe('ObjectManager', () => {
         expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('mock-url');
         done();
       });
+<<<<<<< HEAD
+      return null;
+=======
+>>>>>>> master
     });
   });
 
@@ -465,6 +477,10 @@ describe('ObjectManager', () => {
         expect(revokeObjectURLSpy).toHaveBeenCalledWith('mock-url');
         done();
       });
+<<<<<<< HEAD
+      return null;
+=======
+>>>>>>> master
     });
   });
 
@@ -577,6 +593,10 @@ describe('ObjectManager', () => {
         expect(texture.dispose).toHaveBeenCalled();
         done();
       });
+<<<<<<< HEAD
+      return null;
+=======
+>>>>>>> master
     });
   });
 
@@ -620,6 +640,10 @@ describe('ObjectManager', () => {
         consoleWarnSpy.mockRestore();
         done();
       });
+<<<<<<< HEAD
+      return null;
+=======
+>>>>>>> master
     });
   });
 });
