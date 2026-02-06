@@ -72,6 +72,11 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
 *   **1.2.1. Linting and Formatting Setup**
     *   **Action Items**:
 <<<<<<< HEAD
+        *   [x] **Install Tools**: `pnpm add -D eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn eslint-plugin-import husky lint-staged globals @eslint/js`.
+        *   [x] **Configure ESLint (`eslint.config.js` - Flat Config)**:
+            *   [x] `env`: `{ browser: true, node: true, es2022: true }` via `globals`.
+=======
+<<<<<<< HEAD
         *   [x] **Install Tools**: `npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn`.
         *   [x] **Configure ESLint (`eslint.config.mjs`)**:
 =======
@@ -79,11 +84,16 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
         *   [x] **Configure ESLint (`.eslintrc.json`)**:
 >>>>>>> master
             *   [x] `env`: `{ browser: true, node: true, es2022: true }`.
+>>>>>>> master
             *   [x] `rules`: Enforce `eqeqeq`, `no-var`, `prefer-const`, `no-console` (warn), `promise/always-return`.
         *   [x] **Configure Prettier (`.prettierrc`)**:
             *   [x] `{ "semi": true, "singleQuote": true, "tabWidth": 2, "printWidth": 100 }`.
         *   [x] **Setup Husky**:
+<<<<<<< HEAD
+            *   [x] `pnpm exec husky init`.
+=======
             *   [x] `npx husky install`.
+>>>>>>> master
             *   [x] Add `pre-commit` hook: `npx lint-staged`.
             *   [x] Configure `lint-staged` in package.json to run `eslint --fix` on `*.js` files.
     *   **Verification & Testing**:

@@ -7,6 +7,13 @@
     "start": "node src/backend/server.js",
     "test": "jest --config jest.config.cjs",
 <<<<<<< HEAD
+    "lint": "eslint .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.js": "eslint --fix"
+=======
+<<<<<<< HEAD
     "prepare": "husky",
     "lint": "eslint src/**/*.js"
   },
@@ -15,6 +22,7 @@
 =======
     "lint": "eslint .",
     "format": "prettier --write ."
+>>>>>>> master
 >>>>>>> master
   },
   "keywords": [
@@ -45,6 +53,15 @@
 <<<<<<< HEAD
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-unicorn": "^62.0.0",
+    "globals": "^17.2.0",
+    "husky": "^9.1.7",
+=======
+<<<<<<< HEAD
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-promise": "^7.2.1",
     "eslint-plugin-unicorn": "^62.0.0",
     "globals": "^17.1.0",
@@ -56,6 +73,7 @@
     "eslint-plugin-promise": "^7.2.1",
     "eslint-plugin-unicorn": "^54.0.0",
 >>>>>>> master
+>>>>>>> master
     "jest": "^29.7.0",
     "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^30.2.0",
@@ -64,9 +82,12 @@
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
     "supertest": "^7.0.0",
     "typescript": "^5.9.3"
 =======
+>>>>>>> master
 >>>>>>> master
     "prettier": "^3.8.1",
     "supertest": "^7.0.0"
