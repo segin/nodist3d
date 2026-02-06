@@ -42,7 +42,12 @@
     "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^30.2.0",
     "node-fetch": "^2.7.0",
+<<<<<<< HEAD
+    "supertest": "^7.0.0",
+    "typescript": "^5.9.3"
+=======
     "prettier": "^3.8.1",
     "supertest": "^7.0.0"
+>>>>>>> master
   }
 }

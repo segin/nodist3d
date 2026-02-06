@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+// loglevel loaded as global script in index.html
+=======
+<<<<<<< HEAD
 // Custom logger implementation to replace loglevel due to ESM issues
 const log = {
     trace: (...args) => console.trace(...args),
@@ -14,15 +17,21 @@ const log = {
 =======
 <<<<<<< HEAD
 // Access global log instance from window (loaded via script tag)
+>>>>>>> master
 const log = window.log;
 
 if (log) {
     log.setLevel('info'); // Set the default log level
 } else {
+<<<<<<< HEAD
+    console.warn('loglevel not loaded correctly');
+}
+=======
     console.error('loglevel not loaded globally');
 =======
 // Access loglevel from global scope (loaded via script tag)
 const log = window.log;
+>>>>>>> master
 >>>>>>> master
 
 if (log) {

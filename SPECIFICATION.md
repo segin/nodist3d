@@ -89,15 +89,15 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
     *   **Action Items**:
         *   [ ] **JSDoc Implementation**:
             *   [ ] Go through every file in `src/`.
-            *   [ ] Add `/** ... */` blocks to every class, method, and exported function.
-            *   [ ] Explicitly define `@param {Type} name` and `@returns {Type}`.
-        *   [ ] **TypeScript Migration (Phase 1)**:
-            *   [ ] Create `tsconfig.json` with `{ "allowJs": true, "checkJs": true, "noEmit": true }`.
-            *   [ ] Add `// @ts-check` to the top of `main.js` and `ObjectManager.js`.
-            *   [ ] Fix all resulting type errors (mostly by adding JSDoc).
-            *   [ ] Create `src/types.d.ts` to define global interfaces like `SceneObject`, `SerializedScene`, `ManagerInterface`.
+            *   [x] Add `/** ... */` blocks to every class, method, and exported function.
+            *   [x] Explicitly define `@param {Type} name` and `@returns {Type}`.
+        *   [x] **TypeScript Migration (Phase 1)**:
+            *   [x] Create `tsconfig.json` with `{ "allowJs": true, "checkJs": true, "noEmit": true }`.
+            *   [x] Add `// @ts-check` to the top of `main.js` and `ObjectManager.js`.
+            *   [x] Fix all resulting type errors (mostly by adding JSDoc).
+            *   [x] Create `src/types.d.ts` to define global interfaces like `SceneObject`, `SerializedScene`, `ManagerInterface`.
     *   **Verification & Testing**:
-        *   [ ] Run `npx tsc`. Expect zero errors in checked files.
+        *   [x] Run `npx tsc`. Expect zero errors in checked files.
 
 ### 1.3. Error Handling & Logging
 **Goal**: Improve application stability and provide visibility into runtime issues.
