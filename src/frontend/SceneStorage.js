@@ -1,14 +1,24 @@
+// @ts-check
 // JSZip will be loaded globally from CDN
 import * as THREE from 'three';
 import log from './logger.js';
 
 export class SceneStorage {
+    /**
+     * @param {THREE.Scene} scene
+     * @param {any} eventBus
+     */
     constructor(scene, eventBus) {
         this.eventBus = eventBus;
         this.scene = scene;
         this.worker = new Worker('./worker.js');
+<<<<<<< HEAD
+        this.worker.onmessage = this.handleWorkerMessage.bind(this);
+        /** @type {((value: any) => void) | null} */
+=======
         this.boundHandleWorkerMessage = this.handleWorkerMessage.bind(this);
         this.worker.onmessage = this.boundHandleWorkerMessage;
+>>>>>>> master
         this.loadPromiseResolve = null;
         this.savePromiseResolve = null;
         this.savePromiseReject = null;
@@ -72,6 +82,9 @@ export class SceneStorage {
         URL.revokeObjectURL(url);
     }
 
+    /**
+     * @param {File} file
+     */
     async loadScene(file) {
         try {
             const zip = new window.JSZip();
@@ -86,11 +99,16 @@ export class SceneStorage {
             while(this.scene.children.length > 0){
                 const object = this.scene.children[0];
                 this.scene.remove(object);
+                // @ts-ignore
                 if (object.geometry) object.geometry.dispose();
+                // @ts-ignore
                 if (object.material) {
+                    // @ts-ignore
                     if (Array.isArray(object.material)) {
+                        // @ts-ignore
                         object.material.forEach(material => material.dispose());
                     } else {
+                        // @ts-ignore
                         object.material.dispose();
                     }
                 }
@@ -108,10 +126,14 @@ export class SceneStorage {
         }
     }
 
+    /**
+     * @param {MessageEvent} event
+     */
     handleWorkerMessage(event) {
         if (event.data.type === 'deserialize_complete') {
             const loadedScene = event.data.data;
             // Add loaded objects back to the scene
+            // @ts-ignore
             loadedScene.children.forEach(object => {
                 this.scene.add(object);
             });

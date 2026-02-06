@@ -3,10 +3,18 @@ import log from './logger.js';
 import { Events } from './constants.js';
 
 export class LightManager {
+<<<<<<< HEAD
+    constructor(scene, eventBus) {
+        this.scene = scene;
+        this.eventBus = eventBus;
+        /** @type {THREE.Light[]} */
+        this.lights = [];
+=======
   constructor(scene, eventBus) {
     this.scene = scene;
     this.eventBus = eventBus;
     this.lights = [];
+>>>>>>> master
 
     // Add a default ambient light
     const ambientLight = new THREE.AmbientLight(0x404040); // soft white light
