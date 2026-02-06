@@ -40,6 +40,9 @@ jest.mock('three', () => {
         })),
         PerspectiveCamera: jest.fn(() => ({
 <<<<<<< HEAD
+        position: { set: jest.fn(), clone: jest.fn() },
+=======
+<<<<<<< HEAD
             position: { set: jest.fn(), clone: jest.fn() },
 =======
 <<<<<<< HEAD
@@ -55,6 +58,7 @@ jest.mock('three', () => {
             position: { set: jest.fn(), clone: jest.fn() },
 =======
             position: { ...mockVector3 },
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -75,8 +79,16 @@ jest.mock('three', () => {
                 getBoundingClientRect: jest.fn(() => ({ left: 0, top: 0, width: 800, height: 600 }))
             }
         })),
+        Loader: jest.fn(),
+        FileLoader: jest.fn(() => ({ load: jest.fn(), setPath: jest.fn(), setResponseType: jest.fn(), setWithCredentials: jest.fn(), setRequestHeader: jest.fn() })),
+        Shape: jest.fn(),
         Mesh: jest.fn(() => mockMesh),
         BufferGeometry: jest.fn(),
+<<<<<<< HEAD
+        ExtrudeGeometry: jest.fn(),
+        LatheGeometry: jest.fn(),
+=======
+>>>>>>> master
         BoxGeometry: jest.fn(),
         SphereGeometry: jest.fn(),
         CylinderGeometry: jest.fn(),
@@ -116,9 +128,14 @@ jest.mock('three', () => {
         })),
         Vector2: jest.fn(),
 <<<<<<< HEAD
+        Clock: jest.fn(),
+        TOUCH: { ROTATE: 1, DOLLY_PAN: 2 },
+=======
+<<<<<<< HEAD
         Clock: jest.fn(() => ({
             getDelta: jest.fn(() => 0.016)
         })),
+>>>>>>> master
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide',
 <<<<<<< HEAD
@@ -319,6 +336,9 @@ jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
         enabled: true,
         update: jest.fn(),
 <<<<<<< HEAD
+        target: { clone: jest.fn(), copy: jest.fn() }
+=======
+<<<<<<< HEAD
         target: { clone: jest.fn(() => ({ copy: jest.fn() })) }
 =======
 <<<<<<< HEAD
@@ -328,6 +348,7 @@ jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
         }
 =======
         target: { clone: jest.fn() }
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
     }))

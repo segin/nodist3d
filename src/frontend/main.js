@@ -31,6 +31,9 @@ export class App {
 export class App {
 =======
 <<<<<<< HEAD
+export class App {
+=======
+<<<<<<< HEAD
 class App {
 <<<<<<< HEAD
   constructor() {
@@ -46,6 +49,7 @@ class App {
      */
 =======
 export class App {
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -1565,9 +1569,7 @@ export class App {
 
     /** Adds a box to the scene. */
     addBox() {
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
-        const mesh = new THREE.Mesh(geometry, material);
+        const mesh = this.primitiveFactory.createPrimitive('Box', { width: 1, height: 1, depth: 1, color: 0x00ff00 });
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.name = `Box_${this.objects.length + 1}`;
@@ -1582,9 +1584,7 @@ export class App {
 
     /** Adds a sphere to the scene. */
     addSphere() {
-        const geometry = new THREE.SphereGeometry(0.5, 32, 32);
-        const material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
-        const mesh = new THREE.Mesh(geometry, material);
+        const mesh = this.primitiveFactory.createPrimitive('Sphere', { radius: 0.5, widthSegments: 32, heightSegments: 32, color: 0xff0000 });
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.name = `Sphere_${this.objects.length + 1}`;
@@ -1599,9 +1599,7 @@ export class App {
 
     /** Adds a cylinder to the scene. */
     addCylinder() {
-        const geometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 32);
-        const material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
-        const mesh = new THREE.Mesh(geometry, material);
+        const mesh = this.primitiveFactory.createPrimitive('Cylinder', { radiusTop: 0.5, radiusBottom: 0.5, height: 1, radialSegments: 32, color: 0x0000ff });
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.name = `Cylinder_${this.objects.length + 1}`;
@@ -1616,9 +1614,7 @@ export class App {
 
     /** Adds a cone to the scene. */
     addCone() {
-        const geometry = new THREE.ConeGeometry(0.5, 1, 32);
-        const material = new THREE.MeshLambertMaterial({ color: 0xffff00 });
-        const mesh = new THREE.Mesh(geometry, material);
+        const mesh = this.primitiveFactory.createPrimitive('Cone', { radius: 0.5, height: 1, radialSegments: 32, color: 0xffff00 });
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.name = `Cone_${this.objects.length + 1}`;
@@ -1633,9 +1629,7 @@ export class App {
 
     /** Adds a torus to the scene. */
     addTorus() {
-        const geometry = new THREE.TorusGeometry(0.4, 0.2, 16, 100);
-        const material = new THREE.MeshLambertMaterial({ color: 0xff00ff });
-        const mesh = new THREE.Mesh(geometry, material);
+        const mesh = this.primitiveFactory.createPrimitive('Torus', { radius: 0.4, tube: 0.2, radialSegments: 16, tubularSegments: 100, color: 0xff00ff });
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.name = `Torus_${this.objects.length + 1}`;
@@ -1650,9 +1644,7 @@ export class App {
 
     /** Adds a plane to the scene. */
     addPlane() {
-        const geometry = new THREE.PlaneGeometry(2, 2);
-        const material = new THREE.MeshLambertMaterial({ color: 0x00ffff, side: THREE.DoubleSide });
-        const mesh = new THREE.Mesh(geometry, material);
+        const mesh = this.primitiveFactory.createPrimitive('Plane', { width: 2, height: 2, color: 0x00ffff });
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.name = `Plane_${this.objects.length + 1}`;
@@ -1667,9 +1659,7 @@ export class App {
 
     /** Adds a torus knot to the scene. */
     addTorusKnot() {
-        const geometry = new THREE.TorusKnotGeometry(0.4, 0.15, 100, 16);
-        const material = new THREE.MeshLambertMaterial({ color: 0x888888 });
-        const mesh = new THREE.Mesh(geometry, material);
+        const mesh = this.primitiveFactory.createPrimitive('TorusKnot', { radius: 0.4, tube: 0.15, tubularSegments: 100, radialSegments: 16, color: 0x888888 });
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.name = `TorusKnot_${this.objects.length + 1}`;
@@ -1684,9 +1674,7 @@ export class App {
 
     /** Adds a tetrahedron to the scene. */
     addTetrahedron() {
-        const geometry = new THREE.TetrahedronGeometry(0.6);
-        const material = new THREE.MeshLambertMaterial({ color: 0x00aa00 });
-        const mesh = new THREE.Mesh(geometry, material);
+        const mesh = this.primitiveFactory.createPrimitive('Tetrahedron', { radius: 0.6, color: 0x00aa00 });
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.name = `Tetrahedron_${this.objects.length + 1}`;
@@ -1701,9 +1689,7 @@ export class App {
 
     /** Adds a icosahedron to the scene. */
     addIcosahedron() {
-        const geometry = new THREE.IcosahedronGeometry(0.6);
-        const material = new THREE.MeshLambertMaterial({ color: 0xaa0000 });
-        const mesh = new THREE.Mesh(geometry, material);
+        const mesh = this.primitiveFactory.createPrimitive('Icosahedron', { radius: 0.6, color: 0xaa0000 });
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.name = `Icosahedron_${this.objects.length + 1}`;
@@ -1718,9 +1704,7 @@ export class App {
 
     /** Adds a dodecahedron to the scene. */
     addDodecahedron() {
-        const geometry = new THREE.DodecahedronGeometry(0.6);
-        const material = new THREE.MeshLambertMaterial({ color: 0x0000aa });
-        const mesh = new THREE.Mesh(geometry, material);
+        const mesh = this.primitiveFactory.createPrimitive('Dodecahedron', { radius: 0.6, color: 0x0000aa });
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.name = `Dodecahedron_${this.objects.length + 1}`;
@@ -1735,9 +1719,7 @@ export class App {
 
     /** Adds a octahedron to the scene. */
     addOctahedron() {
-        const geometry = new THREE.OctahedronGeometry(0.6);
-        const material = new THREE.MeshLambertMaterial({ color: 0xaa00aa });
-        const mesh = new THREE.Mesh(geometry, material);
+        const mesh = this.primitiveFactory.createPrimitive('Octahedron', { radius: 0.6, color: 0xaa00aa });
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.name = `Octahedron_${this.objects.length + 1}`;
@@ -1758,9 +1740,7 @@ export class App {
             new THREE.Vector3(0.5, 0, 0),
             new THREE.Vector3(0, -0.5, 0)
         ]);
-        const geometry = new THREE.TubeGeometry(curve, 20, 0.1, 8, false);
-        const material = new THREE.MeshLambertMaterial({ color: 0xaaaa00 });
-        const mesh = new THREE.Mesh(geometry, material);
+        const mesh = this.primitiveFactory.createPrimitive('Tube', { path: curve, radius: 0.1, color: 0xaaaa00 });
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.name = `Tube_${this.objects.length + 1}`;

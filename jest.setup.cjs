@@ -282,9 +282,50 @@ const THREE = {
     getHex: jest.fn(function () {
       return this._value;
     }),
+<<<<<<< HEAD
+    PerspectiveCamera: jest.fn().mockImplementation(() => ({
+        ...mockObject3D,
+        isPerspectiveCamera: true,
+        aspect: 1,
+        updateProjectionMatrix: jest.fn(),
+    })),
+    WebGLRenderer: jest.fn(() => ({
+        domElement: dom.window.document.createElement('canvas'),
+        setSize: jest.fn(),
+        setPixelRatio: jest.fn(),
+        shadowMap: { enabled: false, type: null },
+        render: jest.fn(),
+        dispose: jest.fn(),
+    })),
+    Clock: jest.fn(() => ({
+        getDelta: jest.fn(() => 0.016),
+    })),
+    EventDispatcher: jest.fn(() => mockEventDispatcher),
+    Object3D: jest.fn(() => ({ ...mockObject3D })),
+    Mesh: jest.fn(() => ({ ...mockMesh })),
+    Group: jest.fn().mockImplementation(function() {
+        const group = {
+            ...mockObject3D,
+            isGroup: true,
+            type: 'Group',
+            name: 'Group',
+            uuid: 'mock-group-uuid',
+            children: [],
+        };
+        group.add = jest.fn(function(object) {
+            this.children.push(object);
+            object.parent = this;
+        });
+        group.remove = jest.fn(function(object) {
+            this.children = this.children.filter(child => child.uuid !== object.uuid);
+            object.parent = null;
+        });
+        return group;
+=======
     set: jest.fn(function (value) {
       this._value = value;
       return this;
+>>>>>>> master
     }),
 <<<<<<< HEAD
     setHex: jest.fn(function (value) {

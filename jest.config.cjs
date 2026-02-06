@@ -23,6 +23,9 @@ module.exports = {
 =======
   transformIgnorePatterns: [
 <<<<<<< HEAD
+    'node_modules/(?!.*three)'
+=======
+<<<<<<< HEAD
     'node_modules/(?!.*three/examples/jsm)'
 =======
 <<<<<<< HEAD
@@ -35,6 +38,7 @@ module.exports = {
     'node_modules/(?!(three|three/examples/jsm)/)'
 =======
     'node_modules/(?!.*three/examples/jsm)'
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
