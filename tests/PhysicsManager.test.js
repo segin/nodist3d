@@ -1,10 +1,14 @@
 <<<<<<< HEAD
+import { Scene, BufferGeometry, Mesh, MeshBasicMaterial, Quaternion, Vector3 } from 'three';
+=======
+<<<<<<< HEAD
 import { Scene, BufferGeometry, Mesh, MeshBasicMaterial, Quaternion } from 'three';
 =======
 <<<<<<< HEAD
 import { Scene, Vector3, Quaternion, BufferGeometry, Mesh, MeshBasicMaterial } from 'three';
 =======
 import { Scene, Mesh, BoxGeometry, SphereGeometry, CylinderGeometry, MeshBasicMaterial, Vector3, Quaternion, BufferGeometry } from 'three';
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 import { PhysicsManager } from '../src/frontend/PhysicsManager.js';
@@ -54,6 +58,12 @@ describe('PhysicsManager', () => {
         physicsManager = new PhysicsManager(scene);
         primitiveFactory = new PrimitiveFactory();
 <<<<<<< HEAD
+
+        // Match ObjectManager constructor signature:
+        // (scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater, stateManager)
+        objectManager = new ObjectManager(scene, eventBus, physicsManager, primitiveFactory, null, null, null);
+=======
+<<<<<<< HEAD
         // Correct constructor signature: scene, eventBus, physicsManager, primitiveFactory
         objectManager = new ObjectManager(scene, eventBus, physicsManager, primitiveFactory);
 =======
@@ -75,6 +85,7 @@ describe('PhysicsManager', () => {
 =======
         // constructor(scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater, stateManager)
         objectManager = new ObjectManager(scene, eventBus, physicsManager, primitiveFactory);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
     });

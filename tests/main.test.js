@@ -36,12 +36,19 @@ jest.mock('three', () => {
         })),
         PerspectiveCamera: jest.fn(() => ({
 <<<<<<< HEAD
+            position: {
+                set: jest.fn(),
+                clone: jest.fn(() => ({ x: 5, y: 5, z: 5 }))
+            },
+=======
+<<<<<<< HEAD
             position: { set: jest.fn(), clone: jest.fn(() => ({ copy: jest.fn() })) },
 =======
 <<<<<<< HEAD
             position: { set: jest.fn(), clone: jest.fn() },
 =======
             position: { ...mockVector3 },
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
             lookAt: jest.fn(),
@@ -87,6 +94,17 @@ jest.mock('three', () => {
         })),
         Vector2: jest.fn(),
 <<<<<<< HEAD
+        Clock: jest.fn(() => ({
+            getDelta: jest.fn(() => 0.016)
+        })),
+        PCFSoftShadowMap: 'PCFSoftShadowMap',
+        DoubleSide: 'DoubleSide',
+        TOUCH: {
+            ROTATE: 0,
+            DOLLY_PAN: 1
+        }
+=======
+<<<<<<< HEAD
         Loader: class {
             constructor() {
                 this.load = jest.fn();
@@ -104,6 +122,7 @@ jest.mock('three', () => {
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide',
         TOUCH: { ROTATE: 1, DOLLY_PAN: 2 }
+>>>>>>> master
     };
 =======
   const mockElement = { createElement: jest.fn(() => ({ tagName: 'CANVAS' })) };
@@ -228,7 +247,14 @@ jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
         dampingFactor: 0.05,
         enabled: true,
         update: jest.fn(),
+<<<<<<< HEAD
+        target: {
+            clone: jest.fn(() => ({ x: 0, y: 0, z: 0 })),
+            copy: jest.fn()
+        }
+=======
         target: { clone: jest.fn() }
+>>>>>>> master
     }))
 >>>>>>> master
 }));

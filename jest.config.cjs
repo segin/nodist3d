@@ -3,7 +3,12 @@ module.exports = {
   setupFiles: ['jest-canvas-mock'],
   setupFilesAfterEnv: ['<rootDir>/jest.dom.cjs', '<rootDir>/jest.setup.cjs'],
   moduleNameMapper: {
+<<<<<<< HEAD
+    '^three/examples/jsm/controls/(.*)': '<rootDir>/node_modules/three/examples/jsm/controls/$1',
+    '^three/examples/jsm/(.*)': '<rootDir>/tests/__mocks__/three-examples.js'
+=======
     '^three/examples/jsm/(.*)$': '<rootDir>/tests/__mocks__/three-examples.js'
+>>>>>>> master
   },
   transform: {
     '^.+\\.js$': 'babel-jest',

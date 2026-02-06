@@ -44,7 +44,14 @@ export class PhysicsManager {
     }
 
     update(deltaTime) {
+<<<<<<< HEAD
+        // Use a fixed time step of 1/60s (60Hz)
+        // param 1: fixedTimeStep - the step size to use for the physics simulation
+        // param 2: timeSinceLastCalled - the time elapsed since the last call to step()
+        // param 3: maxSubSteps - maximum number of fixed steps to take per call to catch up
+=======
         // Use a fixed time step of 1/60 seconds, with a maximum of 10 substeps to catch up
+>>>>>>> master
         this.world.step(1 / 60, deltaTime, 10);
 
         for (const item of this.bodies) {
