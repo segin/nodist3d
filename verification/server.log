@@ -1,5 +1,0 @@
-
-> nodist3d@1.0.0 start
-> node src/backend/server.js
-
-{"timestamp":"2025-11-24T03:46:40.824Z","level":"info","message":"Server listening at http://localhost:3000","extra":[]}

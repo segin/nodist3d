@@ -306,18 +306,18 @@ void main(){ float e = edgeFactor(); vec4 fill = u_Fill; vec4 border = u_Border;
 
 ## Integration notes
 
-* Replace `#version` and attribute locations to suit WebGL/Metal/Direct3D as required. For HLSL, porting is straightforward: `in`/`out` to `VS_INPUT`/`VS_OUTPUT` semantics, `texture()` to `Texture.Sample()` etc.
-* Keep UI shaders small and fast: avoid branching and high-cost loops; keep multiple LODs for mobile or low-power devices.
-* For post-process outlines and effects, render required G-buffers (normals, depth, ID) at the same resolution as viewport or at a lower resolution for performance.
-* Consider exposing toggles in the UI for `MatCap`, `Metallic` previews, and `Gamma`/`SRGB` handling.
+- Replace `#version` and attribute locations to suit WebGL/Metal/Direct3D as required. For HLSL, porting is straightforward: `in`/`out` to `VS_INPUT`/`VS_OUTPUT` semantics, `texture()` to `Texture.Sample()` etc.
+- Keep UI shaders small and fast: avoid branching and high-cost loops; keep multiple LODs for mobile or low-power devices.
+- For post-process outlines and effects, render required G-buffers (normals, depth, ID) at the same resolution as viewport or at a lower resolution for performance.
+- Consider exposing toggles in the UI for `MatCap`, `Metallic` previews, and `Gamma`/`SRGB` handling.
 
 ---
 
 If you want, I can also:
 
-* Produce HLSL and GLSL ES (WebGL) equivalents.
-* Provide a small shader library file (single header) arranged for your engine's naming conventions.
-* Create compact versions with minimal dependencies for immediate embedding into an editor.
+- Produce HLSL and GLSL ES (WebGL) equivalents.
+- Provide a small shader library file (single header) arranged for your engine's naming conventions.
+- Create compact versions with minimal dependencies for immediate embedding into an editor.
 
 Specify which follow-up you want and target API (OpenGL, WebGL, Direct3D, Metal).
 
@@ -326,7 +326,9 @@ Specify which follow-up you want and target API (OpenGL, WebGL, Direct3D, Metal)
 Here are several commonly used shaders for 3D modeling program UIs, written in GLSL-like syntax:
 
 ## 1. Flat Unlit Shader
+
 **Use case:** Basic UI elements, gizmos, icons
+
 ```glsl
 // Vertex
 #version 330 core
@@ -350,7 +352,9 @@ void main() {
 ```
 
 ## 2. Wireframe Shader
+
 **Use case:** Edge display, mesh outlines
+
 ```glsl
 // Vertex
 #version 330 core
@@ -379,7 +383,9 @@ void main() {
 ```
 
 ## 3. X-Ray/See-Through Shader
+
 **Use case:** Occluded object visualization
+
 ```glsl
 // Fragment
 #version 330 core
@@ -405,7 +411,9 @@ void main() {
 ```
 
 ## 4. Selection Highlight Shader
+
 **Use case:** Selected objects, hover states
+
 ```glsl
 // Fragment
 #version 330 core
@@ -425,7 +433,9 @@ void main() {
 ```
 
 ## 5. Grid Shader
+
 **Use case:** Ground plane, construction grids
+
 ```glsl
 // Fragment
 #version 330 core
@@ -458,7 +468,9 @@ void main() {
 ```
 
 ## 6. Gizmo Shader
+
 **Use case:** Transformation gizmos (move, rotate, scale)
+
 ```glsl
 // Fragment - Axis-colored with highlight
 #version 330 core
@@ -481,7 +493,9 @@ void main() {
 ```
 
 ## 7. UV Checkerboard Shader
+
 **Use case:** Default material, UV visualization
+
 ```glsl
 // Fragment
 #version 330 core
@@ -500,7 +514,9 @@ void main() {
 ```
 
 ## 8. Normal Visualization Shader
+
 **Use case:** Debugging, normal map preview
+
 ```glsl
 // Fragment
 #version 330 core
@@ -515,7 +531,9 @@ void main() {
 ```
 
 ## 9. Screen-Space UI Shader
+
 **Use case:** 2D UI elements, text, HUD
+
 ```glsl
 // Vertex
 #version 330 core
@@ -542,6 +560,7 @@ void main() {
 ```
 
 ## Common Utility Functions
+
 ```glsl
 // Include in any shader that needs these utilities
 float linearDepth(float depth, float near, float far) {
