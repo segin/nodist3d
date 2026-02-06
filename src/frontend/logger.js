@@ -1,4 +1,18 @@
 <<<<<<< HEAD
+const log = {
+    trace: console.trace,
+    debug: console.debug,
+    info: console.info,
+    warn: console.warn,
+    error: console.error,
+    setLevel: () => {},
+    setDefaultLevel: () => {},
+    enableAll: () => {},
+    disableAll: () => {},
+    methodFactory: () => {},
+    getLogger: () => log,
+=======
+<<<<<<< HEAD
 const log = window.log;
 =======
 <<<<<<< HEAD
@@ -22,6 +36,7 @@ const log = window.log || window.loglevel || {
     warn: console.warn,
     error: console.error,
     setLevel: () => {}
+>>>>>>> master
 };
 
 if (window.log || window.loglevel) {
