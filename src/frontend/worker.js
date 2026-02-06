@@ -1,7 +1,10 @@
 // @ts-check
 // src/frontend/worker.js
+<<<<<<< HEAD
+=======
 // @ts-ignore
 importScripts('/modules/three.min.js');
+>>>>>>> master
 
 self.onmessage = function (event) {
   const { type, data } = event.data;
@@ -32,10 +35,16 @@ self.onmessage = function (event) {
         }
     } else if (type === 'deserialize') {
         try {
+<<<<<<< HEAD
+            // Only perform JSON parsing in the worker
+            const sceneObject = JSON.parse(data);
+            self.postMessage({ type: 'deserialize_complete', data: sceneObject });
+=======
             // @ts-ignore
             const loader = new THREE.ObjectLoader();
             const scene = loader.parse(JSON.parse(data));
             self.postMessage({ type: 'deserialize_complete', data: scene });
+>>>>>>> master
         } catch (error) {
             self.postMessage({ type: 'error', message: 'Deserialization failed', error: error.message });
         }

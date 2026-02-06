@@ -73,8 +73,12 @@ export class SceneStorage {
 =======
         const sceneJson = await new Promise((resolve, reject) => {
 <<<<<<< HEAD
+            const originalOnMessage = this.worker.onmessage;
+=======
+<<<<<<< HEAD
             this.savePromiseResolve = resolve;
             this.savePromiseReject = reject;
+>>>>>>> master
             this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
 =======
             // OPTIMIZATION: Patch BufferAttribute.toJSON to return TypedArrays directly
@@ -99,8 +103,10 @@ export class SceneStorage {
 
             this.worker.onmessage = (event) => {
                 if (event.data.type === 'serialize_complete') {
+                    this.worker.onmessage = originalOnMessage;
                     resolve(event.data.data);
                 } else if (event.data.type === 'error') {
+                    this.worker.onmessage = originalOnMessage;
                     reject(new Error(event.data.message + ': ' + event.data.error));
                 }
             };
@@ -175,12 +181,22 @@ export class SceneStorage {
      */
     handleWorkerMessage(event) {
         if (event.data.type === 'deserialize_complete') {
-            const loadedScene = event.data.data;
+            const data = event.data.data;
+            const loader = new THREE.ObjectLoader();
+            const loadedScene = loader.parse(data);
+
             // Add loaded objects back to the scene
+<<<<<<< HEAD
+            while (loadedScene.children.length > 0) {
+                this.scene.add(loadedScene.children[0]);
+            }
+
+=======
             // @ts-ignore
             loadedScene.children.forEach(object => {
                 this.scene.add(object);
             });
+>>>>>>> master
             if (this.loadPromiseResolve) {
                 this.loadPromiseResolve(loadedScene);
                 this.loadPromiseResolve = null;
