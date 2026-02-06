@@ -1,3 +1,4 @@
+// @ts-check
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
@@ -17,7 +18,7 @@ import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
 /**
  * Simple 3D modeling application with basic primitives and transform controls
  */
-class App {
+export class App {
     constructor() {
         // Initialize Service Container
         this.container = new ServiceContainer();
@@ -139,49 +140,22 @@ class App {
     }
 
     setupSceneGraph() {
-        // Create scene graph panel
-        this.sceneGraphPanel = document.createElement('div');
-        this.sceneGraphPanel.id = 'scene-graph-panel';
-        this.sceneGraphPanel.style.cssText = `
-            position: fixed;
-            top: 80px;
-            left: 10px;
-            width: 250px;
-            max-height: calc(100vh - 100px);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 12px;
-            overflow-y: auto;
-            z-index: 1000;
-        `;
+        // Use existing scene graph panel from DOM
+        this.sceneGraphPanel = document.getElementById('scene-graph');
+        if (!this.sceneGraphPanel) {
+            console.error('Scene graph panel element not found!');
+            return;
+        }
         
         // Create title
         const title = document.createElement('h3');
         title.textContent = 'Scene Graph';
-        title.style.cssText = `
-            margin: 0 0 10px 0;
-            padding: 0;
-            font-size: 14px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 5px;
-        `;
         
         // Create objects list
         this.objectsList = document.createElement('ul');
-        this.objectsList.setAttribute('role', 'listbox');
-        this.objectsList.setAttribute('aria-label', 'Scene Graph Objects');
-        this.objectsList.style.cssText = `
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        `;
         
         this.sceneGraphPanel.appendChild(title);
         this.sceneGraphPanel.appendChild(this.objectsList);
-        document.body.appendChild(this.sceneGraphPanel);
         
         // Update initially
         this.updateSceneGraph();
@@ -206,7 +180,7 @@ class App {
                 this.saveState('Transform object');
             }
         });
-        this.scene.add(this.transformControls);
+        this.scene.add(/** @type {any} */ (this.transformControls));
 
         // Raycaster for object selection
         this.raycaster = new THREE.Raycaster();
@@ -289,19 +263,19 @@ class App {
         // Handle vendor-specific fullscreen events
         document.addEventListener('webkitfullscreenchange', () => {
             if (fullscreenButton) {
-                fullscreenButton.textContent = document.webkitFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+                fullscreenButton.textContent = /** @type {any} */ (document).webkitFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
             }
         });
         
         document.addEventListener('mozfullscreenchange', () => {
             if (fullscreenButton) {
-                fullscreenButton.textContent = document.mozFullScreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+                fullscreenButton.textContent = /** @type {any} */ (document).mozFullScreenElement ? 'Exit Fullscreen' : 'Fullscreen';
             }
         });
         
         document.addEventListener('MSFullscreenChange', () => {
             if (fullscreenButton) {
-                fullscreenButton.textContent = document.msFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+                fullscreenButton.textContent = /** @type {any} */ (document).msFullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
             }
         });
 
@@ -322,7 +296,8 @@ class App {
             });
             
             fileInput.addEventListener('change', (event) => {
-                const file = event.target.files[0];
+                const target = /** @type {HTMLInputElement} */ (event.target);
+                const file = target.files[0];
                 if (file) {
                     this.loadScene(file);
                 }
@@ -346,6 +321,7 @@ class App {
             });
 
             // Optimize orbit controls for touch
+            // @ts-ignore
             this.orbitControls.enableKeys = false; // Disable keyboard on mobile
             this.orbitControls.touches = {
                 ONE: THREE.TOUCH.ROTATE,
@@ -357,7 +333,7 @@ class App {
             
             // Add touch-friendly selection using longer press
             let touchStartTime = 0;
-            let touchStart = { x: 0, y: 0 };
+            const touchStart = { x: 0, y: 0 };
             const touchSelectThreshold = 200; // milliseconds
             const touchMoveThreshold = 10; // pixels
 
@@ -976,10 +952,8 @@ class App {
         });
         
         // Remove all subfolders
-        const folders = this.propertiesFolder.__folders;
-        const folderList = Array.isArray(folders) ? folders : Object.values(folders);
-
-        folderList.forEach(folder => {
+        const folders = [...this.propertiesFolder.__folders];
+        folders.forEach(folder => {
             this.propertiesFolder.removeFolder(folder);
         });
         
@@ -993,36 +967,17 @@ class App {
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
-            listItem.tabIndex = 0;
-            listItem.setAttribute('role', 'option');
-            listItem.setAttribute('aria-selected', this.selectedObject === object ? 'true' : 'false');
-            listItem.setAttribute('aria-label', `${object.name || `Object_${index + 1}`}, ${object.geometry.type.replace('Geometry', '')}`);
-
-            listItem.style.cssText = `
-                padding: 8px;
-                margin: 4px 0;
-                background: ${this.selectedObject === object ? '#444' : '#222'};
-                border-radius: 3px;
-                cursor: pointer;
-                border: 1px solid #555;
-                outline-offset: -2px;
-            `;
+            // Use CSS class for selection state
+            if (this.selectedObject === object) {
+                listItem.classList.add('selected');
+            }
             
-            // Add keyboard selection support
-            listItem.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    this.selectObject(object);
-                }
-            });
-
             // Object name and type
             const objectInfo = document.createElement('div');
             objectInfo.style.cssText = `
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                pointer-events: none; /* Let clicks pass to listItem */
             `;
             
             const objectName = document.createElement('span');
@@ -1042,79 +997,42 @@ class App {
             
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
-            const isVisible = object.visible;
-            visibilityBtn.textContent = isVisible ? '👁' : '🚫';
-            visibilityBtn.setAttribute('aria-label', isVisible ? `Hide ${objectName.textContent}` : `Show ${objectName.textContent}`);
-            visibilityBtn.title = isVisible ? 'Hide Object' : 'Show Object';
-
+            visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
+            visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
             visibilityBtn.style.cssText = `
                 background: none;
-                border: 1px solid transparent;
-                border-radius: 4px;
+                border: none;
                 color: white;
                 cursor: pointer;
-                font-size: 16px;
-                padding: 8px;
+                font-size: 12px;
+                padding: 2px 5px;
                 margin: 0 5px;
-                min-width: 32px;
-                min-height: 32px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                pointer-events: auto; /* Re-enable pointer events */
             `;
-
-            // Add focus visual style
-            visibilityBtn.onfocus = () => visibilityBtn.style.borderColor = 'white';
-            visibilityBtn.onblur = () => visibilityBtn.style.borderColor = 'transparent';
-
             visibilityBtn.onclick = (e) => {
                 e.stopPropagation();
                 object.visible = !object.visible;
-                // Update button state immediately without full redraw if possible,
-                // but main logic calls updateSceneGraph anyway.
-                // For now just let the redraw handle it, or update explicitly:
-                // visibilityBtn.textContent = object.visible ? '👁' : '🚫';
-                // But updateSceneGraph is called by caller usually?
-                // Wait, onclick in SEARCH block did `visibilityBtn.textContent = ...`
-                // But usually this modifies state and we should re-render or update attributes.
-                // The SEARCH block had:
-                // object.visible = !object.visible;
-                // visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                visibilityBtn.textContent = object.visible ? '👁' : '🚫';
 
-                // I will keep that logic but update ARIA too.
-                const newVisible = object.visible;
-                visibilityBtn.textContent = newVisible ? '👁' : '🚫';
-                visibilityBtn.setAttribute('aria-label', newVisible ? `Hide ${objectName.textContent}` : `Show ${objectName.textContent}`);
-                visibilityBtn.title = newVisible ? 'Hide Object' : 'Show Object';
+                // Update accessibility attributes
+                const action = object.visible ? 'Hide' : 'Show';
+                visibilityBtn.title = `${action} object`;
+                visibilityBtn.setAttribute('aria-label', `${action} ${object.name}`);
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '🗑';
-            deleteBtn.setAttribute('aria-label', `Delete ${objectName.textContent}`);
-            deleteBtn.title = 'Delete Object';
-
+            deleteBtn.title = 'Delete object';
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
             deleteBtn.style.cssText = `
                 background: none;
-                border: 1px solid transparent;
-                border-radius: 4px;
+                border: none;
                 color: #ff4444;
                 cursor: pointer;
-                font-size: 16px;
-                padding: 8px;
-                min-width: 32px;
-                min-height: 32px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                pointer-events: auto; /* Re-enable pointer events */
+                font-size: 12px;
+                padding: 2px 5px;
             `;
-
-            // Add focus visual style
-            deleteBtn.onfocus = () => deleteBtn.style.borderColor = '#ff4444';
-            deleteBtn.onblur = () => deleteBtn.style.borderColor = 'transparent';
-
             deleteBtn.onclick = (e) => {
                 e.stopPropagation();
                 this.deleteObject(object);
@@ -1274,72 +1192,120 @@ class App {
         }
     }
 
+    createGeometryFromData(objData) {
+        const params = objData.geometryParams || {};
+        switch (objData.type) {
+            case 'BoxGeometry':
+                return new THREE.BoxGeometry(params.width || 1, params.height || 1, params.depth || 1);
+            case 'SphereGeometry':
+                return new THREE.SphereGeometry(params.radius || 0.5, params.widthSegments || 32, params.heightSegments || 32);
+            case 'CylinderGeometry':
+                return new THREE.CylinderGeometry(params.radiusTop || 0.5, params.radiusBottom || 0.5, params.height || 1, 32);
+            case 'ConeGeometry':
+                return new THREE.ConeGeometry(params.radius || 0.5, params.height || 1, 32);
+            case 'TorusGeometry':
+                return new THREE.TorusGeometry(params.radius || 0.4, params.tube || 0.2, 16, 100);
+            case 'PlaneGeometry':
+                return new THREE.PlaneGeometry(params.width || 2, params.height || 2);
+            default:
+                return new THREE.BoxGeometry(1, 1, 1);
+        }
+    }
+
     restoreState(state) {
-        // Clear current scene
+        // Track current objects by UUID for easy lookup
+        const currentObjectsMap = new Map();
         this.objects.forEach(obj => {
+            currentObjectsMap.set(obj.uuid, obj);
+        });
+        
+        const newObjects = [];
+
+        // Process objects from state
+        state.objects.forEach(objData => {
+            let object = currentObjectsMap.get(objData.uuid);
+            
+            if (object) {
+                // UPDATE existing object
+                if (object.name !== objData.name) object.name = objData.name;
+                object.position.copy(objData.position);
+                object.rotation.copy(objData.rotation);
+                object.scale.copy(objData.scale);
+                object.visible = objData.visible;
+
+                // Update material
+                if (object.material.color.getHex() !== objData.material.color.getHex()) {
+                    object.material.color.set(objData.material.color);
+                }
+                if (object.material.emissive.getHex() !== objData.material.emissive.getHex()) {
+                    object.material.emissive.set(objData.material.emissive);
+                }
+
+                // Check if geometry update is needed
+                const currentParams = object.userData.geometryParams;
+                const newParams = objData.geometryParams;
+
+                let geometryNeedsUpdate = false;
+                if (!currentParams && newParams) geometryNeedsUpdate = true;
+                else if (currentParams && !newParams) geometryNeedsUpdate = true;
+                else if (currentParams && newParams) {
+                    // Compare keys
+                    for (const key in newParams) {
+                        if (currentParams[key] !== newParams[key]) {
+                            geometryNeedsUpdate = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (geometryNeedsUpdate) {
+                     object.userData.geometryParams = newParams ? {...newParams} : null;
+                     const newGeometry = this.createGeometryFromData(objData);
+                     object.geometry.dispose();
+                     object.geometry = newGeometry;
+                }
+
+                newObjects.push(object);
+                // Remove from map so we know what's left to delete
+                currentObjectsMap.delete(objData.uuid);
+
+            } else {
+                // CREATE new object
+                const geometry = this.createGeometryFromData(objData);
+
+                // Recreate material
+                const material = new THREE.MeshLambertMaterial({
+                    color: objData.material.color,
+                    side: objData.type === 'PlaneGeometry' ? THREE.DoubleSide : THREE.FrontSide
+                });
+                material.emissive.set(objData.material.emissive);
+
+                // Create mesh
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.name = objData.name;
+                mesh.position.copy(objData.position);
+                mesh.rotation.copy(objData.rotation);
+                mesh.scale.copy(objData.scale);
+                mesh.visible = objData.visible;
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                mesh.uuid = objData.uuid;
+                mesh.userData.geometryParams = objData.geometryParams;
+
+                this.scene.add(mesh);
+                newObjects.push(mesh);
+            }
+        });
+        
+        // DELETE removed objects
+        currentObjectsMap.forEach(obj => {
             this.scene.remove(obj);
             obj.geometry.dispose();
             obj.material.dispose();
         });
-        this.objects.length = 0;
-        
-        // Restore objects
-        state.objects.forEach(objData => {
-            let geometry;
-            
-            // Recreate geometry based on type
-            switch (objData.type) {
-                case 'BoxGeometry':
-                    const params = objData.geometryParams || { width: 1, height: 1, depth: 1 };
-                    geometry = new THREE.BoxGeometry(params.width, params.height, params.depth);
-                    break;
-                case 'SphereGeometry':
-                    const sphereParams = objData.geometryParams || { radius: 0.5, widthSegments: 32, heightSegments: 32 };
-                    geometry = new THREE.SphereGeometry(sphereParams.radius, sphereParams.widthSegments, sphereParams.heightSegments);
-                    break;
-                case 'CylinderGeometry':
-                    const cylinderParams = objData.geometryParams || { radiusTop: 0.5, radiusBottom: 0.5, height: 1 };
-                    geometry = new THREE.CylinderGeometry(cylinderParams.radiusTop, cylinderParams.radiusBottom, cylinderParams.height, 32);
-                    break;
-                case 'ConeGeometry':
-                    const coneParams = objData.geometryParams || { radius: 0.5, height: 1 };
-                    geometry = new THREE.ConeGeometry(coneParams.radius, coneParams.height, 32);
-                    break;
-                case 'TorusGeometry':
-                    const torusParams = objData.geometryParams || { radius: 0.4, tube: 0.2 };
-                    geometry = new THREE.TorusGeometry(torusParams.radius, torusParams.tube, 16, 100);
-                    break;
-                case 'PlaneGeometry':
-                    const planeParams = objData.geometryParams || { width: 2, height: 2 };
-                    geometry = new THREE.PlaneGeometry(planeParams.width, planeParams.height);
-                    break;
-                default:
-                    geometry = new THREE.BoxGeometry(1, 1, 1);
-            }
-            
-            // Recreate material
-            const material = new THREE.MeshLambertMaterial({ 
-                color: objData.material.color,
-                side: objData.type === 'PlaneGeometry' ? THREE.DoubleSide : THREE.FrontSide
-            });
-            material.emissive.copy(objData.material.emissive);
-            
-            // Create mesh
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.name = objData.name;
-            mesh.position.copy(objData.position);
-            mesh.rotation.copy(objData.rotation);
-            mesh.scale.copy(objData.scale);
-            mesh.visible = objData.visible;
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
-            mesh.uuid = objData.uuid;
-            mesh.userData.geometryParams = objData.geometryParams;
-            
-            this.scene.add(mesh);
-            this.objects.push(mesh);
-        });
-        
+
+        this.objects = newObjects;
+
         // Restore selection
         this.deselectObject();
         if (state.selectedObjectUuid) {
@@ -1357,23 +1323,23 @@ class App {
             // Enter fullscreen
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen();
-            } else if (document.documentElement.webkitRequestFullscreen) {
-                document.documentElement.webkitRequestFullscreen();
-            } else if (document.documentElement.mozRequestFullScreen) {
-                document.documentElement.mozRequestFullScreen();
-            } else if (document.documentElement.msRequestFullscreen) {
-                document.documentElement.msRequestFullscreen();
+            } else if (/** @type {any} */ (document.documentElement).webkitRequestFullscreen) {
+                /** @type {any} */ (document.documentElement).webkitRequestFullscreen();
+            } else if (/** @type {any} */ (document.documentElement).mozRequestFullScreen) {
+                /** @type {any} */ (document.documentElement).mozRequestFullScreen();
+            } else if (/** @type {any} */ (document.documentElement).msRequestFullscreen) {
+                /** @type {any} */ (document.documentElement).msRequestFullscreen();
             }
         } else {
             // Exit fullscreen
             if (document.exitFullscreen) {
                 document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
+            } else if (/** @type {any} */ (document).webkitExitFullscreen) {
+                /** @type {any} */ (document).webkitExitFullscreen();
+            } else if (/** @type {any} */ (document).mozCancelFullScreen) {
+                /** @type {any} */ (document).mozCancelFullScreen();
+            } else if (/** @type {any} */ (document).msExitFullscreen) {
+                /** @type {any} */ (document).msExitFullscreen();
             }
         }
     }
@@ -1395,8 +1361,8 @@ class App {
             // Update the objects array to reflect the loaded scene
             this.objects = [];
             this.scene.traverse((child) => {
-                if (child.isMesh) {
-                    this.objects.push(child);
+                if (/** @type {any} */ (child).isMesh) {
+                    this.objects.push(/** @type {THREE.Mesh} */ (child));
                 }
             });
             this.updateSceneGraph();

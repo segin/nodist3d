@@ -31,6 +31,13 @@ jest.mock('three', () => ({
     PlaneGeometry: jest.fn(() => ({
         dispose: jest.fn()
     })),
+    BoxGeometry: jest.fn(() => ({
+        dispose: jest.fn()
+    })),
+    Color: jest.fn(() => ({
+        setHex: jest.fn(),
+        getHex: jest.fn()
+    })),
     WebGLRenderer: jest.fn(() => ({
         domElement: { addEventListener: jest.fn() }
     })),
@@ -45,15 +52,18 @@ jest.mock('three', () => ({
 }));
 
 // Mock dat.gui with proper structure
-const mockController = {
-    name: jest.fn(() => ({ onChange: jest.fn() })),
-    onChange: jest.fn()
+const createMockController = () => {
+    const controller = {};
+    controller.name = jest.fn(() => controller);
+    controller.listen = jest.fn(() => controller);
+    controller.onChange = jest.fn(() => controller);
+    return controller;
 };
 
 const mockFolder = {
-    add: jest.fn(() => mockController),
+    add: jest.fn(() => createMockController()),
     addFolder: jest.fn(() => mockFolder),
-    addColor: jest.fn(() => mockController),
+    addColor: jest.fn(() => createMockController()),
     open: jest.fn(),
     close: jest.fn(),
     remove: jest.fn(),
@@ -142,7 +152,9 @@ describe('ShaderEditor', () => {
     it("should update shader code and set needsUpdate to true when changed in the GUI", () => {
         shaderEditor.createShader();
         const editorFolder = gui.addFolder.mock.results[0].value;
-        const shaderCodeController = editorFolder.add.mock.results[1].value; // Assuming vertex shader is the second 'add' call
+        // Find the controller for the 'vertex' property
+        const vertexCallIndex = editorFolder.add.mock.calls.findIndex(call => call[1] === 'vertex');
+        const shaderCodeController = editorFolder.add.mock.results[vertexCallIndex].value;
   
         const newVertexShader = 'void main() { gl_Position = vec4(0.0); }';
         const onChangeCallback = shaderCodeController.onChange.mock.calls[0][0];

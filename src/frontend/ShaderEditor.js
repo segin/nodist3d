@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { GUI } from 'dat.gui';
 
 export class ShaderEditor {
@@ -46,8 +47,8 @@ export class ShaderEditor {
         this.uniforms = {};
 
         this.shaderMaterial = new THREE.ShaderMaterial({
-            vertexShader: this.vertexShader,
-            fragmentShader: this.fragmentShader,
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
             uniforms: this.uniforms,
         });
 
@@ -55,9 +56,10 @@ export class ShaderEditor {
         mesh.name = 'ShaderMesh';
         this.scene.add(mesh);
         this.eventBus.publish('objectAdded', mesh);
-        return mesh;
 
         this.addShaderControls();
+
+        return mesh;
     }
 
     addShaderControls() {
@@ -67,7 +69,7 @@ export class ShaderEditor {
         this.uniformsFolder = this.editorFolder.addFolder('Uniforms');
 
         // Example: Add a color uniform
-        this.uniforms.myColor = { value: new global.THREE.Color(0xff0000) };
+        this.uniforms.myColor = { value: new THREE.Color(0xff0000) };
         this.uniformsFolder.addColor(this.uniforms.myColor, 'value').name('Color').onChange(() => {
             this.shaderMaterial.needsUpdate = true;
         });

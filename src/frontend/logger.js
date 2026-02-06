@@ -1,10 +1,10 @@
-// Access global log variable provided by loglevel script
+// Access loglevel from global scope (loaded via script tag)
 const log = window.log;
 
 if (log) {
     log.setLevel('info');
 } else {
-    console.error('loglevel not loaded');
+    console.warn('loglevel not loaded, falling back to console');
 }
 
-export default log;
+export default log || console;
