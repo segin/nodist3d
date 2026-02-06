@@ -36,9 +36,13 @@ jest.mock('three', () => {
         })),
         PerspectiveCamera: jest.fn(() => ({
 <<<<<<< HEAD
+            position: { set: jest.fn(), clone: jest.fn(() => ({ copy: jest.fn() })) },
+=======
+<<<<<<< HEAD
             position: { set: jest.fn(), clone: jest.fn() },
 =======
             position: { ...mockVector3 },
+>>>>>>> master
 >>>>>>> master
             lookAt: jest.fn(),
             aspect: 1,
@@ -57,12 +61,14 @@ jest.mock('three', () => {
             }
         })),
         Mesh: jest.fn(() => mockMesh),
+        BufferGeometry: jest.fn(),
         BoxGeometry: jest.fn(),
         SphereGeometry: jest.fn(),
         CylinderGeometry: jest.fn(),
         ConeGeometry: jest.fn(),
         TorusGeometry: jest.fn(),
         PlaneGeometry: jest.fn(),
+        ExtrudeGeometry: jest.fn(),
         MeshLambertMaterial: jest.fn(() => ({
             emissive: { setHex: jest.fn() },
             clone: jest.fn(() => ({ emissive: { setHex: jest.fn() } }))
@@ -80,7 +86,21 @@ jest.mock('three', () => {
             intersectObjects: jest.fn(() => [])
         })),
         Vector2: jest.fn(),
+<<<<<<< HEAD
+        Loader: class {
+            constructor() {
+                this.load = jest.fn();
+                this.parse = jest.fn();
+            }
+        },
+        FileLoader: class {
+            constructor() {
+                this.load = jest.fn();
+            }
+        },
+=======
         Vector3: jest.fn(() => ({ ...mockVector3 })),
+>>>>>>> master
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide',
         TOUCH: { ROTATE: 1, DOLLY_PAN: 2 }
@@ -192,6 +212,17 @@ jest.mock('dat.gui', () => ({
 <<<<<<< HEAD
 // Mock OrbitControls
 jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
+<<<<<<< HEAD
+    OrbitControls: class {
+        constructor() {
+            this.enableDamping = true;
+            this.dampingFactor = 0.05;
+            this.enabled = true;
+            this.update = jest.fn();
+            this.target = { clone: jest.fn(() => ({ copy: jest.fn() })) };
+        }
+    }
+=======
     OrbitControls: jest.fn(() => ({
         enableDamping: true,
         dampingFactor: 0.05,
@@ -199,17 +230,20 @@ jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
         update: jest.fn(),
         target: { clone: jest.fn() }
     }))
+>>>>>>> master
 }));
 
 // Mock TransformControls
 jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
-    TransformControls: jest.fn(() => ({
-        addEventListener: jest.fn(),
-        setMode: jest.fn(),
-        attach: jest.fn(),
-        detach: jest.fn(),
-        dragging: false
-    }))
+    TransformControls: class {
+        constructor() {
+            this.addEventListener = jest.fn();
+            this.setMode = jest.fn();
+            this.attach = jest.fn();
+            this.detach = jest.fn();
+            this.dragging = false;
+        }
+    }
 }));
 =======
 // Mocks for three/examples/jsm/* are handled via moduleNameMapper in jest.config.cjs

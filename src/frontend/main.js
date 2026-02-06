@@ -1250,6 +1250,9 @@ export class App {
         
         // Remove all subfolders
 <<<<<<< HEAD
+        const folders = Object.values(this.propertiesFolder.__folders || {});
+=======
+<<<<<<< HEAD
         // @ts-ignore - __folders is internal
         const folders = [...this.propertiesFolder.__folders];
         // @ts-ignore
@@ -1272,6 +1275,7 @@ export class App {
         const folders = [...this.propertiesFolder.__folders];
 =======
         const folders = Object.values(this.propertiesFolder.__folders || {});
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
         folders.forEach(folder => {
@@ -1418,6 +1422,10 @@ export class App {
             const visibilityLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
 <<<<<<< HEAD
+            visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
+            visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+=======
+<<<<<<< HEAD
             visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
             visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
 =======
@@ -1455,6 +1463,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1468,7 +1477,12 @@ export class App {
             visibilityBtn.onclick = (e) => {
                 e.stopPropagation();
                 object.visible = !object.visible;
+                const label = object.visible ? 'Hide object' : 'Show object';
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+                visibilityBtn.title = label;
+                visibilityBtn.setAttribute('aria-label', label);
+=======
 <<<<<<< HEAD
                 visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
                 visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
@@ -1499,6 +1513,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             };
             
             // Delete button
@@ -1506,6 +1521,10 @@ export class App {
 <<<<<<< HEAD
             const deleteLabel = 'Delete ' + (object.name || 'Object');
             deleteBtn.textContent = '🗑';
+<<<<<<< HEAD
+            deleteBtn.title = 'Delete object';
+            deleteBtn.setAttribute('aria-label', 'Delete object');
+=======
 <<<<<<< HEAD
             deleteBtn.setAttribute('aria-label', 'Delete object');
             deleteBtn.setAttribute('title', 'Delete object');
@@ -1539,6 +1558,7 @@ export class App {
             deleteBtn.title = 'Delete object';
 >>>>>>> master
             deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

@@ -1,4 +1,15 @@
 <<<<<<< HEAD
+const log = (typeof window !== 'undefined' && window.log) ? window.log : {
+    info: console.log,
+    warn: console.warn,
+    error: console.error,
+    setLevel: () => {}
+};
+
+if (log && log.setLevel) {
+    log.setLevel('info');
+=======
+<<<<<<< HEAD
 // Access global log instance from window (loaded via script tag)
 =======
 <<<<<<< HEAD
@@ -36,6 +47,7 @@ if (log) {
 =======
 <<<<<<< HEAD
     console.error('loglevel not loaded globally');
+>>>>>>> master
 >>>>>>> master
 }
 

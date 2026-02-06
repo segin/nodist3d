@@ -135,6 +135,9 @@ describe('GroupManager', () => {
     const group2 = groupManager.groupObjects([group1, object4]);
 
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
         expect(group2).toBeInstanceOf(Group);
         expect(scene.children).toContain(group2);
         expect(group2.children).toContain(group1);

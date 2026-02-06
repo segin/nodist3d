@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import './__mocks__/three-dat.gui.js';
 import { Pointer } from '../src/frontend/Pointer.js';
 import EventBus from '../src/frontend/EventBus.js';
 
