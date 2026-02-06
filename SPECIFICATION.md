@@ -71,19 +71,19 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
 
 *   **1.2.1. Linting and Formatting Setup**
     *   **Action Items**:
-        *   [ ] **Install Tools**: `npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn eslint-plugin-import`.
-        *   [ ] **Configure ESLint (`.eslintrc.json`)**:
-            *   [ ] `env`: `{ browser: true, node: true, es2022: true }`.
-            *   [ ] `rules`: Enforce `eqeqeq`, `no-var`, `prefer-const`, `no-console` (warn), `promise/always-return`.
-        *   [ ] **Configure Prettier (`.prettierrc`)**:
-            *   [ ] `{ "semi": true, "singleQuote": true, "tabWidth": 2, "printWidth": 100 }`.
-        *   [ ] **Setup Husky**:
-            *   [ ] `npx husky install`.
-            *   [ ] Add `pre-commit` hook: `npx lint-staged`.
-            *   [ ] Configure `lint-staged` in package.json to run `eslint --fix` on `*.js` files.
+        *   [x] **Install Tools**: `npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn eslint-plugin-import`.
+        *   [x] **Configure ESLint (`.eslintrc.json`)**:
+            *   [x] `env`: `{ browser: true, node: true, es2022: true }`.
+            *   [x] `rules`: Enforce `eqeqeq`, `no-var`, `prefer-const`, `no-console` (warn), `promise/always-return`.
+        *   [x] **Configure Prettier (`.prettierrc`)**:
+            *   [x] `{ "semi": true, "singleQuote": true, "tabWidth": 2, "printWidth": 100 }`.
+        *   [x] **Setup Husky**:
+            *   [x] `npx husky install`.
+            *   [x] Add `pre-commit` hook: `npx lint-staged`.
+            *   [x] Configure `lint-staged` in package.json to run `eslint --fix` on `*.js` files.
     *   **Verification & Testing**:
-        *   [ ] Deliberately introduce a lint error (e.g., `var x = 1;`). Verify commit fails.
-        *   [ ] Run `npm run lint`. Verify it catches issues.
+        *   [x] Deliberately introduce a lint error (e.g., `var x = 1;`). Verify commit fails.
+        *   [x] Run `npm run lint`. Verify it catches issues.
 
 *   **1.2.2. Documentation & Type Safety**
     *   **Action Items**:

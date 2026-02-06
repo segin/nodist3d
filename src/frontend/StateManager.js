@@ -5,7 +5,7 @@ export class StateManager {
       toolMode: 'select',
       clipboard: null,
       isDragging: false,
-      sceneDirty: false
+      sceneDirty: false,
     };
 
     this._listeners = new Map();
@@ -68,9 +68,9 @@ export class StateManager {
   }
 
   _notifyListeners(changedKeys, newState) {
-    changedKeys.forEach(key => {
+    changedKeys.forEach((key) => {
       if (this._listeners.has(key)) {
-        this._listeners.get(key).forEach(callback => {
+        this._listeners.get(key).forEach((callback) => {
           try {
             callback(newState[key], newState);
           } catch (error) {
