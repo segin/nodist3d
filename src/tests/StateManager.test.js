@@ -14,7 +14,7 @@ describe('StateManager', () => {
       toolMode: 'select',
       clipboard: null,
       isDragging: false,
-      sceneDirty: false
+      sceneDirty: false,
     });
   });
 
@@ -46,7 +46,10 @@ describe('StateManager', () => {
     stateManager.setState({ toolMode: 'rotate' });
 
     expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith('rotate', expect.objectContaining({ toolMode: 'rotate' }));
+    expect(callback).toHaveBeenCalledWith(
+      'rotate',
+      expect.objectContaining({ toolMode: 'rotate' }),
+    );
   });
 
   test('subscribe does not fire if value is unchanged', () => {
