@@ -80,6 +80,9 @@
     "@eslint/js": "^9.39.2",
 >>>>>>> master
     "babel-jest": "^30.0.2",
+<<<<<<< HEAD
+    "eslint": "^9.0.0",
+=======
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
 <<<<<<< HEAD
@@ -129,6 +132,7 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-promise": "^7.2.1",
     "eslint-plugin-unicorn": "^54.0.0",
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

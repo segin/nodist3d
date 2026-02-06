@@ -11,6 +11,29 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3000;
 
+<<<<<<< HEAD
+// TODO: AUDIT-SEC-002: Implement rate limiting to prevent abuse.
+// const rateLimit = require('express-rate-limit');
+// app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            // TODO: AUDIT-SEC-001: 'unsafe-inline' is currently required for Import Maps in index.html.
+            // Recommendation: Refactor to use a cryptographic nonce or hash for the inline script.
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:"],
+            connectSrc: ["'self'"],
+            fontSrc: ["'self'", "data:"],
+            objectSrc: ["'none'"],
+            mediaSrc: ["'self'"],
+            frameSrc: ["'none'"]
+        }
+    }
+}));
+=======
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -28,6 +51,7 @@ app.use(
     },
   }),
 );
+>>>>>>> master
 app.use(cors());
 
 // Serve modules from node_modules with proper MIME types
