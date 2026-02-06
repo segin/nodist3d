@@ -113,6 +113,8 @@ body {
     outline-offset: -2px;
 }
 
+<<<<<<< HEAD
+=======
 #scene-graph .icon-btn {
     background: none;
     border: none;
@@ -132,6 +134,7 @@ body {
     outline: 2px solid #007bff;
 }
 
+>>>>>>> master
 /* Mobile optimizations */
 @media (max-width: 768px) {
     #ui {

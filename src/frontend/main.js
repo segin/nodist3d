@@ -1005,6 +1005,19 @@ export class App {
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
 <<<<<<< HEAD
+            listItem.tabIndex = 0;
+            listItem.role = 'button';
+            listItem.setAttribute('aria-label', `Select ${object.name || 'Object ' + (index + 1)}`);
+            listItem.style.cssText = `
+                padding: 5px;
+                margin: 2px 0;
+                background: ${this.selectedObject === object ? '#444' : '#222'};
+                border-radius: 3px;
+                cursor: pointer;
+                border: 1px solid #555;
+            `;
+=======
+<<<<<<< HEAD
             // Use CSS classes instead of inline styles
             if (this.selectedObject === object) {
                 listItem.classList.add('selected');
@@ -1022,6 +1035,7 @@ export class App {
             if (this.selectedObject === object) {
                 listItem.classList.add('selected');
             }
+>>>>>>> master
 >>>>>>> master
             
             // Object name and type
@@ -1052,6 +1066,9 @@ export class App {
 <<<<<<< HEAD
             const visibilityLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+            visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+=======
             visibilityBtn.setAttribute('aria-label', visibilityLabel);
             visibilityBtn.title = visibilityLabel;
 =======
@@ -1069,6 +1086,7 @@ export class App {
 >>>>>>> master
             visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
 >>>>>>> master
+>>>>>>> master
             visibilityBtn.style.cssText = `
                 background: none;
                 border: none;
@@ -1083,6 +1101,9 @@ export class App {
                 e.stopPropagation();
                 object.visible = !object.visible;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+                visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+=======
 <<<<<<< HEAD
                 const newLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
                 visibilityBtn.setAttribute('aria-label', newLabel);
@@ -1104,6 +1125,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             };
             
             // Delete button
@@ -1111,6 +1133,9 @@ export class App {
 <<<<<<< HEAD
             const deleteLabel = 'Delete ' + (object.name || 'Object');
             deleteBtn.textContent = '🗑';
+<<<<<<< HEAD
+            deleteBtn.setAttribute('aria-label', 'Delete object');
+=======
             deleteBtn.setAttribute('aria-label', deleteLabel);
             deleteBtn.title = deleteLabel;
 =======
@@ -1127,6 +1152,7 @@ export class App {
             deleteBtn.title = 'Delete object';
 >>>>>>> master
             deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+>>>>>>> master
 >>>>>>> master
             deleteBtn.style.cssText = `
                 background: none;
@@ -1148,8 +1174,15 @@ export class App {
             listItem.onclick = () => {
                 this.selectObject(object);
             };
+<<<<<<< HEAD
+
+            // Keyboard support for selection
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+=======
             listItem.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+>>>>>>> master
                     e.preventDefault();
                     this.selectObject(object);
                 }
