@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, PointLight, DirectionalLight, Group, AmbientLight } from 'three';
+import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, MeshStandardMaterial, PointLight, DirectionalLight, Group, AmbientLight } from 'three';
 import { SceneStorage } from '../src/frontend/SceneStorage.js';
 import JSZip from 'jszip';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
@@ -24,6 +24,8 @@ jest.mock('../src/frontend/ObjectManager.js', () => {
     };
 });
 
+<<<<<<< HEAD
+=======
 // Mock the worker for testing purposes
 class MockWorker {
     constructor() {
@@ -111,6 +113,7 @@ class MockWorker {
     }
 }
 
+>>>>>>> master
 // Mock URL.createObjectURL and URL.revokeObjectURL
 global.URL = {
     createObjectURL: jest.fn(() => 'blob:mockurl'),
@@ -123,14 +126,147 @@ describe('SceneStorage', () => {
     let objectManager;
     let primitiveFactory;
     let eventBus;
+    let mockJSZipInstance;
 
     beforeEach(() => {
+<<<<<<< HEAD
+        // Create a recursive serializer helper
+        const serializeObject = (obj) => {
+            const data = {
+                uuid: obj.uuid,
+                type: obj.isMesh ? 'Mesh' : (obj.isPointLight ? 'PointLight' : (obj.isDirectionalLight ? 'DirectionalLight' : (obj.isAmbientLight ? 'AmbientLight' : (obj.isGroup ? 'Group' : 'Object3D')))),
+                name: obj.name,
+                position: [obj.position.x, obj.position.y, obj.position.z],
+                rotation: [obj.rotation.x, obj.rotation.y, obj.rotation.z],
+                scale: [obj.scale.x, obj.scale.y, obj.scale.z],
+                color: obj.color ? obj.color.getHex() : undefined,
+                intensity: obj.intensity,
+                children: []
+            };
+
+            if (obj.material) {
+                data.material = {
+                    color: obj.material.color ? obj.material.color.getHex() : undefined,
+                    roughness: obj.material.roughness,
+                    metalness: obj.material.metalness
+                };
+            }
+
+            if (obj.children && obj.children.length > 0) {
+                data.children = obj.children.map(child => serializeObject(child));
+            }
+
+            return data;
+        };
+
+        THREE.Scene.prototype.toJSON = jest.fn(function() {
+            return {
+                metadata: { version: 4.5, type: 'Scene', generator: 'SceneExporter' },
+                children: this.children.map(child => serializeObject(child))
+            };
+        });
+
+=======
         jest.clearAllMocks();
         global.Worker = MockWorker;
+>>>>>>> master
         scene = new Scene();
         eventBus = EventBus;
+
+        // Setup JSZip mock for instances
+        mockJSZipInstance = {
+            file: jest.fn(),
+            loadAsync: jest.fn().mockResolvedValue({
+                file: jest.fn()
+            }),
+            generateAsync: jest.fn().mockResolvedValue(new Blob())
+        };
+
+        const mockJSZipConstructor = jest.fn(() => mockJSZipInstance);
+        global.JSZip = mockJSZipConstructor;
+        window.JSZip = mockJSZipConstructor;
+
+        // Setup Worker mock specific for SceneStorage logic
+        global.Worker = class {
+            constructor(stringUrl) {
+                this.url = stringUrl;
+                this.onmessage = () => {};
+            }
+            postMessage(msg) {
+                // Execute asynchronously to simulate worker and allow onmessage assignment in SaveScene
+                setTimeout(() => {
+                    if (msg.type === 'serialize') {
+                        this.onmessage({ data: { type: 'serialize_complete', data: JSON.stringify(msg.data) } });
+                    } else if (msg.type === 'deserialize') {
+                        let parsedData;
+                        try {
+                            parsedData = JSON.parse(msg.data);
+                        } catch (e) {
+                            this.onmessage({ data: { type: 'error', message: 'SyntaxError', error: e.message } });
+                            return;
+                        }
+
+                        // Reconstruct objects
+                        const mockScene = { children: [] };
+
+                        // Recursive deserializer
+                        const deserializeObject = (objData) => {
+                            let obj;
+                            if (objData.type === 'Mesh') {
+                                obj = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
+                            } else if (objData.type === 'PointLight') {
+                                obj = new PointLight(objData.color || 0xffffff, objData.intensity || 1);
+                            } else if (objData.type === 'DirectionalLight') {
+                                obj = new DirectionalLight(objData.color || 0xffffff, objData.intensity || 1);
+                            } else if (objData.type === 'AmbientLight') {
+                                obj = new AmbientLight(objData.color || 0xffffff, objData.intensity || 1);
+                            } else if (objData.type === 'Group') {
+                                obj = new Group();
+                            } else {
+                                obj = new THREE.Object3D(); // Fallback
+                            }
+
+                            if (obj) {
+                                obj.uuid = objData.uuid;
+                                obj.name = objData.name;
+                                if (objData.position) obj.position.set(objData.position[0], objData.position[1], objData.position[2]);
+                                if (objData.rotation) obj.rotation.set(objData.rotation[0], objData.rotation[1], objData.rotation[2]);
+                                if (objData.scale) obj.scale.set(objData.scale[0], objData.scale[1], objData.scale[2]);
+
+                                if (objData.material && obj.material) {
+                                    if (objData.material.color) obj.material.color.setHex(objData.material.color);
+                                    if (objData.material.roughness !== undefined) obj.material.roughness = objData.material.roughness;
+                                    if (objData.material.metalness !== undefined) obj.material.metalness = objData.material.metalness;
+                                }
+
+                                if (objData.children) {
+                                    objData.children.forEach(childData => {
+                                        const child = deserializeObject(childData);
+                                        if (child) obj.add(child);
+                                    });
+                                }
+                            }
+                            return obj;
+                        };
+
+                        if (parsedData.children) {
+                            parsedData.children.forEach(childData => {
+                                const mockObject = deserializeObject(childData);
+                                if (mockObject) mockScene.children.push(mockObject);
+                            });
+                        }
+
+                        this.onmessage({ data: { type: 'deserialize_complete', data: mockScene } });
+                    }
+                }, 0);
+            }
+        };
+
         sceneStorage = new SceneStorage(scene);
         primitiveFactory = new PrimitiveFactory();
+<<<<<<< HEAD
+        objectManager = new ObjectManager(scene, eventBus, null, primitiveFactory, null, null, null);
+=======
         objectManager = new ObjectManager(scene, primitiveFactory, eventBus);
 
         global.JSZip.mockImplementation(() => ({
@@ -140,6 +276,7 @@ describe('SceneStorage', () => {
                  file: jest.fn().mockReturnValue({ async: jest.fn().mockResolvedValue('{}') })
             })
         }));
+>>>>>>> master
     });
 
     it('should correctly serialize scene data into the expected JSON format', async () => {
@@ -150,8 +287,12 @@ describe('SceneStorage', () => {
         cube.scale.set(0.5, 0.5, 0.5);
         objectManager.updateMaterial(cube, { color: 0xff0000 });
 
+<<<<<<< HEAD
+        await sceneStorage.saveScene();
+=======
         const savePromise = sceneStorage.saveScene();
         await savePromise;
+>>>>>>> master
 
         expect(URL.createObjectURL).toHaveBeenCalled();
         expect(URL.revokeObjectURL).toHaveBeenCalled();
@@ -162,8 +303,12 @@ describe('SceneStorage', () => {
         const light = new THREE.PointLight(0xffffff, 1);
         scene.add(light);
 
+<<<<<<< HEAD
+        await sceneStorage.saveScene();
+=======
         const savePromise = sceneStorage.saveScene();
         await savePromise;
+>>>>>>> master
 
         expect(URL.createObjectURL).toHaveBeenCalled();
         expect(URL.revokeObjectURL).toHaveBeenCalled();
@@ -194,6 +339,19 @@ describe('SceneStorage', () => {
         const mockFileContent = JSON.stringify(mockSceneData.object);
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
 
+<<<<<<< HEAD
+        mockJSZipInstance.loadAsync.mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+            })
+        });
+
+        await sceneStorage.loadScene(mockFile);
+
+        // Wait for next tick to ensure worker callback runs
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+=======
         global.JSZip.mockImplementation(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn().mockReturnValue({
@@ -205,6 +363,7 @@ describe('SceneStorage', () => {
 
         await sceneStorage.loadScene(mockFile);
 
+>>>>>>> master
         expect(scene.children.length).toBe(1);
         const loadedObject = scene.children[0];
         expect(loadedObject.name).toBe('LoadedCube');
@@ -234,6 +393,13 @@ describe('SceneStorage', () => {
         const mockFileContent = JSON.stringify(mockSceneData.object);
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
 
+<<<<<<< HEAD
+        mockJSZipInstance.loadAsync.mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+            })
+        });
+=======
         global.JSZip.mockImplementation(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn().mockReturnValue({
@@ -242,8 +408,10 @@ describe('SceneStorage', () => {
             }),
             file: jest.fn(), generateAsync: jest.fn()
         }));
+>>>>>>> master
 
         await sceneStorage.loadScene(mockFile);
+        await new Promise(resolve => setTimeout(resolve, 10));
 
         expect(scene.children.length).toBe(1);
         expect(scene.children[0].name).toBe('LoadedCube');
@@ -271,6 +439,16 @@ describe('SceneStorage', () => {
         const mockFileContent = JSON.stringify(mockSceneData.object);
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
 
+<<<<<<< HEAD
+        mockJSZipInstance.loadAsync.mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+            })
+        });
+
+        await sceneStorage.loadScene(mockFile);
+        await new Promise(resolve => setTimeout(resolve, 10));
+=======
         global.JSZip.mockImplementation(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn().mockReturnValue({
@@ -281,6 +459,7 @@ describe('SceneStorage', () => {
         }));
 
         await sceneStorage.loadScene(mockFile);
+>>>>>>> master
 
         expect(scene.children.length).toBe(1);
         const loadedObject = scene.children[0];
@@ -309,6 +488,16 @@ describe('SceneStorage', () => {
         const mockFileContent = JSON.stringify(mockSceneData.object);
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
 
+<<<<<<< HEAD
+        mockJSZipInstance.loadAsync.mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+            })
+        });
+
+        await sceneStorage.loadScene(mockFile);
+        await new Promise(resolve => setTimeout(resolve, 10));
+=======
         global.JSZip.mockImplementation(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn().mockReturnValue({
@@ -319,6 +508,7 @@ describe('SceneStorage', () => {
         }));
 
         await sceneStorage.loadScene(mockFile);
+>>>>>>> master
 
         expect(scene.children.length).toBe(1);
         expect(scene.children[0].uuid).toBe(mockUUID);
@@ -335,13 +525,31 @@ describe('SceneStorage', () => {
         directionalLight.name = 'TestDirectionalLight';
         scene.add(directionalLight);
 
+<<<<<<< HEAD
+        await sceneStorage.saveScene();
+
+        // Capture serialized data BEFORE clearing
+=======
         const savePromise = sceneStorage.saveScene();
         await savePromise;
 
+>>>>>>> master
         const sceneJson = JSON.stringify(scene.toJSON());
         const mockFileContent = sceneJson;
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
 
+<<<<<<< HEAD
+        mockJSZipInstance.loadAsync.mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+            })
+        });
+
+        await sceneStorage.loadScene(mockFile);
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+        expect(scene.children.length).toBe(2);
+=======
         global.JSZip.mockImplementation(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn().mockReturnValue({
@@ -356,6 +564,7 @@ describe('SceneStorage', () => {
         }
 
         await sceneStorage.loadScene(mockFile);
+>>>>>>> master
 
         expect(scene.children.length).toBe(2);
         const loadedPointLight = scene.children.find(obj => obj.name === 'TestPointLight');
@@ -384,6 +593,10 @@ describe('SceneStorage', () => {
 
         await sceneStorage.saveScene();
 
+<<<<<<< HEAD
+        // Capture serialized data BEFORE clearing
+        const sceneJson = JSON.stringify(scene.toJSON());
+=======
         const sceneJson = JSON.stringify(scene.toJSON());
         const mockFileContent = sceneJson;
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
@@ -396,12 +609,27 @@ describe('SceneStorage', () => {
             }),
             file: jest.fn(), generateAsync: jest.fn().mockResolvedValue('')
         }));
+>>>>>>> master
 
         while(scene.children.length > 0) {
             scene.remove(scene.children[0]);
         }
 
+<<<<<<< HEAD
+        const mockFileContent = sceneJson;
+        const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
+
+        mockJSZipInstance.loadAsync.mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+            })
+        });
+
         await sceneStorage.loadScene(mockFile);
+        await new Promise(resolve => setTimeout(resolve, 10));
+=======
+        await sceneStorage.loadScene(mockFile);
+>>>>>>> master
 
         expect(scene.children.length).toBe(1);
         expect(scene.children[0].name).toBe('Group2');
@@ -410,15 +638,26 @@ describe('SceneStorage', () => {
     it('should handle loading a file that is not a valid zip archive', async () => {
         const invalidFile = new Blob(['this is not a zip file'], { type: 'text/plain' });
 
+<<<<<<< HEAD
+        mockJSZipInstance.loadAsync.mockRejectedValue(new Error('Invalid or unsupported zip file'));
+=======
         global.JSZip.mockImplementation(() => ({
             loadAsync: jest.fn().mockRejectedValue(new Error('Invalid or unsupported zip file')),
             file: jest.fn(), generateAsync: jest.fn()
         }));
+>>>>>>> master
 
         await expect(sceneStorage.loadScene(invalidFile)).rejects.toThrow('Invalid or unsupported zip file');
     });
 
     it("should handle loading a zip file that is missing 'scene.json'", async () => {
+<<<<<<< HEAD
+        const file = new File([new Blob()], 'test.zip', { type: 'application/zip' });
+
+        mockJSZipInstance.loadAsync.mockResolvedValue({
+            file: jest.fn().mockReturnValue(null)
+        });
+=======
         const file = new File([''], 'test.zip', { type: 'application/zip' });
 
         global.JSZip.mockImplementation(() => ({
@@ -427,17 +666,23 @@ describe('SceneStorage', () => {
             }),
             file: jest.fn(), generateAsync: jest.fn()
         }));
+>>>>>>> master
 
         await expect(sceneStorage.loadScene(file)).rejects.toThrow("scene.json not found in the zip file");
     });
 
     it('should correctly save and load material properties like roughness and metalness', async () => {
-        const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial({ roughness: 0.5, metalness: 0.8 }));
+        // Use MeshStandardMaterial as MeshBasicMaterial doesn't support roughness/metalness
+        const mesh = new Mesh(new BoxGeometry(), new MeshStandardMaterial({ roughness: 0.5, metalness: 0.8 }));
         mesh.name = 'TestMesh';
         scene.add(mesh);
 
         await sceneStorage.saveScene();
 
+<<<<<<< HEAD
+        // Capture serialized data BEFORE clearing
+        const sceneJson = JSON.stringify(scene.toJSON());
+=======
         const sceneJson = JSON.stringify(scene.toJSON());
         const mockFileContent = sceneJson;
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
@@ -450,12 +695,27 @@ describe('SceneStorage', () => {
             }),
             file: jest.fn(), generateAsync: jest.fn().mockResolvedValue('')
         }));
+>>>>>>> master
 
         while(scene.children.length > 0) {
             scene.remove(scene.children[0]);
         }
 
+<<<<<<< HEAD
+        const mockFileContent = sceneJson;
+        const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
+
+        mockJSZipInstance.loadAsync.mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+            })
+        });
+
         await sceneStorage.loadScene(mockFile);
+        await new Promise(resolve => setTimeout(resolve, 10));
+=======
+        await sceneStorage.loadScene(mockFile);
+>>>>>>> master
 
         expect(scene.children.length).toBe(1);
         const loadedMesh = scene.children[0];
@@ -464,6 +724,8 @@ describe('SceneStorage', () => {
 
     it('should successfully save and load a scene with no objects (an empty scene)', async () => {
         await sceneStorage.saveScene();
+<<<<<<< HEAD
+=======
 
         const sceneJson = JSON.stringify(scene.toJSON());
         const mockFileContent = sceneJson;
@@ -477,12 +739,28 @@ describe('SceneStorage', () => {
             }),
             file: jest.fn(), generateAsync: jest.fn().mockResolvedValue('')
         }));
+>>>>>>> master
 
         while(scene.children.length > 0) {
             scene.remove(scene.children[0]);
         }
 
+<<<<<<< HEAD
+        const sceneJson = JSON.stringify(scene.toJSON());
+        const mockFileContent = sceneJson;
+        const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
+
+        mockJSZipInstance.loadAsync.mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+            })
+        });
+
         await sceneStorage.loadScene(mockFile);
+        await new Promise(resolve => setTimeout(resolve, 10));
+=======
+        await sceneStorage.loadScene(mockFile);
+>>>>>>> master
 
         expect(scene.children.length).toBe(0);
     });
@@ -491,6 +769,13 @@ describe('SceneStorage', () => {
         const corruptedJson = 'this is not valid json';
         const mockFile = new Blob([corruptedJson], { type: 'application/zip' });
 
+<<<<<<< HEAD
+        mockJSZipInstance.loadAsync.mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(corruptedJson)
+            })
+        });
+=======
         global.JSZip.mockImplementation(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn().mockReturnValue({
@@ -499,12 +784,19 @@ describe('SceneStorage', () => {
             }),
             file: jest.fn(), generateAsync: jest.fn()
         }));
+>>>>>>> master
 
         const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
         await sceneStorage.loadScene(mockFile);
+<<<<<<< HEAD
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+        expect(consoleErrorSpy).toHaveBeenCalledWith('Worker error:', 'SyntaxError', expect.any(String));
+=======
 
         expect(consoleErrorSpy).toHaveBeenCalledWith('Worker error:', expect.stringContaining('Unexpected token'), expect.any(Error));
+>>>>>>> master
         expect(scene.children.length).toBe(0);
 
         consoleErrorSpy.mockRestore();
@@ -519,6 +811,10 @@ describe('SceneStorage', () => {
 
         await sceneStorage.saveScene();
 
+<<<<<<< HEAD
+        // Capture serialized data BEFORE clearing
+        const sceneJson = JSON.stringify(scene.toJSON());
+=======
         const sceneJson = JSON.stringify(scene.toJSON());
         const mockFileContent = sceneJson;
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
@@ -531,12 +827,27 @@ describe('SceneStorage', () => {
             }),
             file: jest.fn(), generateAsync: jest.fn().mockResolvedValue('')
         }));
+>>>>>>> master
 
         while(scene.children.length > 0) {
             scene.remove(scene.children[0]);
         }
 
+<<<<<<< HEAD
+        const mockFileContent = sceneJson;
+        const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
+
+        mockJSZipInstance.loadAsync.mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+            })
+        });
+
         await sceneStorage.loadScene(mockFile);
+        await new Promise(resolve => setTimeout(resolve, 10));
+=======
+        await sceneStorage.loadScene(mockFile);
+>>>>>>> master
 
         expect(scene.children.length).toBe(2);
         expect(scene.children.find(obj => obj.name === 'ObjectA')).toBeDefined();
@@ -560,6 +871,10 @@ describe('SceneStorage', () => {
 
         await sceneStorage.saveScene();
 
+<<<<<<< HEAD
+        // Capture serialized data BEFORE clearing
+        const sceneJson = JSON.stringify(scene.toJSON());
+=======
         const sceneJson = JSON.stringify(scene.toJSON());
         const mockFileContent = sceneJson;
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
@@ -572,12 +887,27 @@ describe('SceneStorage', () => {
             }),
             file: jest.fn(), generateAsync: jest.fn().mockResolvedValue('')
         }));
+>>>>>>> master
 
         while(scene.children.length > 0) {
             scene.remove(scene.children[0]);
         }
 
+<<<<<<< HEAD
+        const mockFileContent = sceneJson;
+        const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
+
+        mockJSZipInstance.loadAsync.mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+            })
+        });
+
         await sceneStorage.loadScene(mockFile);
+        await new Promise(resolve => setTimeout(resolve, 10));
+=======
+        await sceneStorage.loadScene(mockFile);
+>>>>>>> master
 
         expect(scene.children.length).toBe(3);
         const loadedPointLight = scene.children.find(obj => obj.name === 'PointLightTest');

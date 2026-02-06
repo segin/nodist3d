@@ -10,6 +10,7 @@ jest.mock('../src/frontend/EventBus.js', () => ({
 
 // Mock THREE.js
 jest.mock('three', () => ({
+    __esModule: true,
     ShaderMaterial: jest.fn(() => ({
         vertexShader: 'original vertex shader',
         fragmentShader: 'original fragment shader',
@@ -52,6 +53,14 @@ jest.mock('three', () => ({
 }));
 
 // Mock dat.gui with proper structure
+<<<<<<< HEAD
+const createMockController = () => ({
+    name: jest.fn().mockReturnThis(),
+    onChange: jest.fn().mockReturnThis(),
+    listen: jest.fn().mockReturnThis(),
+    setValue: jest.fn()
+});
+=======
 const createMockController = () => {
     const controller = {};
     controller.name = jest.fn(() => controller);
@@ -59,6 +68,7 @@ const createMockController = () => {
     controller.onChange = jest.fn(() => controller);
     return controller;
 };
+>>>>>>> master
 
 const mockFolder = {
     add: jest.fn(() => createMockController()),
@@ -152,9 +162,19 @@ describe('ShaderEditor', () => {
     it("should update shader code and set needsUpdate to true when changed in the GUI", () => {
         shaderEditor.createShader();
         const editorFolder = gui.addFolder.mock.results[0].value;
+<<<<<<< HEAD
+
+        // Debug calls
+        // console.log(editorFolder.add.mock.calls);
+
+        // Find the call for vertex shader
+        const callIndex = editorFolder.add.mock.calls.findIndex(call => call[1] === 'vertex');
+        const shaderCodeController = editorFolder.add.mock.results[callIndex].value;
+=======
         // Find the controller for the 'vertex' property
         const vertexCallIndex = editorFolder.add.mock.calls.findIndex(call => call[1] === 'vertex');
         const shaderCodeController = editorFolder.add.mock.results[vertexCallIndex].value;
+>>>>>>> master
   
         const newVertexShader = 'void main() { gl_Position = vec4(0.0); }';
         const onChangeCallback = shaderCodeController.onChange.mock.calls[0][0];

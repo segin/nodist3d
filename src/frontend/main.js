@@ -129,9 +129,6 @@ export class App {
 
         // Initialize scene storage
         this.sceneStorage = new SceneStorage(this.scene, null); // EventBus not needed for basic save/load
-
-        // Mobile touch optimizations
-        this.setupMobileOptimizations();
     }
 
     // Backward compatibility: init() logic split into initRenderer and initRemaining
@@ -140,12 +137,18 @@ export class App {
     }
 
     setupSceneGraph() {
+<<<<<<< HEAD
+        // Use existing scene graph panel
+        this.sceneGraphPanel = document.getElementById('scene-graph');
+        this.sceneGraphPanel.innerHTML = '';
+=======
         // Use existing scene graph panel from DOM
         this.sceneGraphPanel = document.getElementById('scene-graph');
         if (!this.sceneGraphPanel) {
             console.error('Scene graph panel element not found!');
             return;
         }
+>>>>>>> master
         
         // Create title
         const title = document.createElement('h3');
@@ -961,16 +964,44 @@ export class App {
     }
 
     updateSceneGraph() {
+        // Capture current focus to restore it after update
+        const activeElement = document.activeElement;
+        let focusedIndex = -1;
+        if (activeElement && this.objectsList.contains(activeElement)) {
+            const items = Array.from(this.objectsList.children);
+            const focusedLi = activeElement.closest('li');
+            if (focusedLi) {
+                focusedIndex = items.indexOf(focusedLi);
+            }
+        }
+
         // Clear existing list
         this.objectsList.innerHTML = '';
+        this.objectsList.setAttribute('role', 'listbox');
+        this.objectsList.setAttribute('aria-label', 'Scene Graph Objects');
         
         // Add each object to the scene graph
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
+<<<<<<< HEAD
+            // Use CSS classes instead of inline styles
+            if (this.selectedObject === object) {
+                listItem.classList.add('selected');
+            }
+
+            // Accessibility attributes for the list item
+            listItem.tabIndex = 0;
+            listItem.setAttribute('role', 'option');
+            listItem.setAttribute('aria-label', `Select ${object.name || `Object_${index + 1}`}`);
+            if (this.selectedObject === object) {
+                listItem.setAttribute('aria-selected', 'true');
+            }
+=======
             // Use CSS class for selection state
             if (this.selectedObject === object) {
                 listItem.classList.add('selected');
             }
+>>>>>>> master
             
             // Object name and type
             const objectInfo = document.createElement('div');
@@ -997,7 +1028,13 @@ export class App {
             
             // Visibility toggle
             const visibilityBtn = document.createElement('button');
+            visibilityBtn.className = 'icon-btn';
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+            visibilityBtn.title = object.visible ? 'Hide Object' : 'Show Object';
+            visibilityBtn.setAttribute('aria-label', `${object.visible ? 'Hide' : 'Show'} ${object.name || `Object_${index + 1}`}`);
+
+=======
             visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
             visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
             visibilityBtn.style.cssText = `
@@ -1009,20 +1046,33 @@ export class App {
                 padding: 2px 5px;
                 margin: 0 5px;
             `;
+>>>>>>> master
             visibilityBtn.onclick = (e) => {
                 e.stopPropagation();
                 object.visible = !object.visible;
                 visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+<<<<<<< HEAD
+                // Update title and aria-label
+                visibilityBtn.title = object.visible ? 'Hide Object' : 'Show Object';
+                visibilityBtn.setAttribute('aria-label', `${object.visible ? 'Hide' : 'Show'} ${object.name || `Object_${index + 1}`}`);
+=======
 
                 // Update accessibility attributes
                 const action = object.visible ? 'Hide' : 'Show';
                 visibilityBtn.title = `${action} object`;
                 visibilityBtn.setAttribute('aria-label', `${action} ${object.name}`);
+>>>>>>> master
             };
             
             // Delete button
             const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'icon-btn';
             deleteBtn.textContent = '🗑';
+<<<<<<< HEAD
+            deleteBtn.title = 'Delete Object';
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name || `Object_${index + 1}`}`);
+
+=======
             deleteBtn.title = 'Delete object';
             deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
             deleteBtn.style.cssText = `
@@ -1033,6 +1083,7 @@ export class App {
                 font-size: 12px;
                 padding: 2px 5px;
             `;
+>>>>>>> master
             deleteBtn.onclick = (e) => {
                 e.stopPropagation();
                 this.deleteObject(object);
@@ -1043,6 +1094,14 @@ export class App {
                 this.selectObject(object);
             };
             
+            // Keyboard navigation
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
+
             objectInfo.appendChild(objectName);
             objectInfo.appendChild(objectType);
             
@@ -1077,6 +1136,25 @@ export class App {
                 padding: 20px;
             `;
             this.objectsList.appendChild(emptyMessage);
+        }
+
+        // Restore focus if it was within the list
+        if (focusedIndex >= 0) {
+            const items = this.objectsList.children;
+            // If previous index is now out of bounds (e.g. item deleted), select the last item
+            if (focusedIndex >= items.length) {
+                focusedIndex = items.length - 1;
+            }
+            if (focusedIndex >= 0) {
+                // Check if the item itself is focusable (li with tabindex=0)
+                if (items[focusedIndex].tabIndex === 0) {
+                    items[focusedIndex].focus();
+                } else {
+                    // Try to find a focusable element inside?
+                    // Actually our li has tabindex=0 so it receives focus.
+                    items[focusedIndex].focus();
+                }
+            }
         }
     }
 

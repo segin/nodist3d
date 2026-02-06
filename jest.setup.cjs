@@ -40,6 +40,12 @@ const mockVector3 = {
         this.z = v.z;
         return this;
     }),
+    add: jest.fn(function(v) {
+        this.x += v.x;
+        this.y += v.y;
+        this.z += v.z;
+        return this;
+    }),
     sub: jest.fn(function(v) {
         this.x -= v.x;
         this.y -= v.y;
@@ -327,31 +333,8 @@ const THREE = {
 
 global.THREE = THREE;
 
-jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
-    OrbitControls: jest.fn().mockImplementation(() => ({
-        enableDamping: false,
-        dampingFactor: 0.25,
-        screenSpacePanning: false,
-        enableZoom: false,
-        minDistance: 0,
-        maxDistance: Infinity,
-        maxPolarAngle: Math.PI,
-        update: jest.fn(),
-        target: { clone: jest.fn(() => ({...mockVector3})) }
-    }))
-}));
-
-jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
-    TransformControls: jest.fn().mockImplementation(() => ({
-        ...mockObject3D,
-        setMode: jest.fn(),
-        attach: jest.fn(),
-        detach: jest.fn(),
-        translationSnap: null,
-        rotationSnap: null,
-        scaleSnap: null
-    }))
-}));
+// Mocks for three/examples/jsm/* are handled via moduleNameMapper in jest.config.cjs
+// pointing to tests/__mocks__/three-examples.js
 
 const createChainableMock = () => {
     const obj = {};
@@ -404,6 +387,7 @@ global.Worker = class {
   }
 
   postMessage(msg) {
-    this.onmessage(msg);
+    // Wrap the message in an event-like object with a 'data' property
+    this.onmessage({ data: msg });
   }
 };

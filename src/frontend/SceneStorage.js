@@ -10,6 +10,8 @@ export class SceneStorage {
         this.boundHandleWorkerMessage = this.handleWorkerMessage.bind(this);
         this.worker.onmessage = this.boundHandleWorkerMessage;
         this.loadPromiseResolve = null;
+        this.savePromiseResolve = null;
+        this.savePromiseReject = null;
     }
 
     async saveScene() {
@@ -17,6 +19,11 @@ export class SceneStorage {
         
         // Serialize the scene using the worker
         const sceneJson = await new Promise((resolve, reject) => {
+<<<<<<< HEAD
+            this.savePromiseResolve = resolve;
+            this.savePromiseReject = reject;
+            this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
+=======
             // OPTIMIZATION: Patch BufferAttribute.toJSON to return TypedArrays directly
             // instead of converting to standard Arrays (which is slow).
             const originalToJSON = THREE.BufferAttribute.prototype.toJSON;
@@ -51,6 +58,7 @@ export class SceneStorage {
             this.worker.postMessage({ type: 'serialize', data: data });
         }).finally(() => {
             this.worker.onmessage = this.boundHandleWorkerMessage;
+>>>>>>> master
         });
 
         zip.file('scene.json', sceneJson);
@@ -111,11 +119,22 @@ export class SceneStorage {
                 this.loadPromiseResolve(loadedScene);
                 this.loadPromiseResolve = null;
             }
+        } else if (event.data.type === 'serialize_complete') {
+            if (this.savePromiseResolve) {
+                this.savePromiseResolve(event.data.data);
+                this.savePromiseResolve = null;
+                this.savePromiseReject = null;
+            }
         } else if (event.data.type === 'error') {
             log.error('Worker error:', event.data.message, event.data.error);
             if (this.loadPromiseResolve) {
-                this.loadPromiseResolve(null); // Resolve with null or reject the promise
+                this.loadPromiseResolve(null);
                 this.loadPromiseResolve = null;
+            }
+            if (this.savePromiseReject) {
+                this.savePromiseReject(new Error(event.data.message + ': ' + event.data.error));
+                this.savePromiseResolve = null;
+                this.savePromiseReject = null;
             }
         }
     }
