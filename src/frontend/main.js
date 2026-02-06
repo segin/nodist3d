@@ -34,6 +34,9 @@ export class App {
 export class App {
 =======
 <<<<<<< HEAD
+export class App {
+=======
+<<<<<<< HEAD
 class App {
 <<<<<<< HEAD
   constructor() {
@@ -49,6 +52,7 @@ class App {
      */
 =======
 export class App {
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -3834,15 +3838,47 @@ export class App {
             let mesh = currentObjectsMap.get(objData.uuid);
             
             if (mesh) {
+<<<<<<< HEAD
+                // Remove from map so we know it's kept
+                currentObjectsMap.delete(objData.uuid);
+
+                // Update properties
+=======
                 // Reuse existing mesh
                 currentObjectsMap.delete(objData.uuid);
 
+>>>>>>> master
                 mesh.name = objData.name;
                 mesh.position.copy(objData.position);
                 mesh.rotation.copy(objData.rotation);
                 mesh.scale.copy(objData.scale);
                 mesh.visible = objData.visible;
 
+<<<<<<< HEAD
+                // Update material
+                if (!mesh.material.color.equals(objData.material.color)) {
+                    mesh.material.color.copy(objData.material.color);
+                }
+                if (!mesh.material.emissive.equals(objData.material.emissive)) {
+                    mesh.material.emissive.copy(objData.material.emissive);
+                }
+
+                const expectedSide = objData.type === 'PlaneGeometry' ? THREE.DoubleSide : THREE.FrontSide;
+                if (mesh.material.side !== expectedSide) {
+                    mesh.material.side = expectedSide;
+                    mesh.material.needsUpdate = true;
+                }
+
+                // Check geometry
+                const currentParams = JSON.stringify(mesh.userData.geometryParams);
+                const newParams = JSON.stringify(objData.geometryParams);
+                const typeMismatch = mesh.geometry.type !== objData.type;
+
+                if (typeMismatch || currentParams !== newParams) {
+                    mesh.geometry.dispose();
+                    mesh.geometry = this.createGeometryFromData(objData);
+                    mesh.userData.geometryParams = objData.geometryParams ? {...objData.geometryParams} : null;
+=======
                 if (mesh.material.color.getHex() !== objData.material.color.getHex()) {
                     mesh.material.color.copy(objData.material.color);
                 }
@@ -3858,12 +3894,18 @@ export class App {
                      mesh.geometry.dispose();
                      mesh.geometry = this.createGeometryFromData(objData.type, newParams);
                      mesh.userData.geometryParams = newParams ? {...newParams} : null;
+>>>>>>> master
                 }
 
                 newObjects.push(mesh);
             } else {
+<<<<<<< HEAD
+                // Create new object
+                const geometry = this.createGeometryFromData(objData);
+=======
                 // Create new mesh
                 const geometry = this.createGeometryFromData(objData.type, objData.geometryParams);
+>>>>>>> master
 
                 const material = new THREE.MeshLambertMaterial({
                     color: objData.material.color,
@@ -3871,7 +3913,11 @@ export class App {
                 });
                 material.emissive.copy(objData.material.emissive);
 
+<<<<<<< HEAD
+                mesh = new THREE.Mesh(geometry, material);
+=======
                 const mesh = new THREE.Mesh(geometry, material);
+>>>>>>> master
                 mesh.name = objData.name;
                 mesh.position.copy(objData.position);
                 mesh.rotation.copy(objData.rotation);
@@ -3880,11 +3926,28 @@ export class App {
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
                 mesh.uuid = objData.uuid;
+<<<<<<< HEAD
+                mesh.userData.geometryParams = objData.geometryParams ? {...objData.geometryParams} : null;
+=======
                 mesh.userData.geometryParams = objData.geometryParams;
+>>>>>>> master
 
                 this.scene.add(mesh);
                 newObjects.push(mesh);
             }
+<<<<<<< HEAD
+        });
+        
+        // Remove deleted objects
+        currentObjectsMap.forEach(obj => {
+            this.scene.remove(obj);
+            obj.geometry.dispose();
+            obj.material.dispose();
+        });
+
+        this.objects = newObjects;
+
+=======
         });
         
         // Remove unused objects
@@ -4076,6 +4139,7 @@ export class App {
 
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
         // Restore selection
         this.deselectObject();
         // @ts-ignore
@@ -4090,6 +4154,41 @@ export class App {
         this.updateSceneGraph();
     }
 
+<<<<<<< HEAD
+    createGeometryFromData(objData) {
+        let geometry;
+        switch (objData.type) {
+            case 'BoxGeometry':
+                const params = objData.geometryParams || { width: 1, height: 1, depth: 1 };
+                geometry = new THREE.BoxGeometry(params.width, params.height, params.depth);
+                break;
+            case 'SphereGeometry':
+                const sphereParams = objData.geometryParams || { radius: 0.5, widthSegments: 32, heightSegments: 32 };
+                geometry = new THREE.SphereGeometry(sphereParams.radius, sphereParams.widthSegments, sphereParams.heightSegments);
+                break;
+            case 'CylinderGeometry':
+                const cylinderParams = objData.geometryParams || { radiusTop: 0.5, radiusBottom: 0.5, height: 1 };
+                geometry = new THREE.CylinderGeometry(cylinderParams.radiusTop, cylinderParams.radiusBottom, cylinderParams.height, 32);
+                break;
+            case 'ConeGeometry':
+                const coneParams = objData.geometryParams || { radius: 0.5, height: 1 };
+                geometry = new THREE.ConeGeometry(coneParams.radius, coneParams.height, 32);
+                break;
+            case 'TorusGeometry':
+                const torusParams = objData.geometryParams || { radius: 0.4, tube: 0.2 };
+                geometry = new THREE.TorusGeometry(torusParams.radius, torusParams.tube, 16, 100);
+                break;
+            case 'PlaneGeometry':
+                const planeParams = objData.geometryParams || { width: 2, height: 2 };
+                geometry = new THREE.PlaneGeometry(planeParams.width, planeParams.height);
+                break;
+            default:
+                geometry = new THREE.BoxGeometry(1, 1, 1);
+        }
+        return geometry;
+    }
+
+=======
     /**
 <<<<<<< HEAD
      * Toggles fullscreen mode.
@@ -4101,6 +4200,7 @@ export class App {
 >>>>>>> master
 >>>>>>> master
      */
+>>>>>>> master
     toggleFullscreen() {
         const doc = document;
         const docEl = document.documentElement;
