@@ -1,4 +1,17 @@
 <<<<<<< HEAD
+## 2024-05-23 - Scene Graph Accessibility & Layout
+**Learning:** Hardcoded absolute positioning (e.g., `top: 10px; right: 10px`) often conflicts with default library positions (like `dat.gui` default top-right), causing UI overlap.
+**Action:** Always verify UI component positioning against known 3rd-party overlays. Prefer flex/grid layouts or explicit non-overlapping zones (e.g., Left vs Right sidebar).
+
+## 2024-05-23 - Dynamic List Focus Management
+**Learning:** Re-rendering a list (via `innerHTML = ''`) destroys the active element, killing keyboard focus.
+**Action:** When updating dynamic lists, always capture `document.activeElement`, check if it's within the container, and restore focus to the corresponding new element (by ID or UUID) after render.
+
+## 2024-05-23 - ESM/UMD Browser Compatibility
+**Learning:** Libraries like `loglevel` may fail in native ESM environments (`import * as log from ...`) if they are UMD builds without explicit exports.
+**Action:** Use global script tags and `window` access for legacy UMD libraries in non-bundled environments to ensure reliability.
+=======
+<<<<<<< HEAD
 ## 2024-03-21 - Scene Graph Accessibility
 **Learning:** The scene graph is built using vanilla DOM manipulation within the main application logic rather than a separate component. This requires manually injecting accessibility attributes (`tabindex`, `role`, `aria-label`) and event listeners during element creation.
 **Action:** When working on dynamic UI components in this codebase, always check `main.js` or `App` class for direct DOM manipulation and ensure accessibility attributes are added at creation time.
@@ -20,6 +33,7 @@
 ## 2026-01-28 - Dynamic UI Accessibility & Layout
 **Learning:** Dynamic UI components (like the Scene Graph) generated in `main.js` were ignoring CSS classes and missing accessibility attributes (ARIA labels, titles), leading to hardcoded styles and poor a11y. Also, fixed positioning caused overlap with `dat.gui`.
 **Action:** Always target existing DOM elements for containers, use CSS classes instead of inline styles, and explicitly add ARIA attributes when creating elements dynamically. Ensure overlay positions don't conflict with library-generated UI.
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

@@ -196,6 +196,16 @@ export class App {
         
         // Create objects list
         this.objectsList = document.createElement('ul');
+<<<<<<< HEAD
+        this.objectsList.setAttribute('role', 'listbox');
+        this.objectsList.setAttribute('aria-label', 'Scene objects');
+        this.objectsList.style.cssText = `
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        `;
+=======
+>>>>>>> master
         
         this.sceneGraphPanel.appendChild(title);
         this.sceneGraphPanel.appendChild(this.objectsList);
@@ -1085,6 +1095,10 @@ export class App {
      * Updates the scene graph UI
      */
     updateSceneGraph() {
+<<<<<<< HEAD
+        // Check if focus is currently within the list
+        const listHasFocus = this.objectsList.contains(document.activeElement);
+=======
         // Capture current focus to restore it after update
         const activeElement = document.activeElement;
         let focusedIndex = -1;
@@ -1095,6 +1109,7 @@ export class App {
                 focusedIndex = items.indexOf(focusedLi);
             }
         }
+>>>>>>> master
 
         // Clear existing list
         this.objectsList.innerHTML = '';
@@ -1105,9 +1120,25 @@ export class App {
         this.objects.forEach((object, index) => {
             const listItem = document.createElement('li');
 <<<<<<< HEAD
+            listItem.setAttribute('role', 'option');
+            listItem.setAttribute('tabindex', '0');
+            listItem.setAttribute('aria-selected', this.selectedObject === object ? 'true' : 'false');
+            listItem.dataset.uuid = object.uuid;
+
+            // Handle keyboard selection
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
+
+=======
+<<<<<<< HEAD
             listItem.tabIndex = 0;
             listItem.role = 'button';
             listItem.setAttribute('aria-label', `Select ${object.name || 'Object ' + (index + 1)}`);
+>>>>>>> master
             listItem.style.cssText = `
                 padding: 5px;
                 margin: 2px 0;
@@ -1168,6 +1199,9 @@ export class App {
             const visibilityLabel = object.visible ? 'Hide ' + (object.name || 'Object') : 'Show ' + (object.name || 'Object');
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
 <<<<<<< HEAD
+            visibilityBtn.setAttribute('aria-label', `Toggle visibility of ${object.name || `Object ${index + 1}`}`);
+=======
+<<<<<<< HEAD
             visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
 =======
             visibilityBtn.setAttribute('aria-label', visibilityLabel);
@@ -1186,6 +1220,7 @@ export class App {
             visibilityBtn.title = object.visible ? 'Hide object' : 'Show object';
 >>>>>>> master
             visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
             visibilityBtn.style.cssText = `
@@ -1235,6 +1270,9 @@ export class App {
             const deleteLabel = 'Delete ' + (object.name || 'Object');
             deleteBtn.textContent = '🗑';
 <<<<<<< HEAD
+            deleteBtn.setAttribute('aria-label', `Delete ${object.name || `Object ${index + 1}`}`);
+=======
+<<<<<<< HEAD
             deleteBtn.setAttribute('aria-label', 'Delete object');
 =======
             deleteBtn.setAttribute('aria-label', deleteLabel);
@@ -1253,6 +1291,7 @@ export class App {
             deleteBtn.title = 'Delete object';
 >>>>>>> master
             deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
             deleteBtn.style.cssText = `
@@ -1319,6 +1358,14 @@ export class App {
             
             this.objectsList.appendChild(listItem);
         });
+
+        // Restore focus if list was focused and we have a selected object
+        if (listHasFocus && this.selectedObject) {
+            const newItem = this.objectsList.querySelector(`[data-uuid="${this.selectedObject.uuid}"]`);
+            if (newItem) {
+                newItem.focus();
+            }
+        }
         
         // Add message if no objects
         if (this.objects.length === 0) {
