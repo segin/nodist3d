@@ -3,6 +3,7 @@
 ## Original 50 Tests
 
 ### ObjectManager.js Tests
+
 - [ ] 1. should return null when duplicating a non-existent object.
 - [ ] 2. should successfully add a texture to an object's material map.
 - [ ] 3. should successfully add a texture to an object's normal map.
@@ -17,6 +18,7 @@
 - [ ] 12. should handle a request to create a text object when the font has not yet loaded.
 
 ### LightManager.js Tests
+
 - [ ] 13. should add a PointLight to the scene.
 - [ ] 14. should add a DirectionalLight to the scene.
 - [ ] 15. should add an AmbientLight to the scene.
@@ -27,6 +29,7 @@
 - [ ] 20. should successfully change the type of an existing light.
 
 ### PhysicsManager.js Tests
+
 - [ ] 21. should add a box-shaped physics body to the world.
 - [ ] 22. should add a sphere-shaped physics body to the world.
 - [ ] 23. should add a cylinder-shaped physics body to the world.
@@ -34,6 +37,7 @@
 - [ ] 25. should update the corresponding mesh position and quaternion after a physics world step.
 
 ### GroupManager.js Tests
+
 - [ ] 26. should successfully group two or more objects.
 - [ ] 27. should refuse to create a group with fewer than two objects.
 - [ ] 28. should correctly calculate the center of the grouped objects for the group's position.
@@ -42,6 +46,7 @@
 - [ ] 31. should handle a request to ungroup an object that is not a group.
 
 ### SceneStorage.js Tests
+
 - [ ] 32. should correctly serialize scene data into the expected JSON format.
 - [ ] 33. should ignore non-mesh objects when saving a scene.
 - [ ] 34. should successfully load a scene from a valid scene file.
@@ -50,6 +55,7 @@
 - [ ] 37. should preserve the UUID of objects when loading a scene.
 
 ### History.js Tests
+
 - [ ] 38. should save the initial state of the scene.
 - [ ] 39. should successfully undo the last action.
 - [ ] 40. should successfully redo a previously undone action.
@@ -58,6 +64,7 @@
 - [ ] 43. should handle a redo request when at the most recent state.
 
 ### SceneGraph.js Tests
+
 - [ ] 44. should display all mesh and light objects from the scene in the UI.
 - [ ] 45. should not display objects other than meshes and lights.
 - [ ] 46. should correctly rename an object in the scene.
@@ -65,12 +72,14 @@
 - [ ] 48. should delete an object from the scene when the delete button is clicked.
 
 ### General/Integration Tests
+
 - [ ] 49. should ensure a duplicated object is a deep clone, not a reference.
 - [ ] 50. should ensure that deleting a group also removes all its children from the scene.
 
 ## Additional 100 Tests
 
 ### ObjectManager.js Extended Tests
+
 - [ ] 51. should resolve the promise when `addText` is called and font is available.
 - [ ] 52. should correctly set the material `side` property for planes (`THREE.DoubleSide`).
 - [ ] 53. should call `URL.revokeObjectURL` after a texture has been loaded to free memory.
@@ -88,6 +97,7 @@
 - [ ] 65. should handle adding a texture of an unsupported type gracefully.
 
 ### LightManager.js Extended Tests
+
 - [ ] 66. should assign a default name to a new light if no name is provided.
 - [ ] 67. should not throw an error when attempting to remove a light that is not in the scene.
 - [ ] 68. should preserve light properties (color, intensity) when changing light type.
@@ -95,6 +105,7 @@
 - [ ] 70. should ensure ambient lights do not have a position property that can be updated.
 
 ### PhysicsManager.js Extended Tests
+
 - [ ] 71. should create a static body when mass is set to 0.
 - [ ] 72. should correctly scale the physics shape when the associated mesh is scaled.
 - [ ] 73. should correctly orient the physics shape when the associated mesh is rotated.
@@ -107,6 +118,7 @@
 - [ ] 80. should ensure `update` method correctly steps the physics world with the provided `deltaTime`.
 
 ### GroupManager.js Extended Tests
+
 - [ ] 81. should allow grouping a group with another object.
 - [ ] 82. should correctly handle ungrouping a nested group, restoring all objects to the scene.
 - [ ] 83. should maintain the world-space transforms of objects when they are grouped.
@@ -119,6 +131,7 @@
 - [ ] 90. A group's name should be settable and reflected in the Scene Graph.
 
 ### SceneStorage.js Extended Tests
+
 - [ ] 91. should correctly save and load a scene containing lights with their properties.
 - [ ] 92. should correctly save and load a scene containing nested groups.
 - [ ] 93. should handle loading a file that is not a valid zip archive.
@@ -131,6 +144,7 @@
 - [ ] 100. The load process should trigger an update in the SceneGraph.
 
 ### History.js Extended Tests
+
 - [ ] 101. should correctly undo/redo the creation of a group.
 - [ ] 102. should correctly undo/redo an ungrouping operation.
 - [ ] 103. `restoreState` should correctly dispose of old geometries and materials to prevent memory leaks.
@@ -143,6 +157,7 @@
 - [ ] 110. Restoring a state should also restore the camera position and rotation if saved.
 
 ### Pointer.js Tests
+
 - [ ] 111. should dispatch a `selectionChange` event when an object is selected.
 - [ ] 112. should dispatch `selectionChange` with a `null` payload on deselection.
 - [ ] 113. should correctly apply an outline to a selected object.
@@ -155,6 +170,7 @@
 - [ ] 120. Raycasting should correctly identify the front-most object if multiple are overlapping.
 
 ### SceneManager.js Tests
+
 - [ ] 121. `onWindowResize` should update the renderer size and camera aspect ratio.
 - [ ] 122. `resetCamera` should restore the camera's initial position and target.
 - [ ] 123. OrbitControls `damping` should be enabled.
@@ -162,6 +178,7 @@
 - [ ] 125. The renderer's DOM element should be the same as the canvas provided in the constructor.
 
 ### ShaderEditor.js Tests
+
 - [ ] 126. `createShader` should add a mesh with a `ShaderMaterial` to the scene.
 - [ ] 127. `initGUI` should create a "Shader Editor" folder in the GUI.
 - [ ] 128. Updating a uniform value should set `needsUpdate` on the material to true.
@@ -169,6 +186,7 @@
 - [ ] 130. Creating a new shader should dispose of the previous shader material if it exists.
 
 ### Integration Tests (main.js)
+
 - [ ] 131. Clicking the "Translate" button should set `transformControls` mode to "translate".
 - [ ] 132. Clicking the "Rotate" button should set `transformControls` mode to "rotate".
 - [ ] 133. Clicking the "Scale" button should set `transformControls` mode to "scale".
