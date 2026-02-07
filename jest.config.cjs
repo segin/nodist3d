@@ -1,52 +1,20 @@
 module.exports = {
   testEnvironment: 'jsdom',
   setupFiles: ['jest-canvas-mock'],
-  setupFilesAfterEnv: ['<rootDir>/jest.dom.cjs', '<rootDir>/jest.setup.cjs'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.cjs'],
   moduleNameMapper: {
-<<<<<<< HEAD
-    '^three/examples/jsm/(.*)': '<rootDir>/node_modules/three/examples/jsm/$1',
-=======
-<<<<<<< HEAD
-    '^three/examples/jsm/controls/(.*)': '<rootDir>/node_modules/three/examples/jsm/controls/$1',
-    '^three/examples/jsm/(.*)': '<rootDir>/tests/__mocks__/three-examples.js'
-=======
-    '^three/examples/jsm/(.*)$': '<rootDir>/tests/__mocks__/three-examples.js'
->>>>>>> master
->>>>>>> master
+    // We map controls to actual files if possible, or mocks if they are problematic.
+    // The previous config had variations. Let's try to map to node_modules for real execution
+    // but tests might rely on mocks.
+    // However, if I want to run a benchmark using real Three.js, I need real Three.js.
+    // The previous config mapped 'three/examples/jsm' to a mock file in some branches.
+    // I'll keep it simple for now and rely on transformIgnorePatterns to let babel handle ESM.
+    '^three/examples/jsm/(.*)$': '<rootDir>/node_modules/three/examples/jsm/$1'
   },
   transform: {
     '^.+\\.js$': 'babel-jest',
   },
-<<<<<<< HEAD
-  transformIgnorePatterns: ['node_modules/(?!.*three/examples/jsm)'],
-};
-=======
   transformIgnorePatterns: [
-<<<<<<< HEAD
-    'node_modules/(?!.*three/examples/jsm)'
-=======
-<<<<<<< HEAD
     'node_modules/(?!.*three)'
-=======
-<<<<<<< HEAD
-    'node_modules/(?!.*three/examples/jsm)'
-=======
-<<<<<<< HEAD
-    'node_modules/(?!.*three/examples/jsm/)'
-=======
-<<<<<<< HEAD
-    'node_modules/(?!.*three/examples/jsm/)'
-=======
-<<<<<<< HEAD
-    'node_modules/(?!(three|three/examples/jsm)/)'
-=======
-    'node_modules/(?!.*three/examples/jsm)'
->>>>>>> master
->>>>>>> master
->>>>>>> master
->>>>>>> master
->>>>>>> master
->>>>>>> master
   ],
 };
->>>>>>> master
