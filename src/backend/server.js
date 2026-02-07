@@ -4,6 +4,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import helmet from 'helmet';
 import cors from 'cors';
+import crypto from 'crypto';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,18 +13,22 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3000;
 
-<<<<<<< HEAD
 // TODO: AUDIT-SEC-002: Implement rate limiting to prevent abuse.
 // const rateLimit = require('express-rate-limit');
 // app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+
+// Generate nonce for each request
+app.use((req, res, next) => {
+  res.locals.cspNonce = crypto.randomBytes(16).toString('base64');
+  next();
+});
 
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            // TODO: AUDIT-SEC-001: 'unsafe-inline' is currently required for Import Maps in index.html.
-            // Recommendation: Refactor to use a cryptographic nonce or hash for the inline script.
-            scriptSrc: ["'self'", "'unsafe-inline'"],
+            // Refactored to use cryptographic nonce for inline scripts (Import Maps)
+            scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
             styleSrc: ["'self'", "'unsafe-inline'"],
             imgSrc: ["'self'", "data:"],
             connectSrc: ["'self'"],
@@ -33,25 +39,7 @@ app.use(helmet({
         }
     }
 }));
-=======
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"], // Only unsafe-inline for import maps
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", 'data:'],
-        connectSrc: ["'self'"],
-        fontSrc: ["'self'", 'data:'],
-        objectSrc: ["'none'"],
-        mediaSrc: ["'self'"],
-        frameSrc: ["'none'"],
-      },
-    },
-  }),
-);
->>>>>>> master
+
 app.use(cors());
 
 // Serve modules from node_modules with proper MIME types
@@ -187,6 +175,26 @@ app.get('/modules/TextGeometry.js', (req, res) => {
   );
 });
 
+// Serve index.html with injected nonce
+const serveIndex = (req, res) => {
+  const indexHtmlPath = path.join(__dirname, '..', 'frontend', 'index.html');
+  fs.readFile(indexHtmlPath, 'utf8', (err, data) => {
+    if (err) {
+      log.error('Failed to read index.html:', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    const injectedHtml = data.replace(
+      '<script type="importmap">',
+      `<script type="importmap" nonce="${res.locals.cspNonce}">`
+    );
+    res.send(injectedHtml);
+  });
+};
+
+app.get('/', serveIndex);
+app.get('/index.html', serveIndex);
+
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
 app.get('/healthz', (req, res) => {
@@ -199,13 +207,19 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 });
 
-const server = app.listen(port, '0.0.0.0', () => {
-  log.info(`Server listening at http://localhost:${port}`);
-});
+let server;
 
-process.on('SIGINT', () => {
-  log.info('SIGINT signal received: closing HTTP server');
-  server.close(() => {
-    log.info('HTTP server closed');
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  server = app.listen(port, '0.0.0.0', () => {
+    log.info(`Server listening at http://localhost:${port}`);
   });
-});
+
+  process.on('SIGINT', () => {
+    log.info('SIGINT signal received: closing HTTP server');
+    server.close(() => {
+      log.info('HTTP server closed');
+    });
+  });
+}
+
+export { app, server };
