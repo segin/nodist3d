@@ -63,9 +63,6 @@ jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
 describe('Scene Graph/Outliner Functionality', () => {
   let dom, app;
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
     beforeEach(() => {
         // Setup DOM
         dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
@@ -83,23 +80,13 @@ describe('Scene Graph/Outliner Functionality', () => {
             const element = {
                 tagName: tagName.toUpperCase(),
                 style: {},
-<<<<<<< HEAD
                 children: [],
                 appendChild: jest.fn(function(child) {
                     this.children.push(child);
                     return child;
                 }),
-=======
-<<<<<<< HEAD
                 appendChild: jest.fn(),
                 setAttribute: jest.fn(),
-=======
-                childNodes: [],
-                appendChild: jest.fn((child) => {
-                    element.childNodes.push(child);
-                    return child;
-                }),
->>>>>>> master
 >>>>>>> master
                 textContent: '',
                 _innerHTML: '',
@@ -113,7 +100,6 @@ describe('Scene Graph/Outliner Functionality', () => {
                     return this._innerHTML;
                 },
                 onclick: null,
-<<<<<<< HEAD
                 click: jest.fn(function() {
                     if (this.onclick) this.onclick({ stopPropagation: jest.fn() });
                 }),
@@ -138,20 +124,9 @@ describe('Scene Graph/Outliner Functionality', () => {
                     if (this.children) this.children.forEach(traverse);
                     return results;
                 })
-=======
-                attributes: {},
-                setAttribute: jest.fn((name, value) => { element.attributes[name] = value; }),
-                getAttribute: jest.fn((name) => element.attributes[name]),
-                addEventListener: jest.fn(),
-                removeEventListener: jest.fn(),
-<<<<<<< HEAD
                 setAttribute: jest.fn(),
                 getAttribute: jest.fn((attr) => element[attr]),
                 title: ''
-=======
-                setAttribute: jest.fn((name, value) => { element[name] = value; }),
-                getAttribute: jest.fn((name) => element[name])
->>>>>>> master
 >>>>>>> master
             };
             
@@ -176,7 +151,6 @@ describe('Scene Graph/Outliner Functionality', () => {
     global.window = dom.window;
     global.requestAnimationFrame = jest.fn();
     global.console.log = jest.fn(); // Suppress console.log
-<<<<<<< HEAD
 
     // Mock document methods
     jest.spyOn(document.body, 'appendChild').mockImplementation();
@@ -271,103 +245,8 @@ describe('Scene Graph/Outliner Functionality', () => {
           this.objectsList.appendChild(listItem);
         });
 
-=======
-
-    // Mock document methods
-    jest.spyOn(document.body, 'appendChild').mockImplementation();
-    jest.spyOn(window, 'addEventListener').mockImplementation();
-
-    // Mock createElement to return proper elements
-    jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
-      const element = {
-        tagName: tagName.toUpperCase(),
-        style: {},
-        appendChild: jest.fn(),
-        textContent: '',
-        innerHTML: '',
-        onclick: null,
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-      };
-
-      // Add style.cssText property
-      Object.defineProperty(element.style, 'cssText', {
-        set: jest.fn(),
-        get: jest.fn(),
-      });
-
-      return element;
-    });
-
-    jest.clearAllMocks();
-
-    // Create test app with scene graph functionality
-    class TestApp {
-      constructor() {
-        this.objects = [];
-        this.selectedObject = null;
-        this.scene = { add: jest.fn(), remove: jest.fn() };
-        this.setupSceneGraph();
-      }
-
-      setupSceneGraph() {
-        this.sceneGraphPanel = document.createElement('div');
-        this.objectsList = document.createElement('ul');
-        this.sceneGraphPanel.appendChild(document.createElement('h3'));
-        this.sceneGraphPanel.appendChild(this.objectsList);
-        document.body.appendChild(this.sceneGraphPanel);
-        this.updateSceneGraph();
-      }
-
-      updateSceneGraph() {
-        this.objectsList.innerHTML = '';
-
-        this.objects.forEach((object, index) => {
-          const listItem = document.createElement('li');
-          const objectInfo = document.createElement('div');
-          const objectName = document.createElement('span');
-          const objectType = document.createElement('span');
-          const visibilityBtn = document.createElement('button');
-          const deleteBtn = document.createElement('button');
-          const positionInfo = document.createElement('div');
-
-          objectName.textContent = object.name || `Object_${index + 1}`;
-          objectType.textContent = object.geometry.type.replace('Geometry', '');
-          visibilityBtn.textContent = object.visible ? '👁' : '🚫';
-          deleteBtn.textContent = '🗑';
-          positionInfo.textContent = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
-
-          // Mock event handlers
-          visibilityBtn.onclick = (e) => {
-            e.stopPropagation();
-            object.visible = !object.visible;
-            visibilityBtn.textContent = object.visible ? '👁' : '🚫';
-          };
-
-          deleteBtn.onclick = (e) => {
-            e.stopPropagation();
-            this.deleteObject(object);
-          };
-
-          listItem.onclick = () => {
-            this.selectObject(object);
-          };
-
-          const buttonContainer = document.createElement('div');
-          buttonContainer.appendChild(visibilityBtn);
-          buttonContainer.appendChild(deleteBtn);
-
-          objectInfo.appendChild(objectName);
-          objectInfo.appendChild(objectType);
-          objectInfo.appendChild(buttonContainer);
-
-          listItem.appendChild(objectInfo);
-          listItem.appendChild(positionInfo);
-          this.objectsList.appendChild(listItem);
->>>>>>> master
         });
 
-<<<<<<< HEAD
             setupSceneGraph() {
                 this.sceneGraphPanel = document.createElement('div');
                 this.objectsList = document.createElement('ul');
@@ -384,20 +263,11 @@ describe('Scene Graph/Outliner Functionality', () => {
                 
                 this.objects.forEach((object, index) => {
                     const listItem = document.createElement('li');
-<<<<<<< HEAD
                     listItem.setAttribute('role', 'button');
                     listItem.setAttribute('tabindex', '0');
                     listItem.setAttribute('aria-label', `Select ${object.name || `Object_${index + 1}`}`);
-=======
-<<<<<<< HEAD
                     listItem.setAttribute('role', 'button');
                     listItem.setAttribute('tabindex', '0');
-=======
-
-                    // Add a11y attributes
-                    listItem.tabIndex = 0;
-                    listItem.setAttribute('aria-label', `Select ${object.name || 'Object ' + (index + 1)}`);
->>>>>>> master
 >>>>>>> master
 
                     const objectInfo = document.createElement('div');
@@ -410,7 +280,6 @@ describe('Scene Graph/Outliner Functionality', () => {
                     objectName.textContent = object.name || `Object_${index + 1}`;
                     objectType.textContent = object.geometry.type.replace('Geometry', '');
 
-<<<<<<< HEAD
                     const visibilityLabel = object.visible ? `Hide ${object.name || 'object'}` : `Show ${object.name || 'object'}`;
                     visibilityBtn.textContent = object.visible ? '👁' : '🚫';
                     visibilityBtn.setAttribute('aria-label', visibilityLabel);
@@ -421,8 +290,6 @@ describe('Scene Graph/Outliner Functionality', () => {
                     deleteBtn.setAttribute('aria-label', deleteLabel);
                     deleteBtn.title = deleteLabel;
 
-=======
-<<<<<<< HEAD
                     visibilityBtn.textContent = object.visible ? '👁' : '🚫';
                     visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
                     visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
@@ -431,10 +298,6 @@ describe('Scene Graph/Outliner Functionality', () => {
                     deleteBtn.setAttribute('aria-label', 'Delete object');
                     deleteBtn.setAttribute('title', 'Delete object');
 
-=======
-                    // Visibility button with accessibility attributes
-                    visibilityBtn.textContent = object.visible ? '👁' : '🚫';
-<<<<<<< HEAD
                     const visLabel = object.visible ? 'Hide object' : 'Show object';
                     visibilityBtn.title = visLabel;
                     visibilityBtn.setAttribute('aria-label', visLabel);
@@ -444,20 +307,9 @@ describe('Scene Graph/Outliner Functionality', () => {
                     deleteBtn.title = 'Delete object';
                     deleteBtn.setAttribute('aria-label', 'Delete object');
 
-=======
-<<<<<<< HEAD
                     visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
                     deleteBtn.textContent = '🗑';
                     deleteBtn.setAttribute('aria-label', 'Delete object');
-=======
-                    visibilityBtn.title = 'Toggle visibility';
-                    visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
-
-                    deleteBtn.textContent = '🗑';
-                    deleteBtn.title = `Delete ${object.name}`;
-                    deleteBtn.setAttribute('aria-label', `Delete ${object.name}`);
-
->>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -467,27 +319,15 @@ describe('Scene Graph/Outliner Functionality', () => {
                     visibilityBtn.onclick = (e) => {
                         e.stopPropagation();
                         object.visible = !object.visible;
-<<<<<<< HEAD
                         const newLabel = object.visible ? `Hide ${object.name || 'object'}` : `Show ${object.name || 'object'}`;
                         visibilityBtn.textContent = object.visible ? '👁' : '🚫';
                         visibilityBtn.setAttribute('aria-label', newLabel);
                         visibilityBtn.title = newLabel;
-=======
-                        const label = object.visible ? 'Hide object' : 'Show object';
-                        visibilityBtn.textContent = object.visible ? '👁' : '🚫';
-<<<<<<< HEAD
                         visibilityBtn.setAttribute('aria-label', label);
                         visibilityBtn.setAttribute('title', label);
-=======
-<<<<<<< HEAD
                         visibilityBtn.title = label;
                         visibilityBtn.setAttribute('aria-label', label);
-=======
-<<<<<<< HEAD
                         visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
-=======
-                        visibilityBtn.setAttribute('aria-label', object.visible ? `Hide ${object.name}` : `Show ${object.name}`);
->>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -502,20 +342,12 @@ describe('Scene Graph/Outliner Functionality', () => {
                         this.selectObject(object);
                     };
 
-<<<<<<< HEAD
                     listItem.addEventListener('keydown', (e) => {
-=======
-                    listItem.onkeydown = (e) => {
->>>>>>> master
                         if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
                             this.selectObject(object);
                         }
-<<<<<<< HEAD
                     });
-=======
-                    };
->>>>>>> master
                     
                     // Keyboard support
                     listItem.addEventListener('keydown', (e) => {
@@ -582,9 +414,6 @@ describe('Scene Graph/Outliner Functionality', () => {
           const emptyMessage = document.createElement('li');
           emptyMessage.textContent = 'No objects in scene';
           this.objectsList.appendChild(emptyMessage);
-<<<<<<< HEAD
-=======
->>>>>>> master
 >>>>>>> master
         }
       }
@@ -700,7 +529,6 @@ describe('Scene Graph/Outliner Functionality', () => {
     it('should clear selection when selected object is deleted', () => {
       const obj = app.addTestObject('WillBeDeleted');
       app.selectObject(obj);
-<<<<<<< HEAD
 
       expect(app.selectedObject).toBe(obj);
 
@@ -708,15 +536,6 @@ describe('Scene Graph/Outliner Functionality', () => {
 
       expect(app.selectedObject).toBeNull();
     });
-=======
-
-      expect(app.selectedObject).toBe(obj);
-
-      app.deleteObject(obj);
-
-      expect(app.selectedObject).toBeNull();
-    });
-<<<<<<< HEAD
 
     describe('Accessibility', () => {
         it('should have correct ARIA labels for buttons', () => {
@@ -755,7 +574,6 @@ describe('Scene Graph/Outliner Functionality', () => {
             expect(visBtn.setAttribute).toHaveBeenCalledWith('aria-label', 'Show ToggleTestObject');
         });
     });
-<<<<<<< HEAD
 
     describe('Accessibility', () => {
         it('should have accessible list items with role and tabindex', () => {
@@ -833,8 +651,6 @@ describe('Scene Graph/Outliner Functionality', () => {
         });
     });
 });
-=======
-<<<<<<< HEAD
 
     describe('Accessibility', () => {
         it('should ensure visibility button has correct accessibility attributes', () => {
@@ -868,10 +684,6 @@ describe('Scene Graph/Outliner Functionality', () => {
         });
     });
 });
-=======
-});
-=======
->>>>>>> master
   });
 
   describe('Visibility Toggle', () => {
@@ -902,7 +714,6 @@ describe('Scene Graph/Outliner Functionality', () => {
       buttonText = obj.visible ? '👁' : '🚫';
       expect(buttonText).toBe('🚫');
     });
-<<<<<<< HEAD
 
     describe('Accessibility', () => {
         it('should have role="button" and tabindex="0" on list items', () => {
@@ -940,78 +751,6 @@ describe('Scene Graph/Outliner Functionality', () => {
         });
     });
 });
-=======
-  });
-
-  describe('Scene Graph Updates', () => {
-    it('should update scene graph when objects are added', () => {
-      const updateSpy = jest.spyOn(app, 'updateSceneGraph');
-      app.addTestObject('UpdateTest');
-
-      expect(updateSpy).toHaveBeenCalled();
-    });
-
-    it('should update scene graph when objects are removed', () => {
-      const obj = app.addTestObject('RemoveTest');
-      const updateSpy = jest.spyOn(app, 'updateSceneGraph');
-
-      app.deleteObject(obj);
-
-      expect(updateSpy).toHaveBeenCalled();
-    });
-
-    it('should update scene graph when selection changes', () => {
-      const obj = app.addTestObject('SelectionTest');
-      const updateSpy = jest.spyOn(app, 'updateSceneGraph');
-
-      app.selectObject(obj);
-
-      expect(updateSpy).toHaveBeenCalled();
-    });
-  });
-
-  describe('Object Information Display', () => {
-    it('should display object name and type', () => {
-      const obj = app.addTestObject('InfoTest');
-      obj.geometry.type = 'SphereGeometry';
-
-      // Mock the text content setting
-      const mockSpan = { textContent: '' };
-
-      // Simulate name display
-      mockSpan.textContent = obj.name;
-      expect(mockSpan.textContent).toBe('InfoTest');
-
-      // Simulate type display
-      mockSpan.textContent = obj.geometry.type.replace('Geometry', '');
-      expect(mockSpan.textContent).toBe('Sphere');
-    });
-
-    it('should display object position coordinates', () => {
-      const obj = app.addTestObject('PositionTest');
-      obj.position = {
-        x: 1.5,
-        y: 2.3,
-        z: -0.7,
-        toFixed: (n) => String(Number(obj.position.x).toFixed(n)),
-      };
-
-      const positionText = `x: ${obj.position.x.toFixed(2)}, y: ${obj.position.y.toFixed(2)}, z: ${obj.position.z.toFixed(2)}`;
-      expect(positionText).toContain('x: 1.50');
-    });
-
-    it('should handle objects without names', () => {
-      const obj = app.addTestObject();
-      obj.name = null;
-
-      const displayName = obj.name || `Object_${app.objects.indexOf(obj) + 1}`;
-      expect(displayName).toBe('Object_1');
-    });
-  });
-});
-<<<<<<< HEAD
-=======
->>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

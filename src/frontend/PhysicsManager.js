@@ -52,51 +52,18 @@ export class PhysicsManager {
     return body;
   }
 
-<<<<<<< HEAD
   removeBody(bodyToRemove) {
     this.world.removeBody(bodyToRemove);
     this.bodies = this.bodies.filter((item) => item.body !== bodyToRemove);
   }
 
   update(deltaTime) {
-    this.world.step(deltaTime); // Update physics world
+    // Use a fixed time step of 1/60 seconds, with a maximum of 10 substeps to catch up
+    this.world.step(1 / 60, deltaTime, 10);
 
     for (const item of this.bodies) {
       item.mesh.position.copy(item.body.position);
       item.mesh.quaternion.copy(item.body.quaternion);
-=======
-        const body = new CANNON.Body({
-            mass: mass,
-            position: new CANNON.Vec3(mesh.position.x, mesh.position.y, mesh.position.z),
-            quaternion: new CANNON.Quaternion(mesh.quaternion.x, mesh.quaternion.y, mesh.quaternion.z, mesh.quaternion.w),
-            shape: shape
-        });
-        this.world.addBody(body);
-        this.bodies.push({ mesh, body });
-        return body;
-    }
-
-    removeBody(bodyToRemove) {
-        this.world.removeBody(bodyToRemove);
-        this.bodies = this.bodies.filter(item => item.body !== bodyToRemove);
-    }
-
-    update(deltaTime) {
-<<<<<<< HEAD
-        // Use a fixed time step of 1/60s (60Hz)
-        // param 1: fixedTimeStep - the step size to use for the physics simulation
-        // param 2: timeSinceLastCalled - the time elapsed since the last call to step()
-        // param 3: maxSubSteps - maximum number of fixed steps to take per call to catch up
-=======
-        // Use a fixed time step of 1/60 seconds, with a maximum of 10 substeps to catch up
->>>>>>> master
-        this.world.step(1 / 60, deltaTime, 10);
-
-        for (const item of this.bodies) {
-            item.mesh.position.copy(item.body.position);
-            item.mesh.quaternion.copy(item.body.quaternion);
-        }
->>>>>>> master
     }
   }
 }

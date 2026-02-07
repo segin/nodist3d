@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * Global type definitions
  */
@@ -14,9 +13,6 @@ declare global {
     }
 
     interface SceneObject extends Object3D {
-=======
-
-<<<<<<< HEAD
 type SceneObject = import('three').Object3D & {
     userData: {
         geometryParams?: any;
@@ -71,15 +67,7 @@ interface Window {
 }
 
 declare function importScripts(...urls: string[]): void;
-=======
-import * as THREE from 'three';
-
-declare global {
-<<<<<<< HEAD
     interface SceneObject extends THREE.Object3D {
-=======
-    interface SceneObject extends THREE.Mesh {
->>>>>>> master
 >>>>>>> master
         userData: {
             geometryParams?: any;
@@ -87,7 +75,6 @@ declare global {
         };
     }
 
-<<<<<<< HEAD
     interface SerializedScene {
         metadata: {
             version: number;
@@ -104,29 +91,16 @@ declare global {
     }
 
     // Vendor-specific Fullscreen API extensions
-=======
-<<<<<<< HEAD
-=======
-    interface SerializedMaterial {
-        color: THREE.Color;
-        emissive: THREE.Color;
-    }
-
->>>>>>> master
     interface SerializedObject {
         name: string;
         type: string;
         position: THREE.Vector3;
         rotation: THREE.Euler;
         scale: THREE.Vector3;
-<<<<<<< HEAD
         material: {
             color: THREE.Color;
             emissive: THREE.Color;
         };
-=======
-        material: SerializedMaterial;
->>>>>>> master
         geometryParams: any;
         visible: boolean;
         uuid: string;
@@ -141,11 +115,9 @@ declare global {
 
     interface ManagerInterface {
         init?(): void;
-<<<<<<< HEAD
         update?(deltaTime: number): void;
     }
 
->>>>>>> master
     interface Document {
         webkitFullscreenElement?: Element;
         mozFullScreenElement?: Element;
@@ -159,13 +131,8 @@ declare global {
         webkitRequestFullscreen?: () => Promise<void>;
         mozRequestFullScreen?: () => Promise<void>;
         msRequestFullscreen?: () => Promise<void>;
-<<<<<<< HEAD
     }
 }
-=======
-=======
-        update?(): void;
->>>>>>> master
     }
 }
 >>>>>>> master

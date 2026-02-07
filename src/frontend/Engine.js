@@ -1,18 +1,10 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 // @ts-check
 import * as THREE from 'three';
-=======
->>>>>>> master
 >>>>>>> master
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Clock } from 'three';
 
 export class Engine {
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
     /**
      * @param {HTMLCanvasElement} canvas
      * @param {any} physicsManager
@@ -26,8 +18,6 @@ export class Engine {
         this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, powerPreference: "high-performance" });
         this.camera = new THREE.PerspectiveCamera(75, 2, 0.1, 5);
         this.camera.position.z = 2;
-=======
->>>>>>> master
   constructor(canvas, physicsManager, transformControls) {
     this.canvas = canvas;
     this.physicsManager = physicsManager;
@@ -39,9 +29,6 @@ export class Engine {
     });
     this.camera = new global.THREE.PerspectiveCamera(75, 2, 0.1, 5);
     this.camera.position.z = 2;
-<<<<<<< HEAD
-=======
->>>>>>> master
 >>>>>>> master
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -56,7 +43,6 @@ export class Engine {
     this.initialCameraPosition = this.camera.position.clone();
     this.initialControlsTarget = this.controls.target.clone();
 
-<<<<<<< HEAD
     const gridHelper = new global.THREE.GridHelper(10, 10);
     this.scene.add(gridHelper);
 
@@ -96,20 +82,11 @@ export class Engine {
     requestAnimationFrame(this.animate.bind(this));
   }
 
-=======
-<<<<<<< HEAD
         const gridHelper = new THREE.GridHelper(10, 10);
         this.scene.add(gridHelper);
 
         const axesHelper = new THREE.AxesHelper(5);
         this.scene.add(axesHelper);
-=======
-    const gridHelper = new global.THREE.GridHelper(10, 10);
-    this.scene.add(gridHelper);
-
-    const axesHelper = new global.THREE.AxesHelper(5);
-    this.scene.add(axesHelper);
->>>>>>> master
 
     this.clock = new Clock();
 
