@@ -4,7 +4,6 @@ import * as THREE from 'three';
 import log from './logger.js';
 
 export class SceneStorage {
-<<<<<<< HEAD
   constructor(scene, eventBus) {
     this.eventBus = eventBus;
     this.scene = scene;
@@ -24,22 +23,6 @@ export class SceneStorage {
           resolve(event.data.data);
         } else if (event.data.type === 'error') {
           reject(new Error(event.data.message + ': ' + event.data.error));
-=======
-    /**
-     * @param {THREE.Scene} scene
-     * @param {any} eventBus
-     */
-    constructor(scene, eventBus) {
-        this.eventBus = eventBus;
-        this.scene = scene;
-        this.worker = new Worker('./worker.js');
-<<<<<<< HEAD
-        this.worker.onmessage = this.handleWorkerMessage.bind(this);
-        /** @type {((value: any) => void) | null} */
-=======
-        this.boundHandleWorkerMessage = this.handleWorkerMessage.bind(this);
-        this.worker.onmessage = this.boundHandleWorkerMessage;
->>>>>>> master
         this.loadPromiseResolve = null;
         this.savePromiseResolve = null;
         this.savePromiseReject = null;
@@ -68,7 +51,6 @@ export class SceneStorage {
         }
 
         // Serialize the scene using the worker
-<<<<<<< HEAD
         let sceneJson;
         try {
             sceneJson = await new Promise((resolve, reject) => {
@@ -89,23 +71,6 @@ export class SceneStorage {
         if (!sceneJson) {
              throw new Error('Serialization failed: Empty data received');
         }
-=======
-        const sceneJson = await new Promise((resolve, reject) => {
-<<<<<<< HEAD
-            const handleMessage = (event) => {
-                if (event.data.type === 'serialize_complete') {
-                    this.worker.removeEventListener('message', handleMessage);
-                    resolve(event.data.data);
-                } else if (event.data.type === 'error') {
-                    this.worker.removeEventListener('message', handleMessage);
-=======
-<<<<<<< HEAD
-            const originalOnMessage = this.worker.onmessage;
-=======
-<<<<<<< HEAD
-            this.savePromiseResolve = resolve;
-            this.savePromiseReject = reject;
->>>>>>> master
             this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
 =======
             // OPTIMIZATION: Patch BufferAttribute.toJSON to return TypedArrays directly
@@ -139,17 +104,8 @@ export class SceneStorage {
                 }
             };
 
-<<<<<<< HEAD
             this.worker.addEventListener('message', handleMessage);
             this.worker.postMessage({ type: 'serialize', data: sceneData });
-=======
-            // Send data to worker. We do NOT transfer buffers because that would detach them
-            // from the main thread, breaking the live scene. Structured cloning (default)
-            // copies the buffers, which is fast enough and safe.
-            this.worker.postMessage({ type: 'serialize', data: data });
-        }).finally(() => {
-            this.worker.onmessage = this.boundHandleWorkerMessage;
->>>>>>> master
 >>>>>>> master
         });
 >>>>>>> master
@@ -219,17 +175,10 @@ export class SceneStorage {
             const loadedScene = loader.parse(data);
 
             // Add loaded objects back to the scene
-<<<<<<< HEAD
             while (loadedScene.children.length > 0) {
                 this.scene.add(loadedScene.children[0]);
             }
 
-=======
-            // @ts-ignore
-            loadedScene.children.forEach(object => {
-                this.scene.add(object);
-            });
->>>>>>> master
             if (this.loadPromiseResolve) {
                 this.loadPromiseResolve(loadedScene);
                 this.loadPromiseResolve = null;

@@ -74,7 +74,6 @@ body {
 
 /* Scene graph styling */
 #scene-graph {
-<<<<<<< HEAD
   position: absolute;
   top: 10px;
   right: 10px;
@@ -88,21 +87,6 @@ body {
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 1000;
-=======
-    position: fixed;
-    top: 80px;
-    left: 10px;
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 8px;
-    padding: 10px;
-    width: 250px;
-    max-height: 400px;
-    overflow-y: auto;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
->>>>>>> master
 }
 
 #scene-graph h3 {
@@ -135,7 +119,6 @@ body {
   background-color: rgba(0, 123, 255, 0.3);
 }
 
-<<<<<<< HEAD
 #scene-graph li:focus-visible {
     outline: 2px solid white;
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
@@ -148,49 +131,6 @@ body {
     border-radius: 2px;
 }
 
-=======
-<<<<<<< HEAD
-#scene-graph-panel li:focus-visible,
-#scene-graph li:focus-visible {
-    outline: 2px solid white;
-    box-shadow: 0 0 0 2px #0056b3;
-}
-
-#scene-graph-panel button:focus-visible,
-#scene-graph button:focus-visible {
-    outline: 2px solid white;
-    box-shadow: 0 0 0 2px #0056b3;
-    border-radius: 2px;
-}
-
-=======
-#scene-graph li:focus-visible {
-    outline: 2px solid #007bff;
-    outline-offset: -2px;
-}
-
-<<<<<<< HEAD
-=======
-#scene-graph .icon-btn {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    font-size: 12px;
-    padding: 2px 5px;
-    margin: 0 5px;
-    border-radius: 4px;
-}
-
-#scene-graph .icon-btn:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-#scene-graph .icon-btn:focus-visible {
-    outline: 2px solid #007bff;
-}
-
->>>>>>> master
 >>>>>>> master
 >>>>>>> master
 /* Mobile optimizations */
@@ -321,7 +261,6 @@ body {
 
 /* Improve scrolling on mobile scene graph */
 @media (max-width: 768px) {
-<<<<<<< HEAD
   #scene-graph {
     -webkit-overflow-scrolling: touch;
     overflow-scrolling: touch;
@@ -345,45 +284,6 @@ body {
   #scene-graph::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
   }
-=======
-    #scene-graph {
-        -webkit-overflow-scrolling: touch;
-        overflow-scrolling: touch;
-    }
-    
-    /* Better scrollbar for mobile */
-    #scene-graph::-webkit-scrollbar {
-        width: 4px;
-    }
-    
-    #scene-graph::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 2px;
-    }
-    
-    #scene-graph::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: 2px;
-    }
-    
-    #scene-graph::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 255, 255, 0.5);
-    }
-}
-<<<<<<< HEAD
-/* Accessibility focus state */
-.scene-graph-item:focus {
-    outline: 2px solid #007bff;
-    outline-offset: -2px;
-}
-=======
-<<<<<<< HEAD
-=======
-/* Accessibility focus styles for dynamically created scene graph panel */
-#scene-graph-panel li:focus-visible {
-    outline: 2px solid #007bff;
-    outline-offset: -2px;
->>>>>>> master
 }
 >>>>>>> master
 >>>>>>> master
