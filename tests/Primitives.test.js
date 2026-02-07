@@ -11,7 +11,6 @@ const mockGeometryFactory = (type, parameters = {}) => ({
 });
 
 jest.mock('three', () => ({
-<<<<<<< HEAD
     Scene: jest.fn(() => ({
         add: jest.fn(),
         remove: jest.fn()
@@ -87,130 +86,6 @@ jest.mock('three', () => ({
     Vector2: jest.fn(),
     // Constants
     DoubleSide: 'DoubleSide'
-=======
-  Scene: jest.fn(() => ({
-    add: jest.fn(),
-    remove: jest.fn(),
-  })),
-  PerspectiveCamera: jest.fn(() => ({
-    position: { set: jest.fn() },
-    lookAt: jest.fn(),
-  })),
-  WebGLRenderer: jest.fn(() => ({
-    setSize: jest.fn(),
-    setPixelRatio: jest.fn(),
-    shadowMap: {},
-    domElement: { addEventListener: jest.fn() },
-  })),
-  Mesh: jest.fn(() => ({
-    position: { x: 0, y: 0, z: 0, set: jest.fn() },
-    rotation: { x: 0, y: 0, z: 0, set: jest.fn() },
-    scale: { x: 1, y: 1, z: 1, set: jest.fn() },
-    material: { color: { setHex: jest.fn() }, emissive: { setHex: jest.fn() } },
-    name: '',
-    castShadow: false,
-    receiveShadow: false,
-    userData: {},
-  })),
-  Group: jest.fn(() => ({
-    add: jest.fn(),
-    name: '',
-    position: { x: 0, y: 0, z: 0 },
-    rotation: { x: 0, y: 0, z: 0 },
-    scale: { x: 1, y: 1, z: 1 },
-  })),
-  // Primitive geometries
-  BoxGeometry: jest.fn((w, h, d) =>
-    mockGeometryFactory('BoxGeometry', { width: w || 1, height: h || 1, depth: d || 1 }),
-  ),
-  SphereGeometry: jest.fn((r, ws, hs) =>
-    mockGeometryFactory('SphereGeometry', {
-      radius: r || 0.5,
-      widthSegments: ws || 32,
-      heightSegments: hs || 32,
-    }),
-  ),
-  CylinderGeometry: jest.fn((rt, rb, h, s) =>
-    mockGeometryFactory('CylinderGeometry', {
-      radiusTop: rt || 0.5,
-      radiusBottom: rb || 0.5,
-      height: h || 1,
-      radialSegments: s || 32,
-    }),
-  ),
-  ConeGeometry: jest.fn((r, h, s) =>
-    mockGeometryFactory('ConeGeometry', {
-      radius: r || 0.5,
-      height: h || 1,
-      radialSegments: s || 32,
-    }),
-  ),
-  TorusGeometry: jest.fn((r, t, rs, ts) =>
-    mockGeometryFactory('TorusGeometry', {
-      radius: r || 0.4,
-      tube: t || 0.2,
-      radialSegments: rs || 16,
-      tubularSegments: ts || 100,
-    }),
-  ),
-  TorusKnotGeometry: jest.fn((r, t, ts, rs) =>
-    mockGeometryFactory('TorusKnotGeometry', {
-      radius: r || 0.4,
-      tube: t || 0.15,
-      tubularSegments: ts || 100,
-      radialSegments: rs || 16,
-    }),
-  ),
-  TetrahedronGeometry: jest.fn((r) =>
-    mockGeometryFactory('TetrahedronGeometry', { radius: r || 0.6 }),
-  ),
-  IcosahedronGeometry: jest.fn((r) =>
-    mockGeometryFactory('IcosahedronGeometry', { radius: r || 0.6 }),
-  ),
-  DodecahedronGeometry: jest.fn((r) =>
-    mockGeometryFactory('DodecahedronGeometry', { radius: r || 0.6 }),
-  ),
-  OctahedronGeometry: jest.fn((r) =>
-    mockGeometryFactory('OctahedronGeometry', { radius: r || 0.6 }),
-  ),
-  PlaneGeometry: jest.fn((w, h) =>
-    mockGeometryFactory('PlaneGeometry', { width: w || 2, height: h || 2 }),
-  ),
-  TubeGeometry: jest.fn((curve, ts, r, rs, closed) =>
-    mockGeometryFactory('TubeGeometry', {
-      tubularSegments: ts || 20,
-      radius: r || 0.1,
-      radialSegments: rs || 8,
-      closed: closed || false,
-    }),
-  ),
-  // Materials
-  MeshLambertMaterial: jest.fn(() => ({
-    color: { setHex: jest.fn() },
-    emissive: { setHex: jest.fn() },
-    dispose: jest.fn(),
-  })),
-  // Curve for tube geometry
-  CatmullRomCurve3: jest.fn(() => ({})),
-  Vector3: jest.fn((x, y, z) => ({ x: x || 0, y: y || 0, z: z || 0 })),
-  // Lights
-  AmbientLight: jest.fn(),
-  DirectionalLight: jest.fn(() => ({
-    position: { set: jest.fn() },
-    shadow: { mapSize: {} },
-  })),
-  // Helpers
-  GridHelper: jest.fn(),
-  AxesHelper: jest.fn(),
-  // Raycaster
-  Raycaster: jest.fn(() => ({
-    setFromCamera: jest.fn(),
-    intersectObjects: jest.fn(() => []),
-  })),
-  Vector2: jest.fn(),
-  // Constants
-  DoubleSide: 'DoubleSide',
->>>>>>> master
 }));
 
 // Mock dat.gui
@@ -273,7 +148,6 @@ describe('3D Primitives Functionality', () => {
         this.objectCount = 0;
       }
 
-<<<<<<< HEAD
             // All 13 primitive methods
             addBox() {
                 const THREE = require('three');
@@ -472,164 +346,6 @@ describe('3D Primitives Functionality', () => {
                 this.saveState('Add Tube');
                 return mesh;
             }
-=======
-      selectObject(object) {
-        this.selectedObject = object;
-      }
-
-      updateSceneGraph() {
-        // Mock implementation
-      }
-
-      saveState(description) {
-        // Mock implementation
-      }
-
-      // All 13 primitive methods
-      addBox() {
-        const THREE = require('three');
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        mesh.name = `Box_${this.objects.length + 1}`;
-        this.scene.add(mesh);
-        this.objects.push(mesh);
-        this.selectObject(mesh);
-        this.updateSceneGraph();
-        this.saveState('Add Box');
-        return mesh;
-      }
-
-      addSphere() {
-        const THREE = require('three');
-        const geometry = new THREE.SphereGeometry(0.5, 32, 32);
-        const material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        mesh.name = `Sphere_${this.objects.length + 1}`;
-        this.scene.add(mesh);
-        this.objects.push(mesh);
-        this.selectObject(mesh);
-        this.updateSceneGraph();
-        this.saveState('Add Sphere');
-        return mesh;
-      }
-
-      addCylinder() {
-        const THREE = require('three');
-        const geometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 32);
-        const material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        mesh.name = `Cylinder_${this.objects.length + 1}`;
-        this.scene.add(mesh);
-        this.objects.push(mesh);
-        this.selectObject(mesh);
-        this.updateSceneGraph();
-        this.saveState('Add Cylinder');
-        return mesh;
-      }
-
-      addCone() {
-        const THREE = require('three');
-        const geometry = new THREE.ConeGeometry(0.5, 1, 32);
-        const material = new THREE.MeshLambertMaterial({ color: 0xffff00 });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        mesh.name = `Cone_${this.objects.length + 1}`;
-        this.scene.add(mesh);
-        this.objects.push(mesh);
-        this.selectObject(mesh);
-        this.updateSceneGraph();
-        this.saveState('Add Cone');
-        return mesh;
-      }
-
-      addTorus() {
-        const THREE = require('three');
-        const geometry = new THREE.TorusGeometry(0.4, 0.2, 16, 100);
-        const material = new THREE.MeshLambertMaterial({ color: 0xff00ff });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        mesh.name = `Torus_${this.objects.length + 1}`;
-        this.scene.add(mesh);
-        this.objects.push(mesh);
-        this.selectObject(mesh);
-        this.updateSceneGraph();
-        this.saveState('Add Torus');
-        return mesh;
-      }
-
-      addTorusKnot() {
-        const THREE = require('three');
-        const geometry = new THREE.TorusKnotGeometry(0.4, 0.15, 100, 16);
-        const material = new THREE.MeshLambertMaterial({ color: 0x888888 });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        mesh.name = `TorusKnot_${this.objects.length + 1}`;
-        this.scene.add(mesh);
-        this.objects.push(mesh);
-        this.selectObject(mesh);
-        this.updateSceneGraph();
-        this.saveState('Add Torus Knot');
-        return mesh;
-      }
-
-      addTetrahedron() {
-        const THREE = require('three');
-        const geometry = new THREE.TetrahedronGeometry(0.6);
-        const material = new THREE.MeshLambertMaterial({ color: 0x00aa00 });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        mesh.name = `Tetrahedron_${this.objects.length + 1}`;
-        this.scene.add(mesh);
-        this.objects.push(mesh);
-        this.selectObject(mesh);
-        this.updateSceneGraph();
-        this.saveState('Add Tetrahedron');
-        return mesh;
-      }
-
-      addIcosahedron() {
-        const THREE = require('three');
-        const geometry = new THREE.IcosahedronGeometry(0.6);
-        const material = new THREE.MeshLambertMaterial({ color: 0xaa0000 });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        mesh.name = `Icosahedron_${this.objects.length + 1}`;
-        this.scene.add(mesh);
-        this.objects.push(mesh);
-        this.selectObject(mesh);
-        this.updateSceneGraph();
-        this.saveState('Add Icosahedron');
-        return mesh;
-      }
-
-      addDodecahedron() {
-        const THREE = require('three');
-        const geometry = new THREE.DodecahedronGeometry(0.6);
-        const material = new THREE.MeshLambertMaterial({ color: 0x0000aa });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        mesh.name = `Dodecahedron_${this.objects.length + 1}`;
-        this.scene.add(mesh);
-        this.objects.push(mesh);
-        this.selectObject(mesh);
-        this.updateSceneGraph();
-        this.saveState('Add Dodecahedron');
-        return mesh;
-      }
->>>>>>> master
 
       addOctahedron() {
         const THREE = require('three');
@@ -803,7 +519,6 @@ describe('3D Primitives Functionality', () => {
       const THREE = require('three');
       app.addCylinder();
 
-<<<<<<< HEAD
         it('should create Sphere with correct radius and segments', () => {
             const THREE = require('three');
             app.addSphere();
@@ -870,9 +585,6 @@ describe('3D Primitives Functionality', () => {
             expect(THREE.CatmullRomCurve3).toHaveBeenCalled();
             expect(THREE.TubeGeometry).toHaveBeenCalled();
         });
-=======
-      expect(THREE.CylinderGeometry).toHaveBeenCalledWith(0.5, 0.5, 1, 32);
->>>>>>> master
     });
 
     it('should create Cone with correct radius and height', () => {
@@ -882,7 +594,6 @@ describe('3D Primitives Functionality', () => {
       expect(THREE.ConeGeometry).toHaveBeenCalledWith(0.5, 1, 32);
     });
 
-<<<<<<< HEAD
     describe('Material Properties', () => {
         it('should assign unique colors to different primitives', () => {
             const THREE = require('three');
@@ -923,13 +634,6 @@ describe('3D Primitives Functionality', () => {
             // All other 12 primitives use MeshPhongMaterial
             expect(THREE.MeshPhongMaterial.mock.calls.length).toBeGreaterThanOrEqual(phongCalls + 12);
         });
-=======
-    it('should create Torus with correct major and minor radius', () => {
-      const THREE = require('three');
-      app.addTorus();
-
-      expect(THREE.TorusGeometry).toHaveBeenCalledWith(0.4, 0.2, 16, 100);
->>>>>>> master
     });
 
     it('should create TorusKnot with correct parameters', () => {
