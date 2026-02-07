@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import helmet from 'helmet';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,35 +12,24 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3000;
 
-<<<<<<< HEAD
-// TODO: AUDIT-SEC-002: Implement rate limiting to prevent abuse.
-// const rateLimit = require('express-rate-limit');
-// app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+// AUDIT-SEC-002: Implement rate limiting to prevent abuse.
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: 'draft-7', // combined `RateLimit` header
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
 
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            // TODO: AUDIT-SEC-001: 'unsafe-inline' is currently required for Import Maps in index.html.
-            // Recommendation: Refactor to use a cryptographic nonce or hash for the inline script.
-            scriptSrc: ["'self'", "'unsafe-inline'"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            imgSrc: ["'self'", "data:"],
-            connectSrc: ["'self'"],
-            fontSrc: ["'self'", "data:"],
-            objectSrc: ["'none'"],
-            mediaSrc: ["'self'"],
-            frameSrc: ["'none'"]
-        }
-    }
-}));
-=======
+app.use(limiter);
+
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"], // Only unsafe-inline for import maps
+        // AUDIT-SEC-001: 'unsafe-inline' is currently required for Import Maps in index.html.
+        // Recommendation: Refactor to use a cryptographic nonce or hash for the inline script.
+        scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", 'data:'],
         connectSrc: ["'self'"],
@@ -51,7 +41,7 @@ app.use(
     },
   }),
 );
->>>>>>> master
+
 app.use(cors());
 
 // Serve modules from node_modules with proper MIME types
@@ -199,13 +189,18 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 });
 
-const server = app.listen(port, '0.0.0.0', () => {
-  log.info(`Server listening at http://localhost:${port}`);
-});
-
-process.on('SIGINT', () => {
-  log.info('SIGINT signal received: closing HTTP server');
-  server.close(() => {
-    log.info('HTTP server closed');
+// Only start the server if this file is run directly (not imported)
+if (process.env.NODE_ENV !== 'test') {
+  const server = app.listen(port, '0.0.0.0', () => {
+    log.info(`Server listening at http://localhost:${port}`);
   });
-});
+
+  process.on('SIGINT', () => {
+    log.info('SIGINT signal received: closing HTTP server');
+    server.close(() => {
+      log.info('HTTP server closed');
+    });
+  });
+}
+
+export { app };
