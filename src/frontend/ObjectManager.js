@@ -1,10 +1,28 @@
+import * as THREE from 'three';
 import { Events } from './constants.js';
-import { PrimitiveFactory } from './PrimitiveFactory.js';
+
+/**
+ * @typedef {typeof import('./EventBus.js').default} EventBus
+ * @typedef {import('./PhysicsManager.js').PhysicsManager} PhysicsManager
+ * @typedef {import('./ObjectFactory.js').ObjectFactory} ObjectFactory
+ * @typedef {import('./ObjectPropertyUpdater.js').ObjectPropertyUpdater} ObjectPropertyUpdater
+ * @typedef {import('./StateManager.js').StateManager} StateManager
+ * @typedef {import('./PrimitiveFactory.js').PrimitiveFactory} PrimitiveFactory
+ */
 
 /**
  * Manages 3D objects in the scene.
  */
 export class ObjectManager {
+  /**
+   * @param {THREE.Scene} scene
+   * @param {EventBus} eventBus
+   * @param {any} physicsManager
+   * @param {PrimitiveFactory} primitiveFactory
+   * @param {ObjectFactory} objectFactory
+   * @param {ObjectPropertyUpdater} objectPropertyUpdater
+   * @param {StateManager} stateManager
+   */
   constructor(
     scene,
     eventBus,
@@ -23,6 +41,9 @@ export class ObjectManager {
     this.stateManager = stateManager;
   }
 
+  /**
+   * @param {THREE.Object3D} object
+   */
   selectObject(object) {
     if (this.stateManager) {
       this.stateManager.setState({ selection: [object] });
@@ -30,6 +51,9 @@ export class ObjectManager {
     this.eventBus.publish(Events.OBJECT_SELECTED, object);
   }
 
+  /**
+   * @returns {void}
+   */
   deselectObject() {
     if (this.stateManager) {
       this.stateManager.setState({ selection: [] });
@@ -37,46 +61,68 @@ export class ObjectManager {
     this.eventBus.publish(Events.OBJECT_DESELECTED);
   }
 
+  /**
+   * @param {string} type
+   * @param {object} [options]
+   * @returns {Promise<THREE.Object3D> | THREE.Object3D | null}
+   */
   addPrimitive(type, options) {
     if (this.objectFactory) {
       return this.objectFactory.addPrimitive(type, options);
     }
 
     const object = this.primitiveFactory.createPrimitive(type, options);
-    if (object) {
+    if (object && !(object instanceof Promise)) {
       this.scene.add(object);
       this.eventBus.publish(Events.OBJECT_ADDED, object);
     }
     return object;
   }
 
+  /**
+   * @param {THREE.Object3D} object
+   * @returns {THREE.Object3D}
+   */
   duplicateObject(object) {
     if (this.objectFactory) {
-        return this.objectFactory.duplicateObject(object);
+      return this.objectFactory.duplicateObject(object);
     }
   }
 
+  /**
+   * @param {THREE.Object3D} object
+   * @param {object} properties
+   */
   updateMaterial(object, properties) {
     if (this.objectPropertyUpdater) {
-        this.objectPropertyUpdater.updateMaterial(object, properties);
+      this.objectPropertyUpdater.updateMaterial(object, properties);
     }
   }
 
+  /**
+   * @param {THREE.Object3D} object
+   * @param {File} file
+   * @param {string} type
+   */
   addTexture(object, file, type) {
     if (this.objectPropertyUpdater) {
-        this.objectPropertyUpdater.addTexture(object, file, type);
+      this.objectPropertyUpdater.addTexture(object, file, type);
     }
   }
 
+  /**
+   * Deletes an object from the scene and disposes of its resources.
+   * @param {THREE.Object3D} object - The object to delete.
+   */
   deleteObject(object) {
     if (object) {
-      if (object.isGroup) {
-        // Recursively delete children
-        // Use backward iteration for performance/safety when removing
+      if (object.children && object.children.length > 0) {
+        // Recursively delete children backwards to avoid array copy and index shifts
         for (let i = object.children.length - 1; i >= 0; i--) {
-            this.deleteObject(object.children[i]);
+          this.deleteObject(object.children[i]);
         }
       }
+
       // Dispose of geometry and material to free up memory
       if (object.geometry) {
         object.geometry.dispose();
@@ -100,6 +146,7 @@ export class ObjectManager {
           material.dispose();
         });
       }
+
       // Remove the object from its parent (scene or group)
       if (object.parent) {
         object.parent.remove(object);
