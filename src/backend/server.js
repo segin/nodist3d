@@ -11,17 +11,10 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3000;
 
-<<<<<<< HEAD
-// TODO: AUDIT-SEC-002: Implement rate limiting to prevent abuse.
-// const rateLimit = require('express-rate-limit');
-// app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
-
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            // TODO: AUDIT-SEC-001: 'unsafe-inline' is currently required for Import Maps in index.html.
-            // Recommendation: Refactor to use a cryptographic nonce or hash for the inline script.
             scriptSrc: ["'self'", "'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'"],
             imgSrc: ["'self'", "data:"],
@@ -33,25 +26,6 @@ app.use(helmet({
         }
     }
 }));
-=======
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"], // Only unsafe-inline for import maps
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", 'data:'],
-        connectSrc: ["'self'"],
-        fontSrc: ["'self'", 'data:'],
-        objectSrc: ["'none'"],
-        mediaSrc: ["'self'"],
-        frameSrc: ["'none'"],
-      },
-    },
-  }),
-);
->>>>>>> master
 app.use(cors());
 
 // Serve modules from node_modules with proper MIME types
@@ -129,10 +103,11 @@ app.get('/modules/cannon-es.js', (req, res) => {
   );
 });
 
-// Serve three-csg-ts
+// Serve three-csg-ts (bundled version)
 app.get('/modules/three-csg-ts.js', (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
-  res.sendFile(path.join(__dirname, '..', '..', 'node_modules', 'three-csg-ts', 'index.js'));
+  // Serve the bundled file we created
+  res.sendFile(path.join(__dirname, '..', 'frontend', 'vendor', 'three-csg.js'));
 });
 
 // Serve extra three examples
