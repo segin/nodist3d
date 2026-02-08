@@ -19,6 +19,8 @@ jest.mock('three', () => {
   };
 
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
     // Factory for Vector3 to ensure unique instances
     const createMockVector3 = (x = 0, y = 0, z = 0) => ({
         x, y, z,
@@ -107,6 +109,7 @@ jest.mock('three', () => {
     };
 =======
 >>>>>>> master
+>>>>>>> master
   return {
     Vector3: jest.fn(() => mockVector3),
     Color: jest.fn(() => mockColor),
@@ -115,7 +118,21 @@ jest.mock('three', () => {
       name: '',
       position: mockVector3,
       rotation: mockVector3,
+<<<<<<< HEAD
+      scale: { x: 1, y: 1, z: 1, clone: jest.fn(() => ({ x: 1, y: 1, z: 1 })), copy: jest.fn() },
+      material: {
+        color: mockColor,
+        emissive: mockColor,
+        dispose: jest.fn(),
+      },
+      geometry: {
+        type: 'BoxGeometry',
+        dispose: jest.fn(),
+      },
+      name: 'TestMesh',
+=======
       scale: mockVector3,
+>>>>>>> master
       visible: true,
       geometry: { type: 'BoxGeometry', dispose: jest.fn() },
       material: { color: mockColor, emissive: mockColor, dispose: jest.fn(), copy: jest.fn() },
@@ -126,8 +143,11 @@ jest.mock('three', () => {
     Scene: jest.fn(() => ({ add: jest.fn(), remove: jest.fn() })),
   };
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 });
 
@@ -312,7 +332,22 @@ describe('Undo/Redo History Functionality', () => {
         const mesh = new THREE.Mesh();
         mesh.name = name;
         mesh.uuid = `uuid-${name}-${Date.now()}`;
+<<<<<<< HEAD
+        // Ensure properties exist for cloning
+        mesh.position = { x: 0, y: 0, z: 0, clone: () => ({ x: 0, y: 0, z: 0 }), copy: () => {} };
+        mesh.rotation = { x: 0, y: 0, z: 0, clone: () => ({ x: 0, y: 0, z: 0 }), copy: () => {} };
+        mesh.scale = { x: 1, y: 1, z: 1, clone: () => ({ x: 1, y: 1, z: 1 }), copy: () => {} };
+        mesh.material = {
+            color: { clone: () => ({ r: 1, g: 0, b: 0 }), copy: () => {} },
+            emissive: { clone: () => ({ r: 0, g: 0, b: 0 }), copy: () => {} },
+            dispose: () => {}
+        };
+        mesh.geometry = { type: 'BoxGeometry', dispose: () => {} };
+        mesh.visible = true;
+        mesh.userData = {};
+=======
         mesh.geometry.type = 'BoxGeometry'; // Default for test
+>>>>>>> master
 
         this.objects.push(mesh);
         this.scene.add(mesh);
@@ -352,10 +387,12 @@ describe('Undo/Redo History Functionality', () => {
     });
 
     it('should save state with correct data structure', () => {
-      const obj = app.addTestObject('StateTest');
+      app.addTestObject('StateTest');
 
       expect(app.history.length).toBe(2); // Initial + add object
       const lastState = app.history[app.history.length - 1];
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
         it('should save state with correct data structure', () => {
             const obj = app.addTestObject('StateTest');
@@ -372,6 +409,7 @@ describe('Undo/Redo History Functionality', () => {
         });
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 
       expect(lastState).toHaveProperty('description');
@@ -393,6 +431,8 @@ describe('Undo/Redo History Functionality', () => {
 
       expect(app.history.length).toBe(3);
       expect(app.historyIndex).toBe(2);
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
         it('should restore object selection state', () => {
             const obj = app.addTestObject('SelectionTest');
@@ -421,6 +461,7 @@ describe('Undo/Redo History Functionality', () => {
 >>>>>>> master
 =======
 >>>>>>> master
+>>>>>>> master
     });
 
     it('should remove future states when new action is performed', () => {
@@ -429,6 +470,11 @@ describe('Undo/Redo History Functionality', () => {
 
       // Undo once
       app.undo();
+<<<<<<< HEAD
+      expect(app.historyIndex).toBe(1);
+
+      // Add new object (divergent history)
+=======
       const historyLengthAfterUndo = app.history.length;
       expect(app.historyIndex).toBe(historyLengthAfterUndo - 2);
 
@@ -451,21 +497,32 @@ describe('Undo/Redo History Functionality', () => {
             expect(app.objects.some(obj => obj.name === 'Redo1')).toBe(true);
         });
       // Add new object (should remove future states)
+>>>>>>> master
       app.addTestObject('Object3');
 
-      expect(app.history.length).toBeLessThanOrEqual(historyLengthAfterUndo + 1);
+      expect(app.history.length).toBe(3);
+      expect(app.historyIndex).toBe(2);
+      expect(app.history[2].description).toBe('Add Object3');
     });
-  });
 
-  describe('Undo Functionality', () => {
-    it('should undo to previous state', () => {
-      const initialObjectCount = app.objects.length;
-      app.addTestObject('UndoTest');
+    it('should restore correct state after multiple undo/redo operations', () => {
+        // Initial state: 0 objects
+        app.addTestObject('Redo1'); // Index 1, 1 object
+        app.addTestObject('Redo2'); // Index 2, 2 objects
 
-      expect(app.objects.length).toBe(initialObjectCount + 1);
+        expect(app.objects.length).toBe(2);
 
-      const undoResult = app.undo();
+        // Undo twice
+        app.undo(); // Index 1, 1 object
+        app.undo(); // Index 0, 0 objects
+        expect(app.objects.length).toBe(0);
 
+<<<<<<< HEAD
+        // Redo once
+        app.redo(); // Index 1, 1 object
+        expect(app.objects.length).toBe(1);
+        expect(app.objects.some(obj => obj.name === 'Redo1')).toBe(true);
+=======
       expect(undoResult).toBe(true);
       expect(app.objects.length).toBe(initialObjectCount);
 >>>>>>> master
@@ -475,6 +532,7 @@ describe('Undo/Redo History Functionality', () => {
 
       // Future states should be gone
       expect(app.history.length).toBe(historyLengthAfterUndo);
+>>>>>>> master
 >>>>>>> master
     });
 
@@ -496,6 +554,12 @@ describe('Undo/Redo History Functionality', () => {
 
       // Undo should restore selection
       app.undo();
+<<<<<<< HEAD
+      // Compare by UUID since object reference might change if recreated
+      expect(app.selectedObject.uuid).toBe(obj.uuid);
+    });
+  });
+=======
       expect(app.selectedObject).toBe(obj);
     });
 <<<<<<< HEAD
@@ -639,5 +703,6 @@ describe('Undo/Redo History Functionality', () => {
 >>>>>>> master
 =======
   });
+>>>>>>> master
 >>>>>>> master
 });

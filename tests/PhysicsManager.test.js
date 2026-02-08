@@ -1,5 +1,6 @@
-<<<<<<< HEAD
 import { Scene, BufferGeometry, Mesh, MeshBasicMaterial, Quaternion, Vector3 } from 'three';
+<<<<<<< HEAD
+=======
 import { Scene, BufferGeometry, Mesh, MeshBasicMaterial, Quaternion } from 'three';
 import { Scene, Vector3, Quaternion, BufferGeometry, Mesh, MeshBasicMaterial } from 'three';
 >>>>>>> master
@@ -8,6 +9,7 @@ import { Scene, Vector3, Quaternion, BufferGeometry, Mesh, MeshBasicMaterial } f
 import { Scene, Mesh, MeshBasicMaterial, Vector3, Quaternion, BufferGeometry } from 'three';
 =======
 import { Scene, BufferGeometry, Mesh, MeshBasicMaterial, Quaternion, Vector3 } from 'three';
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 import { PhysicsManager } from '../src/frontend/PhysicsManager.js';
@@ -70,6 +72,8 @@ describe('PhysicsManager', () => {
     objectManager = new ObjectManager(scene, eventBus, physicsManager, primitiveFactory, null, null, null);
   });
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
 
         // Match ObjectManager constructor signature:
         // (scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater, stateManager)
@@ -90,6 +94,7 @@ describe('PhysicsManager', () => {
             null, // objectPropertyUpdater
             null  // stateManager
         );
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
     });
@@ -259,13 +264,15 @@ describe('PhysicsManager', () => {
 
     physicsManager.update(deltaTime);
 
-<<<<<<< HEAD
     expect(stepSpy).toHaveBeenCalledWith(deltaTime);
+<<<<<<< HEAD
+=======
 =======
 <<<<<<< HEAD
     expect(stepSpy).toHaveBeenCalledWith(1 / 60, deltaTime, 10);
 =======
     expect(stepSpy).toHaveBeenCalledWith(deltaTime);
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
   });

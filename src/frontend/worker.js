@@ -1,6 +1,5 @@
 // @ts-check
 // src/frontend/worker.js
-<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 =======
@@ -84,10 +83,13 @@ self.onmessage = function (event) {
     } catch (error) {
       self.postMessage({ type: 'error', message: 'Serialization failed', error: error.message });
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
             const json = JSON.stringify(data, (key, value) => {
                 // Convert TypedArrays to standard Arrays for JSON compatibility
                 // This allows passing TypedArrays from the main thread (optimization)
                 if (ArrayBuffer.isView(value) && !(value instanceof DataView)) {
+>>>>>>> master
                     return Array.from(value);
                 }
                 return value;

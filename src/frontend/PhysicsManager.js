@@ -75,6 +75,16 @@ export class PhysicsManager {
     for (const item of this.bodies) {
       item.mesh.position.copy(item.body.position);
       item.mesh.quaternion.copy(item.body.quaternion);
+<<<<<<< HEAD
+        this.world.step(1 / 60, deltaTime, 10);
+
+        for (const item of this.bodies) {
+            item.mesh.position.copy(item.body.position);
+            item.mesh.quaternion.copy(item.body.quaternion);
+        }
+>>>>>>> master
+=======
+>>>>>>> master
     }
   }
 }

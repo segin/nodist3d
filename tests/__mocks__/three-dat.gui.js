@@ -82,6 +82,8 @@ class MockColor {
 const createMockMaterial = (options = {}) => ({
     color: new MockColor(options.color !== undefined ? options.color : 0xffffff),
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
     // Helper to create a mock Vector3 with common methods
     const createMockVector3 = jest.fn(function(x = 0, y = 0, z = 0) {
         const v = {
@@ -101,6 +103,7 @@ const createMockMaterial = (options = {}) => ({
             multiplyScalar: jest.fn(function(s) { this.x *= s; this.y *= s; this.z *= s; return this; })
         };
         return v;
+>>>>>>> master
   // Helper to create a mock Vector3 with common methods
   const createMockVector3 = (x = 0, y = 0, z = 0) => ({
     x: x,
@@ -199,6 +202,11 @@ const createMockMaterial = (options = {}) => ({
   // Helper to create a mock Material with common properties and methods
   const createMockMaterial = (options = {}) => ({
     color: new originalThree.Color(options.color !== undefined ? options.color : 0xffffff),
+<<<<<<< HEAD
+=======
+>>>>>>> master
+=======
+>>>>>>> master
 >>>>>>> master
     dispose: jest.fn(),
     map: null,
@@ -293,6 +301,8 @@ const createMockMaterial = (options = {}) => ({
         clonedGroup.add(child.clone());
       });
       return clonedGroup;
+<<<<<<< HEAD
+=======
     setHex: jest.fn(function(hex) { this.color.setHex(hex); }),
     clone: jest.fn(function() { return createMockMaterial(options); }),
 });
@@ -328,6 +338,7 @@ const MockMesh = jest.fn(function(geometry = createMockGeometry('BufferGeometry'
         clonedMesh.scale.copy(this.scale);
         clonedMesh.name = this.name;
         return clonedMesh;
+>>>>>>> master
     });
     this.getWorldPosition = jest.fn(function(target) { return target.copy(this.position); });
     this.updateMatrixWorld = jest.fn();
@@ -931,6 +942,11 @@ module.exports = {
       }),
     })),
   };
+<<<<<<< HEAD
+=======
+>>>>>>> master
+=======
+>>>>>>> master
 >>>>>>> master
 });
 >>>>>>> master
@@ -961,6 +977,9 @@ jest.mock('dat.gui', () => {
   }));
 
 <<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
     const mockFolder = {
         add: jest.fn(() => mockController),
         addColor: jest.fn(() => mockController),
@@ -978,6 +997,7 @@ jest.mock('dat.gui', () => {
 
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
   return { GUI: mockGUI };
 });

@@ -261,6 +261,8 @@ describe('ObjectManager', () => {
         done();
       });
       return null;
+<<<<<<< HEAD
+=======
     });
   });
 
@@ -282,6 +284,7 @@ describe('ObjectManager', () => {
         done();
       });
       return null;
+>>>>>>> master
     });
   });
 
@@ -303,6 +306,8 @@ describe('ObjectManager', () => {
         done();
       });
       return null;
+<<<<<<< HEAD
+=======
     });
   });
 
@@ -469,6 +474,7 @@ describe('ObjectManager', () => {
         done();
       });
       return null;
+>>>>>>> master
     });
   });
 
@@ -582,6 +588,8 @@ describe('ObjectManager', () => {
         done();
       });
       return null;
+<<<<<<< HEAD
+=======
     });
   });
 
@@ -626,6 +634,7 @@ describe('ObjectManager', () => {
         done();
       });
       return null;
+>>>>>>> master
     });
   });
 });

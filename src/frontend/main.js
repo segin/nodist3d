@@ -26,6 +26,11 @@ export class App {
     this.container = new ServiceContainer();
 =======
 <<<<<<< HEAD
+  constructor() {
+    // Initialize Service Container
+    this.container = new ServiceContainer();
+=======
+<<<<<<< HEAD
     constructor() {
         // Initialize Service Container
         this.container = new ServiceContainer();
@@ -38,6 +43,7 @@ export class App {
     this.container = new ServiceContainer();
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
 
         // Register Core Services
         this.container.register('EventBus', EventBus);
@@ -48,12 +54,15 @@ export class App {
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         // Initialize Three.js Core
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.clock = new THREE.Clock();
 =======
+>>>>>>> master
 >>>>>>> master
     // Initialize Three.js Core
     this.scene = new THREE.Scene();
@@ -65,8 +74,12 @@ export class App {
     );
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
 <<<<<<< HEAD
+    this.clock = new THREE.Clock();
+=======
+<<<<<<< HEAD
     this.clock = new THREE.Clock(); // Added from master
 =======
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 
@@ -111,6 +124,8 @@ export class App {
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         /** @type {THREE.Object3D | null} */
         this.selectedObject = null;
         /** @type {THREE.Object3D[]} */
@@ -142,6 +157,7 @@ export class App {
         document.body.appendChild(this.renderer.domElement);
 =======
 >>>>>>> master
+>>>>>>> master
     this.selectedObject = null;
     this.objects = [];
 
@@ -150,6 +166,9 @@ export class App {
     this.historyIndex = -1;
     this.maxHistorySize = 50;
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
 
     // Continue initialization
     this.setupControls();
@@ -177,6 +196,8 @@ export class App {
         });
     }
 
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
@@ -211,6 +232,7 @@ export class App {
         this.objectsList.setAttribute('aria-label', 'Scene objects');
         this.objectsList.style.cssText = `
 =======
+>>>>>>> master
 >>>>>>> master
   initRenderer() {
     // Setup renderer
@@ -273,6 +295,9 @@ export class App {
             overflow-y: auto;
             z-index: 1000;
         `;
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
 
     // Create title
@@ -285,6 +310,10 @@ export class App {
 <<<<<<< HEAD
     this.objectsList.setAttribute('aria-label', 'Scene objects');
     this.objectsList.style.cssText = `
+=======
+<<<<<<< HEAD
+    this.objectsList.setAttribute('aria-label', 'Scene objects');
+    this.objectsList.style.cssText = `
         list-style: none;
         margin: 0;
         padding: 0;
@@ -293,6 +322,7 @@ export class App {
     this.sceneGraphPanel.setAttribute('aria-label', 'Scene Graph');
 =======
     this.objectsList.style.cssText = `
+>>>>>>> master
 >>>>>>> master
             list-style: none;
             margin: 0;
@@ -416,6 +446,9 @@ export class App {
               this.redo();
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
             } else {
@@ -423,6 +456,8 @@ export class App {
             }
         });
 
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
@@ -530,12 +565,16 @@ export class App {
             const touchMoveThreshold = 10;
 =======
 >>>>>>> master
+>>>>>>> master
     // Fullscreen button
     const fullscreenButton = document.getElementById('fullscreen');
     if (fullscreenButton) {
       fullscreenButton.addEventListener('click', () => {
         this.toggleFullscreen();
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
       });
     }
 
@@ -580,6 +619,8 @@ export class App {
         this.saveScene();
       });
     }
+<<<<<<< HEAD
+=======
 =======
       });
     }
@@ -644,6 +685,7 @@ export class App {
 =======
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
 
         this.raycaster.setFromCamera(mouse, this.camera);
         const intersects = this.raycaster.intersectObjects(this.objects);
@@ -651,9 +693,12 @@ export class App {
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         if (intersects.length > 0) {
             this.selectObject(intersects[0].object);
 =======
+>>>>>>> master
 >>>>>>> master
       fileInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
@@ -802,6 +847,9 @@ export class App {
           this.updatePropertiesPanel(selection[0]);
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
         } else {
@@ -1053,6 +1101,8 @@ export class App {
       this.objectManager.selectObject(object);
     }
 
+<<<<<<< HEAD
+=======
 =======
     }
 
@@ -1290,13 +1340,18 @@ export class App {
         this.updateSceneGraph();
 =======
 >>>>>>> master
+>>>>>>> master
     this.selectedObject = object;
     this.transformControls.attach(object);
 
     // Visual feedback
     this.objects.forEach((obj) => {
         if (obj.material && obj.material.emissive) {
+<<<<<<< HEAD
+             obj.material.emissive.setHex(0x000000);
+=======
             obj.material.emissive.setHex(0x000000);
+>>>>>>> master
         }
     });
 
@@ -1428,6 +1483,8 @@ export class App {
 
   addGeometryProperties(object) {
     const geometry = object.geometry;
+    if (!geometry) return;
+
     const geometryFolder = this.propertiesFolder.addFolder('Geometry');
 
     // Store original geometry parameters for rebuilding
@@ -1537,6 +1594,8 @@ export class App {
         });
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
 >>>>>>> master
     }
 
@@ -1560,14 +1619,18 @@ export class App {
             this.transformControls.detach();
         }
 >>>>>>> master
+>>>>>>> master
     }
 
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
     updatePropertiesPanel(object) {
         this.clearPropertiesPanel();
         if (!object) return;
 =======
+>>>>>>> master
 >>>>>>> master
   getGeometryParameters(geometry) {
     const params = geometry.parameters || {};
@@ -1632,6 +1695,8 @@ export class App {
         rotationFolder.add(rotationDegrees, 'y', -180, 180).name('Y (deg)').onChange(v => updateRot('y', v));
         rotationFolder.add(rotationDegrees, 'z', -180, 180).name('Z (deg)').onChange(v => updateRot('z', v));
 
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
@@ -1982,6 +2047,7 @@ export class App {
     }
 =======
 >>>>>>> master
+>>>>>>> master
     if (newGeometry) {
       object.geometry.dispose();
       object.geometry = newGeometry;
@@ -1996,10 +2062,18 @@ export class App {
     });
 
     // Remove all subfolders
+<<<<<<< HEAD
+    // dat.gui stores folders as an object map, so convert to array
+    const folders = this.propertiesFolder.__folders;
+    if (folders) {
+        const folderArray = Array.isArray(folders) ? folders : Object.values(folders);
+        folderArray.forEach((folder) => {
+=======
     // dat.gui might store folders as object
     const folders = this.propertiesFolder.__folders;
     if (folders) {
         Object.values(folders).forEach((folder) => {
+>>>>>>> master
             this.propertiesFolder.removeFolder(folder);
         });
     }
@@ -2008,14 +2082,32 @@ export class App {
   }
 
   updateSceneGraph() {
+<<<<<<< HEAD
+    if (!this.sceneGraphItemMap) this.sceneGraphItemMap = new Map();
+=======
     // Check if focus is currently within the list
     const listHasFocus = this.objectsList.contains(document.activeElement);
 
     // Clear existing list
     this.objectsList.innerHTML = '';
+>>>>>>> master
 
-    // Add each object to the scene graph
+    const visited = new Set();
+
+    // Add or update each object in the scene graph
     this.objects.forEach((object, index) => {
+<<<<<<< HEAD
+        visited.add(object.uuid);
+        
+        let listItem = this.sceneGraphItemMap.get(object.uuid);
+        const isSelected = this.selectedObject === object;
+        const backgroundColor = isSelected ? '#444' : '#222';
+        
+        if (!listItem) {
+            // Create new list item
+            listItem = document.createElement('li');
+            listItem.style.cssText = `
+=======
       const listItem = document.createElement('li');
       listItem.setAttribute('role', 'option');
       listItem.setAttribute('tabindex', '0');
@@ -2046,14 +2138,24 @@ export class App {
         this.selectObject(object);
       };
 =======
+>>>>>>> master
                 padding: 5px;
                 margin: 2px 0;
-                background: ${this.selectedObject === object ? '#444' : '#222'};
+                background: ${backgroundColor};
                 border-radius: 3px;
                 cursor: pointer;
                 border: 1px solid #555;
                 outline: none;
             `;
+<<<<<<< HEAD
+            listItem.setAttribute('role', 'button');
+            listItem.setAttribute('tabindex', '0');
+            listItem.setAttribute('aria-label', `Select ${object.name || `Object_${index + 1}`}`);
+
+            // Object name and type container
+            const objectInfo = document.createElement('div');
+            objectInfo.style.cssText = `
+=======
       listItem.setAttribute('role', 'button');
       listItem.setAttribute('tabindex', '0');
       listItem.setAttribute('aria-label', `Select ${object.name || `Object_${index + 1}`}`);
@@ -2076,10 +2178,17 @@ export class App {
         align-items: center;
       `;
 =======
+>>>>>>> master
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
             `;
+<<<<<<< HEAD
+
+            const objectName = document.createElement('span');
+            objectName.className = 'object-name';
+            objectName.style.cssText = `
+=======
 >>>>>>> master
 
       const objectName = document.createElement('span');
@@ -2090,11 +2199,17 @@ export class App {
         color: #fff;
       `;
 =======
+>>>>>>> master
                 font-weight: bold;
                 color: #fff;
             `;
 >>>>>>> master
 
+<<<<<<< HEAD
+            const objectType = document.createElement('span');
+            objectType.className = 'object-type';
+            objectType.style.cssText = `
+=======
       const objectType = document.createElement('span');
       objectType.textContent = object.geometry.type.replace('Geometry', '');
       objectType.style.cssText = `
@@ -2104,10 +2219,18 @@ export class App {
         font-style: italic;
       `;
 =======
+>>>>>>> master
                 font-size: 10px;
                 color: #aaa;
                 font-style: italic;
             `;
+<<<<<<< HEAD
+
+            // Visibility toggle
+            const visibilityBtn = document.createElement('button');
+            visibilityBtn.className = 'visibility-btn';
+            visibilityBtn.style.cssText = `
+=======
 >>>>>>> master
 
       // Visibility toggle
@@ -2133,15 +2256,22 @@ export class App {
       visibilityBtn.setAttribute('aria-label', visibilityLabel);
       visibilityBtn.title = visibilityLabel;
       visibilityBtn.style.cssText = `
+>>>>>>> master
                 background: none;
                 border: none;
                 color: white;
                 cursor: pointer;
                 font-size: 12px;
-                padding: 5px 8px;
+                padding: 2px 5px;
                 margin: 0 5px;
-                min-width: 24px;
             `;
+<<<<<<< HEAD
+
+            // Delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = '🗑';
+            deleteBtn.style.cssText = `
+=======
 >>>>>>> master
       visibilityBtn.onclick = (e) => {
         e.stopPropagation();
@@ -2180,14 +2310,21 @@ export class App {
       deleteBtn.setAttribute('aria-label', deleteLabel);
       deleteBtn.title = deleteLabel;
       deleteBtn.style.cssText = `
+>>>>>>> master
                 background: none;
                 border: none;
                 color: #ff4444;
                 cursor: pointer;
                 font-size: 12px;
-                padding: 5px 8px;
-                min-width: 24px;
+                padding: 2px 5px;
             `;
+<<<<<<< HEAD
+
+            // Position info
+            const positionInfo = document.createElement('div');
+            positionInfo.className = 'position-info';
+            positionInfo.style.cssText = `
+=======
 >>>>>>> master
       deleteBtn.onclick = (e) => {
         e.stopPropagation();
@@ -2213,19 +2350,125 @@ export class App {
         margin-top: 3px;
       `;
 =======
+>>>>>>> master
                 font-size: 10px;
                 color: #999;
                 margin-top: 3px;
             `;
+<<<<<<< HEAD
+=======
 >>>>>>> master
       positionInfo.textContent = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
       listItem.appendChild(positionInfo);
+>>>>>>> master
 
-      this.objectsList.appendChild(listItem);
+            // Build structure
+            const buttonContainer = document.createElement('div');
+            buttonContainer.appendChild(visibilityBtn);
+            buttonContainer.appendChild(deleteBtn);
+
+            objectInfo.appendChild(objectName);
+            objectInfo.appendChild(objectType);
+            objectInfo.appendChild(buttonContainer);
+
+            listItem.appendChild(objectInfo);
+            listItem.appendChild(positionInfo);
+
+            // Attach Event Listeners
+            visibilityBtn.onclick = (e) => {
+                e.stopPropagation();
+                object.visible = !object.visible;
+                visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            };
+
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                this.deleteObject(object);
+            };
+
+            listItem.onclick = () => {
+                this.selectObject(object);
+            };
+            
+            listItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectObject(object);
+                }
+            });
+
+            this.sceneGraphItemMap.set(object.uuid, listItem);
+            this.objectsList.appendChild(listItem);
+        } else {
+            // Ensure correct order in DOM
+            this.objectsList.appendChild(listItem);
+        }
+
+        // Update Dynamic Properties
+        if (listItem.style.background !== (isSelected ? 'rgb(68, 68, 68)' : 'rgb(34, 34, 34)') &&
+            listItem.style.background !== backgroundColor) {
+                listItem.style.background = backgroundColor;
+        }
+
+        const nameSpan = listItem.querySelector('.object-name');
+        const newName = object.name || `Object_${index + 1}`;
+        if (nameSpan && nameSpan.textContent !== newName) {
+            nameSpan.textContent = newName;
+        }
+
+        const typeSpan = listItem.querySelector('.object-type');
+        const newType = object.geometry ? object.geometry.type.replace('Geometry', '') : 'Unknown';
+        if (typeSpan && typeSpan.textContent !== newType) {
+            typeSpan.textContent = newType;
+        }
+
+        const visBtn = listItem.querySelector('.visibility-btn');
+        const visText = object.visible ? '👁' : '🚫';
+        if (visBtn && visBtn.textContent !== visText) {
+            visBtn.textContent = visText;
+        }
+
+        const posInfo = listItem.querySelector('.position-info');
+        const newPosText = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
+        if (posInfo && posInfo.textContent !== newPosText) {
+            posInfo.textContent = newPosText;
+        }
     });
+
+    // Remove deleted objects
+    for (const [uuid, element] of this.sceneGraphItemMap) {
+        if (!visited.has(uuid)) {
+            if (element.parentNode === this.objectsList) {
+                this.objectsList.removeChild(element);
+            }
+            this.sceneGraphItemMap.delete(uuid);
+        }
+    }
 
     // Add message if no objects
     if (this.objects.length === 0) {
+<<<<<<< HEAD
+        let emptyMessage = document.getElementById('scene-graph-empty-message');
+        if (!emptyMessage) {
+            emptyMessage = document.createElement('li');
+            emptyMessage.id = 'scene-graph-empty-message';
+            emptyMessage.textContent = 'No objects in scene';
+            emptyMessage.style.cssText = `
+                color: #666;
+                font-style: italic;
+                text-align: center;
+                padding: 20px;
+            `;
+            this.objectsList.appendChild(emptyMessage);
+        } else {
+            this.objectsList.appendChild(emptyMessage);
+        }
+    } else {
+        const emptyMessage = document.getElementById('scene-graph-empty-message');
+        if (emptyMessage && emptyMessage.parentNode === this.objectsList) {
+            this.objectsList.removeChild(emptyMessage);
+        }
+=======
       const emptyMessage = document.createElement('li');
       emptyMessage.textContent = 'No objects in scene';
       emptyMessage.style.cssText = `
@@ -2242,6 +2485,7 @@ export class App {
     if (listHasFocus && this.selectedObject) {
          // This logic is simplified; in a real app we'd find the specific element
 =======
+>>>>>>> master
 >>>>>>> master
     }
   }
@@ -2299,11 +2543,23 @@ export class App {
 
   // History system methods
   saveState(description = 'Action') {
-    // Create a snapshot of the current state
-    const state = {
-      description: description,
-      timestamp: Date.now(),
-      objects: this.objects.map((obj) => ({
+    const timestamp = Date.now();
+    const previousState = this.history[this.historyIndex];
+    const previousObjectsMap = new Map();
+
+    if (previousState) {
+      previousState.objects.forEach((obj) => {
+        previousObjectsMap.set(obj.uuid, obj);
+      });
+    }
+
+    const objects = this.objects.map((obj) => {
+      const prevObj = previousObjectsMap.get(obj.uuid);
+      if (prevObj && this.areObjectsEqual(obj, prevObj)) {
+        return prevObj;
+      }
+
+      return {
         name: obj.name,
         type: obj.geometry.type,
         position: obj.position.clone(),
@@ -2316,7 +2572,14 @@ export class App {
         geometryParams: obj.userData.geometryParams ? { ...obj.userData.geometryParams } : null,
         visible: obj.visible,
         uuid: obj.uuid,
-      })),
+      };
+    });
+
+    // Create a snapshot of the current state
+    const state = {
+      description: description,
+      timestamp: timestamp,
+      objects: objects,
       selectedObjectUuid: this.selectedObject ? this.selectedObject.uuid : null,
     };
 
@@ -2336,6 +2599,43 @@ export class App {
     }
 
     console.log(`State saved: ${description} (${this.historyIndex + 1}/${this.history.length})`);
+  }
+
+  areObjectsEqual(liveObj, stateObj) {
+    if (liveObj.name !== stateObj.name) return false;
+    if (liveObj.visible !== stateObj.visible) return false;
+
+    // Compare transforms
+    // @ts-ignore
+    if (!liveObj.position.equals(stateObj.position)) return false;
+    // @ts-ignore
+    if (!liveObj.rotation.equals(stateObj.rotation)) return false;
+    // @ts-ignore
+    if (!liveObj.scale.equals(stateObj.scale)) return false;
+
+    // Compare material
+    // @ts-ignore
+    if (!liveObj.material.color.equals(stateObj.material.color)) return false;
+    // @ts-ignore
+    if (!liveObj.material.emissive.equals(stateObj.material.emissive)) return false;
+
+    // Compare geometry params
+    const liveParams = liveObj.userData.geometryParams;
+    const stateParams = stateObj.geometryParams;
+
+    if (!liveParams && !stateParams) return true;
+    if (!liveParams || !stateParams) return false;
+
+    // Shallow compare params
+    const keys1 = Object.keys(liveParams);
+    const keys2 = Object.keys(stateParams);
+    if (keys1.length !== keys2.length) return false;
+
+    for (const key of keys1) {
+      if (liveParams[key] !== stateParams[key]) return false;
+    }
+
+    return true;
   }
 
   undo() {
@@ -2520,6 +2820,11 @@ export class App {
         this.physicsManager.update(deltaTime);
     }
 
+    const deltaTime = this.clock.getDelta();
+    if (this.physicsManager) {
+        this.physicsManager.update(deltaTime);
+    }
+
     this.orbitControls.update();
     this.renderer.render(this.scene, this.camera);
   }
@@ -2528,13 +2833,15 @@ export class App {
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
-<<<<<<< HEAD
   new App();
+<<<<<<< HEAD
+=======
 =======
 <<<<<<< HEAD
     new App();
 =======
   new App();
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 });

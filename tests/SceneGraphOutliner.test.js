@@ -63,7 +63,6 @@ jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
 describe('Scene Graph/Outliner Functionality', () => {
   let dom, app;
 
-<<<<<<< HEAD
 =======
 <<<<<<< HEAD
     beforeEach(() => {
@@ -88,8 +87,11 @@ describe('Scene Graph/Outliner Functionality', () => {
                     this.children.push(child);
                     return child;
                 }),
+<<<<<<< HEAD
+=======
                 appendChild: jest.fn(),
                 setAttribute: jest.fn(),
+>>>>>>> master
 >>>>>>> master
                 textContent: '',
                 _innerHTML: '',
@@ -127,9 +129,12 @@ describe('Scene Graph/Outliner Functionality', () => {
                     if (this.children) this.children.forEach(traverse);
                     return results;
                 })
+<<<<<<< HEAD
+=======
                 setAttribute: jest.fn(),
                 getAttribute: jest.fn((attr) => element[attr]),
                 title: ''
+>>>>>>> master
 >>>>>>> master
             };
             
@@ -311,11 +316,14 @@ describe('Scene Graph/Outliner Functionality', () => {
         });
 
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         if (this.objects.length === 0) {
             const empty = document.createElement('li');
             empty.textContent = 'No objects in scene';
             this.objectsList.appendChild(empty);
 =======
+>>>>>>> master
         });
 
             setupSceneGraph() {
@@ -337,8 +345,11 @@ describe('Scene Graph/Outliner Functionality', () => {
                     listItem.setAttribute('role', 'button');
                     listItem.setAttribute('tabindex', '0');
                     listItem.setAttribute('aria-label', `Select ${object.name || `Object_${index + 1}`}`);
+<<<<<<< HEAD
+=======
                     listItem.setAttribute('role', 'button');
                     listItem.setAttribute('tabindex', '0');
+>>>>>>> master
 >>>>>>> master
 
                     const objectInfo = document.createElement('div');
@@ -361,6 +372,8 @@ describe('Scene Graph/Outliner Functionality', () => {
                     deleteBtn.setAttribute('aria-label', deleteLabel);
                     deleteBtn.title = deleteLabel;
 
+<<<<<<< HEAD
+=======
                     visibilityBtn.textContent = object.visible ? '👁' : '🚫';
                     visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
                     visibilityBtn.setAttribute('title', object.visible ? 'Hide object' : 'Show object');
@@ -384,6 +397,7 @@ describe('Scene Graph/Outliner Functionality', () => {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
                     positionInfo.textContent = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
                     
                     // Mock event handlers
@@ -394,11 +408,14 @@ describe('Scene Graph/Outliner Functionality', () => {
                         visibilityBtn.textContent = object.visible ? '👁' : '🚫';
                         visibilityBtn.setAttribute('aria-label', newLabel);
                         visibilityBtn.title = newLabel;
+<<<<<<< HEAD
+=======
                         visibilityBtn.setAttribute('aria-label', label);
                         visibilityBtn.setAttribute('title', label);
                         visibilityBtn.title = label;
                         visibilityBtn.setAttribute('aria-label', label);
                         visibilityBtn.setAttribute('aria-label', object.visible ? 'Hide object' : 'Show object');
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -485,6 +502,9 @@ describe('Scene Graph/Outliner Functionality', () => {
           const emptyMessage = document.createElement('li');
           emptyMessage.textContent = 'No objects in scene';
           this.objectsList.appendChild(emptyMessage);
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
 =======
 >>>>>>> master
@@ -610,6 +630,8 @@ describe('Scene Graph/Outliner Functionality', () => {
 
       expect(app.selectedObject).toBeNull();
     });
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 
@@ -762,6 +784,7 @@ describe('Scene Graph/Outliner Functionality', () => {
     });
 });
 >>>>>>> master
+>>>>>>> master
   });
 
   describe('Visibility Toggle', () => {
@@ -869,10 +892,13 @@ describe('Scene Graph/Outliner Functionality', () => {
         });
     });
 });
+<<<<<<< HEAD
+=======
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master

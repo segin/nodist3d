@@ -7,6 +7,8 @@ export class ObjectPropertyUpdater {
   }
 
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
     /**
      * @param {import('./PrimitiveFactory.js').PrimitiveFactory} primitiveFactory
      */
@@ -66,6 +68,7 @@ export class ObjectPropertyUpdater {
                 object.geometry.dispose();
                 // @ts-ignore
                 object.geometry = newGeometry;
+>>>>>>> master
   updateMaterial(object, newMaterialProperties) {
     if (object && object.material) {
       const materials = Array.isArray(object.material) ? object.material : [object.material];
@@ -76,6 +79,9 @@ export class ObjectPropertyUpdater {
               material.color.set(newMaterialProperties[prop]);
             } else {
               material[prop] = newMaterialProperties[prop];
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
             }
           }
@@ -92,13 +98,26 @@ export class ObjectPropertyUpdater {
   addTexture(object, file, type = 'map') {
     if (!object.material) return;
 
+<<<<<<< HEAD
+=======
     // Use window.THREE if available (browser), otherwise global.THREE (test)
     const THREE = window.THREE || global.THREE;
+>>>>>>> master
     const loader = new THREE.TextureLoader();
     const url = URL.createObjectURL(file);
     loader.load(
       url,
       (texture) => {
+<<<<<<< HEAD
+        if (type === 'map') {
+          object.material.map = texture;
+        } else if (type === 'normalMap') {
+          object.material.normalMap = texture;
+        } else if (type === 'roughnessMap') {
+          object.material.roughnessMap = texture;
+        }
+        object.material.needsUpdate = true;
+=======
         const materials = Array.isArray(object.material) ? object.material : [object.material];
         materials.forEach(material => {
             if (type === 'map') {
@@ -110,6 +129,7 @@ export class ObjectPropertyUpdater {
             }
             material.needsUpdate = true;
         });
+>>>>>>> master
         URL.revokeObjectURL(url); // Clean up the object URL
       },
       undefined,

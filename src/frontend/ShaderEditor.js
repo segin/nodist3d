@@ -16,12 +16,15 @@ export class ShaderEditor {
     this.uniforms = {};
     this.editorFolder = null;
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
      * Creates an instance of ShaderEditor.
      * @param {GUI} gui - The dat.GUI instance.
      * @param {THREE.WebGLRenderer} renderer - The renderer.
      * @param {THREE.Scene} scene - The scene.
      * @param {THREE.Camera} camera - The camera.
      * @param {any} eventBus - The event bus.
+>>>>>>> master
      */
     constructor(gui, renderer, scene, camera, eventBus) {
         this.eventBus = eventBus;
@@ -69,6 +72,8 @@ export class ShaderEditor {
 
     const vertexShader = `
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         }
         if (this.shaderMesh) {
             this.scene.remove(this.shaderMesh);
@@ -78,6 +83,7 @@ export class ShaderEditor {
             // @ts-ignore: dat.gui types might not have removeFolder correctly typed or editorFolder is possibly null
             this.editorFolder.removeFolder(this.uniformsFolder);
             this.uniformsFolder = null;
+>>>>>>> master
         }
 
         const vertexShader = `
@@ -116,6 +122,8 @@ export class ShaderEditor {
     if (this.uniformsFolder) {
       this.editorFolder.removeFolder(this.uniformsFolder);
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         this.shaderMesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.shaderMaterial);
         this.shaderMesh.name = 'ShaderMesh';
         this.scene.add(this.shaderMesh);
@@ -127,11 +135,16 @@ export class ShaderEditor {
         if (this.eventBus) {
             this.eventBus.publish('objectAdded', this.shaderMesh);
         }
+>>>>>>> master
 
         this.addShaderControls();
 
         return this.shaderMesh;
+<<<<<<< HEAD
+=======
+=======
         return mesh;
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -185,12 +198,15 @@ export class ShaderEditor {
       });
   }
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         this.uniforms.myColor = { value: new THREE.Color(0xff0000) };
         this.uniformsFolder.addColor(this.uniforms.myColor, 'value').name('Color').onChange(() => {
             if (this.shaderMaterial) this.shaderMaterial.needsUpdate = true;
         // @ts-ignore
         this.uniforms.myColor = { value: new THREE.Color(0xff0000) };
         // @ts-ignore
+>>>>>>> master
         this.uniformsFolder.addColor(this.uniforms.myColor, 'value').name('Color').onChange(() => {
             // @ts-ignore
             this.shaderMaterial.needsUpdate = true;

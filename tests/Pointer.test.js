@@ -46,6 +46,8 @@ describe('Pointer', () => {
   });
 
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
     beforeEach(() => {
         camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
         scene = new THREE.Scene();
@@ -72,6 +74,7 @@ describe('Pointer', () => {
         // Mock window properties
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 200 });
         Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 100 });
+>>>>>>> master
 
     global.pointerInstance = new Pointer(camera, scene, renderer, eventBus);
     mockEvent.target = renderer.domElement;
@@ -82,12 +85,15 @@ describe('Pointer', () => {
         // Reset EventBus subscribers (implementation detail of mock/real EventBus)
         if (EventBus.events) EventBus.events = {};
     });
+<<<<<<< HEAD
+=======
   afterEach(() => {
     jest.restoreAllMocks();
     EventBus.events = {};
   });
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 
   it('should dispatch a `selectionChange` event when an object is selected', () => {
@@ -109,10 +115,13 @@ describe('Pointer', () => {
     expect(global.pointerInstance.selectedObject).toBe(mesh);
   });
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         expect(callback).toHaveBeenCalledWith(mesh);
     });
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 
   it('should dispatch `selectionChange` with a null payload on deselection', () => {
@@ -248,6 +257,8 @@ describe('Pointer', () => {
     document.body.appendChild(uiElement);
 
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         expect(callback).toHaveBeenCalledWith(null);
     });
 
@@ -275,6 +286,7 @@ describe('Pointer', () => {
         expect(global.pointerInstance.outline).toBeNull();
         expect(mesh.children).not.toContain(global.pointerInstance.outline); // outline is null, so checking not.toContain(null) is trivial but ok
     });
+>>>>>>> master
 
   it('`isDragging` flag should be true on `pointerdown` and false on `pointerup`', () => {
     expect(global.pointerInstance.isDragging).toBe(false);
@@ -320,6 +332,12 @@ describe('Pointer', () => {
             clientY: 50,
             target: uiElement
         };
+<<<<<<< HEAD
+
+    global.pointerInstance.onPointerDown(mockEvent);
+
+        expect(callback).not.toHaveBeenCalled();
+=======
     const mockEvent = {
       clientX: 50,
       clientY: 50,
@@ -337,10 +355,15 @@ describe('Pointer', () => {
 >>>>>>> master
 =======
 >>>>>>> master
+>>>>>>> master
 
     document.body.removeChild(uiElement);
   });
 
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> master
 <<<<<<< HEAD
     it('`removeOutline` should not throw an error if called when no outline exists', () => {
         global.pointerInstance.outline = null;
@@ -348,6 +371,8 @@ describe('Pointer', () => {
             global.pointerInstance.removeOutline();
         }).not.toThrow();
     });
+<<<<<<< HEAD
+=======
   it('`removeOutline` should not throw an error if called when no outline exists', () => {
     // Ensure no outline exists initially
     global.pointerInstance.outline = null;
@@ -357,6 +382,7 @@ describe('Pointer', () => {
   });
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 
   it('Raycasting should correctly identify the front-most object if multiple are overlapping', () => {
@@ -377,10 +403,16 @@ describe('Pointer', () => {
     scene.add(meshBack);
 
 <<<<<<< HEAD
+=======
+=======
+>>>>>>> master
+<<<<<<< HEAD
         jest.spyOn(global.pointerInstance.raycaster, 'intersectObjects').mockReturnValue([
             { object: meshFront, distance: 1 },
             { object: meshBack, distance: 3 }
         ]);
+<<<<<<< HEAD
+=======
     // Mock raycaster to return both objects, with the front one first
     jest.spyOn(global.pointerInstance.raycaster, 'intersectObjects').mockReturnValue([
       { object: meshFront, distance: 1 },
@@ -388,6 +420,7 @@ describe('Pointer', () => {
     ]);
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 
     const callback = jest.fn();
@@ -400,9 +433,12 @@ describe('Pointer', () => {
     expect(global.pointerInstance.selectedObject).toBe(meshFront);
   });
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         expect(callback).toHaveBeenCalledWith(meshFront);
     });
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 });

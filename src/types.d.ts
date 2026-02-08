@@ -14,6 +14,8 @@ declare global {
 
     interface SceneObject extends Object3D {
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
 type SceneObject = import('three').Object3D & {
     userData: {
         geometryParams?: any;
@@ -69,6 +71,7 @@ interface Window {
 
 declare function importScripts(...urls: string[]): void;
     interface SceneObject extends THREE.Object3D {
+>>>>>>> master
 >>>>>>> master
         userData: {
             geometryParams?: any;

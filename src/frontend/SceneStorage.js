@@ -4,10 +4,13 @@ import * as THREE from 'three';
 import log from './logger.js';
 
 export class SceneStorage {
+<<<<<<< HEAD
+=======
   /**
    * @param {THREE.Scene} scene
    * @param {any} eventBus
    */
+>>>>>>> master
   constructor(scene, eventBus) {
     this.eventBus = eventBus;
     this.scene = scene;
@@ -54,6 +57,8 @@ export class SceneStorage {
           resolve(event.data.data);
         } else if (event.data.type === 'error') {
           reject(new Error(event.data.message + ': ' + event.data.error));
+<<<<<<< HEAD
+=======
         this.worker.onmessage = this.handleWorkerMessage.bind(this);
 =======
 <<<<<<< HEAD
@@ -70,6 +75,7 @@ export class SceneStorage {
 
 >>>>>>> master
         /** @type {((value: any) => void) | null} */
+>>>>>>> master
         this.loadPromiseResolve = null;
         /** @type {((value: any) => void) | null} */
         this.savePromiseResolve = null;
@@ -100,7 +106,6 @@ export class SceneStorage {
         }
 
         // Serialize the scene using the worker
-<<<<<<< HEAD
         let sceneJson;
         try {
             sceneJson = await new Promise((resolve, reject) => {
@@ -121,6 +126,8 @@ export class SceneStorage {
         if (!sceneJson) {
              throw new Error('Serialization failed: Empty data received');
         }
+<<<<<<< HEAD
+=======
 >>>>>>> master
             const handleMessage = (event) => {
                 if (event.data.type === 'serialize_complete') {
@@ -133,6 +140,7 @@ export class SceneStorage {
             const originalOnMessage = this.worker.onmessage;
             this.savePromiseResolve = resolve;
             this.savePromiseReject = reject;
+>>>>>>> master
             this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
 =======
             // OPTIMIZATION: Patch BufferAttribute.toJSON to return TypedArrays directly
@@ -168,6 +176,9 @@ export class SceneStorage {
             };
 
 <<<<<<< HEAD
+            this.worker.addEventListener('message', handleMessage);
+=======
+<<<<<<< HEAD
             // We use addEventListener to not override the default onmessage handler completely
             // (though in this implementation we overwrite it in constructor anyway, but this is safer for future)
 =======
@@ -199,6 +210,7 @@ export class SceneStorage {
             // Send data to worker. We do NOT transfer buffers because that would detach them
             // from the main thread, breaking the live scene. Structured cloning (default)
             // copies the buffers, which is fast enough and safe.
+>>>>>>> master
             this.worker.postMessage({ type: 'serialize', data: sceneData });
 >>>>>>> master
         });
@@ -393,16 +405,18 @@ export class SceneStorage {
             const loadedScene = loader.parse(data);
 
             // Add loaded objects back to the scene
-<<<<<<< HEAD
             while (loadedScene.children.length > 0) {
                 this.scene.add(loadedScene.children[0]);
             }
 
+<<<<<<< HEAD
+=======
 =======
             // Iterate backwards or use a while loop because scene.add removes the object from loadedScene.children
             while (loadedScene.children.length > 0) {
                 this.scene.add(loadedScene.children[0]);
             }
+>>>>>>> master
 >>>>>>> master
             if (this.loadPromiseResolve) {
                 this.loadPromiseResolve(loadedScene);

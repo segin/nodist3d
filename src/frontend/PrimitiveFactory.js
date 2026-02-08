@@ -183,6 +183,8 @@ export class PrimitiveFactory {
         }
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
 =======
 <<<<<<< HEAD
 >>>>>>> master
@@ -360,6 +362,7 @@ export class PrimitiveFactory {
         return mesh;
 <<<<<<< HEAD
 >>>>>>> master
+>>>>>>> master
         geometry = new THREE.LatheGeometry(pointsLathe);
         color = options.color || 0x00ff80;
         mesh = this._createMesh(geometry, color);
@@ -367,10 +370,15 @@ export class PrimitiveFactory {
       case 'Extrude':
         const shape = new THREE.Shape();
 <<<<<<< HEAD
+        const x = 0,
+          y = 0;
+=======
+<<<<<<< HEAD
         const x = 0, y = 0;
 =======
         const x = 0,
           y = 0;
+>>>>>>> master
 >>>>>>> master
         shape.moveTo(x + 0.5, y + 0.5);
         shape.bezierCurveTo(x + 0.5, y + 0.5, x + 0.4, y, x, y);
@@ -416,6 +424,8 @@ export class PrimitiveFactory {
       default:
         log.error(`Unknown primitive type: ${type}`);
         return null;
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 =======
@@ -577,6 +587,7 @@ export class PrimitiveFactory {
         for (let i = 0; i < 10; i++) {
           pointsLathe.push(new THREE.Vector2(Math.sin(i * 0.2) * 0.5 + 0.5, (i - 5) * 0.2));
         }
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

@@ -86,6 +86,8 @@ describe('GroupManager', () => {
   });
 
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
     beforeEach(() => {
         scene = new Scene();
         eventBus = EventBus;
@@ -116,6 +118,7 @@ describe('GroupManager', () => {
         expect(scene.children).not.toContain(object1);
         expect(scene.children).not.toContain(object2);
     });
+>>>>>>> master
 
   it('should refuse to create a group with fewer than two objects', () => {
     const group = groupManager.groupObjects([object1]);
@@ -168,6 +171,14 @@ describe('GroupManager', () => {
         const object4 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
         object4.name = 'Object4';
         scene.add(object4);
+<<<<<<< HEAD
+
+    const group2 = groupManager.groupObjects([group1, object4]);
+
+=======
+<<<<<<< HEAD
+>>>>>>> master
+=======
   it('should allow grouping a group with another object', () => {
     const group1 = groupManager.groupObjects([object1, object2]);
     const object4 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
@@ -244,6 +255,7 @@ describe('GroupManager', () => {
 
     const group2 = groupManager.groupObjects([group1, object4]);
 
+>>>>>>> master
         expect(group2).toBeInstanceOf(Group);
         expect(scene.children).toContain(group2);
         expect(group2.children).toContain(group1);
@@ -259,23 +271,6 @@ describe('GroupManager', () => {
         meshB.name = 'MeshB';
         const meshC = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
         meshC.name = 'MeshC';
-=======
-    expect(group2).toBeInstanceOf(THREE.Group);
-    expect(scene.children).toContain(group2);
-    expect(group2.children).toContain(group1);
-    expect(group2.children).toContain(object4);
-    expect(scene.children).not.toContain(group1);
-    expect(scene.children).not.toContain(object4);
-  });
-
-  it('should correctly handle ungrouping a nested group, restoring all objects to the scene', () => {
-    const meshA = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
-    meshA.name = 'MeshA';
-    const meshB = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
-    meshB.name = 'MeshB';
-    const meshC = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
-    meshC.name = 'MeshC';
->>>>>>> master
 
     scene.add(meshA, meshB, meshC);
 
@@ -331,6 +326,8 @@ describe('GroupManager', () => {
         mesh1.getWorldPosition(newMesh1WorldPosition);
         const newMesh2WorldPosition = new Vector3();
         mesh2.getWorldPosition(newMesh2WorldPosition);
+<<<<<<< HEAD
+=======
     // After grouping, the objects' world positions should remain the same
     const newMesh1WorldPosition = new THREE.Vector3();
     mesh1.getWorldPosition(newMesh1WorldPosition);
@@ -338,6 +335,7 @@ describe('GroupManager', () => {
     mesh2.getWorldPosition(newMesh2WorldPosition);
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 
     expect(newMesh1WorldPosition.x).toBeCloseTo(mesh1WorldPosition.x);
@@ -350,6 +348,10 @@ describe('GroupManager', () => {
   });
 
 <<<<<<< HEAD
+=======
+=======
+>>>>>>> master
+<<<<<<< HEAD
     it('should return an empty array when trying to ungroup a non-group object', () => {
         const mesh = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
         scene.add(mesh);
@@ -357,6 +359,8 @@ describe('GroupManager', () => {
         expect(ungroupedObjects).toEqual([]);
         expect(scene.children).toContain(mesh);
     });
+<<<<<<< HEAD
+=======
   it('should return an empty array when trying to ungroup a non-group object', () => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
     scene.add(mesh);
@@ -366,6 +370,7 @@ describe('GroupManager', () => {
   });
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 
   it('`ungroupObjects` should return an array containing all the former children', () => {
@@ -378,11 +383,17 @@ describe('GroupManager', () => {
   });
 
 <<<<<<< HEAD
+=======
+=======
+>>>>>>> master
+<<<<<<< HEAD
     it('Grouping should remove the original objects from the scene and add the new group', () => {
         const mesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
         const mesh2 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
         scene.add(mesh1);
         scene.add(mesh2);
+<<<<<<< HEAD
+=======
   it('Grouping should remove the original objects from the scene and add the new group', () => {
     const mesh1 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
     const mesh2 = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
@@ -390,6 +401,7 @@ describe('GroupManager', () => {
     scene.add(mesh2);
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 
     expect(scene.children).toContain(mesh1);
@@ -403,16 +415,23 @@ describe('GroupManager', () => {
   });
 
 <<<<<<< HEAD
+=======
+=======
+>>>>>>> master
+<<<<<<< HEAD
     it('An empty group should be removable from the scene', () => {
         const emptyGroup = new Group();
         scene.add(emptyGroup);
         expect(scene.children).toContain(emptyGroup);
+<<<<<<< HEAD
+=======
   it('An empty group should be removable from the scene', () => {
     const emptyGroup = new THREE.Group();
     scene.add(emptyGroup);
     expect(scene.children).toContain(emptyGroup);
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 
     groupManager.ungroupObjects(emptyGroup);
@@ -459,6 +478,8 @@ describe('GroupManager', () => {
   });
 
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
     it('Grouping objects with existing animations should continue to work', () => {
         const animatedMesh1 = new Mesh(new BoxGeometry(), new MeshBasicMaterial());
         animatedMesh1.name = 'AnimatedMesh1';
@@ -469,6 +490,7 @@ describe('GroupManager', () => {
         animatedMesh2.name = 'AnimatedMesh2';
         animatedMesh2.rotation.y = 0; // Initial rotation
         scene.add(animatedMesh2);
+>>>>>>> master
 
     // Simulate animation by manually updating rotation
     const animate = (mesh) => {

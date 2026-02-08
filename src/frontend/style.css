@@ -132,6 +132,8 @@ body {
 }
 
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
 #scene-graph-panel li:focus-visible,
 #scene-graph li:focus-visible {
     outline: 2px solid white;
@@ -145,6 +147,7 @@ body {
     border-radius: 2px;
 }
 
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 =======
@@ -301,6 +304,8 @@ body {
     background: rgba(255, 255, 255, 0.5);
   }
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
 /* Accessibility focus state */
 .scene-graph-item:focus {
     outline: 2px solid #007bff;
@@ -364,5 +369,6 @@ body {
     transform: none;
     align-items: flex-end;
   }
+>>>>>>> master
 >>>>>>> master
 }

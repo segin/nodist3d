@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
 import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, MeshStandardMaterial, PointLight, DirectionalLight, Group, AmbientLight } from 'three';
 import { SceneStorage } from '../src/frontend/SceneStorage.js';
 import JSZip from 'jszip';
@@ -11,6 +13,7 @@ import { EventBus } from '../src/frontend/EventBus.js';
 <<<<<<< HEAD
 import { Scene, Mesh, BoxGeometry, MeshBasicMaterial, MeshStandardMaterial, PointLight, DirectionalLight, Group, AmbientLight } from 'three';
 =======
+>>>>>>> master
 >>>>>>> master
 import {
   Scene,
@@ -24,6 +27,9 @@ import {
 } from 'three';
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 import { SceneStorage } from '../src/frontend/SceneStorage.js';
@@ -43,12 +49,15 @@ jest.mock('../src/frontend/logger.js', () => ({
     default: { error: jest.fn() }
 }));
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
 
 jest.mock('../src/frontend/ObjectManager.js', () => {
 =======
 <<<<<<< HEAD
 
 jest.mock('../src/frontend/PrimitiveFactory.js');
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 
@@ -69,6 +78,8 @@ jest.mock('../src/frontend/ObjectManager.js', () => {
       updateMaterial: jest.fn(),
     })),
   };
+<<<<<<< HEAD
+=======
 =======
 
 jest.mock('../src/frontend/ObjectManager.js', () => {
@@ -89,6 +100,7 @@ jest.mock('../src/frontend/ObjectManager.js', () => {
             updateMaterial: jest.fn(),
         })),
     };
+>>>>>>> master
 >>>>>>> master
 });
 
@@ -228,6 +240,8 @@ class MockWorker {
         this.onmessage({ data: { type: 'deserialize_complete', data: mockScene } });
       }
 >>>>>>> master
+<<<<<<< HEAD
+=======
         setTimeout(() => {
             const dispatch = (data) => {
                 const event = { data };
@@ -368,6 +382,7 @@ class MockWorker {
             if (this.onmessage) {
                 this.onmessage({ data: { type: 'deserialize_complete', data: mockScene } });
 >>>>>>> master
+>>>>>>> master
             }
         }
 >>>>>>> master
@@ -376,6 +391,8 @@ class MockWorker {
 
 global.Worker = MockWorker;
 
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
@@ -401,6 +418,7 @@ global.Worker = MockWorker;
 
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
 // Mock URL.createObjectURL and URL.revokeObjectURL
 >>>>>>> master
 global.URL = {
@@ -409,6 +427,8 @@ global.URL = {
 };
 
 describe('SceneStorage', () => {
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
@@ -611,6 +631,7 @@ describe('SceneStorage', () => {
     });
 });
 =======
+>>>>>>> master
 >>>>>>> master
   let scene;
   let sceneStorage;
@@ -867,6 +888,8 @@ describe('SceneStorage', () => {
         async: jest.fn().mockResolvedValue(mockFileContent),
       }),
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
     let originalWorker;
     let originalConsoleError;
 
@@ -1004,6 +1027,7 @@ describe('SceneStorage', () => {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
         scene = new Scene();
 
         // Override scene.toJSON to return actual children data for the worker recursively
@@ -1056,6 +1080,8 @@ describe('SceneStorage', () => {
         jest.spyOn(eventBus, 'publish');
 
         sceneStorage = new SceneStorage(scene, eventBus);
+<<<<<<< HEAD
+=======
 
         // Inject MockWorker explicitly to bypass JSDOM Worker limitations
         const mockWorker = new MockWorker();
@@ -1063,6 +1089,7 @@ describe('SceneStorage', () => {
         mockWorker.onmessage = sceneStorage.handleWorkerMessage.bind(sceneStorage);
         sceneStorage.worker = mockWorker;
 
+>>>>>>> master
 >>>>>>> master
         primitiveFactory = new PrimitiveFactory();
         objectManager = new ObjectManager(scene, eventBus, null, primitiveFactory, null, null, null);
@@ -1152,7 +1179,10 @@ describe('SceneStorage', () => {
         async: jest.fn().mockResolvedValue(mockFileContent),
       }),
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         await sceneStorage.saveScene();
+>>>>>>> master
 
         // Simulate the worker message for serialization completion
         const sceneJson = JSON.stringify(scene.toJSON());
@@ -1161,10 +1191,13 @@ describe('SceneStorage', () => {
         await savePromise; // Wait for the save operation to complete
 
         // In a real scenario, you'd inspect the generated blob. Here, we check the mock calls.
+<<<<<<< HEAD
+=======
         expect(URL.createObjectURL).toHaveBeenCalled();
         expect(URL.revokeObjectURL).toHaveBeenCalled();
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
     });
 
@@ -1246,7 +1279,10 @@ describe('SceneStorage', () => {
         async: jest.fn().mockResolvedValue(mockFileContent),
       }),
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         await sceneStorage.saveScene();
+>>>>>>> master
 
         // Simulate the worker message for serialization completion
         const sceneJson = JSON.stringify(scene.toJSON());
@@ -1307,8 +1343,11 @@ describe('SceneStorage', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 >>>>>>> master
 
+<<<<<<< HEAD
+=======
 =======
 
+>>>>>>> master
 >>>>>>> master
     expect(scene.children.length).toBe(1);
     const loadedMesh = scene.children[0];
@@ -1323,6 +1362,8 @@ describe('SceneStorage', () => {
     sceneStorage.worker.onmessage({ data: { type: 'serialize_complete', data: sceneJson } });
     await savePromise;
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         const zip = new JSZip();
         zip.file('scene.json', JSON.stringify(mockSceneData.object));
         const mockFile = await zip.generateAsync({ type: 'blob' });
@@ -1334,6 +1375,7 @@ describe('SceneStorage', () => {
                 }))
             })
         }));
+>>>>>>> master
 
     // Clear the scene before loading
     while (scene.children.length > 0) {
@@ -1347,11 +1389,14 @@ describe('SceneStorage', () => {
       file: jest.fn().mockReturnValue({
         async: jest.fn().mockResolvedValue(mockFileContent),
       }),
+<<<<<<< HEAD
+=======
         mockJSZipInstance.loadAsync.mockResolvedValue({
             file: jest.fn().mockReturnValue({
                 async: jest.fn().mockResolvedValue(mockFileContent)
             })
         });
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 
@@ -1364,6 +1409,8 @@ describe('SceneStorage', () => {
         expect(scene.children.length).toBe(1);
         const loadedObject = scene.children[0];
         expect(loadedObject.name).toBe('LoadedCube');
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
     });
 
@@ -1391,14 +1438,18 @@ describe('SceneStorage', () => {
         await expect(sceneStorage.loadScene(file)).rejects.toThrow();
     });
 =======
+>>>>>>> master
         expect(loadedObject.position.x).toBe(10);
         expect(loadedObject.position.y).toBe(20);
         expect(loadedObject.position.z).toBe(30);
         expect(loadedObject.material.color.getHex()).toBe(0x00ff00);
     }, 10000);
+<<<<<<< HEAD
+=======
     });
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 
     await sceneStorage.loadScene(mockFile);
@@ -1480,6 +1531,8 @@ describe('SceneStorage', () => {
         const zip = new JSZip();
         zip.file('scene.json', JSON.stringify(mockSceneData.object));
         const mockFile = await zip.generateAsync({ type: 'blob' });
+<<<<<<< HEAD
+=======
         global.JSZip.mockImplementationOnce(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn(() => ({
@@ -1493,6 +1546,7 @@ describe('SceneStorage', () => {
                 async: jest.fn().mockResolvedValue(mockFileContent)
             })
         });
+>>>>>>> master
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn().mockReturnValue({
                     async: jest.fn().mockResolvedValue(mockFileContent)
@@ -1535,6 +1589,8 @@ describe('SceneStorage', () => {
         const zip = new JSZip();
         zip.file('scene.json', JSON.stringify(mockSceneData.object));
         const mockFile = await zip.generateAsync({ type: 'blob' });
+<<<<<<< HEAD
+=======
         global.JSZip.mockImplementationOnce(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn(() => ({
@@ -1554,6 +1610,7 @@ describe('SceneStorage', () => {
                 async: jest.fn().mockResolvedValue(mockFileContent)
             })
         });
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 
@@ -1587,6 +1644,10 @@ describe('SceneStorage', () => {
         expect(loadedObject.scale.z).toBeCloseTo(0.7);
         expect(loadedObject.material.color.getHex()).toBe(0xabcdef);
     }, 10000);
+<<<<<<< HEAD
+
+    xit('should preserve the UUID of objects when loading a scene', async () => {
+=======
     });
 >>>>>>> master
 
@@ -1631,6 +1692,7 @@ describe('SceneStorage', () => {
       file: jest.fn().mockReturnValue({
         async: jest.fn().mockResolvedValue(mockFileContent),
       }),
+>>>>>>> master
         const mockUUID = 'test-uuid-123';
         const mockSceneData = {
             metadata: { version: 4.5, type: 'Scene', generator: 'SceneExporter' },
@@ -1652,6 +1714,8 @@ describe('SceneStorage', () => {
         const zip = new JSZip();
         zip.file('scene.json', JSON.stringify(mockSceneData.object));
         const mockFile = await zip.generateAsync({ type: 'blob' });
+<<<<<<< HEAD
+=======
         global.JSZip.mockImplementationOnce(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn(() => ({
@@ -1659,6 +1723,7 @@ describe('SceneStorage', () => {
                 }))
             })
         }));
+>>>>>>> master
 
         await sceneStorage.loadScene(mockFile);
 
@@ -1698,6 +1763,8 @@ describe('SceneStorage', () => {
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
 
         jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
+<<<<<<< HEAD
+=======
         global.JSZip.mockImplementationOnce(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn().mockReturnValue({
@@ -1706,6 +1773,7 @@ describe('SceneStorage', () => {
             })
         }));
         mockJSZipInstance.loadAsync.mockResolvedValue({
+>>>>>>> master
             file: jest.fn().mockReturnValue({
                 async: jest.fn().mockResolvedValue(mockFileContent)
             })
@@ -1726,8 +1794,11 @@ describe('SceneStorage', () => {
         }));
 
         expect(scene.children.length).toBe(3);
+<<<<<<< HEAD
+=======
         // Wait for the worker to complete deserialization
         await new Promise(resolve => setTimeout(resolve, 500));
+>>>>>>> master
 
         expect(scene.children.length).toBe(1);
         const loadedObject = scene.children[0];
@@ -1801,9 +1872,12 @@ describe('SceneStorage', () => {
         async: jest.fn().mockResolvedValue(mockFileContent),
       }),
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         await sceneStorage.saveScene();
 
         // Capture serialized data BEFORE clearing
+>>>>>>> master
         const sceneJson = JSON.stringify(scene.toJSON());
         const mockFileContent = sceneJson;
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
@@ -1813,9 +1887,12 @@ describe('SceneStorage', () => {
                 file: jest.fn().mockReturnValue({
                     async: jest.fn().mockResolvedValue(mockFileContent)
                 })
+<<<<<<< HEAD
+=======
         mockJSZipInstance.loadAsync.mockResolvedValue({
             file: jest.fn().mockReturnValue({
                 async: jest.fn().mockResolvedValue(mockFileContent)
+>>>>>>> master
             })
         }));
 
@@ -1878,6 +1955,8 @@ describe('SceneStorage', () => {
   });
 });
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
         scene.toJSON = jest.fn(() => ({
             metadata: { version: 4.5, type: 'Scene' },
             object: {
@@ -1906,6 +1985,7 @@ describe('SceneStorage', () => {
         // Capture serialized data BEFORE clearing
         const sceneJson = JSON.stringify(scene.toJSON());
 >>>>>>> master
+>>>>>>> master
 
         while(scene.children.length > 0) {
             scene.remove(scene.children[0]);
@@ -1915,6 +1995,8 @@ describe('SceneStorage', () => {
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
 
         jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
+<<<<<<< HEAD
+=======
         global.JSZip.mockImplementationOnce(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn(() => ({
@@ -1925,6 +2007,7 @@ describe('SceneStorage', () => {
                 file: jest.fn().mockReturnValue({
                     async: jest.fn().mockResolvedValue(mockFileContent)
                 })
+>>>>>>> master
             file: jest.fn().mockReturnValue({
                 async: jest.fn().mockResolvedValue(mockFileContent)
 >>>>>>> master
@@ -1973,11 +2056,14 @@ describe('SceneStorage', () => {
 
         // Mock JSZip.loadAsync to throw an error for invalid zip files
         jest.spyOn(JSZip.prototype, 'loadAsync').mockRejectedValue(new Error('Invalid or unsupported zip file'));
+<<<<<<< HEAD
+=======
         // Override global.JSZip to fail loadAsync
         global.JSZip.mockImplementationOnce(() => ({
             loadAsync: jest.fn().mockRejectedValue(new Error('Invalid or unsupported zip file'))
         }));
         mockJSZipInstance.loadAsync.mockRejectedValue(new Error('Invalid or unsupported zip file'));
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -1989,6 +2075,8 @@ describe('SceneStorage', () => {
         const zip = new JSZip();
         const blob = await zip.generateAsync({ type: 'blob' });
         const file = new File([blob], 'test.zip', { type: 'application/zip' });
+<<<<<<< HEAD
+=======
         global.JSZip.mockImplementationOnce(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn().mockReturnValue(null)
@@ -2008,6 +2096,7 @@ describe('SceneStorage', () => {
         mockJSZipInstance.loadAsync.mockResolvedValue({
             file: jest.fn().mockReturnValue(null)
         });
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -2037,8 +2126,11 @@ describe('SceneStorage', () => {
         const sceneJson = JSON.stringify(scene.toJSON());
         sceneStorage.worker.simulateMessage({ type: 'serialize_complete', data: sceneJson });
         await savePromise;
+<<<<<<< HEAD
+=======
         // Capture serialized data BEFORE clearing
         const sceneJson = JSON.stringify(scene.toJSON());
+>>>>>>> master
 >>>>>>> master
 
         while(scene.children.length > 0) {
@@ -2049,6 +2141,8 @@ describe('SceneStorage', () => {
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
 
         jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
+<<<<<<< HEAD
+=======
         global.JSZip.mockImplementationOnce(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn(() => ({
@@ -2059,6 +2153,7 @@ describe('SceneStorage', () => {
                 file: jest.fn().mockReturnValue({
                     async: jest.fn().mockResolvedValue(mockFileContent)
                 })
+>>>>>>> master
             file: jest.fn().mockReturnValue({
                 async: jest.fn().mockResolvedValue(mockFileContent)
 >>>>>>> master
@@ -2093,6 +2188,8 @@ describe('SceneStorage', () => {
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
 
         jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
+<<<<<<< HEAD
+=======
         global.JSZip.mockImplementationOnce(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn(() => ({
@@ -2103,6 +2200,7 @@ describe('SceneStorage', () => {
                 file: jest.fn().mockReturnValue({
                     async: jest.fn().mockResolvedValue(mockFileContent)
                 })
+>>>>>>> master
             file: jest.fn().mockReturnValue({
                 async: jest.fn().mockResolvedValue(mockFileContent)
 >>>>>>> master
@@ -2125,6 +2223,8 @@ describe('SceneStorage', () => {
         const mockFile = new Blob([corruptedJson], { type: 'application/zip' });
 
         jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
+<<<<<<< HEAD
+=======
         global.JSZip.mockImplementationOnce(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn(() => ({
@@ -2147,6 +2247,7 @@ describe('SceneStorage', () => {
         expect(scene.children.length).toBe(0); // Scene should remain empty or cleared
     }, 10000);
         mockJSZipInstance.loadAsync.mockResolvedValue({
+>>>>>>> master
             file: jest.fn().mockReturnValue({
                 async: jest.fn().mockResolvedValue(corruptedJson)
             })
@@ -2169,7 +2270,10 @@ describe('SceneStorage', () => {
         await new Promise(resolve => setTimeout(resolve, 10));
 
         expect(consoleErrorSpy).toHaveBeenCalledWith('Worker error:', expect.stringContaining('Unexpected token'), expect.any(String));
+<<<<<<< HEAD
+=======
         expect(consoleErrorSpy).toHaveBeenCalledWith('Worker error:', expect.any(String), expect.any(String));
+>>>>>>> master
         expect(scene.children.length).toBe(0); // Scene should remain empty or cleared
 =======
         expect(consoleErrorSpy).toHaveBeenCalledWith('Worker error:', 'SyntaxError', expect.any(String));
@@ -2207,8 +2311,11 @@ describe('SceneStorage', () => {
         const sceneJson = JSON.stringify(scene.toJSON());
         sceneStorage.worker.simulateMessage({ type: 'serialize_complete', data: sceneJson });
         await savePromise;
+<<<<<<< HEAD
+=======
         // Capture serialized data BEFORE clearing
         const sceneJson = JSON.stringify(scene.toJSON());
+>>>>>>> master
 >>>>>>> master
 
         while(scene.children.length > 0) {
@@ -2219,6 +2326,8 @@ describe('SceneStorage', () => {
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
 
         jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
+<<<<<<< HEAD
+=======
         global.JSZip.mockImplementationOnce(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn(() => ({
@@ -2229,6 +2338,7 @@ describe('SceneStorage', () => {
                 file: jest.fn().mockReturnValue({
                     async: jest.fn().mockResolvedValue(mockFileContent)
                 })
+>>>>>>> master
             file: jest.fn().mockReturnValue({
                 async: jest.fn().mockResolvedValue(mockFileContent)
 >>>>>>> master
@@ -2277,8 +2387,11 @@ describe('SceneStorage', () => {
         const sceneJson = JSON.stringify(scene.toJSON());
         sceneStorage.worker.simulateMessage({ type: 'serialize_complete', data: sceneJson });
         await savePromise;
+<<<<<<< HEAD
+=======
         // Capture serialized data BEFORE clearing
         const sceneJson = JSON.stringify(scene.toJSON());
+>>>>>>> master
 >>>>>>> master
 
         while(scene.children.length > 0) {
@@ -2289,6 +2402,8 @@ describe('SceneStorage', () => {
         const mockFile = new Blob([mockFileContent], { type: 'application/zip' });
 
         jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
+<<<<<<< HEAD
+=======
         global.JSZip.mockImplementationOnce(() => ({
             loadAsync: jest.fn().mockResolvedValue({
                 file: jest.fn(() => ({
@@ -2299,6 +2414,7 @@ describe('SceneStorage', () => {
                 file: jest.fn().mockReturnValue({
                     async: jest.fn().mockResolvedValue(mockFileContent)
                 })
+>>>>>>> master
             file: jest.fn().mockReturnValue({
                 async: jest.fn().mockResolvedValue(mockFileContent)
 >>>>>>> master
@@ -2333,8 +2449,11 @@ describe('SceneStorage', () => {
     }, 10000);
 
     xit('The load process should trigger an update in the SceneGraph', async () => {
+<<<<<<< HEAD
+=======
 
     it.skip('The load process should trigger an update in the SceneGraph', async () => {
+>>>>>>> master
         const mockSceneGraph = {
             update: jest.fn()
         };
@@ -2377,6 +2496,11 @@ describe('SceneStorage', () => {
         };
 
 <<<<<<< HEAD
+        jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
+            file: jest.fn().mockReturnValue({
+                async: jest.fn().mockResolvedValue(mockFileContent)
+=======
+<<<<<<< HEAD
         const buffer = new Float32Array([1, 2, 3]).buffer;
 
         const mockZip = {
@@ -2389,6 +2513,7 @@ describe('SceneStorage', () => {
         jest.spyOn(JSZip.prototype, 'loadAsync').mockResolvedValue({
             file: jest.fn().mockReturnValue({
                 async: jest.fn().mockResolvedValue(mockFileContent)
+>>>>>>> master
 >>>>>>> master
             })
         };
@@ -2415,6 +2540,9 @@ describe('SceneStorage', () => {
         // Restore original SceneGraph
         sceneStorage.sceneGraph = originalSceneGraph;
     });
+<<<<<<< HEAD
+=======
+>>>>>>> master
 >>>>>>> master
 
         // Update MockWorker to handle the buffer reconstruction based on the id
@@ -2435,10 +2563,13 @@ describe('SceneStorage', () => {
 });
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
 >>>>>>> master
 >>>>>>> master
 =======
 
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

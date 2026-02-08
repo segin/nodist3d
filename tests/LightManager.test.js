@@ -106,6 +106,10 @@ describe('LightManager', () => {
   });
 
 <<<<<<< HEAD
+=======
+=======
+>>>>>>> master
+<<<<<<< HEAD
     it('should allow updating ambient light position without error, even if it has no effect', () => {
         const ambientLight = lightManager.addLight('AmbientLight', 0xffffff, 1);
         // AmbientLight technically has a position (inherits from Object3D), even if it doesn't affect rendering.
@@ -116,6 +120,8 @@ describe('LightManager', () => {
         expect(ambientLight.position).toBeDefined();
         expect(ambientLight.position.x).toBe(10);
     });
+<<<<<<< HEAD
+=======
   it('should ensure ambient lights do not have a position property that can be updated', () => {
     const ambientLight = lightManager.addLight('AmbientLight', 0xffffff, 1);
     // AmbientLight does not have a position property, so attempting to update it should not cause an error
@@ -127,5 +133,6 @@ describe('LightManager', () => {
   });
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 });

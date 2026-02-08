@@ -8,6 +8,8 @@ jest.mock('three', () => {
   const mockElement = { createElement: jest.fn(() => ({ tagName: 'CANVAS' })) };
 
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
     const mockElement = { createElement: jest.fn(() => ({ tagName: 'CANVAS' })) };
     
     const mockVector3 = {
@@ -54,6 +56,7 @@ jest.mock('three', () => {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
             lookAt: jest.fn(),
             aspect: 1,
             updateProjectionMatrix: jest.fn()
@@ -77,6 +80,8 @@ jest.mock('three', () => {
         BufferGeometry: jest.fn(),
         ExtrudeGeometry: jest.fn(),
         LatheGeometry: jest.fn(),
+<<<<<<< HEAD
+=======
         BoxGeometry: jest.fn(),
         SphereGeometry: jest.fn(),
         CylinderGeometry: jest.fn(),
@@ -94,6 +99,7 @@ jest.mock('three', () => {
             load: jest.fn(),
         })),
         ShapeGeometry: jest.fn(),
+>>>>>>> master
         MeshLambertMaterial: jest.fn(() => ({
             emissive: { setHex: jest.fn() },
             clone: jest.fn(() => ({ emissive: { setHex: jest.fn() } }))
@@ -113,6 +119,11 @@ jest.mock('three', () => {
         Vector2: jest.fn(),
         Clock: jest.fn(),
         TOUCH: { ROTATE: 1, DOLLY_PAN: 2 },
+<<<<<<< HEAD
+        PCFSoftShadowMap: 'PCFSoftShadowMap',
+        DoubleSide: 'DoubleSide',
+        TOUCH: { ROTATE: 0, DOLLY_PAN: 1 }
+=======
         Clock: jest.fn(() => ({
             getDelta: jest.fn(() => 0.016)
         })),
@@ -131,6 +142,7 @@ jest.mock('three', () => {
                 this.load = jest.fn();
             }
         },
+>>>>>>> master
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide',
         TOUCH: { ROTATE: 1, DOLLY_PAN: 2 }
@@ -204,6 +216,10 @@ jest.mock('three', () => {
     PCFSoftShadowMap: 'PCFSoftShadowMap',
     DoubleSide: 'DoubleSide',
   };
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> master
 >>>>>>> master
 =======
 >>>>>>> master
@@ -242,6 +258,8 @@ jest.mock('dat.gui', () => ({
     })),
   })),
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
     __esModule: true,
     GUI: jest.fn(() => ({
         addFolder: jest.fn(() => ({
@@ -273,6 +291,7 @@ jest.mock('dat.gui', () => ({
             __folders: []
         }))
     }))
+>>>>>>> master
 }));
 
 // Mock OrbitControls
@@ -283,6 +302,8 @@ jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
     enabled: true,
     update: jest.fn(),
   })),
+<<<<<<< HEAD
+=======
     OrbitControls: class {
         constructor() {
             this.enableDamping = true;
@@ -302,6 +323,7 @@ jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
             clone: jest.fn(() => ({ x: 0, y: 0, z: 0 })),
             copy: jest.fn()
         }
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -476,7 +498,10 @@ describe('Basic App Functionality', () => {
                 removeEventListener: jest.fn(),
                 setAttribute: jest.fn(),
                 title: ''
+<<<<<<< HEAD
+=======
                 setAttribute: jest.fn()
+>>>>>>> master
 >>>>>>> master
             };
             
@@ -681,6 +706,8 @@ describe('Basic App Functionality', () => {
         expect(app.scene.add).toHaveBeenCalledWith(app.objects[0]);
         expect(app.transformControls.attach).toHaveBeenCalledWith(app.objects[0]);
     });
+<<<<<<< HEAD
+=======
     const app = new TestApp();
 
     // Test adding a box
@@ -693,5 +720,6 @@ describe('Basic App Functionality', () => {
   });
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
 });

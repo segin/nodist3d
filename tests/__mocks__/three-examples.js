@@ -1,4 +1,6 @@
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
 // tests/__mocks__/three-examples.js
 const THREE = require('three');
 
@@ -95,6 +97,7 @@ export const GLTFLoader = jest.fn().mockImplementation(() => ({
 }));
 =======
 >>>>>>> master
+>>>>>>> master
 // Mock for three/examples/jsm/* modules
 export class TeapotGeometry { constructor() {} }
 export class FontLoader { load() {} parse() {} }
@@ -103,7 +106,10 @@ export class OrbitControls { constructor() { this.enabled = true; } update() {} 
 export class TransformControls { constructor() { this.addEventListener = () => {}; } }
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
 
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
