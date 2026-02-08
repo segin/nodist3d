@@ -15,25 +15,33 @@ export class PhysicsManager {
       return null;
     }
     let shape;
-    if (shapeType === 'box') {
-      const halfExtents = new CANNON.Vec3(
-        (mesh.geometry.parameters.width / 2) * mesh.scale.x,
-        (mesh.geometry.parameters.height / 2) * mesh.scale.y,
-        (mesh.geometry.parameters.depth / 2) * mesh.scale.z,
-      );
-      shape = new CANNON.Box(halfExtents);
-    } else if (shapeType === 'sphere') {
-      shape = new CANNON.Sphere(mesh.geometry.parameters.radius * mesh.scale.x);
-    } else if (shapeType === 'cylinder') {
-      shape = new CANNON.Cylinder(
-        mesh.geometry.parameters.radiusTop * mesh.scale.x,
-        mesh.geometry.parameters.radiusBottom * mesh.scale.x,
-        mesh.geometry.parameters.height * mesh.scale.y,
-        mesh.geometry.parameters.radialSegments,
-      );
-    } else {
-      log.warn('Unsupported shape type for physics body:', shapeType);
-      return null;
+    switch (shapeType) {
+      case 'box': {
+        const halfExtents = new CANNON.Vec3(
+          (mesh.geometry.parameters.width / 2) * mesh.scale.x,
+          (mesh.geometry.parameters.height / 2) * mesh.scale.y,
+          (mesh.geometry.parameters.depth / 2) * mesh.scale.z,
+        );
+        shape = new CANNON.Box(halfExtents);
+        break;
+      }
+      case 'sphere': {
+        shape = new CANNON.Sphere(mesh.geometry.parameters.radius * mesh.scale.x);
+        break;
+      }
+      case 'cylinder': {
+        shape = new CANNON.Cylinder(
+          mesh.geometry.parameters.radiusTop * mesh.scale.x,
+          mesh.geometry.parameters.radiusBottom * mesh.scale.x,
+          mesh.geometry.parameters.height * mesh.scale.y,
+          mesh.geometry.parameters.radialSegments,
+        );
+        break;
+      }
+      default: {
+        log.warn('Unsupported shape type for physics body:', shapeType);
+        return null;
+      }
     }
 
     const body = new CANNON.Body({
@@ -54,7 +62,10 @@ export class PhysicsManager {
 
   removeBody(bodyToRemove) {
     this.world.removeBody(bodyToRemove);
-    this.bodies = this.bodies.filter((item) => item.body !== bodyToRemove);
+    const index = this.bodies.findIndex((item) => item.body === bodyToRemove);
+    if (index !== -1) {
+      this.bodies.splice(index, 1);
+    }
   }
 
   update(deltaTime) {

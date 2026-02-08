@@ -105,6 +105,7 @@ describe('LightManager', () => {
     }).not.toThrow();
   });
 
+<<<<<<< HEAD
     it('should allow updating ambient light position without error, even if it has no effect', () => {
         const ambientLight = lightManager.addLight('AmbientLight', 0xffffff, 1);
         // AmbientLight technically has a position (inherits from Object3D), even if it doesn't affect rendering.
@@ -124,5 +125,7 @@ describe('LightManager', () => {
     }).not.toThrow();
     expect(ambientLight.position).toBeUndefined();
   });
+>>>>>>> master
+=======
 >>>>>>> master
 });

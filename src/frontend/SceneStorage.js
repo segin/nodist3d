@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import log from './logger.js';
 
 export class SceneStorage {
+<<<<<<< HEAD
   constructor(scene, eventBus) {
     this.eventBus = eventBus;
     this.scene = scene;
@@ -24,9 +25,25 @@ export class SceneStorage {
         } else if (event.data.type === 'error') {
           reject(new Error(event.data.message + ': ' + event.data.error));
         this.worker.onmessage = this.handleWorkerMessage.bind(this);
+=======
+<<<<<<< HEAD
+    /**
+     * @param {THREE.Scene} scene
+     * @param {any} eventBus
+     */
+    constructor(scene, eventBus) {
+        this.eventBus = eventBus;
+        this.scene = scene;
+        this.worker = new Worker('./worker.js');
+        this.boundHandleWorkerMessage = this.handleWorkerMessage.bind(this);
+        this.worker.onmessage = this.boundHandleWorkerMessage;
+
+>>>>>>> master
         /** @type {((value: any) => void) | null} */
         this.loadPromiseResolve = null;
+        /** @type {((value: any) => void) | null} */
         this.savePromiseResolve = null;
+        /** @type {((reason?: any) => void) | null} */
         this.savePromiseReject = null;
     }
 
@@ -53,6 +70,7 @@ export class SceneStorage {
         }
 
         // Serialize the scene using the worker
+<<<<<<< HEAD
         let sceneJson;
         try {
             sceneJson = await new Promise((resolve, reject) => {
@@ -118,8 +136,25 @@ export class SceneStorage {
             this.worker.addEventListener('message', handleMessage);
             this.worker.postMessage({ type: 'serialize', data: sceneData });
 >>>>>>> master
-        });
+=======
+        const sceneJson = await new Promise((resolve, reject) => {
+            const originalOnMessage = this.worker.onmessage;
+
+            // We temporarily override onmessage to handle the specific response for this save operation
+            // However, since we are using a persistent worker with a shared handler, we should probably
+            // just use the shared handler and store the promise callbacks.
+            // But the current pattern in the code seemed to want to isolate it or use the shared handler.
+            // Let's use the shared handler logic via promise resolvers stored on 'this'.
+
+            this.savePromiseResolve = resolve;
+            this.savePromiseReject = reject;
+
+            // Send data to worker. We do NOT transfer buffers because that would detach them
+            // from the main thread, breaking the live scene. Structured cloning (default)
+            // copies the buffers, which is fast enough and safe.
+            this.worker.postMessage({ type: 'serialize', data: sceneData });
 >>>>>>> master
+        });
 
         zip.file('scene.json', sceneJson);
 
@@ -147,8 +182,16 @@ export class SceneStorage {
 
             // Clear existing objects from the scene
             while(this.scene.children.length > 0){
-                const object = this.scene.children[0];
-                this.scene.remove(object);
+                // Optimization: remove from the end to avoid O(N) shift in splice
+                const object = this.scene.children.pop();
+
+                // Manually handle removal to avoid O(N) indexOf search in scene.remove()
+                if (object.parent) {
+                    object.parent = null;
+                    object.dispatchEvent({ type: 'removed' });
+                    this.scene.dispatchEvent({ type: 'childremoved', child: object });
+                }
+
                 // @ts-ignore
                 if (object.geometry) object.geometry.dispose();
                 // @ts-ignore
@@ -186,10 +229,17 @@ export class SceneStorage {
             const loadedScene = loader.parse(data);
 
             // Add loaded objects back to the scene
+<<<<<<< HEAD
             while (loadedScene.children.length > 0) {
                 this.scene.add(loadedScene.children[0]);
             }
 
+=======
+            // Iterate backwards or use a while loop because scene.add removes the object from loadedScene.children
+            while (loadedScene.children.length > 0) {
+                this.scene.add(loadedScene.children[0]);
+            }
+>>>>>>> master
             if (this.loadPromiseResolve) {
                 this.loadPromiseResolve(loadedScene);
                 this.loadPromiseResolve = null;
@@ -211,76 +261,27 @@ export class SceneStorage {
                 this.savePromiseResolve = null;
                 this.savePromiseReject = null;
             }
+=======
+  constructor(scene, eventBus) {
+    this.eventBus = eventBus;
+    this.scene = scene;
+    this.worker = new Worker('./worker.js');
+    this.worker.onmessage = this.handleWorkerMessage.bind(this);
+    this.loadPromiseResolve = null;
+  }
+
+  async saveScene() {
+    const zip = new window.JSZip();
+
+    // Serialize the scene using the worker
+    const sceneJson = await new Promise((resolve, reject) => {
+      this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
+      this.worker.onmessage = (event) => {
+        if (event.data.type === 'serialize_complete') {
+          resolve(event.data.data);
+        } else if (event.data.type === 'error') {
+          reject(new Error(event.data.message + ': ' + event.data.error));
 >>>>>>> master
         }
-      };
-    });
-
-    zip.file('scene.json', sceneJson);
-
-    const content = await zip.generateAsync({ type: 'blob' });
-    const url = URL.createObjectURL(content);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'scene.nodist3d';
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  async loadScene(file) {
-    try {
-      const zip = new window.JSZip();
-      const loadedZip = await zip.loadAsync(file);
-      const sceneJsonFile = loadedZip.file('scene.json');
-      if (!sceneJsonFile) {
-        throw new Error('scene.json not found in the zip file.');
-      }
-      const sceneJson = await sceneJsonFile.async('string');
-
-      // Clear existing objects from the scene
-      while (this.scene.children.length > 0) {
-        const object = this.scene.children[0];
-        this.scene.remove(object);
-        if (object.geometry) object.geometry.dispose();
-        if (object.material) {
-          if (Array.isArray(object.material)) {
-            object.material.forEach((material) => material.dispose());
-          } else {
-            object.material.dispose();
-          }
-        }
-      }
-
-      // Deserialize the scene using the worker
-      return new Promise((resolve, reject) => {
-        this.loadPromiseResolve = resolve; // Store resolve function for async worker response
-        this.worker.postMessage({ type: 'deserialize', data: sceneJson });
-        this.worker.onerror = (error) =>
-          reject(new Error('Worker error during deserialization: ' + error.message));
-      });
-    } catch (error) {
-      log.error('Error loading scene:', error);
-      return Promise.reject(error);
     }
-  }
-
-  handleWorkerMessage(event) {
-    if (event.data.type === 'deserialize_complete') {
-      const loadedScene = event.data.data;
-      // Add loaded objects back to the scene
-      loadedScene.children.forEach((object) => {
-        this.scene.add(object);
-      });
-      if (this.loadPromiseResolve) {
-        this.loadPromiseResolve(loadedScene);
-        this.loadPromiseResolve = null;
-      }
-    } else if (event.data.type === 'error') {
-      log.error('Worker error:', event.data.message, event.data.error);
-      if (this.loadPromiseResolve) {
-        this.loadPromiseResolve(null); // Resolve with null or reject the promise
-        this.loadPromiseResolve = null;
-      }
-    }
-  }
 }

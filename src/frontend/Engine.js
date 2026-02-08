@@ -1,10 +1,14 @@
+<<<<<<< HEAD
 // @ts-check
 import * as THREE from 'three';
+>>>>>>> master
+=======
 >>>>>>> master
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Clock } from 'three';
 
 export class Engine {
+<<<<<<< HEAD
     /**
      * @param {HTMLCanvasElement} canvas
      * @param {any} physicsManager
@@ -29,6 +33,8 @@ export class Engine {
     });
     this.camera = new global.THREE.PerspectiveCamera(75, 2, 0.1, 5);
     this.camera.position.z = 2;
+>>>>>>> master
+=======
 >>>>>>> master
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -82,6 +88,7 @@ export class Engine {
     requestAnimationFrame(this.animate.bind(this));
   }
 
+<<<<<<< HEAD
         const gridHelper = new THREE.GridHelper(10, 10);
         this.scene.add(gridHelper);
 
@@ -121,6 +128,8 @@ export class Engine {
     requestAnimationFrame(this.animate.bind(this));
   }
 
+>>>>>>> master
+=======
 >>>>>>> master
   start() {
     this.animate();

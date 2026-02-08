@@ -146,6 +146,7 @@ export class PrimitiveManager {
     return this._createMesh(geometry, 0x00ff80); // Spring Green for Lathe
   }
 
+<<<<<<< HEAD
     /**
      * @param {THREE.BufferGeometry} geometry
      * @param {number} color
@@ -168,6 +169,8 @@ export class PrimitiveManager {
     shape.bezierCurveTo(x + 1.3, y + 1.5, x + 1.6, y + 1.1, x + 1.6, y + 0.7);
     shape.bezierCurveTo(x + 1.6, y + 0.7, x + 1.6, y, x + 1, y);
     shape.bezierCurveTo(x + 0.85, y, x + 0.5, y + 0.5, x + 0.5, y + 0.5);
+>>>>>>> master
+=======
 >>>>>>> master
 
     const extrudeSettings = {
@@ -198,6 +201,7 @@ export class PrimitiveManager {
             bevelThickness: 0.03,
             bevelSize: 0.02,
             bevelOffset: 0,
+<<<<<<< HEAD
             bevelSegments: 1
         };
         const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
@@ -232,5 +236,7 @@ export class PrimitiveManager {
       );
     });
   }
+>>>>>>> master
+=======
 >>>>>>> master
 }

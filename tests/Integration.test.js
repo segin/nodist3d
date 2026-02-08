@@ -501,6 +501,7 @@ describe('Integration Tests - Complete Workflow', () => {
       app.undo(); // Remove object
       expect(app.objects.length).toBe(0);
 
+<<<<<<< HEAD
         it('should handle complex undo/redo scenarios with multiple objects', () => {
             const box = app.addBox();
             const sphere = app.addSphere();
@@ -533,6 +534,8 @@ describe('Integration Tests - Complete Workflow', () => {
       expect(app.objects.length).toBe(1);
       expect(app.objects[0].name).toBe(boxName);
       expect(app.selectedObject).toBe(app.objects[0]);
+>>>>>>> master
+=======
 >>>>>>> master
     });
 
@@ -597,6 +600,7 @@ describe('Integration Tests - Complete Workflow', () => {
     it('should update scene graph when objects are added or removed', () => {
       const updateSpy = jest.spyOn(app, 'updateSceneGraph');
 
+<<<<<<< HEAD
         it('should maintain correct selection state through undo/redo operations', () => {
             const box = app.addBox();
             const sphere = app.addSphere();
@@ -648,6 +652,8 @@ describe('Integration Tests - Complete Workflow', () => {
       // Verify scene graph updated
       expect(app.objects).toContain(originalBox);
       expect(app.objects).toContain(duplicatedBox);
+>>>>>>> master
+=======
 >>>>>>> master
     });
 

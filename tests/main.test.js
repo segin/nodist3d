@@ -7,6 +7,7 @@ import { JSDOM } from 'jsdom';
 jest.mock('three', () => {
   const mockElement = { createElement: jest.fn(() => ({ tagName: 'CANVAS' })) };
 
+<<<<<<< HEAD
     const mockElement = { createElement: jest.fn(() => ({ tagName: 'CANVAS' })) };
     
     const mockVector3 = {
@@ -204,6 +205,8 @@ jest.mock('three', () => {
     DoubleSide: 'DoubleSide',
   };
 >>>>>>> master
+=======
+>>>>>>> master
 });
 
 // Mock dat.gui
@@ -238,6 +241,7 @@ jest.mock('dat.gui', () => ({
       __folders: [],
     })),
   })),
+<<<<<<< HEAD
     __esModule: true,
     GUI: jest.fn(() => ({
         addFolder: jest.fn(() => ({
@@ -687,5 +691,7 @@ describe('Basic App Functionality', () => {
     expect(app.scene.add).toHaveBeenCalledWith(app.objects[0]);
     expect(app.transformControls.attach).toHaveBeenCalledWith(app.objects[0]);
   });
+>>>>>>> master
+=======
 >>>>>>> master
 });

@@ -15,6 +15,7 @@ export class ShaderEditor {
     this.shaderMaterial = null;
     this.uniforms = {};
     this.editorFolder = null;
+<<<<<<< HEAD
      * Creates an instance of ShaderEditor.
      * @param {GUI} gui - The dat.GUI instance.
      * @param {THREE.WebGLRenderer} renderer - The renderer.
@@ -37,6 +38,8 @@ export class ShaderEditor {
         this.editorFolder = null;
         /** @type {GUI|null} */
         this.uniformsFolder = null;
+>>>>>>> master
+=======
 >>>>>>> master
 
     this.initGUI();
@@ -65,6 +68,7 @@ export class ShaderEditor {
     }
 
     const vertexShader = `
+<<<<<<< HEAD
         }
         if (this.shaderMesh) {
             this.scene.remove(this.shaderMesh);
@@ -77,6 +81,8 @@ export class ShaderEditor {
         }
 
         const vertexShader = `
+>>>>>>> master
+=======
 >>>>>>> master
             void main() {
                 gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
@@ -109,6 +115,7 @@ export class ShaderEditor {
   addShaderControls() {
     if (this.uniformsFolder) {
       this.editorFolder.removeFolder(this.uniformsFolder);
+<<<<<<< HEAD
         this.shaderMesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.shaderMaterial);
         this.shaderMesh.name = 'ShaderMesh';
         this.scene.add(this.shaderMesh);
@@ -127,6 +134,8 @@ export class ShaderEditor {
         return mesh;
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
+=======
 >>>>>>> master
     }
     this.uniformsFolder = this.editorFolder.addFolder('Uniforms');
@@ -175,6 +184,7 @@ export class ShaderEditor {
         this.shaderMaterial.needsUpdate = true;
       });
   }
+<<<<<<< HEAD
         this.uniforms.myColor = { value: new THREE.Color(0xff0000) };
         this.uniformsFolder.addColor(this.uniforms.myColor, 'value').name('Color').onChange(() => {
             if (this.shaderMaterial) this.shaderMaterial.needsUpdate = true;
@@ -222,5 +232,7 @@ export class ShaderEditor {
             }
         });
     }
+>>>>>>> master
+=======
 >>>>>>> master
 }

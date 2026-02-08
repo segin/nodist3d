@@ -81,6 +81,7 @@ class MockColor {
 // Helper to create a mock Material
 const createMockMaterial = (options = {}) => ({
     color: new MockColor(options.color !== undefined ? options.color : 0xffffff),
+<<<<<<< HEAD
     // Helper to create a mock Vector3 with common methods
     const createMockVector3 = jest.fn(function(x = 0, y = 0, z = 0) {
         const v = {
@@ -933,6 +934,8 @@ module.exports = {
 >>>>>>> master
 });
 >>>>>>> master
+=======
+>>>>>>> master
 
 jest.mock('dat.gui', () => {
   const mockController = {
@@ -957,6 +960,7 @@ jest.mock('dat.gui', () => {
     __folders: [], // To track root folders
   }));
 
+<<<<<<< HEAD
     const mockFolder = {
         add: jest.fn(() => mockController),
         addColor: jest.fn(() => mockController),
@@ -972,6 +976,8 @@ jest.mock('dat.gui', () => {
         __folders: [],
     }));
 
+>>>>>>> master
+=======
 >>>>>>> master
   return { GUI: mockGUI };
 });

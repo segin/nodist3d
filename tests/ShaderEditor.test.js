@@ -48,6 +48,7 @@ jest.mock('three', () => ({
 const mockController = {
   name: jest.fn(() => ({ onChange: jest.fn() })),
   onChange: jest.fn(),
+<<<<<<< HEAD
         setHex: jest.fn()
     })),
     WebGLRenderer: jest.fn(() => ({
@@ -77,6 +78,8 @@ const createMockController = () => ({
 });
 };
 >>>>>>> master
+>>>>>>> master
+=======
 >>>>>>> master
 
 const mockFolder = {
@@ -194,6 +197,7 @@ describe('ShaderEditor', () => {
 
       expect(shaderEditor.shaderMaterial.needsUpdate).toBe(true);
     });
+<<<<<<< HEAD
         // Index 0: createShader, Index 1: float uniform, Index 2: vertex shader
         const shaderCodeController = editorFolder.add.mock.results[2].value;
 
@@ -226,6 +230,8 @@ describe('ShaderEditor', () => {
   
         expect(shaderEditor.shaderMaterial.needsUpdate).toBe(true);
       });
+>>>>>>> master
+=======
 >>>>>>> master
   });
 });

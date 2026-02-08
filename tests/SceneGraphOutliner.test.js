@@ -63,6 +63,7 @@ jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
 describe('Scene Graph/Outliner Functionality', () => {
   let dom, app;
 
+<<<<<<< HEAD
     beforeEach(() => {
         // Setup DOM
         dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
@@ -415,6 +416,8 @@ describe('Scene Graph/Outliner Functionality', () => {
           emptyMessage.textContent = 'No objects in scene';
           this.objectsList.appendChild(emptyMessage);
 >>>>>>> master
+=======
+>>>>>>> master
         }
       }
 
@@ -537,6 +540,7 @@ describe('Scene Graph/Outliner Functionality', () => {
       expect(app.selectedObject).toBeNull();
     });
 
+<<<<<<< HEAD
     describe('Accessibility', () => {
         it('should have correct ARIA labels for buttons', () => {
             app.addTestObject('A11yTestObject');
@@ -754,4 +758,6 @@ describe('Scene Graph/Outliner Functionality', () => {
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
+>>>>>>> master
+=======
 >>>>>>> master

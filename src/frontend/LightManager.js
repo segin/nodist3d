@@ -3,6 +3,7 @@ import log from './logger.js';
 import { Events } from './constants.js';
 
 export class LightManager {
+<<<<<<< HEAD
     constructor(scene, eventBus) {
         this.scene = scene;
         this.eventBus = eventBus;
@@ -12,6 +13,8 @@ export class LightManager {
     this.scene = scene;
     this.eventBus = eventBus;
     this.lights = [];
+>>>>>>> master
+=======
 >>>>>>> master
 
     // Add a default ambient light

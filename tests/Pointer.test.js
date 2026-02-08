@@ -45,6 +45,7 @@ describe('Pointer', () => {
     mockEvent.target = renderer.domElement;
   });
 
+<<<<<<< HEAD
     beforeEach(() => {
         camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
         scene = new THREE.Scene();
@@ -86,6 +87,8 @@ describe('Pointer', () => {
     EventBus.events = {};
   });
 >>>>>>> master
+=======
+>>>>>>> master
 
   it('should dispatch a `selectionChange` event when an object is selected', () => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
@@ -105,8 +108,11 @@ describe('Pointer', () => {
     expect(callback).toHaveBeenCalledWith(mesh);
     expect(global.pointerInstance.selectedObject).toBe(mesh);
   });
+<<<<<<< HEAD
         expect(callback).toHaveBeenCalledWith(mesh);
     });
+>>>>>>> master
+=======
 >>>>>>> master
 
   it('should dispatch `selectionChange` with a null payload on deselection', () => {
@@ -241,6 +247,7 @@ describe('Pointer', () => {
     uiElement.id = 'ui-element';
     document.body.appendChild(uiElement);
 
+<<<<<<< HEAD
         expect(callback).toHaveBeenCalledWith(null);
     });
 
@@ -328,10 +335,13 @@ describe('Pointer', () => {
 
         expect(callback).not.toHaveBeenCalled();
 >>>>>>> master
+=======
+>>>>>>> master
 
     document.body.removeChild(uiElement);
   });
 
+<<<<<<< HEAD
     it('`removeOutline` should not throw an error if called when no outline exists', () => {
         global.pointerInstance.outline = null;
         expect(() => {
@@ -345,6 +355,8 @@ describe('Pointer', () => {
       global.pointerInstance.removeOutline();
     }).not.toThrow();
   });
+>>>>>>> master
+=======
 >>>>>>> master
 
   it('Raycasting should correctly identify the front-most object if multiple are overlapping', () => {
@@ -364,6 +376,7 @@ describe('Pointer', () => {
     meshBack.name = 'MeshBack';
     scene.add(meshBack);
 
+<<<<<<< HEAD
         jest.spyOn(global.pointerInstance.raycaster, 'intersectObjects').mockReturnValue([
             { object: meshFront, distance: 1 },
             { object: meshBack, distance: 3 }
@@ -373,6 +386,8 @@ describe('Pointer', () => {
       { object: meshFront, distance: 1 },
       { object: meshBack, distance: 3 },
     ]);
+>>>>>>> master
+=======
 >>>>>>> master
 
     const callback = jest.fn();
@@ -384,7 +399,10 @@ describe('Pointer', () => {
     expect(callback).toHaveBeenCalledWith(meshFront);
     expect(global.pointerInstance.selectedObject).toBe(meshFront);
   });
+<<<<<<< HEAD
         expect(callback).toHaveBeenCalledWith(meshFront);
     });
+>>>>>>> master
+=======
 >>>>>>> master
 });

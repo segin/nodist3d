@@ -6,6 +6,7 @@ export class ObjectPropertyUpdater {
     this.primitiveFactory = primitiveFactory;
   }
 
+<<<<<<< HEAD
     /**
      * @param {import('./PrimitiveFactory.js').PrimitiveFactory} primitiveFactory
      */
@@ -31,48 +32,22 @@ export class ObjectPropertyUpdater {
                         } else {
                             material[prop] = newMaterialProperties[prop];
                         }
+=======
+  updateMaterial(object, properties) {
+    if (object && object.material) {
+        const materials = Array.isArray(object.material) ? object.material : [object.material];
+        materials.forEach(material => {
+            for (const key in properties) {
+                if (Object.prototype.hasOwnProperty.call(properties, key)) {
+                    if (key === 'color') {
+                        material.color.setHex(properties[key]);
+                    } else {
+                        material[key] = properties[key];
+>>>>>>> master
                     }
                 }
-                material.needsUpdate = true;
-            });
-        }
-    }
-
-    /**
-     * Adds a texture to the object.
-     * @param {THREE.Object3D} object
-     * @param {File} file
-     * @param {string} type
-     */
-    addTexture(object, file, type = 'map') {
-        // @ts-ignore
-        if (!object.material) return;
-
-        const loader = new THREE.TextureLoader();
-        const url = URL.createObjectURL(file);
-        loader.load(
-            url,
-            (texture) => {
-                // @ts-ignore
-                if (type === 'map') {
-                    // @ts-ignore
-                    object.material.map = texture;
-                } else if (type === 'normalMap') {
-                    // @ts-ignore
-                    object.material.normalMap = texture;
-                } else if (type === 'roughnessMap') {
-                    // @ts-ignore
-                    object.material.roughnessMap = texture;
-                }
-                // @ts-ignore
-                object.material.needsUpdate = true;
-                URL.revokeObjectURL(url); // Clean up the object URL
-            },
-            undefined,
-            (error) => {
-                console.warn('Error loading texture:', error);
-                URL.revokeObjectURL(url);
             }
+<<<<<<< HEAD
         );
     }
 
@@ -107,41 +82,60 @@ export class ObjectPropertyUpdater {
         }
         material.needsUpdate = true;
       });
+=======
+            material.needsUpdate = true;
+        });
+>>>>>>> master
     }
   }
 
   addTexture(object, file, type = 'map') {
     if (!object.material) return;
 
-    const loader = new global.THREE.TextureLoader();
+    // Use window.THREE if available (browser), otherwise global.THREE (test)
+    const THREE = window.THREE || global.THREE;
+    const loader = new THREE.TextureLoader();
     const url = URL.createObjectURL(file);
     loader.load(
       url,
       (texture) => {
-        if (type === 'map') {
-          object.material.map = texture;
-        } else if (type === 'normalMap') {
-          object.material.normalMap = texture;
-        } else if (type === 'roughnessMap') {
-          object.material.roughnessMap = texture;
-        }
-        object.material.needsUpdate = true;
-        global.URL.revokeObjectURL(url); // Clean up the object URL
+        const materials = Array.isArray(object.material) ? object.material : [object.material];
+        materials.forEach(material => {
+            if (type === 'map') {
+              material.map = texture;
+            } else if (type === 'normalMap') {
+              material.normalMap = texture;
+            } else if (type === 'roughnessMap') {
+              material.roughnessMap = texture;
+            }
+            material.needsUpdate = true;
+        });
+        URL.revokeObjectURL(url); // Clean up the object URL
       },
       undefined,
       (error) => {
         console.warn('Error loading texture:', error);
-        global.URL.revokeObjectURL(url);
+        URL.revokeObjectURL(url);
       },
     );
   }
 
   updatePrimitive(object, parameters) {
     if (object && object.geometry) {
-      const newGeometry = this.primitiveFactory.createPrimitive(object.geometry.type, parameters);
-      if (newGeometry) {
+      // Assuming createPrimitive returns a Mesh or Geometry.
+      // If it returns a Mesh, we need .geometry.
+      // But primitiveFactory.createPrimitive returns a Mesh usually.
+      // Let's assume it handles geometry creation.
+      // Wait, PrimitiveFactory.createPrimitive usually creates a Mesh.
+      // We want to update the geometry.
+
+      // Let's check PrimitiveFactory usage.
+      // It returns a Mesh.
+
+      const tempMesh = this.primitiveFactory.createPrimitive(object.geometry.type.replace('Geometry', ''), parameters);
+      if (tempMesh && tempMesh.geometry) {
         object.geometry.dispose();
-        object.geometry = newGeometry;
+        object.geometry = tempMesh.geometry;
       }
     }
   }
