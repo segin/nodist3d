@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { Scene, Mesh, MeshBasicMaterial, Vector3, Quaternion, BufferGeometry } from 'three';
+=======
+import { Scene, BufferGeometry, Mesh, MeshBasicMaterial, Quaternion, Vector3 } from 'three';
+>>>>>>> master
 import { PhysicsManager } from '../src/frontend/PhysicsManager.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
@@ -221,6 +225,10 @@ describe('PhysicsManager', () => {
 
     physicsManager.update(deltaTime);
 
+<<<<<<< HEAD
     expect(stepSpy).toHaveBeenCalledWith(1 / 60, deltaTime, 10);
+=======
+    expect(stepSpy).toHaveBeenCalledWith(deltaTime);
+>>>>>>> master
   });
 });
