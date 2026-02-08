@@ -16,14 +16,22 @@ export class PrimitiveFactory {
   }
 
 <<<<<<< HEAD
+  /**
+   * @param {THREE.BufferGeometry} geometry
+   * @param {number} color
+   * @param {THREE.Side} [side]
+   */
+=======
+<<<<<<< HEAD
+>>>>>>> master
   _createMesh(geometry, color, side = THREE.FrontSide) {
-    const cacheKey = `${color}_${side}`;
-    if (!this.materialCache[cacheKey]) {
-      this.materialCache[cacheKey] = new THREE.MeshPhongMaterial({ color, side });
-    }
-    const material = this.materialCache[cacheKey];
-    const mesh = new THREE.Mesh(geometry, material);
-    return mesh;
+      const cacheKey = `${color}_${side}`;
+      if (!this.materialCache[cacheKey]) {
+          this.materialCache[cacheKey] = new THREE.MeshPhongMaterial({ color, side });
+      }
+      const material = this.materialCache[cacheKey];
+      const mesh = new THREE.Mesh(geometry, material);
+      return mesh;
   }
 
   createPrimitive(type, options = {}) {
@@ -114,7 +122,7 @@ export class PrimitiveFactory {
         mesh = this._createMesh(geometry, color);
         break;
       case 'Tetrahedron':
-        geometry = new THREE.IcosahedronGeometry(options.radius || 0.7, 0);
+        geometry = new THREE.TetrahedronGeometry(options.radius || 0.7, options.detail || 0);
         color = options.color || 0x00ff00;
         mesh = this._createMesh(geometry, color);
         break;
@@ -139,7 +147,7 @@ export class PrimitiveFactory {
         mesh = this._createMesh(geometry, color, THREE.DoubleSide);
         break;
       case 'Tube':
-        const path = new THREE.CatmullRomCurve3([
+        const path = options.path || new THREE.CatmullRomCurve3([
           new THREE.Vector3(-1, -1, 0),
           new THREE.Vector3(-0.5, 1, 0),
           new THREE.Vector3(0.5, -1, 0),
@@ -173,6 +181,8 @@ export class PrimitiveFactory {
         for (let i = 0; i < 10; i++) {
           pointsLathe.push(new THREE.Vector2(Math.sin(i * 0.2) * 0.5 + 0.5, (i - 5) * 0.2));
         }
+<<<<<<< HEAD
+=======
 =======
 <<<<<<< HEAD
 >>>>>>> master
@@ -349,14 +359,19 @@ export class PrimitiveFactory {
         }
         return mesh;
 <<<<<<< HEAD
+>>>>>>> master
         geometry = new THREE.LatheGeometry(pointsLathe);
         color = options.color || 0x00ff80;
         mesh = this._createMesh(geometry, color);
         break;
       case 'Extrude':
         const shape = new THREE.Shape();
+<<<<<<< HEAD
+        const x = 0, y = 0;
+=======
         const x = 0,
           y = 0;
+>>>>>>> master
         shape.moveTo(x + 0.5, y + 0.5);
         shape.bezierCurveTo(x + 0.5, y + 0.5, x + 0.4, y, x, y);
         shape.bezierCurveTo(x - 0.6, y, x - 0.6, y + 0.7, x - 0.6, y + 0.7);
@@ -401,6 +416,8 @@ export class PrimitiveFactory {
       default:
         log.error(`Unknown primitive type: ${type}`);
         return null;
+<<<<<<< HEAD
+=======
 =======
 =======
   _createMesh(geometry, color, side = THREE.FrontSide) {
@@ -560,6 +577,7 @@ export class PrimitiveFactory {
         for (let i = 0; i < 10; i++) {
           pointsLathe.push(new THREE.Vector2(Math.sin(i * 0.2) * 0.5 + 0.5, (i - 5) * 0.2));
         }
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
     }

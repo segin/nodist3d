@@ -1,4 +1,8 @@
 <<<<<<< HEAD
+// @ts-check
+import * as THREE from 'three';
+=======
+<<<<<<< HEAD
 import * as THREE from 'three';
 import * as THREE from 'three';
 import * as THREE from 'three';
@@ -12,13 +16,24 @@ import * as THREE from 'three';
 >>>>>>> master
 import * as THREE from 'three';
 >>>>>>> master
+>>>>>>> master
 import { Events } from './constants.js';
 
 /**
-<<<<<<< HEAD
  * Manages 3D objects in the scene.
  */
 export class ObjectManager {
+<<<<<<< HEAD
+  /**
+   * @param {THREE.Scene} scene
+   * @param {any} eventBus
+   * @param {any} physicsManager
+   * @param {PrimitiveFactory} primitiveFactory
+   * @param {any} objectFactory
+   * @param {any} objectPropertyUpdater
+   * @param {any} stateManager
+   */
+=======
 =======
  * @typedef {typeof import('./EventBus.js').default} EventBus
  * @typedef {import('./PhysicsManager.js').PhysicsManager} PhysicsManager
@@ -75,6 +90,7 @@ export class ObjectManager {
    * @param {StateManager} stateManager
    */
 >>>>>>> master
+>>>>>>> master
   constructor(
     scene,
     eventBus,
@@ -94,7 +110,12 @@ export class ObjectManager {
   }
 
   /**
+<<<<<<< HEAD
+   * Selects an object.
+   * @param {THREE.Object3D} object - The object to select.
+=======
    * @param {THREE.Object3D} object
+>>>>>>> master
    */
   selectObject(object) {
     if (this.stateManager) {
@@ -104,7 +125,11 @@ export class ObjectManager {
   }
 
   /**
+<<<<<<< HEAD
+   * Deselects the currently selected object.
+=======
    * @returns {void}
+>>>>>>> master
    */
   deselectObject() {
     if (this.stateManager) {
@@ -114,9 +139,16 @@ export class ObjectManager {
   }
 
   /**
+<<<<<<< HEAD
+   * Adds a primitive to the scene.
+   * @param {string} type
+   * @param {Object} options
+   * @returns {Promise<THREE.Object3D>|THREE.Object3D|null}
+=======
    * @param {string} type
    * @param {object} [options]
    * @returns {Promise<THREE.Object3D> | THREE.Object3D | null}
+>>>>>>> master
    */
   addPrimitive(type, options) {
     if (this.objectFactory) {
@@ -124,6 +156,13 @@ export class ObjectManager {
     }
 
     const object = this.primitiveFactory.createPrimitive(type, options);
+<<<<<<< HEAD
+    // If it returns a promise (e.g. Text), we handle it differently or return the promise.
+    // The caller should handle promise.
+    if (object && !(object instanceof Promise)) {
+      this.scene.add(object);
+      this.eventBus.publish(Events.OBJECT_ADDED, object);
+=======
     if (object && !(object instanceof Promise)) {
       this.scene.add(object);
       this.eventBus.publish(Events.OBJECT_ADDED, object);
@@ -172,8 +211,16 @@ export class ObjectManager {
             this.stateManager.setState({ selection: [] });
         }
         this.eventBus.publish(Events.OBJECT_DESELECTED);
+>>>>>>> master
     }
 
+<<<<<<< HEAD
+  /**
+   * Duplicates an object.
+   * @param {THREE.Object3D} object
+   * @returns {Promise<THREE.Object3D>|THREE.Object3D|null}
+   */
+=======
 <<<<<<< HEAD
 =======
     /**
@@ -269,6 +316,7 @@ export class ObjectManager {
    * @returns {THREE.Object3D}
    */
 >>>>>>> master
+>>>>>>> master
   duplicateObject(object) {
     if (this.objectFactory) {
       return this.objectFactory.duplicateObject(object);
@@ -276,8 +324,14 @@ export class ObjectManager {
   }
 
   /**
+<<<<<<< HEAD
+   * Updates object material properties.
+   * @param {THREE.Object3D} object
+   * @param {Object} properties
+=======
    * @param {THREE.Object3D} object
    * @param {object} properties
+>>>>>>> master
    */
   updateMaterial(object, properties) {
     if (this.objectPropertyUpdater) {
@@ -286,6 +340,10 @@ export class ObjectManager {
   }
 
   /**
+<<<<<<< HEAD
+   * Adds a texture to an object.
+=======
+>>>>>>> master
    * @param {THREE.Object3D} object
    * @param {File} file
    * @param {string} type
@@ -298,6 +356,19 @@ export class ObjectManager {
 
   /**
    * Deletes an object from the scene and disposes of its resources.
+<<<<<<< HEAD
+   * @param {THREE.Object3D} object
+   */
+  deleteObject(object) {
+    if (object) {
+      // Recursively delete children
+      if (object.children && object.children.length > 0) {
+        object.children.slice().forEach((child) => this.deleteObject(child));
+      }
+
+      // Dispose of geometry
+      // @ts-ignore
+=======
    * @param {THREE.Object3D} object - The object to delete.
    */
   deleteObject(object) {
@@ -310,10 +381,16 @@ export class ObjectManager {
       }
 
       // Dispose of geometry and material to free up memory
+>>>>>>> master
       if (object.geometry) {
+        // @ts-ignore
         object.geometry.dispose();
       }
+
+      // Dispose of material(s)
+      // @ts-ignore
       if (object.material) {
+        // @ts-ignore
         const materials = Array.isArray(object.material) ? object.material : [object.material];
         materials.forEach((material) => {
           // Dispose textures
@@ -340,6 +417,8 @@ export class ObjectManager {
         this.scene.remove(object);
       }
       this.eventBus.publish(Events.OBJECT_REMOVED, object);
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
      * Deselects the current selection.
      * Deselects the currently selected object.
@@ -475,6 +554,7 @@ export class ObjectManager {
             this.eventBus.publish(Events.OBJECT_REMOVED, object);
         }
 =======
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
     }

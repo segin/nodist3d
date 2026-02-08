@@ -1,4 +1,10 @@
 <<<<<<< HEAD
+// src/frontend/logger.js
+
+// Access global loglevel instance (from CDN in browser, or mock in tests)
+const log = (typeof window !== 'undefined' && window.log) ? window.log : {
+=======
+<<<<<<< HEAD
 
 // Simple logger wrapper
 const log = (typeof window !== 'undefined' && window.log) ? window.log : {
@@ -18,11 +24,33 @@ const log = (typeof window !== 'undefined' && window.log) ? window.log : {
 =======
 const log = {
 >>>>>>> master
+>>>>>>> master
     trace: console.trace,
     debug: console.debug,
     info: console.info,
     warn: console.warn,
     error: console.error,
+<<<<<<< HEAD
+    setLevel: () => {},
+    getLogger: () => log,
+    methodFactory: () => {},
+    enableAll: () => {},
+    disableAll: () => {},
+    setDefaultLevel: () => {}
+};
+
+if (log && log.setLevel) {
+    // Wrap in try-catch in case it's a simple console fallback
+    try {
+        log.setLevel('info');
+    } catch (e) {
+        // ignore
+    }
+} else {
+    console.warn('loglevel not loaded correctly, falling back to console');
+}
+
+=======
 <<<<<<< HEAD
     setLevel: () => {}
 };
@@ -59,6 +87,7 @@ if (log && log.setLevel) {
 }
 
 =======
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master

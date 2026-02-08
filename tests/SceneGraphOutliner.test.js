@@ -64,6 +64,8 @@ describe('Scene Graph/Outliner Functionality', () => {
   let dom, app;
 
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
     beforeEach(() => {
         // Setup DOM
         dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
@@ -145,6 +147,7 @@ describe('Scene Graph/Outliner Functionality', () => {
             return element;
 =======
 >>>>>>> master
+>>>>>>> master
   beforeEach(() => {
     // Setup DOM
     dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
@@ -162,12 +165,50 @@ describe('Scene Graph/Outliner Functionality', () => {
       const element = {
         tagName: tagName.toUpperCase(),
         style: {},
-        appendChild: jest.fn(),
+        appendChild: jest.fn(function(child) {
+            if (!this.children) this.children = [];
+            this.children.push(child);
+            return child;
+        }),
+        children: [],
         textContent: '',
-        innerHTML: '',
+        _innerHTML: '',
+        set innerHTML(value) {
+            this._innerHTML = value;
+            if (value === '') {
+                this.children = [];
+            }
+        },
+        get innerHTML() {
+            return this._innerHTML;
+        },
         onclick: null,
-        addEventListener: jest.fn(),
+        click: jest.fn(function() {
+            if (this.onclick) this.onclick({ stopPropagation: jest.fn() });
+        }),
+        addEventListener: jest.fn((type, listener) => {
+            if (type === 'keydown') element.onkeydown = listener;
+        }),
         removeEventListener: jest.fn(),
+        setAttribute: jest.fn((name, value) => {
+            element[name] = value;
+        }),
+        getAttribute: jest.fn((name) => {
+            return element[name];
+        }),
+        querySelector: jest.fn(function(selector) {
+            if (selector === 'li') return this.children.find(c => c.tagName === 'LI');
+            return null;
+        }),
+        querySelectorAll: jest.fn(function(selector) {
+            const results = [];
+            const traverse = (el) => {
+                if (el.tagName === selector.toUpperCase()) results.push(el);
+                if (el.children) el.children.forEach(traverse);
+            };
+            if (this.children) this.children.forEach(traverse);
+            return results;
+        })
       };
 
       // Add style.cssText property
@@ -204,6 +245,10 @@ describe('Scene Graph/Outliner Functionality', () => {
 
         this.objects.forEach((object, index) => {
           const listItem = document.createElement('li');
+          listItem.setAttribute('role', 'button');
+          listItem.setAttribute('tabindex', '0');
+          listItem.setAttribute('aria-label', `Select ${object.name || `Object_${index + 1}`}`);
+
           const objectInfo = document.createElement('div');
           const objectName = document.createElement('span');
           const objectType = document.createElement('span');
@@ -213,8 +258,17 @@ describe('Scene Graph/Outliner Functionality', () => {
 
           objectName.textContent = object.name || `Object_${index + 1}`;
           objectType.textContent = object.geometry.type.replace('Geometry', '');
+
           visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+          const visLabel = object.visible ? `Hide ${object.name}` : `Show ${object.name}`;
+          visibilityBtn.setAttribute('aria-label', visLabel);
+          visibilityBtn.title = visLabel;
+
           deleteBtn.textContent = '🗑';
+          const delLabel = `Delete ${object.name}`;
+          deleteBtn.setAttribute('aria-label', delLabel);
+          deleteBtn.title = delLabel;
+
           positionInfo.textContent = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
 
           // Mock event handlers
@@ -222,6 +276,9 @@ describe('Scene Graph/Outliner Functionality', () => {
             e.stopPropagation();
             object.visible = !object.visible;
             visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+            const newLabel = object.visible ? `Hide ${object.name}` : `Show ${object.name}`;
+            visibilityBtn.setAttribute('aria-label', newLabel);
+            visibilityBtn.title = newLabel;
           };
 
           deleteBtn.onclick = (e) => {
@@ -232,6 +289,13 @@ describe('Scene Graph/Outliner Functionality', () => {
           listItem.onclick = () => {
             this.selectObject(object);
           };
+
+          listItem.addEventListener('keydown', (e) => {
+             if (e.key === 'Enter' || e.key === ' ') {
+                 e.preventDefault();
+                 this.selectObject(object);
+             }
+          });
 
           const buttonContainer = document.createElement('div');
           buttonContainer.appendChild(visibilityBtn);
@@ -246,6 +310,12 @@ describe('Scene Graph/Outliner Functionality', () => {
           this.objectsList.appendChild(listItem);
         });
 
+<<<<<<< HEAD
+        if (this.objects.length === 0) {
+            const empty = document.createElement('li');
+            empty.textContent = 'No objects in scene';
+            this.objectsList.appendChild(empty);
+=======
         });
 
             setupSceneGraph() {
@@ -418,6 +488,7 @@ describe('Scene Graph/Outliner Functionality', () => {
 >>>>>>> master
 =======
 >>>>>>> master
+>>>>>>> master
         }
       }
 
@@ -439,7 +510,7 @@ describe('Scene Graph/Outliner Functionality', () => {
       }
 
       addTestObject(name = 'TestObject') {
-        const THREE = require('three');
+        // const THREE = require('three'); // mock handled globally
         const object = {
           name: name,
           position: {
@@ -478,7 +549,7 @@ describe('Scene Graph/Outliner Functionality', () => {
     it('should show empty message when no objects exist', () => {
       app.objects = [];
       app.updateSceneGraph();
-
+      // Implementation might vary, but verify some child is appended
       expect(app.objectsList.appendChild).toHaveBeenCalled();
     });
   });
@@ -539,6 +610,8 @@ describe('Scene Graph/Outliner Functionality', () => {
 
       expect(app.selectedObject).toBeNull();
     });
+<<<<<<< HEAD
+=======
 
 <<<<<<< HEAD
     describe('Accessibility', () => {
@@ -688,6 +761,7 @@ describe('Scene Graph/Outliner Functionality', () => {
         });
     });
 });
+>>>>>>> master
   });
 
   describe('Visibility Toggle', () => {
@@ -705,6 +779,46 @@ describe('Scene Graph/Outliner Functionality', () => {
 
       expect(obj.visible).toBe(true);
     });
+<<<<<<< HEAD
+  });
+
+  describe('Accessibility', () => {
+      it('should have role="button" and tabindex="0" on list items', () => {
+          app.addTestObject('A11yTest');
+
+          const listItem = app.objectsList.querySelector('li');
+          expect(listItem.getAttribute('role')).toBe('button');
+          expect(listItem.getAttribute('tabindex')).toBe('0');
+          expect(listItem.getAttribute('aria-label')).toBe('Select A11yTest');
+      });
+
+      it('should have aria-label and title on visibility button', () => {
+          const obj = app.addTestObject('VisBtnTest');
+
+          const buttons = app.objectsList.querySelectorAll('button');
+          const visBtn = buttons[0]; // First button is visibility
+
+          expect(visBtn.getAttribute('aria-label')).toBe('Hide VisBtnTest');
+          expect(visBtn.title).toBe('Hide VisBtnTest');
+
+          // Toggle
+          visBtn.click();
+          expect(visBtn.getAttribute('aria-label')).toBe('Show VisBtnTest');
+          expect(visBtn.title).toBe('Show VisBtnTest');
+      });
+
+      it('should have aria-label and title on delete button', () => {
+          app.addTestObject('DelBtnTest');
+
+          const buttons = app.objectsList.querySelectorAll('button');
+          const delBtn = buttons[1]; // Second button is delete
+
+          expect(delBtn.getAttribute('aria-label')).toBe('Delete DelBtnTest');
+          expect(delBtn.title).toBe('Delete DelBtnTest');
+      });
+  });
+});
+=======
 
     it('should update visibility button text based on state', () => {
       const obj = app.addTestObject('VisibilityButtonTest');
@@ -760,4 +874,5 @@ describe('Scene Graph/Outliner Functionality', () => {
 >>>>>>> master
 >>>>>>> master
 =======
+>>>>>>> master
 >>>>>>> master
