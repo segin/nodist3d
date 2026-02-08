@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+import { Scene, Mesh, MeshBasicMaterial, Vector3, Quaternion, BufferGeometry } from 'three';
+=======
 import { Scene, BufferGeometry, Mesh, MeshBasicMaterial, Quaternion, Vector3 } from 'three';
+>>>>>>> master
 import { PhysicsManager } from '../src/frontend/PhysicsManager.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
 import { PrimitiveFactory } from '../src/frontend/PrimitiveFactory.js';
@@ -13,18 +17,26 @@ jest.mock('../src/frontend/PrimitiveFactory.js', () => {
             return {
                 createPrimitive: jest.fn((type) => {
                     let geometry;
-                    if (type === 'Box') {
-                        geometry = new THREE.BoxGeometry(1, 1, 1);
-                        geometry.parameters = { width: 1, height: 1, depth: 1 };
-                    } else if (type === 'Sphere') {
-                        geometry = new THREE.SphereGeometry(0.5);
-                        geometry.parameters = { radius: 0.5 };
-                    } else if (type === 'Cylinder') {
-                        geometry = new THREE.CylinderGeometry(0.5, 0.5, 1);
-                        geometry.parameters = { radiusTop: 0.5, radiusBottom: 0.5, height: 1, radialSegments: 8 };
-                    } else {
-                        geometry = new THREE.BoxGeometry(1, 1, 1);
-                        geometry.parameters = { width: 1, height: 1, depth: 1 };
+                    switch (type) {
+                        case 'Box': {
+                            geometry = new THREE.BoxGeometry(1, 1, 1);
+                            geometry.parameters = { width: 1, height: 1, depth: 1 };
+                            break;
+                        }
+                        case 'Sphere': {
+                            geometry = new THREE.SphereGeometry(0.5);
+                            geometry.parameters = { radius: 0.5 };
+                            break;
+                        }
+                        case 'Cylinder': {
+                            geometry = new THREE.CylinderGeometry(0.5, 0.5, 1);
+                            geometry.parameters = { radiusTop: 0.5, radiusBottom: 0.5, height: 1, radialSegments: 8 };
+                            break;
+                        }
+                        default: {
+                            geometry = new THREE.BoxGeometry(1, 1, 1);
+                            geometry.parameters = { width: 1, height: 1, depth: 1 };
+                        }
                     }
                     return new THREE.Mesh(geometry, new THREE.MeshBasicMaterial());
                 })
@@ -45,7 +57,10 @@ describe('PhysicsManager', () => {
     eventBus = EventBus;
     physicsManager = new PhysicsManager(scene);
     primitiveFactory = new PrimitiveFactory();
-    objectManager = new ObjectManager(scene, primitiveFactory, eventBus);
+
+    // Match ObjectManager constructor signature:
+    // (scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater, stateManager)
+    objectManager = new ObjectManager(scene, eventBus, physicsManager, primitiveFactory, null, null, null);
   });
 
   it('should add a box-shaped physics body to the world', () => {
@@ -121,7 +136,7 @@ describe('PhysicsManager', () => {
 
   it('should correctly orient the physics shape when the associated mesh is rotated', () => {
     const cube = objectManager.addPrimitive('Box');
-    cube.quaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+    cube.quaternion.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
     cube.updateMatrixWorld(); // Update the world matrix to reflect rotation
 
     const body = physicsManager.addBody(cube, 1, 'box');
@@ -173,8 +188,7 @@ describe('PhysicsManager', () => {
     const mesh = new Mesh(customGeometry, new MeshBasicMaterial());
     scene.add(mesh);
 
-    const body = physicsManager.addBody(mesh, 1, 'box'); // Try to add a box body
-    expect(body).toBeNull(); // Should return null as it\'s an unsupported geometry
+    expect(physicsManager.addBody(mesh, 1, 'box')).toBeNull(); // Should return null as it's an unsupported geometry
   });
 
   it('should apply world gravity to dynamic bodies correctly over time', () => {
@@ -211,6 +225,10 @@ describe('PhysicsManager', () => {
 
     physicsManager.update(deltaTime);
 
+<<<<<<< HEAD
+    expect(stepSpy).toHaveBeenCalledWith(1 / 60, deltaTime, 10);
+=======
     expect(stepSpy).toHaveBeenCalledWith(deltaTime);
+>>>>>>> master
   });
 });
