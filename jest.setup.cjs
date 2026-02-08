@@ -1,7 +1,3 @@
-const { TextEncoder, TextDecoder } = require('util');
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
-
 const { JSDOM } = require('jsdom');
 const fetch = require('node-fetch');
 
@@ -10,6 +6,7 @@ global.Request = fetch.Request;
 global.Response = fetch.Response;
 global.Headers = fetch.Headers;
 global.URL.createObjectURL = jest.fn();
+global.URL.revokeObjectURL = jest.fn();
 
 const dom = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>', {
   url: 'http://localhost',
@@ -31,6 +28,7 @@ global.window.log = {
 };
 
 // Mock console.error and console.warn to prevent them from cluttering test output
+// and to allow checking if they were called in tests.
 global.console.error = jest.fn();
 global.console.warn = jest.fn();
 
@@ -59,11 +57,11 @@ const mockVector3 = {
     this.z -= v.z;
     return this;
   }),
-  add: jest.fn(function(v) {
-      this.x += v.x;
-      this.y += v.y;
-      this.z += v.z;
-      return this;
+  add: jest.fn(function (v) {
+    this.x += v.x;
+    this.y += v.y;
+    this.z += v.z;
+    return this;
   }),
   normalize: jest.fn(function () {
     const length = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
@@ -86,14 +84,14 @@ const mockVector3 = {
     this.z /= s;
     return this;
   }),
-  multiplyScalar: jest.fn(function(s) {
-      this.x *= s;
-      this.y *= s;
-      this.z *= s;
-      return this;
+  multiplyScalar: jest.fn(function (s) {
+    this.x *= s;
+    this.y *= s;
+    this.z *= s;
+    return this;
   }),
-  applyEuler: jest.fn(function() { return this; }),
-  applyQuaternion: jest.fn(function() { return this; }),
+  applyEuler: jest.fn(function () { return this; }),
+  applyQuaternion: jest.fn(function () { return this; }),
 };
 
 const mockQuaternion = {
@@ -120,8 +118,8 @@ const mockObject3D = {
   uuid: 'mock-object3d-uuid',
   name: '',
   position: { ...mockVector3 },
-  rotation: { x: 0, y: 0, z: 0, set: jest.fn() },
-  scale: { x: 1, y: 1, z: 1, set: jest.fn() },
+  rotation: { x: 0, y: 0, z: 0, set: jest.fn(), clone: jest.fn(() => ({ x: 0, y: 0, z: 0 })) },
+  scale: { x: 1, y: 1, z: 1, set: jest.fn(), clone: jest.fn(() => ({ x: 1, y: 1, z: 1 })) },
   quaternion: { ...mockQuaternion },
   add: jest.fn(function (object) {
     this.children.push(object);
@@ -175,6 +173,7 @@ const mockGeometry = {
   clone: jest.fn(function () {
     return { ...this };
   }),
+  type: 'BoxGeometry',
 };
 
 const mockMaterial = {
@@ -182,7 +181,8 @@ const mockMaterial = {
   clone: jest.fn(function () {
     return { ...this };
   }),
-  color: { getHex: jest.fn(() => 0x00ff00), set: jest.fn(), setHex: jest.fn() },
+  color: { getHex: jest.fn(() => 0x00ff00), set: jest.fn(), setHex: jest.fn(), clone: jest.fn(() => ({ getHex: () => 0x00ff00 })) },
+  emissive: { getHex: jest.fn(() => 0x000000), set: jest.fn(), setHex: jest.fn(), clone: jest.fn(() => ({ getHex: () => 0x000000 })) },
   map: null,
   normalMap: null,
   roughnessMap: null,
@@ -219,24 +219,40 @@ const THREE = {
       this._value = value;
       return this;
     }),
+    clone: jest.fn(function() { return { ...this }; }),
   })),
   Scene: jest.fn(() => {
     const scene = {
+      ...mockObject3D,
+      type: 'Scene',
       children: [],
-      add: jest.fn((object) => {
+      add: jest.fn(function(object) {
         if (object.parent) {
           object.removeFromParent();
         }
         object.parent = scene;
         scene.children.push(object);
       }),
-      remove: jest.fn((object) => {
+      remove: jest.fn(function(object) {
         scene.children = scene.children.filter((child) => child !== object);
         object.parent = null;
       }),
       traverse: jest.fn(),
       getObjectByProperty: jest.fn(() => null),
-      toJSON: jest.fn(() => ({ object: {} })),
+      toJSON: jest.fn(function () {
+        return {
+          metadata: {
+            version: 4.5,
+            type: 'Scene',
+            generator: 'Scene.toJSON',
+          },
+          object: {
+            uuid: 'scene-uuid',
+            type: 'Scene',
+            children: this.children.map((child) => child.toJSON()),
+          },
+        };
+      }),
     };
     return scene;
   }),
@@ -286,9 +302,18 @@ const THREE = {
   TorusGeometry: jest.fn(() => ({ ...mockGeometry })),
   TeapotGeometry: jest.fn(() => ({ ...mockGeometry })),
   TextGeometry: jest.fn(() => ({ ...mockGeometry })),
+  OctahedronGeometry: jest.fn(() => ({ ...mockGeometry })),
+  TetrahedronGeometry: jest.fn(() => ({ ...mockGeometry })),
+  IcosahedronGeometry: jest.fn(() => ({ ...mockGeometry })),
+  DodecahedronGeometry: jest.fn(() => ({ ...mockGeometry })),
+  ConeGeometry: jest.fn(() => ({ ...mockGeometry })),
+  TorusKnotGeometry: jest.fn(() => ({ ...mockGeometry })),
+  TubeGeometry: jest.fn(() => ({ ...mockGeometry })),
+  CatmullRomCurve3: jest.fn(() => ({})),
   MeshBasicMaterial: jest.fn(() => ({ ...mockMaterial })),
   MeshStandardMaterial: jest.fn(() => ({ ...mockMaterial })),
   MeshPhongMaterial: jest.fn(() => ({ ...mockMaterial })),
+  MeshLambertMaterial: jest.fn(() => ({ ...mockMaterial })),
   ShaderMaterial: jest.fn(() => ({
     ...mockMaterial,
     vertexShader: '',
@@ -322,6 +347,7 @@ const THREE = {
       isDirectionalLight: true,
       color: { set: jest.fn() },
       intensity: 1,
+      shadow: { mapSize: { width: 1024, height: 1024 } },
     };
     light.position = new THREE.Vector3();
     return light;
@@ -343,14 +369,48 @@ const THREE = {
     isAxesHelper: true,
     toJSON: () => ({ object: { type: 'AxesHelper' } }),
   })),
+  LineSegments: jest.fn(() => ({ ...mockObject3D, renderOrder: 1 })),
+  EdgesGeometry: jest.fn(() => ({ ...mockGeometry })),
+  LineBasicMaterial: jest.fn(() => ({ ...mockMaterial })),
   Raycaster: jest.fn(() => ({
     setFromCamera: jest.fn(),
     intersectObjects: jest.fn(() => []),
   })),
   DoubleSide: 2,
+  FrontSide: 0,
+  BackSide: 1,
+  PCFSoftShadowMap: 1,
+  TOUCH: { ROTATE: 0, DOLLY_PAN: 1 },
 };
 
 global.THREE = THREE;
+
+jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
+  OrbitControls: jest.fn().mockImplementation(() => ({
+    enableDamping: false,
+    dampingFactor: 0.25,
+    screenSpacePanning: false,
+    enableZoom: false,
+    minDistance: 0,
+    maxDistance: Infinity,
+    maxPolarAngle: Math.PI,
+    update: jest.fn(),
+    target: { clone: jest.fn(() => ({ ...mockVector3 })) },
+  })),
+}));
+
+jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
+  TransformControls: jest.fn().mockImplementation(() => ({
+    ...mockObject3D,
+    setMode: jest.fn(),
+    attach: jest.fn(),
+    detach: jest.fn(),
+    addEventListener: jest.fn(),
+    translationSnap: null,
+    rotationSnap: null,
+    scaleSnap: null,
+  })),
+}));
 
 const createChainableMock = () => {
     const obj = {};
@@ -369,13 +429,16 @@ jest.mock('dat.gui', () => ({
             add: jest.fn(() => createChainableMock()),
             addColor: jest.fn(() => createChainableMock()),
             open: jest.fn(),
-            removeFolder: jest.fn()
+            close: jest.fn(),
+            removeFolder: jest.fn(),
+            remove: jest.fn(),
+            __controllers: [],
+            __folders: {},
         })),
         add: jest.fn(() => createChainableMock())
     }))
 }));
 
-global.URL.revokeObjectURL = jest.fn();
 
 global.FileReader = jest.fn(() => ({
   readAsText: jest.fn(),
@@ -395,7 +458,7 @@ global.JSZip = jest.fn(() => ({
             'scene.json': {
                 async: jest.fn().mockResolvedValue('{}')
             }
-        }
+        },
     })
 }));
 
@@ -406,6 +469,7 @@ global.Worker = class {
   }
 
   postMessage(msg) {
+    // Wrap the message in an event-like object with a 'data' property
     this.onmessage({ data: msg });
   }
 };

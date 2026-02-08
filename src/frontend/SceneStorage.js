@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import log from './logger.js';
 
 export class SceneStorage {
+<<<<<<< HEAD
     /**
      * @param {THREE.Scene} scene
      * @param {any} eventBus
@@ -162,6 +163,27 @@ export class SceneStorage {
                 this.savePromiseResolve = null;
                 this.savePromiseReject = null;
             }
+=======
+  constructor(scene, eventBus) {
+    this.eventBus = eventBus;
+    this.scene = scene;
+    this.worker = new Worker('./worker.js');
+    this.worker.onmessage = this.handleWorkerMessage.bind(this);
+    this.loadPromiseResolve = null;
+  }
+
+  async saveScene() {
+    const zip = new window.JSZip();
+
+    // Serialize the scene using the worker
+    const sceneJson = await new Promise((resolve, reject) => {
+      this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
+      this.worker.onmessage = (event) => {
+        if (event.data.type === 'serialize_complete') {
+          resolve(event.data.data);
+        } else if (event.data.type === 'error') {
+          reject(new Error(event.data.message + ': ' + event.data.error));
+>>>>>>> master
         }
     }
 }

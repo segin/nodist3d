@@ -11,7 +11,6 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3000;
 
-<<<<<<< HEAD
 // TODO: AUDIT-SEC-002: Implement rate limiting to prevent abuse.
 // const rateLimit = require('express-rate-limit');
 // app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
@@ -33,25 +32,6 @@ app.use(helmet({
         }
     }
 }));
-=======
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"], // Only unsafe-inline for import maps
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", 'data:'],
-        connectSrc: ["'self'"],
-        fontSrc: ["'self'", 'data:'],
-        objectSrc: ["'none'"],
-        mediaSrc: ["'self'"],
-        frameSrc: ["'none'"],
-      },
-    },
-  }),
-);
->>>>>>> master
 app.use(cors());
 
 // Serve modules from node_modules with proper MIME types
