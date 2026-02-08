@@ -1,8 +1,11 @@
 // @ts-check
 // src/frontend/worker.js
+<<<<<<< HEAD
 
 // @ts-ignore
 importScripts('/modules/three.min.js');
+=======
+>>>>>>> master
 
 self.onmessage = function (event) {
   const { type, data } = event.data;

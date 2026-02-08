@@ -501,47 +501,6 @@ describe('Integration Tests - Complete Workflow', () => {
       app.undo(); // Remove object
       expect(app.objects.length).toBe(0);
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-        it('should handle complex undo/redo scenarios with multiple objects', () => {
-            const box = app.addBox();
-            const sphere = app.addSphere();
-            
-            expect(app.objects.length).toBe(2);
-            expect(app.selectedObject).toBe(sphere);
-            
-            // Undo sphere creation
-            app.undo();
-            expect(app.objects.length).toBe(1);
-            // Verify by UUID since object instance is recreated on undo
-            expect(app.selectedObject.uuid).toBe(box.uuid);
-            
-            // Undo box creation
-            app.undo();
-            expect(app.objects.length).toBe(0);
-            expect(app.selectedObject).toBeNull();
-            
-            // Redo box creation
-            app.redo();
-            expect(app.objects.length).toBe(1);
-            expect(app.selectedObject).toBe(app.objects[0]);
-            
-            // Redo sphere creation
-            app.redo();
-            expect(app.objects.length).toBe(2);
-            expect(app.selectedObject).toBe(app.objects[1]);
-        });
-=======
->>>>>>> master
-      app.redo(); // Restore object
-      expect(app.objects.length).toBe(1);
-      expect(app.objects[0].name).toBe(boxName);
-      expect(app.selectedObject).toBe(app.objects[0]);
-<<<<<<< HEAD
-=======
->>>>>>> master
->>>>>>> master
     });
 
     it('should handle complex undo/redo scenarios with multiple objects', () => {
@@ -605,66 +564,6 @@ describe('Integration Tests - Complete Workflow', () => {
     it('should update scene graph when objects are added or removed', () => {
       const updateSpy = jest.spyOn(app, 'updateSceneGraph');
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-        it('should maintain correct selection state through undo/redo operations', () => {
-            const box = app.addBox();
-            const sphere = app.addSphere();
-            
-            expect(app.selectedObject).toBe(sphere);
-            
-            // Undo sphere creation - should select box
-            app.undo();
-            // Verify by UUID since object instance is recreated
-            expect(app.selectedObject.uuid).toBe(box.uuid);
-            
-            // Undo box creation - should have no selection
-            app.undo();
-            expect(app.selectedObject).toBeNull();
-            
-            // Redo box creation - should select box
-            app.redo();
-            expect(app.selectedObject).toBe(app.objects[0]);
-        });
-=======
->>>>>>> master
-      app.addBox();
-      expect(updateSpy).toHaveBeenCalled();
-
-      app.addSphere();
-      expect(updateSpy).toHaveBeenCalled();
-
-      app.deleteObject(app.objects[0]);
-      expect(updateSpy).toHaveBeenCalled();
-    });
-  });
-
-  describe('Object Duplication Workflow', () => {
-    it('should duplicate object with all properties and integrate with all systems', () => {
-      const originalBox = app.addBox();
-      originalBox.position.x = 3;
-      originalBox.name = 'CustomBox';
-
-      const duplicatedBox = app.duplicateSelectedObject();
-
-      // Verify duplication
-      expect(duplicatedBox).toBeDefined();
-      expect(duplicatedBox.name).toBe('CustomBox_copy');
-      expect(duplicatedBox.position.x).toBe(4); // Original + 1 offset
-      expect(app.objects.length).toBe(2);
-      expect(app.selectedObject).toBe(duplicatedBox);
-
-      // Verify history saved
-      expect(app.history[app.historyIndex].description).toBe('Duplicate object');
-
-      // Verify scene graph updated
-      expect(app.objects).toContain(originalBox);
-      expect(app.objects).toContain(duplicatedBox);
-<<<<<<< HEAD
-=======
->>>>>>> master
->>>>>>> master
     });
 
     it('should handle duplication when no object is selected', () => {
