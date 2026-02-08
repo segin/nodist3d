@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const log = {
     trace: console.trace,
     debug: console.debug,
@@ -67,20 +68,57 @@ const log = {
         if (currentLevel <= levels.ERROR) console.error(...args);
     }
 };
-
-if (log && log.setLevel) {
-    log.setLevel('info');
 =======
+<<<<<<< HEAD
+// src/frontend/logger.js
+
+// Access global loglevel instance (from CDN in browser, or mock in tests)
+const log = (typeof window !== 'undefined' && window.log) ? window.log : {
+=======
+<<<<<<< HEAD
+>>>>>>> master
+
+// Simple logger wrapper
+const log = (typeof window !== 'undefined' && window.log) ? window.log : {
+=======
+<<<<<<< HEAD
 // Access global log instance from window (loaded via script tag)
 const log = {
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> master
+const log = (typeof window !== 'undefined' && window.log) ? window.log : {
+>>>>>>> master
     trace: (...args) => console.trace(...args),
     debug: (...args) => console.debug(...args),
     info: (...args) => console.info(...args),
     warn: (...args) => console.warn(...args),
     error: (...args) => console.error(...args),
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+const log = {
+>>>>>>> master
+>>>>>>> master
+    trace: console.trace,
+    debug: console.debug,
+    info: console.info,
+    warn: console.warn,
+    error: console.error,
+<<<<<<< HEAD
+>>>>>>> master
     setLevel: () => {},
-    getLogger: () => log
+    getLogger: () => log,
+    methodFactory: () => {},
+    enableAll: () => {},
+    disableAll: () => {},
+    setDefaultLevel: () => {}
 };
+<<<<<<< HEAD
 >>>>>>> master
 >>>>>>> master
 const log = window.log;
@@ -92,10 +130,48 @@ if (log) {
 } else {
     console.error('loglevel not loaded!');
 >>>>>>> master
+=======
+
+if (log && log.setLevel) {
+    // Wrap in try-catch in case it's a simple console fallback
+    try {
+        log.setLevel('info');
+    } catch (e) {
+        // ignore
+    }
+} else {
+    console.warn('loglevel not loaded correctly, falling back to console');
 }
 
-export default log || console; // Fallback to console if log is missing
 =======
+<<<<<<< HEAD
+    setLevel: () => {}
+};
+
+=======
+>>>>>>> master
+>>>>>>> master
+    setLevel: () => {},
+    setDefaultLevel: () => {},
+    enableAll: () => {},
+    disableAll: () => {},
+    methodFactory: () => {},
+    getLogger: () => log,
+};
+
+<<<<<<< HEAD
+if (log && log.setLevel) {
+    // Wrap in try-catch in case setLevel throws or isn't a function despite check
+    try {
+        log.setLevel('info');
+    } catch (e) {
+        console.warn('Failed to set log level:', e);
+    }
+>>>>>>> master
+}
+
+=======
+<<<<<<< HEAD
     console.warn('loglevel not loaded correctly');
 }
 >>>>>>> master
@@ -105,7 +181,20 @@ if (log) {
 } else {
     console.warn('loglevel not loaded, falling back to console');
 >>>>>>> master
+=======
+<<<<<<< HEAD
+if (log && log.setLevel) {
+    try {
+        log.setLevel('info');
+    } catch (e) {
+        // ignore
+    }
+>>>>>>> master
 }
 
-export default log || console;
+=======
 >>>>>>> master
+>>>>>>> master
+>>>>>>> master
+>>>>>>> master
+export default log;

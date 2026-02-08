@@ -50,6 +50,10 @@ jest.mock('three', () => {
             shadowMap: { enabled: false, type: null },
             domElement: mockElement
         })),
+        Clock: jest.fn(() => ({
+            getDelta: jest.fn(() => 0.016),
+            getElapsedTime: jest.fn(() => 0)
+        })),
         Mesh: jest.fn(() => mockMesh),
         BoxGeometry: jest.fn(() => ({ type: 'BoxGeometry', parameters: {}, dispose: jest.fn() })),
         SphereGeometry: jest.fn(),
@@ -147,7 +151,7 @@ jest.mock('../src/frontend/EventBus.js', () => ({ subscribe: jest.fn(), publish:
 jest.mock('../src/frontend/ObjectManager.js', () => ({ ObjectManager: jest.fn() }));
 jest.mock('../src/frontend/SceneManager.js', () => ({ SceneManager: jest.fn() }));
 jest.mock('../src/frontend/InputManager.js', () => ({ InputManager: jest.fn() }));
-jest.mock('../src/frontend/PhysicsManager.js', () => ({ PhysicsManager: jest.fn() }));
+jest.mock('../src/frontend/PhysicsManager.js', () => ({ PhysicsManager: jest.fn(() => ({ update: jest.fn() })) }));
 jest.mock('../src/frontend/PrimitiveFactory.js', () => ({ PrimitiveFactory: jest.fn() }));
 jest.mock('../src/frontend/ObjectFactory.js', () => ({ ObjectFactory: jest.fn() }));
 jest.mock('../src/frontend/ObjectPropertyUpdater.js', () => ({ ObjectPropertyUpdater: jest.fn() }));

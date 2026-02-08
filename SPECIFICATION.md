@@ -100,38 +100,6 @@ This phase focuses on solidifying the codebase foundation, ensuring maintainabil
       - [ ] Create `src/types.d.ts` to define global interfaces like `SceneObject`, `SerializedScene`, `ManagerInterface`.
   - **Verification & Testing**:
     - [ ] Run `npx tsc`. Expect zero errors in checked files.
-            *   [x] `env`: `{ browser: true, node: true, es2022: true }`.
->>>>>>> master
->>>>>>> master
->>>>>>> master
-            *   [x] `rules`: Enforce `eqeqeq`, `no-var`, `prefer-const`, `no-console` (warn), `promise/always-return`.
-        *   [x] **Configure Prettier (`.prettierrc`)**:
-            *   [x] `{ "semi": true, "singleQuote": true, "tabWidth": 2, "printWidth": 100 }`.
-        *   [x] **Setup Husky**:
-            *   [x] `npx husky install`.
->>>>>>> master
->>>>>>> master
-            *   [x] Add `pre-commit` hook: `npx lint-staged`.
-            *   [x] Configure `lint-staged` in package.json to run `eslint --fix` on `*.js` files.
-    *   **Verification & Testing**:
-        *   [x] Deliberately introduce a lint error (e.g., `var x = 1;`). Verify commit fails.
-        *   [x] Run `npm run lint`. Verify it catches issues.
->>>>>>> master
-
-*   **1.2.2. Documentation & Type Safety**
-    *   **Action Items**:
-        *   [ ] **JSDoc Implementation**:
-            *   [ ] Go through every file in `src/`.
-            *   [x] Add `/** ... */` blocks to every class, method, and exported function.
-            *   [x] Explicitly define `@param {Type} name` and `@returns {Type}`.
-        *   [x] **TypeScript Migration (Phase 1)**:
-            *   [x] Create `tsconfig.json` with `{ "allowJs": true, "checkJs": true, "noEmit": true }`.
-            *   [x] Add `// @ts-check` to the top of `main.js` and `ObjectManager.js`.
-            *   [x] Fix all resulting type errors (mostly by adding JSDoc).
-            *   [x] Create `src/types.d.ts` to define global interfaces like `SceneObject`, `SerializedScene`, `ManagerInterface`.
-    *   **Verification & Testing**:
-        *   [x] Run `npx tsc`. Expect zero errors in checked files.
->>>>>>> master
 
 ### 1.3. Error Handling & Logging
 

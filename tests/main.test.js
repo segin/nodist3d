@@ -7,6 +7,51 @@ import { JSDOM } from 'jsdom';
 jest.mock('three', () => {
   const mockElement = { createElement: jest.fn(() => ({ tagName: 'CANVAS' })) };
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    const mockElement = { createElement: jest.fn(() => ({ tagName: 'CANVAS' })) };
+    
+    const mockVector3 = {
+        x: 0, y: 0, z: 0,
+        clone: jest.fn(() => ({ x: 0, y: 0, z: 0 })),
+        copy: jest.fn(),
+        set: jest.fn()
+    };
+
+    const mockMesh = {
+        position: { ...mockVector3 },
+        rotation: { ...mockVector3 },
+        scale: { x: 1, y: 1, z: 1, ...mockVector3 },
+        material: {
+            emissive: { setHex: jest.fn() },
+            clone: jest.fn(() => ({ emissive: { setHex: jest.fn() } }))
+        },
+        geometry: { clone: jest.fn() },
+        castShadow: false,
+        receiveShadow: false
+    };
+
+    return {
+        __esModule: true,
+        Scene: jest.fn(() => ({
+            add: jest.fn(),
+            remove: jest.fn()
+        })),
+        PerspectiveCamera: jest.fn(() => ({
+            position: {
+                set: jest.fn(),
+                clone: jest.fn(() => ({ copy: jest.fn() }))
+            },
+        position: { set: jest.fn(), clone: jest.fn() },
+            position: { set: jest.fn(), clone: jest.fn() },
+            position: {
+                set: jest.fn(),
+                clone: jest.fn(() => ({ x: 5, y: 5, z: 5 }))
+            },
+            position: { set: jest.fn(), clone: jest.fn(() => ({ copy: jest.fn() })) },
+            position: { set: jest.fn(), clone: jest.fn() },
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -35,6 +80,26 @@ jest.mock('three', () => {
         BufferGeometry: jest.fn(),
         ExtrudeGeometry: jest.fn(),
         LatheGeometry: jest.fn(),
+<<<<<<< HEAD
+=======
+        BoxGeometry: jest.fn(),
+        SphereGeometry: jest.fn(),
+        CylinderGeometry: jest.fn(),
+        ConeGeometry: jest.fn(),
+        TorusGeometry: jest.fn(),
+        PlaneGeometry: jest.fn(),
+        BufferGeometry: jest.fn(),
+        ExtrudeGeometry: jest.fn(),
+        LatheGeometry: jest.fn(),
+        Loader: jest.fn(),
+        FileLoader: jest.fn(() => ({
+            setPath: jest.fn(),
+            setRequestHeader: jest.fn(),
+            setWithCredentials: jest.fn(),
+            load: jest.fn(),
+        })),
+        ShapeGeometry: jest.fn(),
+>>>>>>> master
         MeshLambertMaterial: jest.fn(() => ({
             emissive: { setHex: jest.fn() },
             clone: jest.fn(() => ({ emissive: { setHex: jest.fn() } }))
@@ -54,9 +119,30 @@ jest.mock('three', () => {
         Vector2: jest.fn(),
         Clock: jest.fn(),
         TOUCH: { ROTATE: 1, DOLLY_PAN: 2 },
+<<<<<<< HEAD
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide',
         TOUCH: { ROTATE: 0, DOLLY_PAN: 1 }
+=======
+        Clock: jest.fn(() => ({
+            getDelta: jest.fn(() => 0.016)
+        })),
+        PCFSoftShadowMap: 'PCFSoftShadowMap',
+        DoubleSide: 'DoubleSide',
+        TOUCH: { ROTATE: 0, DOLLY_PAN: 1 }
+        TOUCH: { ROTATE: 1, DOLLY_PAN: 2 }
+        Loader: class {
+            constructor() {
+                this.load = jest.fn();
+                this.parse = jest.fn();
+            }
+        },
+        FileLoader: class {
+            constructor() {
+                this.load = jest.fn();
+            }
+        },
+>>>>>>> master
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide',
         TOUCH: { ROTATE: 1, DOLLY_PAN: 2 }
@@ -130,14 +216,17 @@ jest.mock('three', () => {
     PCFSoftShadowMap: 'PCFSoftShadowMap',
     DoubleSide: 'DoubleSide',
   };
+<<<<<<< HEAD
+=======
 =======
 >>>>>>> master
+>>>>>>> master
+=======
 >>>>>>> master
 });
 
 // Mock dat.gui
 jest.mock('dat.gui', () => ({
-<<<<<<< HEAD
   GUI: jest.fn(() => ({
     addFolder: jest.fn(() => ({
       add: jest.fn(() => ({
@@ -168,17 +257,73 @@ jest.mock('dat.gui', () => ({
       __folders: [],
     })),
   })),
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    __esModule: true,
+    GUI: jest.fn(() => ({
+        addFolder: jest.fn(() => ({
+            add: jest.fn(() => ({
+                name: jest.fn(() => ({ onChange: jest.fn() })),
+                onChange: jest.fn()
+            })),
+            addFolder: jest.fn(() => ({
+                add: jest.fn(() => ({
+                    name: jest.fn(() => ({ onChange: jest.fn() })),
+                    onChange: jest.fn()
+                })),
+                addColor: jest.fn(() => ({
+                    name: jest.fn(() => ({ onChange: jest.fn() })),
+                    onChange: jest.fn()
+                })),
+                open: jest.fn(),
+                close: jest.fn()
+            })),
+            addColor: jest.fn(() => ({
+                name: jest.fn(() => ({ onChange: jest.fn() })),
+                onChange: jest.fn()
+            })),
+            open: jest.fn(),
+            close: jest.fn(),
+            remove: jest.fn(),
+            removeFolder: jest.fn(),
+            __controllers: [],
+            __folders: []
+        }))
+    }))
+>>>>>>> master
 }));
 
 // Mock OrbitControls
 jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
-<<<<<<< HEAD
   OrbitControls: jest.fn(() => ({
     enableDamping: true,
     dampingFactor: 0.05,
     enabled: true,
     update: jest.fn(),
   })),
+<<<<<<< HEAD
+=======
+    OrbitControls: class {
+        constructor() {
+            this.enableDamping = true;
+            this.dampingFactor = 0.05;
+            this.enabled = true;
+            this.update = jest.fn();
+            this.target = { clone: jest.fn(() => ({ copy: jest.fn() })) };
+        }
+    }
+        target: {
+            clone: jest.fn(() => ({ copy: jest.fn() })),
+            copy: jest.fn()
+        }
+        target: { clone: jest.fn(), copy: jest.fn() }
+        target: { clone: jest.fn(() => ({ copy: jest.fn() })) }
+        target: {
+            clone: jest.fn(() => ({ x: 0, y: 0, z: 0 })),
+            copy: jest.fn()
+        }
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 >>>>>>> master
@@ -351,9 +496,12 @@ describe('Basic App Functionality', () => {
                 onclick: null,
                 addEventListener: jest.fn(),
                 removeEventListener: jest.fn(),
-<<<<<<< HEAD
                 setAttribute: jest.fn(),
                 title: ''
+<<<<<<< HEAD
+=======
+                setAttribute: jest.fn()
+>>>>>>> master
 >>>>>>> master
             };
             
@@ -558,5 +706,20 @@ describe('Basic App Functionality', () => {
         expect(app.scene.add).toHaveBeenCalledWith(app.objects[0]);
         expect(app.transformControls.attach).toHaveBeenCalledWith(app.objects[0]);
     });
+<<<<<<< HEAD
+=======
+    const app = new TestApp();
+
+    // Test adding a box
+    app.addBox();
+
+    expect(app.objects.length).toBe(1);
+    expect(app.selectedObject).toBe(app.objects[0]);
+    expect(app.scene.add).toHaveBeenCalledWith(app.objects[0]);
+    expect(app.transformControls.attach).toHaveBeenCalledWith(app.objects[0]);
+  });
+>>>>>>> master
+=======
+>>>>>>> master
 >>>>>>> master
 });

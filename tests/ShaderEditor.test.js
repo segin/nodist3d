@@ -48,6 +48,11 @@ jest.mock('three', () => ({
 const mockController = {
   name: jest.fn(() => ({ onChange: jest.fn() })),
   onChange: jest.fn(),
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+        setHex: jest.fn()
+>>>>>>> master
     })),
     WebGLRenderer: jest.fn(() => ({
         domElement: { addEventListener: jest.fn() }
@@ -68,8 +73,19 @@ const createMockController = () => ({
     onChange: jest.fn(function() { return this; }),
     listen: jest.fn(function() { return this; })
 });
+<<<<<<< HEAD
+=======
+const createMockController = () => ({
+    name: jest.fn().mockReturnThis(),
+    onChange: jest.fn().mockReturnThis(),
+    listen: jest.fn().mockReturnThis(),
+    setValue: jest.fn()
+});
+>>>>>>> master
 };
 >>>>>>> master
+>>>>>>> master
+=======
 >>>>>>> master
 
 const mockFolder = {
@@ -187,6 +203,19 @@ describe('ShaderEditor', () => {
 
       expect(shaderEditor.shaderMaterial.needsUpdate).toBe(true);
     });
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+        // Index 0: createShader, Index 1: float uniform, Index 2: vertex shader
+        const shaderCodeController = editorFolder.add.mock.results[2].value;
+
+        // Debug calls
+        // console.log(editorFolder.add.mock.calls);
+
+        // Find the call for vertex shader
+        const callIndex = editorFolder.add.mock.calls.findIndex(call => call[1] === 'vertex');
+        const shaderCodeController = editorFolder.add.mock.results[callIndex].value;
+>>>>>>> master
 >>>>>>> master
   
         const newVertexShader = 'void main() { gl_Position = vec4(0.0); }';
@@ -210,6 +239,8 @@ describe('ShaderEditor', () => {
   
         expect(shaderEditor.shaderMaterial.needsUpdate).toBe(true);
       });
+>>>>>>> master
+=======
 >>>>>>> master
   });
 });

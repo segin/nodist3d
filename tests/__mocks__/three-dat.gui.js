@@ -81,6 +81,29 @@ class MockColor {
 // Helper to create a mock Material
 const createMockMaterial = (options = {}) => ({
     color: new MockColor(options.color !== undefined ? options.color : 0xffffff),
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    // Helper to create a mock Vector3 with common methods
+    const createMockVector3 = jest.fn(function(x = 0, y = 0, z = 0) {
+        const v = {
+            x: x, y: y, z: z,
+            set: jest.fn(function(newX, newY, newZ) { this.x = newX; this.y = newY; this.z = newZ; return this; }),
+            clone: jest.fn(function() { return new createMockVector3(this.x, this.y, this.z); }),
+            addScalar: jest.fn(function(s) { this.x += s; this.y += s; this.z += s; return this; }),
+            equals: jest.fn(function(v) { return this.x === v.x && this.y === v.y && this.z === v.z; }),
+            copy: jest.fn(function(v) { this.x = v.x; this.y = v.y; this.z = v.z; return this; }),
+            addVectors: jest.fn(function(v1, v2) { this.x = v1.x + v2.x; this.y = v1.y + v2.y; this.z = v1.z + v2.z; return this; }),
+            divideScalar: jest.fn(function(s) { this.x /= s; this.y /= s; this.z /= s; return this; }),
+            normalize: jest.fn(function() { return this; }),
+            add: jest.fn(function(v) { this.x += v.x; this.y += v.y; this.z += v.z; return this; }),
+            sub: jest.fn(function(v) { this.x -= v.x; this.y -= v.y; this.z -= v.z; return this; }),
+            applyEuler: jest.fn(function() { return this; }),
+            applyQuaternion: jest.fn(function() { return this; }),
+            multiplyScalar: jest.fn(function(s) { this.x *= s; this.y *= s; this.z *= s; return this; })
+        };
+        return v;
+>>>>>>> master
   // Helper to create a mock Vector3 with common methods
   const createMockVector3 = (x = 0, y = 0, z = 0) => ({
     x: x,
@@ -179,6 +202,9 @@ const createMockMaterial = (options = {}) => ({
   // Helper to create a mock Material with common properties and methods
   const createMockMaterial = (options = {}) => ({
     color: new originalThree.Color(options.color !== undefined ? options.color : 0xffffff),
+<<<<<<< HEAD
+=======
+>>>>>>> master
 =======
 >>>>>>> master
 >>>>>>> master
@@ -190,7 +216,6 @@ const createMockMaterial = (options = {}) => ({
     side: originalThree.FrontSide,
     roughness: options.roughness !== undefined ? options.roughness : 1,
     metalness: options.metalness !== undefined ? options.metalness : 0,
-<<<<<<< HEAD
     setHex: jest.fn(function (hex) {
       this.color.setHex(hex);
     }),
@@ -276,6 +301,44 @@ const createMockMaterial = (options = {}) => ({
         clonedGroup.add(child.clone());
       });
       return clonedGroup;
+<<<<<<< HEAD
+=======
+    setHex: jest.fn(function(hex) { this.color.setHex(hex); }),
+    clone: jest.fn(function() { return createMockMaterial(options); }),
+});
+
+// Helper to create a mock Geometry
+const createMockGeometry = (type, parameters = {}) => ({
+    dispose: jest.fn(),
+    type: type,
+    parameters: parameters,
+    uuid: 'mock-geometry-uuid',
+    clone: jest.fn(() => createMockGeometry(type, parameters)),
+});
+
+// Mock Mesh
+const MockMesh = jest.fn(function(geometry = createMockGeometry('BufferGeometry'), material = createMockMaterial()) {
+    this.isMesh = true;
+    this.isObject3D = true;
+    this.geometry = geometry;
+    this.material = material;
+    this.name = '';
+    this.uuid = 'mock-mesh-uuid';
+    this.position = new MockVector3();
+    this.rotation = new MockEuler();
+    this.scale = new MockVector3(1, 1, 1);
+    this.parent = null;
+    this.children = [];
+    this.add = jest.fn(function(obj) { this.children.push(obj); obj.parent = this; });
+    this.remove = jest.fn(function(obj) { this.children = this.children.filter(child => child !== obj); obj.parent = null; });
+    this.clone = jest.fn(function() {
+        const clonedMesh = new MockMesh(this.geometry.clone(), Array.isArray(this.material) ? this.material.map(m => m.clone()) : this.material.clone());
+        clonedMesh.position.copy(this.position);
+        clonedMesh.rotation.copy(this.rotation);
+        clonedMesh.scale.copy(this.scale);
+        clonedMesh.name = this.name;
+        return clonedMesh;
+>>>>>>> master
     });
     this.getWorldPosition = jest.fn(function(target) { return target.copy(this.position); });
     this.updateMatrixWorld = jest.fn();
@@ -473,11 +536,9 @@ module.exports = {
             });
             return clonedGroup;
         });
->>>>>>> master
     });
   });
 
-<<<<<<< HEAD
   // Mock Lights
   const MockPointLight = jest.fn(function (color, intensity, distance, decay) {
     this.isLight = true;
@@ -881,10 +942,15 @@ module.exports = {
       }),
     })),
   };
+<<<<<<< HEAD
+=======
+>>>>>>> master
 =======
 >>>>>>> master
 >>>>>>> master
 });
+>>>>>>> master
+=======
 >>>>>>> master
 
 jest.mock('dat.gui', () => {
@@ -895,7 +961,6 @@ jest.mock('dat.gui', () => {
     getValue: jest.fn(),
   };
 
-<<<<<<< HEAD
   const mockFolder = {
     add: jest.fn(() => mockController),
     addColor: jest.fn(() => mockController),
@@ -911,7 +976,28 @@ jest.mock('dat.gui', () => {
     __folders: [], // To track root folders
   }));
 
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+    const mockFolder = {
+        add: jest.fn(() => mockController),
+        addColor: jest.fn(() => mockController),
+        addFolder: jest.fn(() => mockFolder),
+        open: jest.fn(),
+        removeFolder: jest.fn(),
+        __controllers: [],
+    };
+
+    const mockGUI = jest.fn(() => ({
+        addFolder: jest.fn(() => mockFolder),
+        add: jest.fn(() => mockController),
+        __folders: [],
+    }));
+
+>>>>>>> master
+=======
+>>>>>>> master
 >>>>>>> master
   return { GUI: mockGUI };
 });
