@@ -1,4 +1,9 @@
 <<<<<<< HEAD
+
+// Simple logger wrapper
+const log = (typeof window !== 'undefined' && window.log) ? window.log : {
+=======
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 >>>>>>> master
@@ -12,11 +17,17 @@ const log = (typeof window !== 'undefined' && window.log) ? window.log : {
 =======
 =======
 const log = {
+>>>>>>> master
     trace: console.trace,
     debug: console.debug,
     info: console.info,
     warn: console.warn,
     error: console.error,
+<<<<<<< HEAD
+    setLevel: () => {}
+};
+
+=======
 >>>>>>> master
 >>>>>>> master
     setLevel: () => {},
@@ -48,6 +59,7 @@ if (log && log.setLevel) {
 }
 
 =======
+>>>>>>> master
 >>>>>>> master
 >>>>>>> master
 export default log;

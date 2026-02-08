@@ -6,6 +6,33 @@ export class ObjectPropertyUpdater {
     this.primitiveFactory = primitiveFactory;
   }
 
+<<<<<<< HEAD
+    /**
+     * @param {import('./PrimitiveFactory.js').PrimitiveFactory} primitiveFactory
+     */
+    constructor(primitiveFactory) {
+        this.primitiveFactory = primitiveFactory;
+    }
+
+    /**
+     * Updates material properties.
+     * @param {THREE.Object3D} object
+     * @param {any} newMaterialProperties
+     */
+    updateMaterial(object, newMaterialProperties) {
+        // @ts-ignore - material existence
+        if (object && object.material) {
+            // @ts-ignore
+            const materials = Array.isArray(object.material) ? object.material : [object.material];
+            materials.forEach(material => {
+                for (const prop in newMaterialProperties) {
+                    if (material[prop] !== undefined) {
+                        if (prop === 'color') {
+                            material.color.set(newMaterialProperties[prop]);
+                        } else {
+                            material[prop] = newMaterialProperties[prop];
+                        }
+=======
   updateMaterial(object, properties) {
     if (object && object.material) {
         const materials = Array.isArray(object.material) ? object.material : [object.material];
@@ -16,11 +43,49 @@ export class ObjectPropertyUpdater {
                         material.color.setHex(properties[key]);
                     } else {
                         material[key] = properties[key];
+>>>>>>> master
                     }
                 }
             }
+<<<<<<< HEAD
+        );
+    }
+
+    /**
+     * Updates primitive parameters.
+     * @param {THREE.Object3D} object
+     * @param {any} parameters
+     */
+    updatePrimitive(object, parameters) {
+        // @ts-ignore
+        if (object && object.geometry) {
+            // @ts-ignore
+            const newGeometry = this.primitiveFactory.createPrimitive(object.geometry.type, parameters);
+            if (newGeometry) {
+                // @ts-ignore
+                object.geometry.dispose();
+                // @ts-ignore
+                object.geometry = newGeometry;
+  updateMaterial(object, newMaterialProperties) {
+    if (object && object.material) {
+      const materials = Array.isArray(object.material) ? object.material : [object.material];
+      materials.forEach((material) => {
+        for (const prop in newMaterialProperties) {
+          if (material[prop] !== undefined) {
+            if (prop === 'color') {
+              material.color.set(newMaterialProperties[prop]);
+            } else {
+              material[prop] = newMaterialProperties[prop];
+>>>>>>> master
+            }
+          }
+        }
+        material.needsUpdate = true;
+      });
+=======
             material.needsUpdate = true;
         });
+>>>>>>> master
     }
   }
 

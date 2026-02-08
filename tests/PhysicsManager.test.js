@@ -1,7 +1,14 @@
 <<<<<<< HEAD
+import { Scene, BufferGeometry, Mesh, MeshBasicMaterial, Quaternion, Vector3 } from 'three';
+import { Scene, BufferGeometry, Mesh, MeshBasicMaterial, Quaternion } from 'three';
+import { Scene, Vector3, Quaternion, BufferGeometry, Mesh, MeshBasicMaterial } from 'three';
+>>>>>>> master
+=======
+<<<<<<< HEAD
 import { Scene, Mesh, MeshBasicMaterial, Vector3, Quaternion, BufferGeometry } from 'three';
 =======
 import { Scene, BufferGeometry, Mesh, MeshBasicMaterial, Quaternion, Vector3 } from 'three';
+>>>>>>> master
 >>>>>>> master
 import { PhysicsManager } from '../src/frontend/PhysicsManager.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
@@ -62,6 +69,33 @@ describe('PhysicsManager', () => {
     // (scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater, stateManager)
     objectManager = new ObjectManager(scene, eventBus, physicsManager, primitiveFactory, null, null, null);
   });
+<<<<<<< HEAD
+
+        // Match ObjectManager constructor signature:
+        // (scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater, stateManager)
+        objectManager = new ObjectManager(scene, eventBus, physicsManager, primitiveFactory, null, null, null);
+        // Correct constructor signature: scene, eventBus, physicsManager, primitiveFactory
+        objectManager = new ObjectManager(scene, eventBus, physicsManager, primitiveFactory);
+
+        // Correct instantiation matching the signature:
+        // constructor(scene, eventBus, physicsManager, primitiveFactory, objectFactory, objectPropertyUpdater, stateManager)
+        // We only need primitiveFactory working for addPrimitive, so we pass nulls for others.
+        // Actually, ObjectManager needs eventBus too.
+        objectManager = new ObjectManager(
+            scene,
+            eventBus,
+            null, // physicsManager (we are testing it separately, not integration here)
+            primitiveFactory,
+            null, // objectFactory
+            null, // objectPropertyUpdater
+            null  // stateManager
+        );
+>>>>>>> master
+>>>>>>> master
+    });
+>>>>>>> master
+=======
+>>>>>>> master
 
   it('should add a box-shaped physics body to the world', () => {
     const cube = objectManager.addPrimitive('Box');
@@ -226,9 +260,13 @@ describe('PhysicsManager', () => {
     physicsManager.update(deltaTime);
 
 <<<<<<< HEAD
+    expect(stepSpy).toHaveBeenCalledWith(deltaTime);
+=======
+<<<<<<< HEAD
     expect(stepSpy).toHaveBeenCalledWith(1 / 60, deltaTime, 10);
 =======
     expect(stepSpy).toHaveBeenCalledWith(deltaTime);
+>>>>>>> master
 >>>>>>> master
   });
 });

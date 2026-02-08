@@ -48,6 +48,39 @@ jest.mock('three', () => ({
 const mockController = {
   name: jest.fn(() => ({ onChange: jest.fn() })),
   onChange: jest.fn(),
+<<<<<<< HEAD
+        setHex: jest.fn()
+    })),
+    WebGLRenderer: jest.fn(() => ({
+        domElement: { addEventListener: jest.fn() }
+    })),
+    Scene: jest.fn(() => ({
+        add: jest.fn(),
+        remove: jest.fn()
+    })),
+    PerspectiveCamera: jest.fn(() => ({
+        aspect: 1,
+        updateProjectionMatrix: jest.fn()
+    }))
+}));
+
+// Mock dat.gui with proper structure
+const createMockController = () => ({
+    name: jest.fn(function() { return this; }),
+    onChange: jest.fn(function() { return this; }),
+    listen: jest.fn(function() { return this; })
+});
+const createMockController = () => ({
+    name: jest.fn().mockReturnThis(),
+    onChange: jest.fn().mockReturnThis(),
+    listen: jest.fn().mockReturnThis(),
+    setValue: jest.fn()
+});
+};
+>>>>>>> master
+>>>>>>> master
+=======
+>>>>>>> master
 
 const mockFolder = {
   add: jest.fn(() => mockController),
@@ -164,5 +197,41 @@ describe('ShaderEditor', () => {
 
       expect(shaderEditor.shaderMaterial.needsUpdate).toBe(true);
     });
+<<<<<<< HEAD
+        // Index 0: createShader, Index 1: float uniform, Index 2: vertex shader
+        const shaderCodeController = editorFolder.add.mock.results[2].value;
+
+        // Debug calls
+        // console.log(editorFolder.add.mock.calls);
+
+        // Find the call for vertex shader
+        const callIndex = editorFolder.add.mock.calls.findIndex(call => call[1] === 'vertex');
+        const shaderCodeController = editorFolder.add.mock.results[callIndex].value;
+>>>>>>> master
+  
+        const newVertexShader = 'void main() { gl_Position = vec4(0.0); }';
+        const onChangeCallback = shaderCodeController.onChange.mock.calls[0][0];
+        onChangeCallback(newVertexShader);
+  
+        expect(shaderEditor.shaderMaterial.vertexShader).toBe(newVertexShader);
+        expect(shaderEditor.shaderMaterial.needsUpdate).toBe(true);
+      });
+  
+      it("should update uniform value and set needsUpdate to true when changed in the GUI", () => {
+        shaderEditor.createShader();
+        const editorFolder = gui.addFolder.mock.results[0].value;
+        const uniformsFolder = editorFolder.addFolder.mock.results[0].value;
+        const colorController = uniformsFolder.addColor.mock.results[0].value;
+  
+        shaderEditor.shaderMaterial.needsUpdate = false; // Reset for test
+  
+        const onChangeCallback = colorController.onChange.mock.calls[0][0];
+        onChangeCallback(); // Simulate the change
+  
+        expect(shaderEditor.shaderMaterial.needsUpdate).toBe(true);
+      });
+>>>>>>> master
+=======
+>>>>>>> master
   });
 });

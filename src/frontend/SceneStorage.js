@@ -5,6 +5,28 @@ import log from './logger.js';
 
 export class SceneStorage {
 <<<<<<< HEAD
+  constructor(scene, eventBus) {
+    this.eventBus = eventBus;
+    this.scene = scene;
+    this.worker = new Worker('./worker.js');
+    this.worker.onmessage = this.handleWorkerMessage.bind(this);
+    this.loadPromiseResolve = null;
+  }
+
+  async saveScene() {
+    const zip = new window.JSZip();
+
+    // Serialize the scene using the worker
+    const sceneJson = await new Promise((resolve, reject) => {
+      this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
+      this.worker.onmessage = (event) => {
+        if (event.data.type === 'serialize_complete') {
+          resolve(event.data.data);
+        } else if (event.data.type === 'error') {
+          reject(new Error(event.data.message + ': ' + event.data.error));
+        this.worker.onmessage = this.handleWorkerMessage.bind(this);
+=======
+<<<<<<< HEAD
     /**
      * @param {THREE.Scene} scene
      * @param {any} eventBus
@@ -16,6 +38,7 @@ export class SceneStorage {
         this.boundHandleWorkerMessage = this.handleWorkerMessage.bind(this);
         this.worker.onmessage = this.boundHandleWorkerMessage;
 
+>>>>>>> master
         /** @type {((value: any) => void) | null} */
         this.loadPromiseResolve = null;
         /** @type {((value: any) => void) | null} */
@@ -47,6 +70,73 @@ export class SceneStorage {
         }
 
         // Serialize the scene using the worker
+<<<<<<< HEAD
+        let sceneJson;
+        try {
+            sceneJson = await new Promise((resolve, reject) => {
+                this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
+                this.worker.onmessage = (event) => {
+                    if (event.data.type === 'serialize_complete') {
+                        resolve(event.data.data);
+                    } else if (event.data.type === 'error') {
+                        reject(new Error(event.data.message + ': ' + event.data.error));
+                    }
+                };
+            });
+        } finally {
+            // Restore default message handler
+            this.worker.onmessage = this.handleWorkerMessage.bind(this);
+        }
+
+        if (!sceneJson) {
+             throw new Error('Serialization failed: Empty data received');
+        }
+            const handleMessage = (event) => {
+                if (event.data.type === 'serialize_complete') {
+                    this.worker.removeEventListener('message', handleMessage);
+                    resolve(event.data.data);
+                } else if (event.data.type === 'error') {
+                    this.worker.removeEventListener('message', handleMessage);
+            const originalOnMessage = this.worker.onmessage;
+            this.savePromiseResolve = resolve;
+            this.savePromiseReject = reject;
+            this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
+=======
+            // OPTIMIZATION: Patch BufferAttribute.toJSON to return TypedArrays directly
+            // instead of converting to standard Arrays (which is slow).
+            const originalToJSON = THREE.BufferAttribute.prototype.toJSON;
+            THREE.BufferAttribute.prototype.toJSON = function () {
+                return {
+                    itemSize: this.itemSize,
+                    type: this.array.constructor.name,
+                    array: this.array, // Keep as TypedArray
+                    normalized: this.normalized
+                };
+            };
+
+            let data;
+            try {
+                data = this.scene.toJSON();
+            } finally {
+                // Restore original toJSON
+                THREE.BufferAttribute.prototype.toJSON = originalToJSON;
+            }
+
+            this.worker.onmessage = (event) => {
+                if (event.data.type === 'serialize_complete') {
+                    this.worker.onmessage = originalOnMessage;
+                    resolve(event.data.data);
+                } else if (event.data.type === 'error') {
+                    this.worker.onmessage = originalOnMessage;
+>>>>>>> master
+                    reject(new Error(event.data.message + ': ' + event.data.error));
+                }
+            };
+
+            this.worker.addEventListener('message', handleMessage);
+            this.worker.postMessage({ type: 'serialize', data: sceneData });
+>>>>>>> master
+=======
         const sceneJson = await new Promise((resolve, reject) => {
             const originalOnMessage = this.worker.onmessage;
 
@@ -63,6 +153,7 @@ export class SceneStorage {
             // from the main thread, breaking the live scene. Structured cloning (default)
             // copies the buffers, which is fast enough and safe.
             this.worker.postMessage({ type: 'serialize', data: sceneData });
+>>>>>>> master
         });
 
         zip.file('scene.json', sceneJson);
@@ -138,10 +229,17 @@ export class SceneStorage {
             const loadedScene = loader.parse(data);
 
             // Add loaded objects back to the scene
+<<<<<<< HEAD
+            while (loadedScene.children.length > 0) {
+                this.scene.add(loadedScene.children[0]);
+            }
+
+=======
             // Iterate backwards or use a while loop because scene.add removes the object from loadedScene.children
             while (loadedScene.children.length > 0) {
                 this.scene.add(loadedScene.children[0]);
             }
+>>>>>>> master
             if (this.loadPromiseResolve) {
                 this.loadPromiseResolve(loadedScene);
                 this.loadPromiseResolve = null;

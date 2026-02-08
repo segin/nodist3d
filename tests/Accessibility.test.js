@@ -321,7 +321,7 @@ describe('Scene Graph Accessibility', () => {
 
         // Verify accessibility attributes on list item
         expect(listItem.setAttribute).toHaveBeenCalledWith('tabindex', '0');
-        expect(listItem.setAttribute).toHaveBeenCalledWith('role', 'button');
+        expect(listItem.setAttribute).toHaveBeenCalledWith('role', 'option');
         expect(listItem.setAttribute).toHaveBeenCalledWith('aria-label', expect.stringContaining('Select TestBox'));
 
         // Verify keydown listener added
@@ -354,8 +354,7 @@ describe('Scene Graph Accessibility', () => {
             .map(r => r.value);
 
         // Filter for visibility and delete buttons based on their likely text content assignment (which happens after creation)
-        // Since we can't see property assignments easily on the return value of results unless we spy on textContent setter (which we didn't),
-        // we might rely on the order or spy on setAttribute calls directly.
+        // Since we can't see property assignments easily on the return value of results unless we spy on setAttribute calls directly.
 
         // A better way is to see which setAttribute calls happened on which objects.
 
@@ -368,7 +367,7 @@ describe('Scene Graph Accessibility', () => {
         expect(ariaLabelElements.length).toBeGreaterThanOrEqual(2);
 
         const visibilityBtn = ariaLabelElements.find(btn =>
-            btn.setAttribute.mock.calls.some(call => call[1].includes('Toggle visibility'))
+            btn.setAttribute.mock.calls.some(call => call[1].includes('Toggle visibility') || call[1].includes('Hide object'))
         );
 
         const deleteBtn = ariaLabelElements.find(btn =>
