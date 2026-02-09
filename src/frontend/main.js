@@ -271,15 +271,49 @@ export class App {
 
     const saveButton = document.getElementById('save-scene');
     if (saveButton) {
-      saveButton.addEventListener('click', () => this.saveScene());
+      saveButton.addEventListener('click', async () => {
+        const originalText = saveButton.textContent;
+        saveButton.textContent = 'Saving...';
+        saveButton.disabled = true;
+        saveButton.style.cursor = 'wait';
+
+        try {
+          await this.saveScene();
+        } finally {
+          saveButton.textContent = originalText;
+          saveButton.disabled = false;
+          saveButton.style.cursor = '';
+        }
+      });
     }
     
-    const loadInput = document.getElementById('load-scene-input');
-    if (loadInput) {
-      loadInput.addEventListener('change', (e) => {
+    const loadButton = document.getElementById('load-scene');
+    const loadInput = document.getElementById('file-input');
+
+    if (loadButton && loadInput) {
+      loadButton.addEventListener('click', () => {
+        loadInput.click();
+      });
+
+      loadInput.addEventListener('change', async (e) => {
         // @ts-ignore
         const file = e.target.files[0];
-        if (file) this.loadScene(file);
+        if (!file) return;
+
+        const originalText = loadButton.textContent;
+        loadButton.textContent = 'Loading...';
+        loadButton.disabled = true;
+        loadButton.style.cursor = 'wait';
+
+        try {
+          await this.loadScene(file);
+        } finally {
+          loadButton.textContent = originalText;
+          loadButton.disabled = false;
+          loadButton.style.cursor = '';
+          // @ts-ignore
+          loadInput.value = '';
+        }
       });
     }
   }
