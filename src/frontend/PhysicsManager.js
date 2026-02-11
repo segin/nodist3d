@@ -7,6 +7,7 @@ export class PhysicsManager {
     this.world.gravity.set(0, -9.82, 0); // m/s^2
     this.scene = scene;
     this.bodies = [];
+    this.bodyToIndexMap = new Map();
   }
 
   addBody(mesh, mass = 1, shapeType = 'box') {
@@ -56,15 +57,30 @@ export class PhysicsManager {
       shape: shape,
     });
     this.world.addBody(body);
+    const index = this.bodies.length;
     this.bodies.push({ mesh, body });
+    this.bodyToIndexMap.set(body, index);
     return body;
   }
 
   removeBody(bodyToRemove) {
     this.world.removeBody(bodyToRemove);
-    const index = this.bodies.findIndex((item) => item.body === bodyToRemove);
-    if (index !== -1) {
-      this.bodies.splice(index, 1);
+    const index = this.bodyToIndexMap.get(bodyToRemove);
+
+    if (index !== undefined) {
+      const lastIndex = this.bodies.length - 1;
+      const lastItem = this.bodies[lastIndex];
+
+      if (index !== lastIndex) {
+        // Swap with the last element
+        this.bodies[index] = lastItem;
+        // Update the index of the swapped element in the map
+        this.bodyToIndexMap.set(lastItem.body, index);
+      }
+
+      // Remove the last element
+      this.bodies.pop();
+      this.bodyToIndexMap.delete(bodyToRemove);
     }
   }
 
