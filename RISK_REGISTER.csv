@@ -1,5 +1,5 @@
 ID,Title,Severity,Estimated Effort,Status
-TEST-001,Fix Jest Worker Crashes (Circular JSON),Critical,Medium,Open
+
 SEC-001,Harden Content Security Policy (CSP),High,Low,Open
 MAINT-001,Refactor Monolithic App Class,High,High,Open
 TEST-002,Fix Unit Test Mocking Infrastructure,High,Medium,Open

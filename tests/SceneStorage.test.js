@@ -167,8 +167,9 @@ describe('SceneStorage', () => {
         expect(global.URL.createObjectURL).toHaveBeenCalled();
         expect(publishSpy).toHaveBeenCalledWith('scene_saved', expect.any(Object));
         
-        // Verify JSZip usage from HEAD's test logic
-        const zipInstance = global.JSZip.mock.instances[0];
+        
+        // Verify JSZip usage
+        const zipInstance = global.JSZip.mock.results[0].value;
         expect(zipInstance.file).toHaveBeenCalledWith('scene.json', expect.any(String));
         expect(zipInstance.file).toHaveBeenCalledWith('buffers.json', expect.any(String));
     });
