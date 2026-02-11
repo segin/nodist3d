@@ -61,15 +61,16 @@ body {
   background-color: #004085;
 }
 
-#ui button:focus-visible {
-    outline: 2px solid white;
-    box-shadow: 0 0 0 4px #0056b3;
+#ui button.active {
+  background-color: #004085;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 #ui button:focus-visible {
-    outline: 2px solid white;
-    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.5);
-    z-index: 1; /* Ensure focus ring is on top */
+  outline: 2px solid white;
+  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.5);
+  z-index: 1; /* Ensure focus ring is on top */
 }
 
 /* Scene graph styling */
@@ -131,9 +132,6 @@ body {
     border-radius: 2px;
 }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 #scene-graph-panel li:focus-visible,
 #scene-graph li:focus-visible {
     outline: 2px solid white;
@@ -147,11 +145,6 @@ body {
     border-radius: 2px;
 }
 
->>>>>>> master
->>>>>>> master
->>>>>>> master
-=======
->>>>>>> master
 /* Mobile optimizations */
 @media (max-width: 768px) {
   #ui {
@@ -303,16 +296,13 @@ body {
   #scene-graph::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
   }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
+}
+
 /* Accessibility focus state */
 .scene-graph-item:focus {
     outline: 2px solid #007bff;
     outline-offset: -2px;
 }
-=======
-
 
 /* Toast Notifications */
 #toast-container {
@@ -369,6 +359,4 @@ body {
     transform: none;
     align-items: flex-end;
   }
->>>>>>> master
->>>>>>> master
 }

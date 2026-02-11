@@ -150,6 +150,20 @@ export class App {
     });
   }
 
+  initRemaining() {
+    // Setup scene graph UI
+    this.setupSceneGraph();
+
+    // Setup toolbar
+    this.setupToolbar();
+
+    // Initialize scene storage
+    this.sceneStorage = new SceneStorage(this.scene, null); // EventBus not needed for basic save/load
+
+    // Mobile touch optimizations
+    this.setupMobileOptimizations();
+  }
+
   setupLighting() {
     this.lighting = new LightManager(this.scene, EventBus);
   }
@@ -205,6 +219,66 @@ export class App {
     if (!this.sceneGraphPanel.parentElement) document.body.appendChild(this.sceneGraphPanel);
     
     this.updateSceneGraph();
+  }
+
+  setupToolbar() {
+    const tools = [
+      {
+        id: 'translate-btn',
+        icon: '✥',
+        title: 'Translate (G)',
+        action: () => this.transformControls.setMode('translate'),
+      },
+      {
+        id: 'rotate-btn',
+        icon: '↻',
+        title: 'Rotate (R)',
+        action: () => this.transformControls.setMode('rotate'),
+      },
+      {
+        id: 'scale-btn',
+        icon: '⤢',
+        title: 'Scale (S)',
+        action: () => this.transformControls.setMode('scale'),
+      },
+      {
+        id: 'undo-btn',
+        icon: '↶',
+        title: 'Undo (Ctrl+Z)',
+        action: () => this.undo(),
+      },
+      {
+        id: 'redo-btn',
+        icon: '↷',
+        title: 'Redo (Ctrl+Y)',
+        action: () => this.redo(),
+      },
+      {
+        id: 'delete-btn',
+        icon: '🗑',
+        title: 'Delete (Del)',
+        action: () => this.deleteSelectedObject(),
+      },
+    ];
+
+    const container = document.getElementById('ui');
+    if (!container) return;
+
+    tools.forEach((tool) => {
+      const btn = document.createElement('button');
+      btn.id = tool.id;
+      btn.textContent = tool.icon;
+      btn.title = tool.title;
+      btn.setAttribute('aria-label', tool.title);
+      btn.onclick = () => {
+        tool.action();
+        if (['translate', 'rotate', 'scale'].includes(tool.id.split('-')[0])) {
+          container.querySelectorAll('button').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+        }
+      };
+      container.appendChild(btn);
+    });
   }
 
   setupControls() {
