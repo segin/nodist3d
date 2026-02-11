@@ -8,8 +8,8 @@ jest.mock('three', () => {
     return {
         ...originalThree,
         Scene: jest.fn(() => ({
-            add: jest.fn(function(obj) { this.children.push(obj); }),
-            remove: jest.fn(function(obj) { this.children = this.children.filter(c => c !== obj); }),
+            add: jest.fn(function(obj) { this.children = this.children || []; this.children.push(obj); }),
+            remove: jest.fn(function(obj) { this.children = this.children || []; this.children = this.children.filter(c => c !== obj); }),
             children: []
         })),
         PointLight: jest.fn((color, intensity) => ({
