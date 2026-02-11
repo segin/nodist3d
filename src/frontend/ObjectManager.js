@@ -104,14 +104,19 @@ export class ObjectManager {
     /**
      * Deletes an object from the scene.
      * @param {THREE.Object3D} object
+     * @param {boolean} [detachFromParent=true]
      */
-    deleteObject(object) {
+    deleteObject(object, detachFromParent = true) {
         if (object) {
             if (object.children && object.children.length > 0) {
                 // Recursively delete children backwards to avoid array copy and index shifts
+                // Pass false to detachFromParent to avoid O(N^2) removal operations
                 for (let i = object.children.length - 1; i >= 0; i--) {
-                    this.deleteObject(object.children[i]);
+                    const child = object.children[i];
+                    this.deleteObject(child, false);
+                    if (child) child.parent = null;
                 }
+                object.children.length = 0;
             }
 
             // Dispose of geometry
@@ -143,10 +148,12 @@ export class ObjectManager {
             }
 
             // Remove the object from its parent (scene or group)
-            if (object.parent) {
-                object.parent.remove(object);
-            } else {
-                this.scene.remove(object);
+            if (detachFromParent) {
+                if (object.parent) {
+                    object.parent.remove(object);
+                } else {
+                    this.scene.remove(object);
+                }
             }
             this.eventBus.publish(Events.OBJECT_REMOVED, object);
         }

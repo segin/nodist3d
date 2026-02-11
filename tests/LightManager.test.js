@@ -8,8 +8,8 @@ jest.mock('three', () => {
     return {
         ...originalThree,
         Scene: jest.fn(() => ({
-            add: jest.fn(function(obj) { this.children.push(obj); }),
-            remove: jest.fn(function(obj) { this.children = this.children.filter(c => c !== obj); }),
+            add: jest.fn(function(obj) { this.children = this.children || []; this.children.push(obj); }),
+            remove: jest.fn(function(obj) { this.children = this.children || []; this.children = this.children.filter(c => c !== obj); }),
             children: []
         })),
         PointLight: jest.fn((color, intensity) => ({
@@ -140,7 +140,6 @@ describe('LightManager', () => {
     }).not.toThrow();
   });
 
-<<<<<<< HEAD
   it('should allow updating ambient light position without error, even if it has no effect', () => {
       const ambientLight = lightManager.addLight('AmbientLight', 0xffffff, 1);
       // AmbientLight technically has a position (inherits from Object3D), even if it doesn't affect rendering.
@@ -150,15 +149,5 @@ describe('LightManager', () => {
       }).not.toThrow();
       expect(ambientLight.position).toBeDefined();
       expect(ambientLight.position.x).toBe(10);
-=======
-  it('should ensure ambient lights do not have a position property that can be updated', () => {
-    const ambientLight = lightManager.addLight('AmbientLight', 0xffffff, 1);
-    // AmbientLight does not have a position property, so attempting to update it should not cause an error
-    // and its position (if it somehow existed) should remain undefined or null.
-    expect(() => {
-      lightManager.updateLight(ambientLight, { position: { x: 10, y: 10, z: 10 } });
-    }).not.toThrow();
-    expect(ambientLight.position).toBeUndefined();
->>>>>>> master
   });
 });
