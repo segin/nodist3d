@@ -1,6 +1,40 @@
-import './__mocks__/three-dat.gui.js';
+import * as THREE from 'three';
 import { LightManager } from '../src/frontend/LightManager.js';
 import EventBus from '../src/frontend/EventBus.js';
+
+// Mock Three.js
+jest.mock('three', () => {
+    const originalThree = jest.requireActual('three');
+    return {
+        ...originalThree,
+        Scene: jest.fn(() => ({
+            add: jest.fn(function(obj) { this.children.push(obj); }),
+            remove: jest.fn(function(obj) { this.children = this.children.filter(c => c !== obj); }),
+            children: []
+        })),
+        PointLight: jest.fn((color, intensity) => ({
+            isPointLight: true,
+            color: { getHex: () => color, set: (c) => { color = c; } },
+            intensity: intensity,
+            position: { x: 0, y: 0, z: 0, set: function(x, y, z) { this.x = x; this.y = y; this.z = z; }, clone: function() { return { ...this }; } },
+            name: ''
+        })),
+        DirectionalLight: jest.fn((color, intensity) => ({
+            isDirectionalLight: true,
+            color: { getHex: () => color, set: (c) => { color = c; } },
+            intensity: intensity,
+            position: { x: 0, y: 0, z: 0, set: function(x, y, z) { this.x = x; this.y = y; this.z = z; return this; }, normalize: jest.fn(), clone: function() { return { ...this }; } },
+            name: ''
+        })),
+        AmbientLight: jest.fn((color, intensity) => ({
+            isAmbientLight: true,
+            color: { getHex: () => color, set: (c) => { color = c; } },
+            intensity: intensity,
+            position: { x: 0, y: 0, z: 0, set: function(x, y, z) { this.x = x; this.y = y; this.z = z; }, clone: function() { return { ...this }; } },
+            name: ''
+        }))
+    };
+});
 
 describe('LightManager', () => {
   let scene;
@@ -8,7 +42,8 @@ describe('LightManager', () => {
   let eventBus;
 
   beforeEach(() => {
-    scene = new THREE.Scene();
+    const { Scene } = require('three');
+    scene = new Scene();
     eventBus = EventBus;
     lightManager = new LightManager(scene, eventBus);
   });
@@ -105,34 +140,14 @@ describe('LightManager', () => {
     }).not.toThrow();
   });
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> master
-<<<<<<< HEAD
-    it('should allow updating ambient light position without error, even if it has no effect', () => {
-        const ambientLight = lightManager.addLight('AmbientLight', 0xffffff, 1);
-        // AmbientLight technically has a position (inherits from Object3D), even if it doesn't affect rendering.
-        // We verify that updating it doesn't throw.
-        expect(() => {
-            lightManager.updateLight(ambientLight, { position: { x: 10, y: 10, z: 10 } });
-        }).not.toThrow();
-        expect(ambientLight.position).toBeDefined();
-        expect(ambientLight.position.x).toBe(10);
-    });
-<<<<<<< HEAD
-=======
-  it('should ensure ambient lights do not have a position property that can be updated', () => {
-    const ambientLight = lightManager.addLight('AmbientLight', 0xffffff, 1);
-    // AmbientLight does not have a position property, so attempting to update it should not cause an error
-    // and its position (if it somehow existed) should remain undefined or null.
-    expect(() => {
-      lightManager.updateLight(ambientLight, { position: { x: 10, y: 10, z: 10 } });
-    }).not.toThrow();
-    expect(ambientLight.position).toBeUndefined();
+  it('should allow updating ambient light position without error, even if it has no effect', () => {
+      const ambientLight = lightManager.addLight('AmbientLight', 0xffffff, 1);
+      // AmbientLight technically has a position (inherits from Object3D), even if it doesn't affect rendering.
+      // We verify that updating it doesn't throw.
+      expect(() => {
+          lightManager.updateLight(ambientLight, { position: { x: 10, y: 10, z: 10 } });
+      }).not.toThrow();
+      expect(ambientLight.position).toBeDefined();
+      expect(ambientLight.position.x).toBe(10);
   });
->>>>>>> master
-=======
->>>>>>> master
->>>>>>> master
 });
