@@ -362,12 +362,11 @@ const THREE = {
   BufferGeometry: class BufferGeometry {
     constructor() { Object.assign(this, createMockGeometry('BufferGeometry')); }
   },
-  Loader: class Loader {
-    constructor() { this.load = jest.fn(); }
-  },
-  FileLoader: class FileLoader {
-    constructor() { this.load = jest.fn(); }
-  },
+  Loader: class Loader { },
+  FileLoader: class FileLoader { },
+  FontLoader: class FontLoader { },
+  TextureLoader: class TextureLoader { },
+  ObjectLoader: class ObjectLoader { },
   CatmullRomCurve3: jest.fn().mockImplementation(() => ({
     getPoints: jest.fn(() => [new Vector3(), new Vector3()]),
   })),
@@ -527,19 +526,6 @@ const THREE = {
     setFromCamera: jest.fn(),
     intersectObjects: jest.fn(() => []),
   })),
-  ObjectLoader: jest.fn().mockImplementation(() => ({
-    parse: jest.fn((json) => {
-        const scene = new Object3D('Scene');
-        if (json && json.children) {
-            json.children.forEach(() => scene.add(new Object3D()));
-        }
-        return scene;
-    })
-  })),
-  TextureLoader: class TextureLoader {
-      constructor() {  }
-      load(u, cb) { if (cb) cb({ dispose: jest.fn() }); }
-  },
   FrontSide: 0,
   BackSide: 1,
   DoubleSide: 2,
@@ -561,6 +547,19 @@ const THREE = {
   MultiplyBlending: 4,
   CustomBlending: 5,
 };
+
+THREE.Loader.prototype.load = jest.fn();
+THREE.FileLoader.prototype.load = jest.fn();
+THREE.FontLoader.prototype.load = jest.fn();
+THREE.TextureLoader.prototype.load = jest.fn();
+THREE.ObjectLoader.prototype.load = jest.fn();
+THREE.ObjectLoader.prototype.parse = jest.fn((json) => {
+    const scene = new Object3D('Scene');
+    if (json && json.children) {
+        json.children.forEach(() => scene.add(new Object3D()));
+    }
+    return scene;
+});
 
 THREE.TextureLoader.prototype.load = jest.fn((u,cb) => cb && cb({ dispose: jest.fn() }));
 
