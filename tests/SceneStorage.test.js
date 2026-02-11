@@ -171,8 +171,9 @@ describe('SceneStorage', () => {
         expect(publishSpy).toHaveBeenCalledWith('scene_saved', expect.any(Object));
         
         // Verify JSZip usage
-        expect(mockJSZipInstance.file).toHaveBeenCalledWith('scene.json', expect.any(String));
-        expect(mockJSZipInstance.file).toHaveBeenCalledWith('buffers.json', expect.any(String));
+        const zipInstance = global.JSZip.mock.results[0].value;
+        expect(zipInstance.file).toHaveBeenCalledWith('scene.json', expect.any(String));
+        expect(zipInstance.file).toHaveBeenCalledWith('buffers.json', expect.any(String));
     });
 
     it('should load the scene', async () => {

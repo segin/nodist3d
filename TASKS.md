@@ -1,3 +1,713 @@
+# nodist3d Master Task List
+
+## Current Focus
+- [ ] Merge and resolve incoming PRs (#66, #67, #68)
+- [ ] Cleanup merge conflict markers ("dirt") across the codebase
+
+---
+
+## I. Original Context & Ideas (from CONTEXT.md)
+# nodist3d Project Context
+
+## Current Status
+- **Test Stability**: achieved 100% pass rate for critical suites (Primitives, Accessibility, Benchmark).
+- **Architecture**: stabilized Three.js mocks using class-based structures in `jest.setup.cjs`.
+- **Logic**: refactored `main.js` and `PrimitiveFactory.js` for asynchronous operations and parameter alignment.
+
+## Working Notes
+- **Recent Success**: Resolved the `TypeError` and `ReferenceError` avalanche by standardizing global mocks. 
+- **Next Steps**: Monitor for regressions during further feature development (e.g., Physics, CSG).
+
+## Ideas
+- Integrate `cannon-es` more deeply for object interaction.
+- Implement Boolean operations using `three-bvh-csg`.
+- Add a material library/palette for easier styling.
+
+---
+
+## II. Audit Report (from AUDIT_REPORT.md)
+# Codebase Audit Report: Nodist3d
+**Date:** 2024-05-24
+**Commit SHA:** (Current HEAD)
+**Branch:** main (assumed)
+**Auditor:** Jules (AI Agent)
+
+## 1. Executive Summary
+*   **Overall Health Score:** 45/100 (High Risk)
+*   **Top Risks:**
+    1.  **Broken Test Suite:** 27% of tests (45/165) failed, with critical worker crashes preventing full execution.
+    2.  **Security Misconfiguration:** Content Security Policy (CSP) enables `'unsafe-inline'` for scripts and styles, increasing XSS risk.
+    3.  **Maintainability:** High cyclomatic complexity in `src/frontend/main.js` (Complexity: 130) indicates a "God Class" anti-pattern.
+    4.  **Inefficient Rendering Updates:** The Scene Graph UI performs full DOM rebuilding on every update, posing a performance risk for large scenes.
+    5.  **Unmanaged Globals:** Reliance on global `THREE` and `JSZip` objects in some modules complicates testing and modularity.
+
+## 2. Full Findings
+
+### Security Findings
+
+| ID | Severity | finding | File/Location | Remediation |
+|----|----------|---------|---------------|-------------|
+| SEC-001 | High | CSP allows `unsafe-inline` for scripts and styles. | `src/backend/server.js:15-16` | Use a cryptographic nonce or hash for inline scripts (Import Maps). |
+| SEC-002 | Medium | No rate limiting configured on the Express server. | `src/backend/server.js` | Implement `express-rate-limit` middleware. |
+| SEC-003 | Low | Static files served from `node_modules`. | `src/backend/server.js` | Bundle assets during build or copy to `public/vendor`. |
+
+### Code Quality & Maintainability
+
+| ID | Severity | Finding | File/Location | Remediation |
+|----|----------|---------|---------------|-------------|
+| MAINT-001 | High | Monolithic `App` class handles UI, State, Scene, and Input. | `src/frontend/main.js` | Refactor `App` into `UIManager`, `InputController`, etc. |
+| MAINT-002 | High | Cyclomatic Complexity hotspot (130). | `src/frontend/main.js` | Extract methods, implement Command pattern for actions. |
+| MAINT-003 | Medium | Duplicate code in `add*` primitive methods. | `src/frontend/main.js` | Create a data-driven `PrimitiveFactory` or helper method. |
+| MAINT-004 | Medium | No Linting Configuration found (created during audit). | Root | Commit `eslint.config.mjs` and enforce in CI. |
+
+### Performance
+
+| ID | Severity | Finding | File/Location | Remediation |
+|----|----------|---------|---------------|-------------|
+| PERF-001 | Medium | `updateSceneGraph` clears `innerHTML` and rebuilds DOM. | `src/frontend/main.js` | Implement Virtual DOM or fine-grained DOM updates. |
+| PERF-002 | Medium | `restoreState` disposes and recreates all meshes. | `src/frontend/main.js` | Implement object pooling or diff-based state restoration. |
+
+### Correctness & Testing
+
+| ID | Severity | Finding | File/Location | Remediation |
+|----|----------|---------|---------------|-------------|
+| TEST-001 | Critical | Jest Worker crashes due to circular JSON serialization. | Tests (General) | Ensure tests do not return/log circular Three.js objects. |
+| TEST-002 | High | Mocking failures (`eventBus.subscribe`, `three` imports). | `tests/SceneGraph.test.js` | Fix Jest mocks to match module structure. |
+
+## 3. Metrics
+*   **Total LOC:** 9341
+*   **Top Complexity:** `src/frontend/main.js` (130)
+*   **Vulnerabilities (SCA):** 0 found (via `pnpm audit`).
+*   **Secrets:** 0 found.
+*   **Test Pass Rate:** 72.7% (120 passed / 45 failed).
+
+## 4. Evidence Bundle
+*   **Tool Output:** `eslint_report.json` (Generated)
+*   **Tool Output:** `test_results.json` (Generated)
+*   **Custom Scans:** `scripts/audit_secrets.cjs`, `scripts/audit_metrics.cjs`
+
+---
+
+## III. Development Specification (from SPECIFICATION.md)
+# Comprehensive Development Specification for nodist3d
+
+This specification document aggregates and massively expands upon all roadmap items, todo lists, testing requirements, and code improvement suggestions found in `README.md`, `SUGGESTIONS.md`, and `TESTING_TODO.md`. It serves as the granular master plan for the continued development of **nodist3d**.
+
+---
+
+## Phase 1: Architecture, Refactoring & Code Quality
+
+This phase focuses on solidifying the codebase foundation, ensuring maintainability, scalability, and robustness before adding complex new features.
+
+### 1.1. Module System & Dependency Management
+
+**Goal**: Transition to a fully modular, decoupled architecture using modern standards.
+
+- **1.1.1. Standardize on ES Modules**
+  - _Context_: The project currently mixes CommonJS (`require`) and ES Modules (`import`), which causes tooling friction.
+  - **Action Items**:
+    - [x] **Update `package.json`**: Add `"type": "module"` property to the root object.
+    - [x] **Refactor Backend (`src/backend/server.js`)**:
+      - [x] Replace `const express = require('express')` with `import express from 'express'`.
+      - [x] Replace all `require` calls with static `import` statements where possible.
+      - [x] For conditional imports, use `await import()`.
+      - [x] Replace `__dirname` (undefined in ESM) with `import { fileURLToPath } from 'url'; import { dirname } from 'path'; const __dirname = dirname(fileURLToPath(import.meta.url));`.
+    - [x] **Refactor Frontend Imports**:
+      - [x] Audit all frontend files (`src/frontend/**/*.js`).
+      - [x] Ensure all local imports include the `.js` extension (e.g., `import { x } from './utils.js'`), which is mandatory for browser-native ESM.
+      - [x] Verify that `three` and other dependencies are imported via their ESM entry points or mapped correctly if using an import map.
+  - **Verification & Testing**:
+    - [x] Run `npm start` and ensure the server boots without "require is not defined" errors.
+    - [x] Open the browser application and check the console for "Module not found" errors.
+    - [x] Run `npm test` (after updating test config) to ensure the test runner handles ESM correctly.
+
+- **1.1.2. Implement Dependency Injection (DI) Container**
+  - _Context_: Managers currently access each other via global variables or direct instantiation, leading to tight coupling and making unit testing difficult.
+  - **Action Items**:
+    - [x] **Create `ServiceContainer` class**:
+      - [x] Implement a `services` Map to store instances.
+      - [x] Implement `register(name, instance)`: Throws if name already exists.
+      - [x] Implement `get(name)`: Throws error if service not found (fail fast).
+    - [x] **Refactor Manager Classes**:
+      - [x] **ObjectManager**: Constructor should accept `scene`, `eventBus`, `physicsManager`. Remove internal `new` calls.
+      - [x] **SceneManager**: Constructor should accept `renderer`, `camera`, `inputManager`.
+      - [x] **InputManager**: Constructor should accept `domElement`.
+    - [x] **Update Entry Point (`main.js`)**:
+      - [x] Create a single instance of `ServiceContainer`.
+      - [x] Instantiate `EventBus` first and register it.
+      - [x] Instantiate other managers in dependency order, passing the container or specific services.
+  - **Verification & Testing**:
+    - [x] **Unit Test**: Create `ServiceContainer.test.js`. verify `register` stores and `get` retrieves. Verify error on missing service.
+    - [x] **Integration Test**: Verify that `ObjectManager` can successfully emit events via the injected `EventBus`.
+
+- **1.1.3. Centralized State Management**
+  - _Context_: Application state (e.g., "is user dragging?", "current color") is scattered across DOM elements and Manager instance properties.
+  - **Action Items**:
+    - [x] **Create `StateManager` class**:
+      - [x] Define initial state schema: `{ selection: [], toolMode: 'select', clipboard: null, isDragging: false, sceneDirty: false }`.
+      - [x] use `Proxy` or a simple setter pattern to detect changes.
+    - [x] **Implement State Accessors**:
+      - [x] `getState()`: Returns a read-only copy (frozen) of the state.
+      - [x] `setState(partialState)`: Merges updates and notifies listeners.
+      - [x] `subscribe(key, callback)`: specific listener for property changes.
+    - [x] **Refactor Consumers**:
+      - [x] **ObjectManager**: When selecting, call `stateManager.setState({ selection: [obj] })` instead of setting `this.selected`.
+      - [x] **PropertiesPanel**: Subscribe to `selection` changes to auto-update the UI.
+  - **Verification & Testing**:
+    - [x] **Unit Test**: Test `setState` merges correctly and fires callbacks.
+    - [x] **Unit Test**: Test that subscribers to irrelevant keys are _not_ fired.
+    - [x] **Integration**: Change selection in 3D view -> Verify Properties Panel updates.
+
+### 1.2. Code Quality & Standards
+
+**Goal**: Enforce consistent coding standards, documentation, and type safety to prevent regression.
+
+- **1.2.1. Linting and Formatting Setup**
+  - **Action Items**:
+    - [x] **Install Tools**: `npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-promise eslint-plugin-unicorn eslint-plugin-import`.
+    - [x] **Configure ESLint (`.eslintrc.json`)**:
+      - [x] `env`: `{ browser: true, node: true, es2022: true }`.
+      - [x] `rules`: Enforce `eqeqeq`, `no-var`, `prefer-const`, `no-console` (warn), `promise/always-return`.
+    - [x] **Configure Prettier (`.prettierrc`)**:
+      - [x] `{ "semi": true, "singleQuote": true, "tabWidth": 2, "printWidth": 100 }`.
+    - [x] **Setup Husky**:
+      - [x] `npx husky install`.
+      - [x] Add `pre-commit` hook: `npx lint-staged`.
+      - [x] Configure `lint-staged` in package.json to run `eslint --fix` on `*.js` files.
+  - **Verification & Testing**:
+    - [x] Deliberately introduce a lint error (e.g., `var x = 1;`). Verify commit fails.
+    - [x] Run `npm run lint`. Verify it catches issues.
+
+- **1.2.2. Documentation & Type Safety**
+  - **Action Items**:
+    - [ ] **JSDoc Implementation**:
+      - [ ] Go through every file in `src/`.
+      - [ ] Add `/** ... */` blocks to every class, method, and exported function.
+      - [ ] Explicitly define `@param {Type} name` and `@returns {Type}`.
+    - [ ] **TypeScript Migration (Phase 1)**:
+      - [ ] Create `tsconfig.json` with `{ "allowJs": true, "checkJs": true, "noEmit": true }`.
+      - [ ] Add `// @ts-check` to the top of `main.js` and `ObjectManager.js`.
+      - [ ] Fix all resulting type errors (mostly by adding JSDoc).
+      - [ ] Create `src/types.d.ts` to define global interfaces like `SceneObject`, `SerializedScene`, `ManagerInterface`.
+  - **Verification & Testing**:
+    - [ ] Run `npx tsc`. Expect zero errors in checked files.
+
+### 1.3. Error Handling & Logging
+
+**Goal**: Improve application stability and provide visibility into runtime issues.
+
+- **1.3.1. Centralized Logging**
+  - **Action Items**:
+    - [ ] **Create `Logger` utility (`src/utils/Logger.js`)**:
+      - [ ] Implement levels: `DEBUG`, `INFO`, `WARN`, `ERROR`.
+      - [ ] Method `log(level, message, meta)`.
+      - [ ] Include timestamp ISO string in every log.
+      - [ ] In `production` mode (env var), suppress `DEBUG` logs.
+    - [ ] **Replace console calls**:
+      - [ ] `grep` for `console.log` and replace with `Logger.info`.
+      - [ ] `grep` for `console.error` and replace with `Logger.error`.
+  - **Verification & Testing**:
+    - [ ] Run app. Verify logs appear with timestamps.
+    - [ ] Set `NODE_ENV=production`. Verify debug logs disappear.
+
+- **1.3.2. Robust Error Boundaries**
+  - **Action Items**:
+    - [ ] **Global Error Handler**:
+      - [ ] Add `window.addEventListener('error', ...)` to catch unhandled exceptions.
+      - [ ] Add `window.addEventListener('unhandledrejection', ...)` for Promises.
+      - [ ] Log these to `Logger.error`.
+    - [ ] **Operation Wrappers**:
+      - [ ] Wrap `JSON.parse` in a utility `safeJSONParse(str, fallback)`. Use this in SceneStorage.
+      - [ ] Wrap `localStorage.setItem` in `try...catch` to handle quota limits.
+    - [ ] **UI Feedback**:
+      - [ ] Create `ToastManager`.
+      - [ ] When an error occurs (e.g., "Save Failed"), spawn a red toast notification instead of crashing or staying silent.
+  - **Verification & Testing**:
+    - [ ] **Manual Test**: Disconnect network, try to save (if cloud save exists). Check for toast.
+    - [ ] **Manual Test**: Manually corrupt `localStorage` entry, try to load. Check for safe failure.
+
+---
+
+## Phase 2: Comprehensive Testing Suite
+
+This phase specifically implements the 150+ test cases defined in `TESTING_TODO.md`.
+
+### 2.1. Unit Testing Framework Setup
+
+- **Action Items**:
+  - [ ] **Jest Config**: Ensure `jest.config.js` is set up for ESM (`transform: {}`) and JSDOM.
+  - [ ] **Mocking Strategy**:
+    - [ ] Create `__mocks__/three.js`. Mock `Mesh`, `Scene`, `WebGLRenderer`, `Camera`.
+    - [ ] Ensure mocks record calls (e.g., `scene.add = jest.fn()`) so we can verify interactions.
+
+### 2.2. Implementing Test Categories
+
+Each category below corresponds to a specific file or feature set.
+
+- **2.2.1. ObjectManager Tests (Detailed)**
+  - **Action Items**: Write tests for:
+    - [ ] `addPrimitive(type)`: Verifies correct geometry/material creation.
+    - [ ] `duplicate(obj)`: Verifies deep cloning of properties, unique name generation, and position offset.
+    - [ ] `delete(obj)`: Verifies removal from scene, disposal of resources (geometry/material), and event emission.
+    - [ ] `updateProperty(obj, prop, val)`: Verifies `object.position.x` updates correctly.
+  - **Verification**: Run `npm test src/tests/ObjectManager.test.js`.
+
+- **2.2.2. History/Undo-Redo Tests (Detailed)**
+  - **Action Items**: Write tests for:
+    - [ ] `undo()` with empty stack (no-op).
+    - [ ] `addState()` pushes to stack and clears redo stack.
+    - [ ] `undo()` restores previous JSON state.
+    - [ ] `redo()` restores next JSON state.
+    - [ ] Circular buffer limit (ensure stack doesn't grow infinitely).
+  - **Verification**: Run `npm test src/tests/History.test.js`.
+
+- **2.2.3. GroupManager Tests (Detailed)**
+  - **Action Items**: Write tests for:
+    - [ ] `groupObjects([a, b])`: Creates new `Group`, adds a/b, centers group pivot.
+    - [ ] `ungroup(group)`: Removes group, re-adds children to scene, preserves world transforms.
+    - [ ] Nested grouping (Group C contains Group A).
+  - **Verification**: Run `npm test src/tests/GroupManager.test.js`.
+
+- **2.2.4. Integration Tests**
+  - **Action Items**: Write tests for:
+    - [ ] **Full Flow**: Add Cube -> Move Cube -> Undo -> Cube moves back.
+    - [ ] **Save/Load**: Add Sphere -> Save to JSON string -> Clear Scene -> Load JSON -> Sphere exists.
+  - **Verification**: Run `npm test src/tests/Integration.test.js`.
+
+---
+
+## Phase 3: Core Feature Implementation
+
+Refining and expanding the 3D capabilities.
+
+### 3.1. Advanced Camera Controls
+
+- **Goal**: Provide professional-grade navigation.
+- **Action Items**:
+  - [ ] **Enhance OrbitControls**:
+    - [ ] Enable `damping` (inertia) for smooth movement.
+    - [ ] Add UI config for `dampingFactor`.
+  - [ ] **Implement View Cube**:
+    - [ ] Create a clickable interactive cube in the corner.
+    - [ ] On click 'Front', tween camera to `(0, 0, z)`.
+    - [ ] On click 'Top', tween camera to `(0, y, 0)`.
+  - [ ] **Focus Selection**:
+    - [ ] Implement hotkey 'F'.
+    - [ ] Calculate bounding box of selection.
+    - [ ] Tween camera to fit bounding box on screen.
+- **Verification & Testing**:
+  - [ ] **Manual**: Click "Front" on view cube. Verify camera aligns perfectly.
+  - [ ] **Unit**: Test `calculateBoundingBox` returns correct dimensions for a group of objects.
+
+### 3.2. Material Editing System
+
+- **Goal**: Allow users to create realistic surfaces.
+- **Action Items**:
+  - [ ] **Texture Loading UI**:
+    - [ ] Add `<input type="file">` for Map, NormalMap, RoughnessMap.
+    - [ ] On file select, read as DataURL, load `THREE.Texture`, apply to material.
+  - [ ] **Material Parameters**:
+    - [ ] Add sliders for `roughness`, `metalness`.
+    - [ ] Add toggle for `wireframe`.
+    - [ ] Add color picker for `emissive` color.
+- **Verification & Testing**:
+  - [ ] **Unit**: Test `loadTexture` handles invalid file types gracefully.
+  - [ ] **Integration**: Load a normal map. Check `material.normalMap` is not null.
+
+### 3.3. Complex Primitives & Geometry
+
+- **Goal**: Expand modeling capabilities beyond basic shapes.
+- **Action Items**:
+  - [ ] **ExtrudeGeometry**:
+    - [ ] Create a "Sketch Mode" canvas overlay.
+    - [ ] Allow user to draw a polygon (click points).
+    - [ ] Generate `THREE.Shape` from points.
+    - [ ] Apply `THREE.ExtrudeGeometry` with user-defined depth.
+  - [ ] **Constructive Solid Geometry (CSG)**:
+    - [ ] Install `three-csg-ts`.
+    - [ ] Create `BooleanManager`.
+    - [ ] Implement `subtract(objA, objB)`: Return `Mesh` that is A minus B.
+    - [ ] Implement `union(objA, objB)`: Return combined mesh.
+- **Verification & Testing**:
+  - [ ] **Unit**: Test CSG subtract of two overlapping cubes. Verify vertex count of result is < sum of parts.
+  - [ ] **Manual**: Draw a triangle in sketch mode, extrude it. Verify 3D prism appears.
+
+### 3.4. Physics Engine Integration
+
+- **Goal**: Enable dynamic simulations.
+- **Action Items**:
+  - [ ] **Integrate Cannon-es**:
+    - [ ] `npm install cannon-es`.
+    - [ ] Initialize `canonn.World` in `PhysicsManager`.
+  - [ ] **Body Mapping**:
+    - [ ] Maintain a Map: `UUID -> Cannon.Body`.
+    - [ ] On `scene.update`: Copy position/quaternion from Body to Mesh.
+  - [ ] **UI Controls**:
+    - [ ] Add "Play/Pause" simulation buttons.
+    - [ ] Add "Reset" button to restore initial positions.
+- **Verification & Testing**:
+  - [ ] **Unit**: Test `update` loop copies coordinates correctly.
+  - [ ] **Manual**: Lift a cube, press Play. Verify it falls.
+
+### 3.5. Shader Editor
+
+- **Goal**: Allow low-level visual customization.
+- **Action Items**:
+  - [ ] **UI Integration**:
+    - [ ] Use `codemirror` or `monaco-editor` for syntax highlighting.
+    - [ ] Create a floating panel with "Vertex Shader" and "Fragment Shader" tabs.
+  - [ ] **Hot Reloading**:
+    - [ ] On 'Ctrl+S' or auto-save:
+    - [ ] Compile string to `THREE.ShaderMaterial`.
+    - [ ] Catch compilation errors (`gl.getShaderInfoLog`) and display line numbers in editor.
+- **Verification & Testing**:
+  - [ ] **Manual**: Type a syntax error. Verify red error message appears in UI.
+  - [ ] **Manual**: Change color to `vec4(1.0, 0.0, 0.0, 1.0)`. Verify object turns red.
+
+---
+
+## Phase 4: UI/UX & Mobile Optimization
+
+Enhancing the user interface for usability and accessibility.
+
+### 4.1. Responsive Layout & Mobile First
+
+- **Action Items**:
+  - [ ] **CSS Grid Layout**:
+    - [ ] Define grid areas: `header`, `viewport`, `sidebar`, `footer`.
+    - [ ] On mobile: Stack sidebar below viewport or make it a slide-out drawer.
+  - [ ] **Touch Gestures**:
+    - [ ] Detect "Pinch" event on canvas -> Update Camera Zoom.
+    - [ ] Detect "Two-finger Pan" -> Pan Camera.
+    - [ ] Detect "Long Press" -> Open Context Menu.
+  - [ ] **Tap Targets**:
+    - [ ] Ensure all buttons have `min-height: 44px` and `min-width: 44px`.
+    - [ ] Add `padding` to small icons.
+- **Verification & Testing**:
+  - [ ] **Manual (Device)**: Load on iPhone/Android. Verify buttons are clickable without zooming.
+  - [ ] **Manual**: Pinch to zoom. Verify it works smoothly.
+
+### 4.2. Scene Graph & Property Panel Improvements
+
+- **Action Items**:
+  - [ ] **Draggable Hierarchy**:
+    - [ ] Implement HTML5 Drag and Drop API for the Scene Graph list.
+    - [ ] On drop: Call `ObjectManager.reparent(child, newParent)`.
+  - [ ] **Scrubbable Inputs**:
+    - [ ] Implement a custom Input component.
+    - [ ] On `mousedown` on label: Lock pointer.
+    - [ ] On `mousemove`: Update numeric value based on delta X.
+- **Verification & Testing**:
+  - [ ] **Unit**: Test `reparent` logic updates both Three.js scene graph and internal lists.
+  - [ ] **Manual**: Drag a Sphere into a Box in the list. Move Box. Verify Sphere moves with it.
+
+### 4.3. Visual Feedback
+
+- **Action Items**:
+  - [ ] **Selection Halo**:
+    - [ ] Setup `EffectComposer`, `RenderPass`, `OutlinePass`.
+    - [ ] When object selected, add to `OutlinePass.selectedObjects`.
+  - [ ] **Grid/Axis Customization**:
+    - [ ] Add UI toggle for "Show Grid", "Show Axes".
+    - [ ] Allow changing Grid size and density.
+- **Verification & Testing**:
+  - [ ] **Manual**: Select object. Verify glowing outline appears.
+
+---
+
+## Phase 5: Backend, Security & DevOps
+
+Hardening the server and deployment pipeline.
+
+### 5.1. Server Security
+
+- **Action Items**:
+  - [ ] **Helmet Middleware**:
+    - [ ] `npm install helmet`.
+    - [ ] `app.use(helmet())`.
+    - [ ] Configure CSP to allow blob: and data: URIs (needed for Three.js/WebWorkers).
+  - [ ] **Rate Limiting**:
+    - [ ] `npm install express-rate-limit`.
+    - [ ] Limit JSON upload endpoint to 10 requests/minute/IP.
+  - [ ] **Sanitization**:
+    - [ ] Sanitize filenames in `SceneStorage` to prevent directory traversal (`../`).
+- **Verification & Testing**:
+  - [ ] **Security Scan**: Run `npm audit`.
+  - [ ] **Manual**: Try to upload a file named `../../etc/passwd`. Verify rejection.
+
+### 5.2. Build & Deployment
+
+- **Action Items**:
+  - [ ] **Vite Integration**:
+    - [ ] `npm install vite`.
+    - [ ] Move `index.html` to root.
+    - [ ] Update entry script references.
+    - [ ] Create `vite.config.js`.
+  - [ ] **Dockerization**:
+    - [ ] Write `Dockerfile`: Multi-stage build (Build frontend -> Serve with Nginx or Node).
+    - [ ] Write `docker-compose.yml`: Service for app, volume for persistence.
+  - [ ] **GitHub Actions**:
+    - [ ] Workflow `test.yml`: Runs `npm install`, `npm test`, `npm run lint`.
+    - [ ] Workflow `deploy.yml`: Builds Docker image and pushes to registry (optional).
+- **Verification & Testing**:
+  - [ ] **Manual**: Run `docker-compose up`. Verify app accessible at `localhost:3000`.
+  - [ ] **Manual**: Push a commit. Check GitHub Actions tab for green checkmark.
+
+---
+
+## Phase 6: Advanced Features (Future Roadmap)
+
+Items from the "Roadmap" section in README.
+
+### 6.1. Cloud Integration
+
+- **Action Items**:
+  - [ ] **Google Drive API**:
+    - [ ] Register GCP Project.
+    - [ ] Implement `GoogleAuth` client in frontend.
+    - [ ] Map `.nodist3d` MIME type to app.
+- **Verification**:
+  - [ ] **Manual**: "Save to Drive" button opens Google Picker.
+
+### 6.2. Collaborative Editing
+
+- **Action Items**:
+  - [ ] **WebSocket Rooms**:
+    - [ ] Implement `socket.io` rooms.
+    - [ ] Broadcast `OBJECT_MOVED` events to room.
+  - [ ] **Interpolation**:
+    - [ ] Other users' cursors should interpolate smoothly between updates.
+- **Verification**:
+  - [ ] **Manual**: Open two browser windows. Move object in one. Watch it move in other.
+
+### 6.3. Performance Optimization
+
+- **Action Items**:
+  - [ ] **InstancedMesh System**:
+    - [ ] Scan scene for identical geometries/materials.
+    - [ ] Auto-convert to `InstancedMesh` rendering.
+  - [ ] **Texture Compression**:
+    - [ ] Use `basis_universal` transcoder.
+    - [ ] Convert uploaded PNGs to `.ktx2` in WebWorker.
+- **Verification**:
+  - [ ] **Benchmark**: Create scene with 10,000 cubes. Measure FPS before/after InstancedMesh.
+
+---
+
+## IV. Testing Todo List (from TESTING_TODO.md)
+# Expanded Unit Test Suite for nodist3d
+
+## Original 50 Tests
+
+### ObjectManager.js Tests
+
+- [ ] 1. should return null when duplicating a non-existent object.
+- [ ] 2. should successfully add a texture to an object's material map.
+- [ ] 3. should successfully add a texture to an object's normal map.
+- [ ] 4. should successfully add a texture to an object's roughness map.
+- [ ] 5. should handle adding a texture to an object with no material.
+- [ ] 6. should properly dispose of an object's geometry and material on deletion.
+- [ ] 7. should handle the deletion of an already deleted object.
+- [ ] 8. should create a unique name for a duplicated object that has no original name.
+- [ ] 9. should successfully update an object's material color.
+- [ ] 10. should handle updating a material property that does not exist.
+- [ ] 11. should successfully create a text object when the font is loaded.
+- [ ] 12. should handle a request to create a text object when the font has not yet loaded.
+
+### LightManager.js Tests
+
+- [ ] 13. should add a PointLight to the scene.
+- [ ] 14. should add a DirectionalLight to the scene.
+- [ ] 15. should add an AmbientLight to the scene.
+- [ ] 16. should remove a specified light from the scene.
+- [ ] 17. should update a light's color property.
+- [ ] 18. should update a light's intensity property.
+- [ ] 19. should update a light's position property.
+- [ ] 20. should successfully change the type of an existing light.
+
+### PhysicsManager.js Tests
+
+- [ ] 21. should add a box-shaped physics body to the world.
+- [ ] 22. should add a sphere-shaped physics body to the world.
+- [ ] 23. should add a cylinder-shaped physics body to the world.
+- [ ] 24. should return null when trying to add a physics body with an unsupported shape.
+- [ ] 25. should update the corresponding mesh position and quaternion after a physics world step.
+
+### GroupManager.js Tests
+
+- [ ] 26. should successfully group two or more objects.
+- [ ] 27. should refuse to create a group with fewer than two objects.
+- [ ] 28. should correctly calculate the center of the grouped objects for the group's position.
+- [ ] 29. should successfully ungroup a group of objects.
+- [ ] 30. should place ungrouped objects back into the scene at the correct world positions.
+- [ ] 31. should handle a request to ungroup an object that is not a group.
+
+### SceneStorage.js Tests
+
+- [ ] 32. should correctly serialize scene data into the expected JSON format.
+- [ ] 33. should ignore non-mesh objects when saving a scene.
+- [ ] 34. should successfully load a scene from a valid scene file.
+- [ ] 35. should clear all existing objects from the scene before loading a new one.
+- [ ] 36. should correctly reconstruct objects with their properties (position, rotation, scale, color) from a save file.
+- [ ] 37. should preserve the UUID of objects when loading a scene.
+
+### History.js Tests
+
+- [ ] 38. should save the initial state of the scene.
+- [ ] 39. should successfully undo the last action.
+- [ ] 40. should successfully redo a previously undone action.
+- [ ] 41. should not allow redo if a new action has been performed after an undo.
+- [ ] 42. should handle an undo request when there is no history.
+- [ ] 43. should handle a redo request when at the most recent state.
+
+### SceneGraph.js Tests
+
+- [ ] 44. should display all mesh and light objects from the scene in the UI.
+- [ ] 45. should not display objects other than meshes and lights.
+- [ ] 46. should correctly rename an object in the scene.
+- [ ] 47. should attach the transform controls when an object is clicked in the scene graph.
+- [ ] 48. should delete an object from the scene when the delete button is clicked.
+
+### General/Integration Tests
+
+- [ ] 49. should ensure a duplicated object is a deep clone, not a reference.
+- [ ] 50. should ensure that deleting a group also removes all its children from the scene.
+
+## Additional 100 Tests
+
+### ObjectManager.js Extended Tests
+
+- [ ] 51. should resolve the promise when `addText` is called and font is available.
+- [ ] 52. should correctly set the material `side` property for planes (`THREE.DoubleSide`).
+- [ ] 53. should call `URL.revokeObjectURL` after a texture has been loaded to free memory.
+- [ ] 54. should handle `updateMaterial` for an object with an array of materials.
+- [ ] 55. should correctly clone an object's material properties when duplicating.
+- [ ] 56. should handle duplication of an object with no geometry or material.
+- [ ] 57. should update `metalness` property correctly via `updateMaterial`.
+- [ ] 58. should update `roughness` property correctly via `updateMaterial`.
+- [ ] 59. should correctly add a TeapotGeometry object.
+- [ ] 60. should correctly add an ExtrudeGeometry object.
+- [ ] 61. should correctly add a LatheGeometry object.
+- [ ] 62. should not add a deleted object back to the scene if it's part of an undo operation.
+- [ ] 63. should correctly dispose of textures when an object with textures is deleted.
+- [ ] 64. should return a new object with a position offset when duplicating.
+- [ ] 65. should handle adding a texture of an unsupported type gracefully.
+
+### LightManager.js Extended Tests
+
+- [ ] 66. should assign a default name to a new light if no name is provided.
+- [ ] 67. should not throw an error when attempting to remove a light that is not in the scene.
+- [ ] 68. should preserve light properties (color, intensity) when changing light type.
+- [ ] 69. should handle updating a light with an invalid or non-existent property.
+- [ ] 70. should ensure ambient lights do not have a position property that can be updated.
+
+### PhysicsManager.js Extended Tests
+
+- [ ] 71. should create a static body when mass is set to 0.
+- [ ] 72. should correctly scale the physics shape when the associated mesh is scaled.
+- [ ] 73. should correctly orient the physics shape when the associated mesh is rotated.
+- [ ] 74. should correctly remove a physics body from the world.
+- [ ] 75. should not affect other bodies when one is removed.
+- [ ] 76. should synchronize the physics body's position with its mesh's position upon creation.
+- [ ] 77. should handle meshes with geometries that have no size parameters (e.g., a custom BufferGeometry).
+- [ ] 78. should apply world gravity to dynamic bodies correctly over time.
+- [ ] 79. should allow adding the same mesh to the physics world multiple times without error.
+- [ ] 80. should ensure `update` method correctly steps the physics world with the provided `deltaTime`.
+
+### GroupManager.js Extended Tests
+
+- [ ] 81. should allow grouping a group with another object.
+- [ ] 82. should correctly handle ungrouping a nested group, restoring all objects to the scene.
+- [ ] 83. should maintain the world-space transforms of objects when they are grouped.
+- [ ] 84. should return an empty array when trying to ungroup a non-group object.
+- [ ] 85. should correctly group objects that have different parents.
+- [ ] 86. `ungroupObjects` should return an array containing all the former children.
+- [ ] 87. Grouping should remove the original objects from the scene and add the new group.
+- [ ] 88. An empty group should be removable from the scene.
+- [ ] 89. Grouping objects with existing animations should continue to work.
+- [ ] 90. A group's name should be settable and reflected in the Scene Graph.
+
+### SceneStorage.js Extended Tests
+
+- [ ] 91. should correctly save and load a scene containing lights with their properties.
+- [ ] 92. should correctly save and load a scene containing nested groups.
+- [ ] 93. should handle loading a file that is not a valid zip archive.
+- [ ] 94. should handle loading a zip file that is missing 'scene.json'.
+- [ ] 95. should correctly save and load material properties like roughness and metalness.
+- [ ] 96. should successfully save and load a scene with no objects (an empty scene).
+- [ ] 97. should handle JSON parsing errors from a corrupted 'scene.json'.
+- [ ] 98. should restore object names correctly from a loaded scene.
+- [ ] 99. should restore lights to their correct types and positions.
+- [ ] 100. The load process should trigger an update in the SceneGraph.
+
+### History.js Extended Tests
+
+- [ ] 101. should correctly undo/redo the creation of a group.
+- [ ] 102. should correctly undo/redo an ungrouping operation.
+- [ ] 103. `restoreState` should correctly dispose of old geometries and materials to prevent memory leaks.
+- [ ] 104. Saving a new state should clear the "redo" history.
+- [ ] 105. Restoring a state should correctly re-render the scene.
+- [ ] 106. Undo should detach transform controls from any selected object.
+- [ ] 107. `saveState` should not add a new state if it's identical to the current one.
+- [ ] 108. The history stack should handle a long series of actions correctly.
+- [ ] 109. Undo/redo should correctly restore object visibility states.
+- [ ] 110. Restoring a state should also restore the camera position and rotation if saved.
+
+### Pointer.js Tests
+
+- [ ] 111. should dispatch a `selectionChange` event when an object is selected.
+- [ ] 112. should dispatch `selectionChange` with a `null` payload on deselection.
+- [ ] 113. should correctly apply an outline to a selected object.
+- [ ] 114. should correctly remove the outline from a deselected object.
+- [ ] 115. should remove the outline from a previous selection when a new object is selected.
+- [ ] 116. `isDragging` flag should be true on `pointerdown` and false on `pointerup`.
+- [ ] 117. Raycaster should be correctly updated with camera and pointer coordinates on move.
+- [ ] 118. Should not select an object if the pointer event started on a UI element.
+- [ ] 119. `removeOutline` should not throw an error if called when no outline exists.
+- [ ] 120. Raycasting should correctly identify the front-most object if multiple are overlapping.
+
+### SceneManager.js Tests
+
+- [ ] 121. `onWindowResize` should update the renderer size and camera aspect ratio.
+- [ ] 122. `resetCamera` should restore the camera's initial position and target.
+- [ ] 123. OrbitControls `damping` should be enabled.
+- [ ] 124. The scene should contain a GridHelper and an AxesHelper on initialization.
+- [ ] 125. The renderer's DOM element should be the same as the canvas provided in the constructor.
+
+### ShaderEditor.js Tests
+
+- [ ] 126. `createShader` should add a mesh with a `ShaderMaterial` to the scene.
+- [ ] 127. `initGUI` should create a "Shader Editor" folder in the GUI.
+- [ ] 128. Updating a uniform value should set `needsUpdate` on the material to true.
+- [ ] 129. Editing GLSL code in the GUI should update the material's `vertexShader` or `fragmentShader`.
+- [ ] 130. Creating a new shader should dispose of the previous shader material if it exists.
+
+### Integration Tests (main.js)
+
+- [ ] 131. Clicking the "Translate" button should set `transformControls` mode to "translate".
+- [ ] 132. Clicking the "Rotate" button should set `transformControls` mode to "rotate".
+- [ ] 133. Clicking the "Scale" button should set `transformControls` mode to "scale".
+- [ ] 134. Clicking the "Save as Image" button should trigger a PNG download.
+- [ ] 135. Using the transform gizmo and releasing the mouse should create one new history state.
+- [ ] 136. The dat.gui properties panel should be cleared when no object is selected.
+- [ ] 137. Changing a property in the dat.gui panel should update the object in real-time.
+- [ ] 138. The "Snap Translation" checkbox should toggle `transformControls.translationSnap`.
+- [ ] 139. The "Snap Rotation" checkbox should toggle `transformControls.rotationSnap`.
+- [ ] 140. The "Snap Scale" checkbox should toggle `transformControls.scaleSnap`.
+- [ ] 141. Clicking the "Duplicate Selected" should create a new object and select it.
+- [ ] 142. The "Add Point Light" button should add a new point light and update the scene graph.
+- [ ] 143. Importing a GLTF file should correctly add its contents to the scene.
+- [ ] 144. Exporting to GLTF should trigger a download with valid GLTF JSON content.
+- [ ] 145. Deleting an object from the Scene Graph UI should remove it from the 3D scene.
+- [ ] 146. Selecting an object in the Scene Graph should also select it in the 3D viewport.
+- [ ] 147. Clicking the physics button should add a physics body to the selected object.
+- [ ] 148. The "Reset View" button should correctly reset the camera controls.
+- [ ] 149. Loading a scene file should correctly populate the Scene Graph UI.
+- [ ] 150. After an undo operation, the UI panels should be cleared or updated to reflect no selection.
+
+---
+
+## V. Code Improvement Suggestions (from SUGGESTIONS.md)
 # Exhaustive Code Improvement Suggestions for nodist3d (300+ Items)
 
 This document provides a detailed list of over 300 suggested improvements for the nodist3d repository. The suggestions are categorized to cover architecture, backend, frontend logic, UI/UX, testing, tooling, and many advanced concepts.

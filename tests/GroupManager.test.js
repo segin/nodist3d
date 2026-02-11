@@ -5,10 +5,10 @@ import { GroupManager } from '../src/frontend/GroupManager.js';
 import EventBus from '../src/frontend/EventBus.js';
 
 describe('GroupManager', () => {
-    let scene;
-    let groupManager;
-    let eventBus;
-    let object1, object2, object3;
+  let scene;
+  let groupManager;
+  let eventBus;
+  let object1, object2, object3;
 
   beforeEach(() => {
     scene = new THREE.Scene();
@@ -156,6 +156,9 @@ describe('GroupManager', () => {
     mesh2.scale.set(0.5, 0.5, 0.5);
     scene.add(mesh2);
 
+    // Mock getWorldPosition for world-space verification if needed
+    // However, THREE.Group integration usually handles this.
+    
     // Get world positions before grouping
     const mesh1WorldPosition = new THREE.Vector3();
     mesh1.getWorldPosition(mesh1WorldPosition);
