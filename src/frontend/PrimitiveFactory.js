@@ -200,16 +200,6 @@ export class PrimitiveFactory {
         mesh = this._createMesh(geometry, color);
         break;
       case 'Extrude':
-        const extrudeShape = new THREE.Shape();
-        const ex = 0, ey = 0;
-        extrudeShape.moveTo(ex + 0.5, ey + 0.5);
-        extrudeShape.bezierCurveTo(ex + 0.5, ey + 0.5, ex + 0.4, ey, ex, ey);
-        extrudeShape.bezierCurveTo(ex - 0.6, ey, ex - 0.6, ey + 0.7, ex - 0.6, ey + 0.7);
-        extrudeShape.bezierCurveTo(ex - 0.6, ey + 1.1, ex - 0.3, ey + 1.5, ex + 0.5, ey + 1.9);
-        extrudeShape.bezierCurveTo(ex + 1.3, ey + 1.5, ex + 1.6, ey + 1.1, ex + 1.6, ey + 0.7);
-        extrudeShape.bezierCurveTo(ex + 1.6, ey + 0.7, ex + 1.6, ey, ex + 1, ey);
-        extrudeShape.bezierCurveTo(ex + 0.85, ey, ex + 0.5, ey + 0.5, ex + 0.5, ey + 0.5);
-
         const extrudeSettings = {
           steps: 2,
           depth: 0.2,
@@ -219,7 +209,24 @@ export class PrimitiveFactory {
           bevelOffset: 0,
           bevelSegments: 1,
         };
-        geometry = new THREE.ExtrudeGeometry(extrudeShape, extrudeSettings);
+
+        // Use the complex shape from reference_grok.html
+        const shape = new THREE.Shape();
+        shape.moveTo(0, 0);
+        shape.lineTo(0, 1);
+        shape.lineTo(1, 1);
+        shape.lineTo(1, 0);
+        shape.lineTo(0, 0);
+
+        const hole = new THREE.Path();
+        hole.moveTo(0.2, 0.2);
+        hole.lineTo(0.8, 0.2);
+        hole.lineTo(0.8, 0.8);
+        hole.lineTo(0.2, 0.8);
+        hole.lineTo(0.2, 0.2);
+        shape.holes.push(hole);
+
+        geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
         color = options.color || 0xff6347;
         mesh = this._createMesh(geometry, color);
         break;

@@ -152,10 +152,19 @@ export class SceneStorage {
           buffers = bufferMapping.map(index => uniqueBuffers[index]);
       }
 
-      // Clear existing objects from the scene
+      // Clear existing objects from the scene.
+      // We iterate backwards and use pop() to achieve O(N) complexity,
+      // avoiding the O(N^2) overhead of repeated remove(child[0]) calls.
       while (this.scene.children.length > 0) {
-        const object = this.scene.children[0];
-        this.scene.remove(object);
+        const object = this.scene.children.pop();
+
+        // Mimic scene.remove(object) logic without the O(N) indexOf search
+        if (object.parent === this.scene) {
+          object.parent = null;
+          object.dispatchEvent({ type: 'removed' });
+          this.scene.dispatchEvent({ type: 'childremoved', child: object });
+        }
+
         // @ts-ignore
         if (object.geometry) object.geometry.dispose();
         // @ts-ignore

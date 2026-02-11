@@ -17,6 +17,7 @@ import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
 import log from './logger.js';
 import { ToastManager } from './ToastManager.js';
 import { LightManager } from './LightManager.js';
+import { ModelLoader } from './ModelLoader.js';
 
 /**
  * Simple 3D modeling application with basic primitives and transform controls
@@ -139,8 +140,27 @@ export class App {
     // Initialize scene storage
     this.sceneStorage = new SceneStorage(this.scene, null); // EventBus not needed for basic save/load
 
+    // Initialize Model Loader
+    this.modelLoader = new ModelLoader(this.scene, EventBus);
+    this.container.register('ModelLoader', this.modelLoader);
+
     // Mobile touch optimizations
     this.setupMobileOptimizations();
+  }
+
+  // Add this method to handle model import
+  async importModel(file) {
+      try {
+          const object = await this.modelLoader.loadModel(file);
+          this.objects.push(object);
+          this.selectObject(object);
+          this.updateSceneGraph();
+          this.saveState('Import Model');
+          this.toastManager.show(`Imported ${file.name}`, 'success');
+      } catch (error) {
+          console.error('Import failed:', error);
+          this.toastManager.show('Import failed: ' + error.message, 'error');
+      }
   }
 
   initRenderer() {
@@ -429,6 +449,27 @@ export class App {
     const objectFolder = this.gui.addFolder('Object');
     objectFolder.add(this, 'deleteSelectedObject').name('Delete Selected');
     objectFolder.add(this, 'duplicateSelectedObject').name('Duplicate Selected');
+    
+    // Add Import Model button
+    const fileFolder = this.gui.addFolder('File');
+    const fileParams = {
+        importModel: () => {
+             const input = document.createElement('input');
+             input.type = 'file';
+             input.accept = '.obj,.glb,.gltf';
+             input.onchange = (e) => {
+                 // @ts-ignore
+                 if (e.target.files && e.target.files[0]) {
+                     // @ts-ignore
+                     this.importModel(e.target.files[0]);
+                 }
+             };
+             input.click();
+        }
+    };
+    fileFolder.add(fileParams, 'importModel').name('Import Model (OBJ/GLTF)');
+    fileFolder.open();
+
     objectFolder.open();
 
     const historyFolder = this.gui.addFolder('History');
