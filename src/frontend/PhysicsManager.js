@@ -9,6 +9,8 @@ export class PhysicsManager {
     this.bodies = [];
     // Map to store body -> index for O(1) removal
     this.bodyToIndexMap = new Map();
+    // Map to store mesh -> body for O(1) lookup
+    this.meshToBodyMap = new Map();
   }
 
   addBody(mesh, mass = 1, shapeType = 'box') {
@@ -63,8 +65,21 @@ export class PhysicsManager {
     const index = this.bodies.length;
     this.bodies.push({ mesh, body });
     this.bodyToIndexMap.set(body, index);
+    this.meshToBodyMap.set(mesh, body);
 
     return body;
+  }
+
+  /**
+   * Removes physics body associated with a mesh.
+   * @param {THREE.Object3D} mesh
+   */
+  removeObject(mesh) {
+    const body = this.meshToBodyMap.get(mesh);
+    if (body) {
+      this.removeBody(body);
+      this.meshToBodyMap.delete(mesh);
+    }
   }
 
   removeBody(bodyToRemove) {
@@ -73,10 +88,9 @@ export class PhysicsManager {
 
     if (index !== undefined) {
       const lastIndex = this.bodies.length - 1;
+      const itemToRemove = this.bodies[index];
 
       // Optimization: Swap-Pop strategy (O(1))
-      // Instead of splicing (O(N)), we swap the removed element with the last one
-      // and then pop the last one.
       if (index !== lastIndex) {
         const lastItem = this.bodies[lastIndex];
         // Swap with the last element
@@ -88,6 +102,9 @@ export class PhysicsManager {
       // Remove the last element
       this.bodies.pop();
       this.bodyToIndexMap.delete(bodyToRemove);
+      if (itemToRemove && itemToRemove.mesh) {
+        this.meshToBodyMap.delete(itemToRemove.mesh);
+      }
     }
   }
 
