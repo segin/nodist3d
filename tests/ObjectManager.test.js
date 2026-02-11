@@ -41,23 +41,8 @@ describe('ObjectManager', () => {
 
   beforeEach(() => {
     scene = new Scene();
-
-    // Mock scene.add/remove to avoid Three.js internal issues in JSDOM/Jest
-    scene.add = jest.fn((obj) => {
-      scene.children.push(obj);
-      obj.parent = scene;
-      return scene;
-    });
-    scene.remove = jest.fn((obj) => {
-      const index = scene.children.indexOf(obj);
-      if (index > -1) {
-        scene.children.splice(index, 1);
-      }
-      if (obj.parent === scene) {
-        obj.parent = null;
-      }
-      return scene;
-    });
+    eventBus = EventBus;
+    // ... rest of init
 
     eventBus = EventBus;
     primitiveFactory = new PrimitiveFactory();
@@ -261,8 +246,6 @@ describe('ObjectManager', () => {
         done();
       });
       return null;
-<<<<<<< HEAD
-=======
     });
   });
 
@@ -284,7 +267,6 @@ describe('ObjectManager', () => {
         done();
       });
       return null;
->>>>>>> master
     });
   });
 
@@ -306,8 +288,6 @@ describe('ObjectManager', () => {
         done();
       });
       return null;
-<<<<<<< HEAD
-=======
     });
   });
 
@@ -474,7 +454,6 @@ describe('ObjectManager', () => {
         done();
       });
       return null;
->>>>>>> master
     });
   });
 
@@ -588,8 +567,6 @@ describe('ObjectManager', () => {
         done();
       });
       return null;
-<<<<<<< HEAD
-=======
     });
   });
 
@@ -634,7 +611,6 @@ describe('ObjectManager', () => {
         done();
       });
       return null;
->>>>>>> master
     });
   });
 });

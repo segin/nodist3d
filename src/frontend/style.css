@@ -61,15 +61,16 @@ body {
   background-color: #004085;
 }
 
-#ui button:focus-visible {
-    outline: 2px solid white;
-    box-shadow: 0 0 0 4px #0056b3;
+#ui button.active {
+  background-color: #004085;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 #ui button:focus-visible {
-    outline: 2px solid white;
-    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.5);
-    z-index: 1; /* Ensure focus ring is on top */
+  outline: 2px solid white;
+  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.5);
+  z-index: 1; /* Ensure focus ring is on top */
 }
 
 /* Scene graph styling */
@@ -302,7 +303,6 @@ body {
     outline: 2px solid #007bff;
     outline-offset: -2px;
 }
-
 
 /* Toast Notifications */
 #toast-container {

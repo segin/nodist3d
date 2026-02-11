@@ -1,29 +1,37 @@
 // @ts-check
 import * as THREE from 'three';
 
+/**
+ * Handles updating of object properties like materials, textures, and geometry.
+ */
 export class ObjectPropertyUpdater {
   /**
-   * @param {import('./PrimitiveFactory.js').PrimitiveFactory} primitiveFactory
+   * @param {any} primitiveFactory
    */
   constructor(primitiveFactory) {
     this.primitiveFactory = primitiveFactory;
   }
 
   /**
-   * Updates material properties.
+   * Updates the material properties of an object.
    * @param {THREE.Object3D} object
-   * @param {any} properties
+   * @param {object} properties
    */
   updateMaterial(object, properties) {
+    // @ts-ignore
     if (object && object.material) {
       // @ts-ignore
       const materials = Array.isArray(object.material) ? object.material : [object.material];
       materials.forEach((material) => {
         for (const key in properties) {
-          if (material[key] !== undefined) {
+          if (Object.prototype.hasOwnProperty.call(properties, key)) {
             if (key === 'color') {
-              material.color.set(properties[key]);
-            } else {
+              if (typeof properties[key] === 'string') {
+                material.color.set(properties[key]);
+              } else {
+                material.color.setHex(properties[key]);
+              }
+            } else if (material[key] !== undefined) {
               material[key] = properties[key];
             }
           }
@@ -37,9 +45,10 @@ export class ObjectPropertyUpdater {
    * Adds a texture to an object.
    * @param {THREE.Object3D} object
    * @param {File} file
-   * @param {string} type
+   * @param {string} [type='map']
    */
   addTexture(object, file, type = 'map') {
+    // @ts-ignore
     if (!object.material) return;
 
     const loader = new THREE.TextureLoader();
@@ -49,17 +58,11 @@ export class ObjectPropertyUpdater {
       (texture) => {
         // @ts-ignore
         const materials = Array.isArray(object.material) ? object.material : [object.material];
-        materials.forEach((material) => {
-          if (type === 'map') {
-            material.map = texture;
-          } else if (type === 'normalMap') {
-            material.normalMap = texture;
-          } else if (type === 'roughnessMap') {
-            material.roughnessMap = texture;
-          }
+        materials.forEach(material => {
+          material[type] = texture;
           material.needsUpdate = true;
         });
-        URL.revokeObjectURL(url); // Clean up the object URL
+        URL.revokeObjectURL(url);
       },
       undefined,
       (error) => {
@@ -70,26 +73,29 @@ export class ObjectPropertyUpdater {
   }
 
   /**
-   * Updates primitive parameters.
+   * Updates the primitive geometry of an object.
    * @param {THREE.Object3D} object
-   * @param {any} parameters
+   * @param {object} parameters
    */
   updatePrimitive(object, parameters) {
     // @ts-ignore
     if (object && object.geometry) {
-      // Assuming createPrimitive returns a Mesh
-      // We try to infer the type from geometry type (e.g. BoxGeometry -> Box)
-      // This is a bit fragile but works for basic primitives
-      // @ts-ignore
       const type = object.geometry.type.replace('Geometry', '');
+      const tempMeshOrPromise = this.primitiveFactory.createPrimitive(type, parameters);
 
-      const tempMesh = this.primitiveFactory.createPrimitive(type, parameters);
-      // @ts-ignore
-      if (tempMesh && tempMesh.geometry) {
-        // @ts-ignore
-        object.geometry.dispose();
-        // @ts-ignore
-        object.geometry = tempMesh.geometry;
+      const updateGeo = (tempMesh) => {
+        if (tempMesh && tempMesh.geometry) {
+          // @ts-ignore
+          object.geometry.dispose();
+          // @ts-ignore
+          object.geometry = tempMesh.geometry;
+        }
+      };
+
+      if (tempMeshOrPromise instanceof Promise) {
+        tempMeshOrPromise.then(updateGeo);
+      } else {
+        updateGeo(tempMeshOrPromise);
       }
     }
   }

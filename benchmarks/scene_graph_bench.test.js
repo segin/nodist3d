@@ -68,9 +68,13 @@ jest.mock('three', () => {
         })),
         AmbientLight: jest.fn(),
         DirectionalLight: jest.fn(() => ({
-            position: { set: jest.fn() },
+            position: { set: function() { return this; }, normalize: function() { return this; } },
             castShadow: false,
             shadow: { mapSize: { width: 0, height: 0 } }
+        })),
+        PointLight: jest.fn(() => ({
+            position: { set: function() { return this; }, normalize: function() { return this; } },
+            castShadow: false
         })),
         GridHelper: jest.fn(),
         AxesHelper: jest.fn(),
@@ -79,7 +83,13 @@ jest.mock('three', () => {
             intersectObjects: jest.fn(() => [])
         })),
         Vector2: jest.fn(),
-        Vector3: jest.fn(() => ({ x: 0, y: 0, z: 0 })),
+        Vector3: jest.fn(() => ({
+          x: 0, y: 0, z: 0,
+          set: function() { return this; },
+          normalize: function() { return this; },
+          copy: function() { return this; },
+          clone: () => ({ x: 0, y: 0, z: 0, set: () => {}, normalize: () => {}, copy: () => {} })
+        })),
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide',
         TOUCH: { ROTATE: 0, DOLLY_PAN: 1 }

@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import { Scene } from 'three';
 import { SceneStorage } from '../src/frontend/SceneStorage.js';
 import EventBus from '../src/frontend/EventBus.js';
 import { ObjectManager } from '../src/frontend/ObjectManager.js';
+import './__mocks__/three-dat.gui.js';
 
 jest.mock('three');
 jest.mock('../src/frontend/logger.js', () => ({
@@ -14,21 +14,21 @@ jest.mock('../src/frontend/logger.js', () => ({
 }));
 
 jest.mock('../src/frontend/ObjectManager.js', () => {
-  const THREE = jest.requireActual('three');
-  return {
-    ObjectManager: jest.fn().mockImplementation(() => ({
-      addPrimitive: jest.fn((type) => {
-        const mockMesh = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
-        mockMesh.name = `Mock${type}`;
-        mockMesh.uuid = `mock-${type}-uuid`;
-        mockMesh.position.set(0, 0, 0);
-        mockMesh.rotation.set(0, 0, 0);
-        mockMesh.scale.set(1, 1, 1);
-        return mockMesh;
-      }),
-      updateMaterial: jest.fn(),
-    })),
-  };
+    const THREE = jest.requireActual('three');
+    return {
+        ObjectManager: jest.fn().mockImplementation(() => ({
+            addPrimitive: jest.fn((type) => {
+                const mockMesh = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
+                mockMesh.name = `Mock${type}`;
+                mockMesh.uuid = `mock-${type}-uuid`;
+                mockMesh.position.set(0, 0, 0);
+                mockMesh.rotation.set(0, 0, 0);
+                mockMesh.scale.set(1, 1, 1);
+                return mockMesh;
+            }),
+            updateMaterial: jest.fn(),
+        })),
+    };
 });
 
 jest.mock('../src/frontend/PrimitiveFactory.js', () => {
@@ -45,6 +45,7 @@ class MockWorker {
         this.onmessage = null;
         this.onerror = null;
         this.listeners = { message: [] };
+        this.terminate = jest.fn();
     }
 
     addEventListener(type, listener) {
@@ -78,7 +79,7 @@ class MockWorker {
                         if (value && value.__type === 'TypedArray') {
                             const buffer = buffers[value.id];
                             if (buffer) {
-                                return new Float32Array(buffer);
+                                return new Float32Array(buffer); // Mock TypedArray reconstruction
                             }
                         }
                         return value;
@@ -91,12 +92,11 @@ class MockWorker {
         }, 0);
     }
 }
-
 global.Worker = MockWorker;
 
 global.URL = {
-  createObjectURL: jest.fn(() => 'blob:mockurl'),
-  revokeObjectURL: jest.fn(),
+    createObjectURL: jest.fn(() => 'blob:mockurl'),
+    revokeObjectURL: jest.fn(),
 };
 
 describe('SceneStorage', () => {
@@ -118,7 +118,10 @@ describe('SceneStorage', () => {
                     return { async: jest.fn().mockResolvedValue('{}') };
                 }
                 if (name === 'buffers.json') {
-                     return { async: jest.fn().mockResolvedValue('[]') };
+                    return { async: jest.fn().mockResolvedValue('[]') };
+                }
+                if (name.startsWith('buffers/bin_')) {
+                     return { async: jest.fn().mockResolvedValue(new ArrayBuffer(8)) };
                 }
                 return null;
             }),
@@ -129,7 +132,10 @@ describe('SceneStorage', () => {
                         return { async: jest.fn().mockResolvedValue('{}') };
                     }
                     if (name === 'buffers.json') {
-                         return { async: jest.fn().mockResolvedValue('[]') };
+                        return { async: jest.fn().mockResolvedValue('[]') };
+                    }
+                    if (name.startsWith('buffers/bin_')) {
+                        return { async: jest.fn().mockResolvedValue(new ArrayBuffer(8)) };
                     }
                     return null;
                 })
@@ -137,14 +143,32 @@ describe('SceneStorage', () => {
         }));
 
         sceneStorage = new SceneStorage(scene, eventBus);
-        // We don't really need primitiveFactory for SceneStorage tests, passing null or mock is fine
-        // ObjectManager is mocked anyway
         objectManager = new ObjectManager(scene, null, eventBus);
     });
 
-    it('should correctly save a scene', async () => {
-        // Trigger save
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    it('should initialize correctly', () => {
+        expect(sceneStorage).toBeDefined();
+        expect(sceneStorage.worker).toBeDefined();
+    });
+
+    it('should save the scene', async () => {
+        const publishSpy = jest.spyOn(EventBus, 'publish');
         await sceneStorage.saveScene();
+        
         expect(global.URL.createObjectURL).toHaveBeenCalled();
+        expect(publishSpy).toHaveBeenCalledWith('scene_saved', expect.any(Object));
+    });
+
+    it('should load the scene', async () => {
+        const mockFile = new Blob(['mock data'], { type: 'application/zip' });
+        const publishSpy = jest.spyOn(EventBus, 'publish');
+        
+        await sceneStorage.loadScene(mockFile);
+        
+        expect(publishSpy).toHaveBeenCalledWith('scene_loaded');
     });
 });

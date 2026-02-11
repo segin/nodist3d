@@ -1,4 +1,5 @@
 // @ts-check
+// src/frontend/worker.js
 
 self.onmessage = function (event) {
   const { type, data, buffers: inputBuffers } = event.data;
@@ -33,7 +34,9 @@ self.onmessage = function (event) {
     try {
       const reconstructed = JSON.parse(data, (key, value) => {
           if (value && value.__type === 'TypedArray' && typeof value.id === 'number') {
-              const buffer = inputBuffers[value.id];
+              const buffer = inputBuffers && inputBuffers[value.id];
+              if (!buffer) return value; // Fallback or error?
+
               const Ctor = self[value.ctor] || Float32Array;
 
               if (buffer instanceof ArrayBuffer) {
@@ -47,7 +50,7 @@ self.onmessage = function (event) {
       self.postMessage({ type: 'deserialize_complete', data: reconstructed });
 
     } catch (error) {
-      self.postMessage({ type: 'error', message: 'Deserialization failed', error: error.message });
+        self.postMessage({ type: 'error', message: 'Deserialization failed', error: error.message });
     }
   }
 };
