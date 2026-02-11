@@ -77,7 +77,7 @@ describe('PhysicsManager removeBody Performance', () => {
 
 
     // --- Current: Splice (find index + splice) ---
-    let bodiesSplice = [...bodies];
+    const bodiesSplice = [...bodies];
     const startSplice = performance.now();
     for (const bodyToRemove of bodiesToRemove) {
         worldRemoveBodyMock(bodyToRemove);
@@ -91,7 +91,7 @@ describe('PhysicsManager removeBody Performance', () => {
 
 
     // --- Optimized: Swap-Pop (find index + swap with last + pop) ---
-    let bodiesSwapPop = [...bodies];
+    const bodiesSwapPop = [...bodies];
     const startSwapPop = performance.now();
     for (const bodyToRemove of bodiesToRemove) {
         worldRemoveBodyMock(bodyToRemove);
@@ -110,8 +110,8 @@ describe('PhysicsManager removeBody Performance', () => {
 
     // --- Optimized: Map + Swap-Pop (O(1) lookup) ---
     // Requires maintaining a map.
-    let bodiesMapArray = [...bodies];
-    let bodyToIndexMap = new Map();
+    const bodiesMapArray = [...bodies];
+    const bodyToIndexMap = new Map();
     bodiesMapArray.forEach((item, idx) => bodyToIndexMap.set(item.body, idx));
 
     const startMap = performance.now();

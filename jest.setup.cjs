@@ -216,6 +216,10 @@ class Object3D {
         this.getWorldQuaternion = jest.fn(this.getWorldQuaternion.bind(this));
         this.getWorldScale = jest.fn(this.getWorldScale.bind(this));
         this.getWorldDirection = jest.fn(this.getWorldDirection.bind(this));
+        this.dispatchEvent = jest.fn();
+        this.addEventListener = jest.fn();
+        this.removeEventListener = jest.fn();
+        this.hasEventListener = jest.fn();
     }
     add(child) {
         if (Array.isArray(child)) {
@@ -412,10 +416,11 @@ const THREE = {
       const s = new Object3D('Scene');
       return s;
   }),
-  Group: jest.fn().mockImplementation(() => {
-      const g = new Object3D('Group');
-      return g;
-  }),
+  Group: class Group extends Object3D {
+      constructor() {
+          super('Group');
+      }
+  },
   Mesh: jest.fn().mockImplementation((geo, mat) => {
       const m = new Object3D('Mesh');
       m.geometry = geo || createMockGeometry();

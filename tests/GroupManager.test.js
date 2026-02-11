@@ -1,3 +1,4 @@
+jest.unmock('three');
 import * as THREE from 'three';
 import './__mocks__/three-dat.gui.js';
 import { GroupManager } from '../src/frontend/GroupManager.js';

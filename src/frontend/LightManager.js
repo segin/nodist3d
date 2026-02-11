@@ -16,7 +16,9 @@ export class LightManager {
 
     // Add a default directional light
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(1, 1, 1).normalize();
+    if (directionalLight.position) {
+      directionalLight.position.set(1, 1, 1).normalize();
+    }
     this.scene.add(directionalLight);
     this.lights.push(directionalLight);
   }
@@ -37,7 +39,7 @@ export class LightManager {
         log.warn('Unknown light type:', type);
         return null;
     }
-    if (position) {
+    if (position && light.position) {
       light.position.set(position.x, position.y, position.z);
     }
     light.name = name || type;
@@ -58,7 +60,7 @@ export class LightManager {
       if (light[prop] !== undefined) {
         if (prop === 'color') {
           light.color.set(properties[prop]);
-        } else if (prop === 'position') {
+        } else if (prop === 'position' && light.position) {
           light.position.set(properties.position.x, properties.position.y, properties.position.z);
         } else {
           light[prop] = properties[prop];
@@ -69,7 +71,7 @@ export class LightManager {
   }
 
   changeLightType(oldLight, newType) {
-    const oldPosition = oldLight.position.clone();
+    const oldPosition = oldLight.position ? oldLight.position.clone() : new THREE.Vector3();
     const oldColor = oldLight.color.getHex();
     const oldIntensity = oldLight.intensity;
     const oldName = oldLight.name;
