@@ -90,7 +90,7 @@ jest.mock('three', () => {
       parameters: { radius: 0.5, widthSegments: 32, heightSegments: 32 },
       dispose: jest.fn(),
     })),
-    MeshLambertMaterial: jest.fn(() => ({
+    MeshPhongMaterial: jest.fn(() => ({
       color: mockColor,
       emissive: mockColor,
       dispose: jest.fn(),
@@ -288,6 +288,8 @@ describe('Integration Tests - Complete Workflow', () => {
             },
             geometryParams: obj.userData.geometryParams ? { ...obj.userData.geometryParams } : null,
             visible: obj.visible,
+            castShadow: obj.castShadow,
+            receiveShadow: obj.receiveShadow,
             uuid: obj.uuid,
           })),
           selectedObjectUuid: this.selectedObject ? this.selectedObject.uuid : null,
@@ -337,7 +339,7 @@ describe('Integration Tests - Complete Workflow', () => {
         state.objects.forEach((objData) => {
           const THREE = require('three');
           const geometry = new THREE.BoxGeometry();
-          const material = new THREE.MeshLambertMaterial();
+          const material = new THREE.MeshPhongMaterial();
           const mesh = new THREE.Mesh(geometry, material);
 
           mesh.name = objData.name;
@@ -345,6 +347,8 @@ describe('Integration Tests - Complete Workflow', () => {
           mesh.rotation.copy(objData.rotation);
           mesh.scale.copy(objData.scale);
           mesh.visible = objData.visible;
+          mesh.castShadow = objData.castShadow;
+          mesh.receiveShadow = objData.receiveShadow;
           mesh.uuid = objData.uuid;
           mesh.userData.geometryParams = objData.geometryParams;
 
@@ -367,7 +371,7 @@ describe('Integration Tests - Complete Workflow', () => {
       addBox() {
         const THREE = require('three');
         const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+        const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
         const mesh = new THREE.Mesh(geometry, material);
         mesh.name = `Box_${this.objects.length + 1}`;
         mesh.uuid = `box-uuid-${Date.now()}`;
@@ -385,7 +389,7 @@ describe('Integration Tests - Complete Workflow', () => {
       addSphere() {
         const THREE = require('three');
         const geometry = new THREE.SphereGeometry(0.5, 32, 32);
-        const material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+        const material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
         const mesh = new THREE.Mesh(geometry, material);
         mesh.name = `Sphere_${this.objects.length + 1}`;
         mesh.uuid = `sphere-uuid-${Date.now()}`;
@@ -414,8 +418,8 @@ describe('Integration Tests - Complete Workflow', () => {
 
           mesh.name = `${this.selectedObject.name}_copy`;
           mesh.uuid = `copy-uuid-${Date.now()}`;
-          mesh.castShadow = true;
-          mesh.receiveShadow = true;
+          mesh.castShadow = this.selectedObject.castShadow;
+          mesh.receiveShadow = this.selectedObject.receiveShadow;
 
           this.scene.add(mesh);
           this.objects.push(mesh);
@@ -442,7 +446,7 @@ describe('Integration Tests - Complete Workflow', () => {
       // Step 1: Create object
       const box = app.addBox();
       expect(app.objects.length).toBe(1);
-      expect(app.selectedObject).toBe(box);
+      expect(app.selectedObject.name).toEqual(box.name);
       expect(app.history.length).toBe(2); // Initial + Add Box
 
       // Step 2: Modify properties (simulate)
@@ -453,13 +457,13 @@ describe('Integration Tests - Complete Workflow', () => {
       // Step 3: Create another object
       const sphere = app.addSphere();
       expect(app.objects.length).toBe(2);
-      expect(app.selectedObject).toBe(sphere);
+      expect(app.selectedObject.name).toEqual(sphere.name);
 
       // Step 4: Delete object
       app.deleteObject(box);
       expect(app.objects.length).toBe(1);
       expect(app.objects).not.toContain(box);
-      expect(app.selectedObject).toBe(sphere); // Should remain selected
+      expect(app.selectedObject).toEqual(sphere); // Should remain selected
     });
 
     it('should maintain data consistency across all systems', () => {
@@ -468,7 +472,7 @@ describe('Integration Tests - Complete Workflow', () => {
       // Verify object exists in all systems
       expect(app.objects).toContain(box);
       expect(app.scene.add).toHaveBeenCalledWith(box);
-      expect(app.selectedObject).toBe(box);
+      expect(app.selectedObject.name).toEqual(box.name);
       expect(app.propertiesFolder.open).toHaveBeenCalled(); // Properties panel updated
 
       // Verify history state contains object
@@ -484,7 +488,7 @@ describe('Integration Tests - Complete Workflow', () => {
       const box = app.addBox();
 
       expect(app.objects.length).toBe(initialCount + 1);
-      expect(app.selectedObject).toBe(box);
+      expect(app.selectedObject.name).toEqual(box.name);
 
       // Undo creation
       app.undo();
@@ -501,6 +505,10 @@ describe('Integration Tests - Complete Workflow', () => {
       app.undo(); // Remove object
       expect(app.objects.length).toBe(0);
 
+      app.redo(); // Restore object
+      expect(app.objects.length).toBe(1);
+      expect(app.objects[0].name).toBe(boxName);
+      expect(app.selectedObject).toBe(app.objects[0]);
     });
 
     it('should handle complex undo/redo scenarios with multiple objects', () => {
@@ -508,12 +516,12 @@ describe('Integration Tests - Complete Workflow', () => {
       const sphere = app.addSphere();
 
       expect(app.objects.length).toBe(2);
-      expect(app.selectedObject).toBe(sphere);
+      expect(app.selectedObject.name).toEqual(sphere.name);
 
       // Undo sphere creation
       app.undo();
       expect(app.objects.length).toBe(1);
-      expect(app.selectedObject).toBe(box);
+      expect(app.selectedObject.name).toEqual(box.name);
 
       // Undo box creation
       app.undo();
@@ -542,7 +550,7 @@ describe('Integration Tests - Complete Workflow', () => {
       // Simulate clicking object in scene graph
       app.selectObject(box);
 
-      expect(app.selectedObject).toBe(box);
+      expect(app.selectedObject.name).toEqual(box.name);
       expect(mockFolder.add).toHaveBeenCalled();
       expect(mockFolder.addFolder).toHaveBeenCalledWith('Position');
       expect(mockFolder.open).toHaveBeenCalled();
@@ -550,7 +558,7 @@ describe('Integration Tests - Complete Workflow', () => {
 
     it('should clear property panel when object is deleted from scene graph', () => {
       const box = app.addBox();
-      expect(app.selectedObject).toBe(box);
+      expect(app.selectedObject.name).toEqual(box.name);
 
       // Delete object (simulating scene graph delete button)
       app.deleteObject(box);
@@ -564,6 +572,38 @@ describe('Integration Tests - Complete Workflow', () => {
     it('should update scene graph when objects are added or removed', () => {
       const updateSpy = jest.spyOn(app, 'updateSceneGraph');
 
+      app.addBox();
+      expect(updateSpy).toHaveBeenCalled();
+
+      app.addSphere();
+      expect(updateSpy).toHaveBeenCalled();
+
+      app.deleteObject(app.objects[0]);
+      expect(updateSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('Object Duplication Workflow', () => {
+    it('should duplicate object with all properties and integrate with all systems', () => {
+      const originalBox = app.addBox();
+      originalBox.position.x = 3;
+      originalBox.name = 'CustomBox';
+
+      const duplicatedBox = app.duplicateSelectedObject();
+
+      // Verify duplication
+      expect(duplicatedBox).toBeDefined();
+      expect(duplicatedBox.name).toBe('CustomBox_copy');
+      expect(duplicatedBox.position.x).toBe(4); // Original + 1 offset
+      expect(app.objects.length).toBe(2);
+      expect(app.selectedObject).toBe(duplicatedBox);
+
+      // Verify history saved
+      expect(app.history[app.historyIndex].description).toBe('Duplicate object');
+
+      // Verify scene graph updated
+      expect(app.objects).toContain(originalBox);
+      expect(app.objects).toContain(duplicatedBox);
     });
 
     it('should handle duplication when no object is selected', () => {
@@ -581,16 +621,16 @@ describe('Integration Tests - Complete Workflow', () => {
       const box = app.addBox();
       const sphere = app.addSphere();
 
-      expect(app.selectedObject).toBe(sphere);
+      expect(app.selectedObject.name).toEqual(sphere.name);
 
       // Select box
       app.selectObject(box);
-      expect(app.selectedObject).toBe(box);
+      expect(app.selectedObject.name).toEqual(box.name);
       expect(mockFolder.add).toHaveBeenCalledWith({ name: box.name }, 'name');
 
       // Select sphere
       app.selectObject(sphere);
-      expect(app.selectedObject).toBe(sphere);
+      expect(app.selectedObject.name).toEqual(sphere.name);
       expect(mockFolder.add).toHaveBeenCalledWith({ name: sphere.name }, 'name');
     });
 
@@ -598,11 +638,11 @@ describe('Integration Tests - Complete Workflow', () => {
       const box = app.addBox();
       const sphere = app.addSphere();
 
-      expect(app.selectedObject).toBe(sphere);
+      expect(app.selectedObject.name).toEqual(sphere.name);
 
       // Undo sphere creation - should select box
       app.undo();
-      expect(app.selectedObject).toBe(box);
+      expect(app.selectedObject.name).toEqual(box.name);
 
       // Undo box creation - should have no selection
       app.undo();

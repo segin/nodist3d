@@ -2,6 +2,17 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Clock } from 'three';
 
 export class Engine {
+  constructor(canvas, physicsManager, transformControls) {
+    this.canvas = canvas;
+    this.physicsManager = physicsManager;
+    this.transformControls = transformControls;
+    this.scene = new global.THREE.Scene();
+    this.renderer = new global.THREE.WebGLRenderer({
+      canvas: this.canvas,
+      powerPreference: 'high-performance',
+    });
+    this.camera = new global.THREE.PerspectiveCamera(75, 2, 0.1, 5);
+    this.camera.position.z = 2;
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true; // an animation loop is required when damping is enabled

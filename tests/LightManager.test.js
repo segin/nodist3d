@@ -105,4 +105,13 @@ describe('LightManager', () => {
     }).not.toThrow();
   });
 
+  it('should ensure ambient lights do not have a position property that can be updated', () => {
+    const ambientLight = lightManager.addLight('AmbientLight', 0xffffff, 1);
+    // AmbientLight does not have a position property, so attempting to update it should not cause an error
+    // and its position (if it somehow existed) should remain undefined or null.
+    expect(() => {
+      lightManager.updateLight(ambientLight, { position: { x: 10, y: 10, z: 10 } });
+    }).not.toThrow();
+    expect(ambientLight.position).toBeUndefined();
+  });
 });

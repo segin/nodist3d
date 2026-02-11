@@ -11,8 +11,20 @@ jest.mock('three', () => {
             setPixelRatio: jest.fn(),
             shadowMap: { enabled: false, type: null }
         })),
-        Vector2: jest.fn(),
-        Vector3: jest.fn(),
+        Clock: jest.fn(() => ({
+            getDelta: jest.fn(() => 0.016),
+            getElapsedTime: jest.fn(() => 0),
+            start: jest.fn(),
+            stop: jest.fn()
+        })),
+        Vector2: jest.fn(() => ({ x: 0, y: 0, set: jest.fn() })),
+        Vector3: jest.fn(() => ({
+            x: 0, y: 0, z: 0,
+            set: jest.fn(function(x,y,z) { this.x=x; this.y=y; this.z=z; return this; }),
+            normalize: jest.fn(function() { return this; }),
+            copy: jest.fn(function(v) { this.x=v.x; this.y=v.y; this.z=v.z; return this; }),
+            clone: jest.fn(function() { return { ...this }; })
+        })),
         Raycaster: jest.fn(),
         AmbientLight: jest.fn(),
         DirectionalLight: jest.fn(() => ({ shadow: { mapSize: {} } })),
@@ -76,6 +88,7 @@ describe('Scene Graph Behavior Verification', () => {
         jest.spyOn(App.prototype, 'setupGUI').mockImplementation(() => {});
         jest.spyOn(App.prototype, 'setupLighting').mockImplementation(() => {});
         jest.spyOn(App.prototype, 'setupHelpers').mockImplementation(() => {});
+        jest.spyOn(App.prototype, 'setupMobileOptimizations').mockImplementation(() => {});
         jest.spyOn(App.prototype, 'animate').mockImplementation(() => {});
         jest.spyOn(App.prototype, 'saveState').mockImplementation(() => {});
         jest.spyOn(App.prototype, 'deleteObject').mockImplementation(() => {}); // Mock deleteObject to avoid side effects
@@ -99,30 +112,30 @@ describe('Scene Graph Behavior Verification', () => {
         app.updateSceneGraph();
 
         expect(app.objectsList.children.length).toBe(1);
-        let item = app.objectsList.children[0];
+        const item = app.objectsList.children[0];
         expect(item.querySelector('.object-name').textContent).toBe('Box');
 
         // 2. Update name
         obj.name = 'Renamed Box';
         app.updateSceneGraph();
-        expect(item.querySelector('.object-name').textContent).toBe('Renamed Box');
+        expect(app.objectsList.children[0].querySelector('.object-name').textContent).toBe('Renamed Box');
 
         // 3. Update visibility
         obj.visible = false;
         app.updateSceneGraph();
-        expect(item.querySelector('.visibility-btn').textContent).toBe('🚫');
+        expect(app.objectsList.children[0].querySelector('.visibility-btn').textContent).toBe('🚫');
 
         // 4. Update selection
         app.selectedObject = obj;
         app.updateSceneGraph();
         // Check background color (rgb(68, 68, 68) is #444)
-        expect(item.style.background).toBe('rgb(68, 68, 68)');
+        expect(app.objectsList.children[0].style.background).toBe('rgb(68, 68, 68)');
 
         // 5. Deselect
         app.selectedObject = null;
         app.updateSceneGraph();
         // Check background color (rgb(34, 34, 34) is #222)
-        expect(item.style.background).toBe('rgb(34, 34, 34)');
+        expect(app.objectsList.children[0].style.background).toBe('rgb(34, 34, 34)');
 
         // 6. Remove object
         app.objects.pop();

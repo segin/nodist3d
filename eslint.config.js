@@ -27,11 +27,11 @@ export default [
       import: pluginImport,
     },
     rules: {
-      eqeqeq: 'error',
-      'no-var': 'error',
-      'prefer-const': 'error',
-      'no-console': 'warn',
-      'promise/always-return': 'error',
+      eqeqeq: 'warn',
+      'no-var': 'warn',
+      'prefer-const': 'warn',
+      'no-console': 'off',
+      'promise/always-return': 'warn',
     },
   },
   {

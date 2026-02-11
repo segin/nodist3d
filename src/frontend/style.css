@@ -132,6 +132,19 @@ body {
     border-radius: 2px;
 }
 
+#scene-graph-panel li:focus-visible,
+#scene-graph li:focus-visible {
+    outline: 2px solid white;
+    box-shadow: 0 0 0 2px #0056b3;
+}
+
+#scene-graph-panel button:focus-visible,
+#scene-graph button:focus-visible {
+    outline: 2px solid white;
+    box-shadow: 0 0 0 2px #0056b3;
+    border-radius: 2px;
+}
+
 /* Mobile optimizations */
 @media (max-width: 768px) {
   #ui {
@@ -283,7 +296,13 @@ body {
   #scene-graph::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
   }
+}
 
+/* Accessibility focus state */
+.scene-graph-item:focus {
+    outline: 2px solid #007bff;
+    outline-offset: -2px;
+}
 
 /* Toast Notifications */
 #toast-container {

@@ -1,33 +1,93 @@
-// @ts-check
-// JSZip will be loaded globally from CDN
 import * as THREE from 'three';
 import log from './logger.js';
 
 export class SceneStorage {
+  /**
+   * @param {THREE.Scene} scene
+   * @param {any} eventBus
+   */
   constructor(scene, eventBus) {
     this.eventBus = eventBus;
     this.scene = scene;
     this.worker = new Worker('./worker.js');
     this.worker.onmessage = this.handleWorkerMessage.bind(this);
     this.loadPromiseResolve = null;
+    this.savePromiseResolve = null;
+    this.savePromiseReject = null;
   }
 
-  async saveScene() {
-    const zip = new window.JSZip();
+  /**
+   * Handles messages from the Web Worker.
+   * @param {MessageEvent} event
+   */
+  handleWorkerMessage(event) {
+    const { type, data, message, error } = event.data;
 
-    // Serialize the scene using the worker
-    const sceneJson = await new Promise((resolve, reject) => {
-      this.worker.postMessage({ type: 'serialize', data: this.scene.toJSON() });
-      this.worker.onmessage = (event) => {
-        if (event.data.type === 'serialize_complete') {
-          resolve(event.data.data);
-        } else if (event.data.type === 'error') {
-          reject(new Error(event.data.message + ': ' + event.data.error));
-        }
+    if (type === 'deserialize_complete') {
+      const loader = new THREE.ObjectLoader();
+      const loadedScene = loader.parse(data);
+      
+      if (this.loadPromiseResolve) {
+        this.loadPromiseResolve(loadedScene);
+        this.loadPromiseResolve = null;
+      }
+    } else if (type === 'serialize_complete') {
+      if (this.savePromiseResolve) {
+        this.savePromiseResolve(data);
+        this.savePromiseResolve = null;
+        this.savePromiseReject = null;
+      }
+    } else if (type === 'error') {
+      log.error('Worker error:', message, error);
+      if (this.loadPromiseResolve) {
+        this.loadPromiseResolve(null);
+        this.loadPromiseResolve = null;
+      }
+      if (this.savePromiseReject) {
+        this.savePromiseReject(new Error(`${message}: ${error}`));
+        this.savePromiseResolve = null;
+        this.savePromiseReject = null;
+      }
+    }
+  }
+
+  /**
+   * Saves the scene to a .nodist3d zip file.
+   */
+  async saveScene() {
+    // @ts-ignore
+    const JSZip = window.JSZip;
+    if (!JSZip) {
+      throw new Error('JSZip not loaded');
+    }
+
+    const zip = new JSZip();
+
+    // Optimization: avoid standard Array conversion for TypedArrays
+    const originalToJSON = THREE.BufferAttribute.prototype.toJSON;
+    THREE.BufferAttribute.prototype.toJSON = function() {
+      return {
+        itemSize: this.itemSize,
+        type: this.array.constructor.name,
+        array: Array.from(this.array), // Still need array for standard ObjectLoader
+        normalized: this.normalized
       };
+    };
+
+    let sceneData;
+    try {
+      sceneData = this.scene.toJSON();
+    } finally {
+      THREE.BufferAttribute.prototype.toJSON = originalToJSON;
+    }
+
+    const sceneJson = await new Promise((resolve, reject) => {
+      this.savePromiseResolve = resolve;
+      this.savePromiseReject = reject;
+      this.worker.postMessage({ type: 'serialize', data: sceneData });
     });
 
-    zip.file('scene.json', sceneJson);
+    zip.file('scene.json', JSON.stringify(sceneJson));
 
     const content = await zip.generateAsync({ type: 'blob' });
     const url = URL.createObjectURL(content);
@@ -36,62 +96,49 @@ export class SceneStorage {
     a.download = 'scene.nodist3d';
     a.click();
     URL.revokeObjectURL(url);
+    this.eventBus.publish('scene_saved', { name: 'scene.nodist3d', size: content.size });
   }
 
+  /**
+   * Loads a scene from a .nodist3d zip file.
+   * @param {File} file
+   */
   async loadScene(file) {
-    try {
-      const zip = new window.JSZip();
-      const loadedZip = await zip.loadAsync(file);
-      const sceneJsonFile = loadedZip.file('scene.json');
-      if (!sceneJsonFile) {
-        throw new Error('scene.json not found in the zip file.');
-      }
-      const sceneJson = await sceneJsonFile.async('string');
+    // @ts-ignore
+    const JSZip = window.JSZip;
+    if (!JSZip) {
+      throw new Error('JSZip not loaded');
+    }
 
-      // Clear existing objects from the scene
-      while (this.scene.children.length > 0) {
-        const object = this.scene.children[0];
-        this.scene.remove(object);
-        if (object.geometry) object.geometry.dispose();
-        if (object.material) {
-          if (Array.isArray(object.material)) {
-            object.material.forEach((material) => material.dispose());
-          } else {
-            object.material.dispose();
-          }
+    const zip = await JSZip.loadAsync(file);
+    const sceneFile = zip.file('scene.json');
+    if (!sceneFile) {
+      throw new Error('Invalid .nodist3d file: missing scene.json');
+    }
+
+    const sceneJsonText = await sceneFile.async('text');
+    const sceneJson = JSON.parse(sceneJsonText);
+
+    const loadedScene = await new Promise((resolve, reject) => {
+      this.loadPromiseResolve = resolve;
+      this.worker.postMessage({ type: 'deserialize', data: sceneJson });
+      
+      // Timeout after 10 seconds
+      setTimeout(() => {
+        if (this.loadPromiseResolve === resolve) {
+          this.loadPromiseResolve = null;
+          reject(new Error('Scene loading timed out'));
         }
-      }
+      }, 10000);
+    });
 
-      // Deserialize the scene using the worker
-      return new Promise((resolve, reject) => {
-        this.loadPromiseResolve = resolve; // Store resolve function for async worker response
-        this.worker.postMessage({ type: 'deserialize', data: sceneJson });
-        this.worker.onerror = (error) =>
-          reject(new Error('Worker error during deserialization: ' + error.message));
-      });
-    } catch (error) {
-      log.error('Error loading scene:', error);
-      return Promise.reject(error);
+    if (!loadedScene) {
+      throw new Error('Failed to deserialize scene');
     }
-  }
 
-  handleWorkerMessage(event) {
-    if (event.data.type === 'deserialize_complete') {
-      const loadedScene = event.data.data;
-      // Add loaded objects back to the scene
-      loadedScene.children.forEach((object) => {
-        this.scene.add(object);
-      });
-      if (this.loadPromiseResolve) {
-        this.loadPromiseResolve(loadedScene);
-        this.loadPromiseResolve = null;
-      }
-    } else if (event.data.type === 'error') {
-      log.error('Worker error:', event.data.message, event.data.error);
-      if (this.loadPromiseResolve) {
-        this.loadPromiseResolve(null); // Resolve with null or reject the promise
-        this.loadPromiseResolve = null;
-      }
-    }
+    this.eventBus.publish('scene_loaded');
+
+    // Clear existing objects in the main thread (handled by App.loadScene)
+    return loadedScene;
   }
 }

@@ -146,6 +146,17 @@ export class PrimitiveManager {
     return this._createMesh(geometry, 0x00ff80); // Spring Green for Lathe
   }
 
+  addExtrude() {
+    const shape = new THREE.Shape();
+    const x = 0,
+      y = 0;
+    shape.moveTo(x + 0.5, y + 0.5);
+    shape.bezierCurveTo(x + 0.5, y + 0.5, x + 0.4, y, x, y);
+    shape.bezierCurveTo(x - 0.6, y, x - 0.6, y + 0.7, x - 0.6, y + 0.7);
+    shape.bezierCurveTo(x - 0.6, y + 1.1, x - 0.3, y + 1.5, x + 0.5, y + 1.9);
+    shape.bezierCurveTo(x + 1.3, y + 1.5, x + 1.6, y + 1.1, x + 1.6, y + 0.7);
+    shape.bezierCurveTo(x + 1.6, y + 0.7, x + 1.6, y, x + 1, y);
+    shape.bezierCurveTo(x + 0.85, y, x + 0.5, y + 0.5, x + 0.5, y + 0.5);
 
     const extrudeSettings = {
       steps: 2,
@@ -160,19 +171,24 @@ export class PrimitiveManager {
     return this._createMesh(geometry, 0xff6347); // Tomato for Extrude
   }
 
-  addText(text = 'nodist3d') {
+  addText(text = "nodist3d") {
     const loader = new FontLoader();
     return new Promise((resolve) => {
-      loader.load(
-        './node_modules/three/examples/fonts/helvetiker_regular.typeface.json',
-        (font) => {
-          const geometry = new TextGeometry(text, {
-            font: font,
-            size: 0.5,
-            height: 0.2,
-            curveSegments: 12,
-            bevelEnabled: true,
-            bevelThickness: 0.03,
-            bevelSize: 0.02,
-            bevelOffset: 0,
+        loader.load('./node_modules/three/examples/fonts/helvetiker_regular.typeface.json', (font) => {
+            const geometry = new TextGeometry(text, {
+                font: font,
+                size: 0.5,
+                depth: 0.2,
+                curveSegments: 12,
+                bevelEnabled: true,
+                bevelThickness: 0.03,
+                bevelSize: 0.02,
+                bevelOffset: 0,
+                bevelSegments: 5
+            });
+            geometry.center();
+            resolve(this._createMesh(geometry, 0x00bfff)); // Deep Sky Blue for Text
+        });
+    });
+  }
 }

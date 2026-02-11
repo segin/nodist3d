@@ -50,6 +50,10 @@ jest.mock('three', () => {
             shadowMap: { enabled: false, type: null },
             domElement: mockElement
         })),
+        Clock: jest.fn(() => ({
+            getDelta: jest.fn(() => 0.016),
+            getElapsedTime: jest.fn(() => 0)
+        })),
         Mesh: jest.fn(() => mockMesh),
         BoxGeometry: jest.fn(() => ({ type: 'BoxGeometry', parameters: {}, dispose: jest.fn() })),
         SphereGeometry: jest.fn(),
@@ -64,9 +68,13 @@ jest.mock('three', () => {
         })),
         AmbientLight: jest.fn(),
         DirectionalLight: jest.fn(() => ({
-            position: { set: jest.fn() },
+            position: { set: function() { return this; }, normalize: function() { return this; } },
             castShadow: false,
             shadow: { mapSize: { width: 0, height: 0 } }
+        })),
+        PointLight: jest.fn(() => ({
+            position: { set: function() { return this; }, normalize: function() { return this; } },
+            castShadow: false
         })),
         GridHelper: jest.fn(),
         AxesHelper: jest.fn(),
@@ -75,7 +83,13 @@ jest.mock('three', () => {
             intersectObjects: jest.fn(() => [])
         })),
         Vector2: jest.fn(),
-        Vector3: jest.fn(() => ({ x: 0, y: 0, z: 0 })),
+        Vector3: jest.fn(() => ({
+          x: 0, y: 0, z: 0,
+          set: function() { return this; },
+          normalize: function() { return this; },
+          copy: function() { return this; },
+          clone: () => ({ x: 0, y: 0, z: 0, set: () => {}, normalize: () => {}, copy: () => {} })
+        })),
         PCFSoftShadowMap: 'PCFSoftShadowMap',
         DoubleSide: 'DoubleSide',
         TOUCH: { ROTATE: 0, DOLLY_PAN: 1 }
@@ -147,7 +161,7 @@ jest.mock('../src/frontend/EventBus.js', () => ({ subscribe: jest.fn(), publish:
 jest.mock('../src/frontend/ObjectManager.js', () => ({ ObjectManager: jest.fn() }));
 jest.mock('../src/frontend/SceneManager.js', () => ({ SceneManager: jest.fn() }));
 jest.mock('../src/frontend/InputManager.js', () => ({ InputManager: jest.fn() }));
-jest.mock('../src/frontend/PhysicsManager.js', () => ({ PhysicsManager: jest.fn() }));
+jest.mock('../src/frontend/PhysicsManager.js', () => ({ PhysicsManager: jest.fn(() => ({ update: jest.fn() })) }));
 jest.mock('../src/frontend/PrimitiveFactory.js', () => ({ PrimitiveFactory: jest.fn() }));
 jest.mock('../src/frontend/ObjectFactory.js', () => ({ ObjectFactory: jest.fn() }));
 jest.mock('../src/frontend/ObjectPropertyUpdater.js', () => ({ ObjectPropertyUpdater: jest.fn() }));

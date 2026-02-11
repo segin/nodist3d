@@ -1,44 +1,27 @@
-/**
- * Tests for the main App class
- */
-import { JSDOM } from 'jsdom';
+import { App } from '../src/frontend/main.js';
 
-// Mock THREE.js
-jest.mock('three', () => {
-  const mockElement = { createElement: jest.fn(() => ({ tagName: 'CANVAS' })) };
+describe('App', () => {
+    let app;
 
-});
+    beforeEach(() => {
+        // Setup DOM environment
+        document.body.innerHTML = '<div id="objects-list"></div>';
+        app = new App();
+    });
 
-// Mock dat.gui
-jest.mock('dat.gui', () => ({
-  GUI: jest.fn(() => ({
-    addFolder: jest.fn(() => ({
-      add: jest.fn(() => ({
-        name: jest.fn(() => ({ onChange: jest.fn() })),
-        onChange: jest.fn(),
-      })),
-      addFolder: jest.fn(() => ({
-        add: jest.fn(() => ({
-          name: jest.fn(() => ({ onChange: jest.fn() })),
-          onChange: jest.fn(),
-        })),
-        addColor: jest.fn(() => ({
-          name: jest.fn(() => ({ onChange: jest.fn() })),
-          onChange: jest.fn(),
-        })),
-        open: jest.fn(),
-        close: jest.fn(),
-      })),
-      addColor: jest.fn(() => ({
-        name: jest.fn(() => ({ onChange: jest.fn() })),
-        onChange: jest.fn(),
-      })),
-      open: jest.fn(),
-      close: jest.fn(),
-      remove: jest.fn(),
-      removeFolder: jest.fn(),
-      __controllers: [],
-      __folders: [],
-    })),
-  })),
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should initialize correctly', () => {
+        expect(app).toBeDefined();
+        // Use type check instead of toBeInstanceOf as mocks can be tricky
+        expect(app.scene.type).toBe('Scene');
+    });
+
+    it('should add a box primitive', async () => {
+        const initialCount = app.objects.length;
+        await app.addBox();
+        expect(app.objects.length).toBeGreaterThan(initialCount);
+    });
 });

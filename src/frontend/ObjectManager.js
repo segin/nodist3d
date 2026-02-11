@@ -2,26 +2,17 @@ import * as THREE from 'three';
 import { Events } from './constants.js';
 
 /**
- * @typedef {typeof import('./EventBus.js').default} EventBus
- * @typedef {import('./PhysicsManager.js').PhysicsManager} PhysicsManager
- * @typedef {import('./ObjectFactory.js').ObjectFactory} ObjectFactory
- * @typedef {import('./ObjectPropertyUpdater.js').ObjectPropertyUpdater} ObjectPropertyUpdater
- * @typedef {import('./StateManager.js').StateManager} StateManager
- * @typedef {import('./PrimitiveFactory.js').PrimitiveFactory} PrimitiveFactory
- */
-
-/**
  * Manages 3D objects in the scene.
  */
 export class ObjectManager {
   /**
    * @param {THREE.Scene} scene
-   * @param {EventBus} eventBus
+   * @param {any} eventBus
    * @param {any} physicsManager
-   * @param {PrimitiveFactory} primitiveFactory
-   * @param {ObjectFactory} objectFactory
-   * @param {ObjectPropertyUpdater} objectPropertyUpdater
-   * @param {StateManager} stateManager
+   * @param {any} primitiveFactory
+   * @param {any} objectFactory
+   * @param {any} objectPropertyUpdater
+   * @param {any} stateManager
    */
   constructor(
     scene,
@@ -70,13 +61,7 @@ export class ObjectManager {
     if (this.objectFactory) {
       return this.objectFactory.addPrimitive(type, options);
     }
-
-    const object = this.primitiveFactory.createPrimitive(type, options);
-    if (object && !(object instanceof Promise)) {
-      this.scene.add(object);
-      this.eventBus.publish(Events.OBJECT_ADDED, object);
-    }
-    return object;
+    return this.primitiveFactory.createPrimitive(type, options);
   }
 
   /**
@@ -84,9 +69,7 @@ export class ObjectManager {
    * @returns {THREE.Object3D}
    */
   duplicateObject(object) {
-    if (this.objectFactory) {
-      return this.objectFactory.duplicateObject(object);
-    }
+    return this.objectFactory.duplicateObject(object);
   }
 
   /**
@@ -94,9 +77,7 @@ export class ObjectManager {
    * @param {object} properties
    */
   updateMaterial(object, properties) {
-    if (this.objectPropertyUpdater) {
-      this.objectPropertyUpdater.updateMaterial(object, properties);
-    }
+    this.objectPropertyUpdater.updateMaterial(object, properties);
   }
 
   /**
@@ -105,54 +86,54 @@ export class ObjectManager {
    * @param {string} type
    */
   addTexture(object, file, type) {
-    if (this.objectPropertyUpdater) {
-      this.objectPropertyUpdater.addTexture(object, file, type);
-    }
+    this.objectPropertyUpdater.addTexture(object, file, type);
   }
 
   /**
-   * Deletes an object from the scene and disposes of its resources.
-   * @param {THREE.Object3D} object - The object to delete.
+   * Deletes an object from the scene.
+   * @param {THREE.Object3D} object
    */
   deleteObject(object) {
     if (object) {
-      if (object.children && object.children.length > 0) {
-        // Recursively delete children backwards to avoid array copy and index shifts
-        for (let i = object.children.length - 1; i >= 0; i--) {
-          this.deleteObject(object.children[i]);
-        }
+      if (object.children.length > 0) {
+        // Recursively delete children
+        object.children.slice().forEach(child => this.deleteObject(child));
       }
-
+      
       // Dispose of geometry and material to free up memory
+      // @ts-ignore
       if (object.geometry) {
+        // @ts-ignore
         object.geometry.dispose();
       }
+      
+      // @ts-ignore
       if (object.material) {
+        // @ts-ignore
         const materials = Array.isArray(object.material) ? object.material : [object.material];
-        materials.forEach((material) => {
+        materials.forEach(material => {
           // Dispose textures
-          for (const key of [
-            'map',
-            'normalMap',
-            'roughnessMap',
-            'metalnessMap',
-            'alphaMap',
-            'aoMap',
-          ]) {
+          const textures = ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'alphaMap', 'aoMap'];
+          textures.forEach(key => {
             if (material[key] && material[key].dispose) {
               material[key].dispose();
             }
-          }
+          });
           material.dispose();
         });
       }
-
-      // Remove the object from its parent (scene or group)
+      
+      // Remove from physics if manager exists
+      if (this.physicsManager && this.physicsManager.removeObject) {
+        this.physicsManager.removeObject(object);
+      }
+      
       if (object.parent) {
         object.parent.remove(object);
       } else {
         this.scene.remove(object);
       }
+      
       this.eventBus.publish(Events.OBJECT_REMOVED, object);
     }
   }
