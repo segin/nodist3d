@@ -1,12 +1,8 @@
-<<<<<<< HEAD
 // @ts-check
 import * as THREE from 'three';
-=======
->>>>>>> master
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export class Engine {
-<<<<<<< HEAD
     /**
      * @param {HTMLCanvasElement} canvas
      * @param {any} physicsManager
@@ -20,19 +16,6 @@ export class Engine {
         this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, powerPreference: "high-performance" });
         this.camera = new THREE.PerspectiveCamera(75, 2, 0.1, 5);
         this.camera.position.z = 2;
-=======
-  constructor(canvas, physicsManager, transformControls) {
-    this.canvas = canvas;
-    this.physicsManager = physicsManager;
-    this.transformControls = transformControls;
-    this.scene = new global.THREE.Scene();
-    this.renderer = new global.THREE.WebGLRenderer({
-      canvas: this.canvas,
-      powerPreference: 'high-performance',
-    });
-    this.camera = new global.THREE.PerspectiveCamera(75, 2, 0.1, 5);
-    this.camera.position.z = 2;
->>>>>>> master
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableDamping = true; // an animation loop is required when damping is enabled
@@ -46,7 +29,6 @@ export class Engine {
         this.initialCameraPosition = this.camera.position.clone();
         this.initialControlsTarget = this.controls.target.clone();
 
-<<<<<<< HEAD
         const gridHelper = new THREE.GridHelper(10, 10);
         this.scene.add(gridHelper);
 
@@ -57,6 +39,8 @@ export class Engine {
 
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
         this.onWindowResize();
+
+        this.animate = this.animate.bind(this);
     }
 
     resetCamera() {
@@ -83,54 +67,10 @@ export class Engine {
         if (this.transformControls) this.transformControls.update();
         if (this.controls) this.controls.update();
         this.render();
-        requestAnimationFrame(this.animate.bind(this));
+        requestAnimationFrame(this.animate);
     }
 
     start() {
         this.animate();
     }
-=======
-    const gridHelper = new global.THREE.GridHelper(10, 10);
-    this.scene.add(gridHelper);
-
-    const axesHelper = new global.THREE.AxesHelper(5);
-    this.scene.add(axesHelper);
-
-    this.clock = new Clock();
-
-    window.addEventListener('resize', this.onWindowResize.bind(this), false);
-    this.onWindowResize();
-  }
-
-  resetCamera() {
-    this.camera.position.copy(this.initialCameraPosition);
-    this.controls.target.copy(this.initialControlsTarget);
-    this.controls.update();
-  }
-
-  onWindowResize() {
-    const width = this.canvas.clientWidth;
-    const height = this.canvas.clientHeight;
-    this.renderer.setSize(width, height, false);
-    this.camera.aspect = width / height;
-    this.camera.updateProjectionMatrix();
-  }
-
-  render() {
-    this.renderer.render(this.scene, this.camera);
-  }
-
-  animate() {
-    const deltaTime = this.clock.getDelta();
-    this.physicsManager.update(deltaTime);
-    this.transformControls.update();
-    this.controls.update();
-    this.render();
-    requestAnimationFrame(this.animate.bind(this));
-  }
-
-  start() {
-    this.animate();
-  }
->>>>>>> master
 }
