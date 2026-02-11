@@ -141,6 +141,11 @@ describe('SceneStorage', () => {
                 })
             })
         }));
+        
+        // Ensure window.JSZip matches global.JSZip for the test
+        if (typeof window !== 'undefined') {
+            window.JSZip = global.JSZip;
+        }
 
         sceneStorage = new SceneStorage(scene, eventBus);
         objectManager = new ObjectManager(scene, null, eventBus);
@@ -161,6 +166,11 @@ describe('SceneStorage', () => {
         
         expect(global.URL.createObjectURL).toHaveBeenCalled();
         expect(publishSpy).toHaveBeenCalledWith('scene_saved', expect.any(Object));
+        
+        // Verify JSZip usage from HEAD's test logic
+        const zipInstance = global.JSZip.mock.instances[0];
+        expect(zipInstance.file).toHaveBeenCalledWith('scene.json', expect.any(String));
+        expect(zipInstance.file).toHaveBeenCalledWith('buffers.json', expect.any(String));
     });
 
     it('should load the scene', async () => {

@@ -8,6 +8,11 @@ export class PrimitiveManager {
     this.scene = scene;
   }
 
+  /**
+   * @param {THREE.BufferGeometry} geometry
+   * @param {number} color
+   * @param {THREE.Side} [side]
+   */
   _createMesh(geometry, color, side = THREE.FrontSide) {
     const material = new THREE.MeshPhongMaterial({ color, side });
     const mesh = new THREE.Mesh(geometry, material);
@@ -174,6 +179,26 @@ export class PrimitiveManager {
   addText(text = "nodist3d") {
     const loader = new FontLoader();
     return new Promise((resolve) => {
+<<<<<<< HEAD
+      loader.load(
+        './node_modules/three/examples/fonts/helvetiker_regular.typeface.json',
+        (font) => {
+          const geometry = new TextGeometry(text, {
+            font: font,
+            size: 0.5,
+            depth: 0.2,
+            curveSegments: 12,
+            bevelEnabled: true,
+            bevelThickness: 0.03,
+            bevelSize: 0.02,
+            bevelOffset: 0,
+            bevelSegments: 5,
+          });
+          geometry.center();
+          resolve(this._createMesh(geometry, 0x00bfff)); // Deep Sky Blue for Text
+        },
+      );
+=======
         loader.load('./node_modules/three/examples/fonts/helvetiker_regular.typeface.json', (font) => {
             const geometry = new TextGeometry(text, {
                 font: font,
@@ -189,6 +214,7 @@ export class PrimitiveManager {
             geometry.center();
             resolve(this._createMesh(geometry, 0x00bfff)); // Deep Sky Blue for Text
         });
+>>>>>>> master
     });
   }
 }

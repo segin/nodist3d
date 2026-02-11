@@ -14,7 +14,8 @@ import { PhysicsManager } from './PhysicsManager.js';
 import { PrimitiveFactory } from './PrimitiveFactory.js';
 import { ObjectFactory } from './ObjectFactory.js';
 import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
-import { toast, ToastManager } from './logger.js';
+import log from './logger.js';
+import { ToastManager } from './ToastManager.js';
 import { LightManager } from './LightManager.js';
 
 /**
@@ -129,6 +130,17 @@ export class App {
 
   initRemaining() {
     // Satisfy tests that expect this method to exist
+    // Setup scene graph UI
+    this.setupSceneGraph();
+
+    // Setup toolbar
+    this.setupToolbar();
+
+    // Initialize scene storage
+    this.sceneStorage = new SceneStorage(this.scene, null); // EventBus not needed for basic save/load
+
+    // Mobile touch optimizations
+    this.setupMobileOptimizations();
   }
 
   initRenderer() {
@@ -148,20 +160,6 @@ export class App {
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(window.innerWidth, window.innerHeight);
     });
-  }
-
-  initRemaining() {
-    // Setup scene graph UI
-    this.setupSceneGraph();
-
-    // Setup toolbar
-    this.setupToolbar();
-
-    // Initialize scene storage
-    this.sceneStorage = new SceneStorage(this.scene, null); // EventBus not needed for basic save/load
-
-    // Mobile touch optimizations
-    this.setupMobileOptimizations();
   }
 
   setupLighting() {
@@ -348,6 +346,7 @@ export class App {
       saveButton.addEventListener('click', async () => {
         const originalText = saveButton.textContent;
         saveButton.textContent = 'Saving...';
+        // @ts-ignore
         saveButton.disabled = true;
         saveButton.style.cursor = 'wait';
 
@@ -355,6 +354,7 @@ export class App {
           await this.saveScene();
         } finally {
           saveButton.textContent = originalText;
+          // @ts-ignore
           saveButton.disabled = false;
           saveButton.style.cursor = '';
         }
@@ -364,30 +364,38 @@ export class App {
     const loadButton = document.getElementById('load-scene');
     const loadInput = document.getElementById('file-input');
 
-    if (loadButton && loadInput) {
-      loadButton.addEventListener('click', () => {
-        loadInput.click();
-      });
+    if (loadInput) {
+      if (loadButton) {
+          loadButton.addEventListener('click', () => {
+              loadInput.click();
+          });
+      }
 
       loadInput.addEventListener('change', async (e) => {
         // @ts-ignore
         const file = e.target.files[0];
-        if (!file) return;
-
-        const originalText = loadButton.textContent;
-        loadButton.textContent = 'Loading...';
-        loadButton.disabled = true;
-        loadButton.style.cursor = 'wait';
-
-        try {
-          await this.loadScene(file);
-        } finally {
-          loadButton.textContent = originalText;
-          loadButton.disabled = false;
-          loadButton.style.cursor = '';
-          // @ts-ignore
-          loadInput.value = '';
+        if (file) {
+            if (loadButton) {
+                const originalText = loadButton.textContent;
+                loadButton.textContent = 'Loading...';
+                // @ts-ignore
+                loadButton.disabled = true;
+                loadButton.style.cursor = 'wait';
+                try {
+                  await this.loadScene(file);
+                } finally {
+                  loadButton.textContent = originalText;
+                  // @ts-ignore
+                  loadButton.disabled = false;
+                  loadButton.style.cursor = '';
+                }
+            } else {
+                await this.loadScene(file);
+            }
         }
+        // Reset input value so same file can be loaded again if needed
+        // @ts-ignore
+        e.target.value = '';
       });
     }
   }
@@ -757,7 +765,3 @@ export class App {
     this.renderer.render(this.scene, this.camera);
   }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  window.app = new App();
-});

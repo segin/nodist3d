@@ -1,5 +1,9 @@
 const { JSDOM } = require('jsdom');
 const fetch = require('node-fetch');
+const { TextEncoder, TextDecoder } = require('util');
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 global.fetch = fetch;
 global.Request = fetch.Request;
@@ -611,6 +615,9 @@ global.JSZip = jest.fn(() => ({
         files: { 'scene.json': { async: jest.fn().mockResolvedValue('{}') } },
     })
 }));
+
+// Populate window.JSZip
+global.window.JSZip = global.JSZip;
 
 global.Worker = class {
   constructor(url) { this.onmessage = () => {}; }
