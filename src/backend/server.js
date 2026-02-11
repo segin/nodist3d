@@ -27,9 +27,8 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            // Refactored to use cryptographic nonce for inline scripts (Import Maps)
             scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
-            styleSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`], // Removed 'unsafe-inline', added nonce
             imgSrc: ["'self'", "data:"],
             connectSrc: ["'self'"],
             fontSrc: ["'self'", "data:"],
@@ -184,9 +183,16 @@ const serveIndex = (req, res) => {
       res.status(500).send('Internal Server Error');
       return;
     }
+    // Inject nonces into all script and style tags
     const injectedHtml = data.replace(
-      '<script type="importmap">',
-      `<script type="importmap" nonce="${res.locals.cspNonce}">`
+      /<script /g,
+      `<script nonce="${res.locals.cspNonce}" `
+    ).replace(
+      /<style>/g,
+      `<style nonce="${res.locals.cspNonce}">`
+    ).replace(
+      /<link rel="stylesheet"/g,
+      `<link rel="stylesheet" nonce="${res.locals.cspNonce}"`
     );
     res.send(injectedHtml);
   });
