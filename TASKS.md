@@ -1,8 +1,6 @@
 # nodist3d Master Task List
 
-## Current Focus
-- [ ] Merge and resolve incoming PRs (#66, #67, #68)
-- [ ] Cleanup merge conflict markers ("dirt") across the codebase
+This document is the single source of truth for all tasks, specifications, suggestions, and audit findings for the **nodist3d** project.
 
 ---
 
