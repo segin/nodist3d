@@ -129,6 +129,74 @@ export class App {
     this.saveState('Initial State');
   }
 
+  /**
+   * Helper to apply state data to a mesh
+   * @param {THREE.Mesh|THREE.Object3D} mesh
+   * @param {Object} data
+   */
+  _applyStateToMesh(mesh, data) {
+    if (!mesh) return;
+    mesh.uuid = data.uuid;
+    mesh.name = data.name;
+    if (data.visible !== undefined) mesh.visible = data.visible;
+    mesh.position.copy(data.position);
+    mesh.rotation.copy(data.rotation);
+    mesh.scale.copy(data.scale);
+    // @ts-ignore
+    if (mesh.material && data.material) {
+        // @ts-ignore
+        if (mesh.material.color && data.material.color) mesh.material.color.copy(data.material.color);
+        // @ts-ignore
+        if (mesh.material.emissive && data.material.emissive) mesh.material.emissive.copy(data.material.emissive);
+    }
+  }
+
+  /**
+   * Helper to check if a saved state object matches the current object state.
+   * This allows for structural sharing in the history stack.
+   * @param {Object} stateObj - The object state from history
+   * @param {THREE.Object3D} currentObj - The live Three.js object
+   * @returns {boolean}
+   */
+  _areObjectsEqual(stateObj, currentObj) {
+    if (!stateObj || !currentObj) return false;
+    if (stateObj.uuid !== currentObj.uuid) return false;
+    if (stateObj.name !== currentObj.name) return false;
+    if (stateObj.visible !== currentObj.visible) return false;
+
+    // Type check (using primitiveType if available)
+    const currentType = currentObj.userData && currentObj.userData.primitiveType
+        ? currentObj.userData.primitiveType
+        : (currentObj.geometry ? currentObj.geometry.type : currentObj.type);
+
+    if (stateObj.type !== currentType) return false;
+
+    // Transform comparison
+    if (!stateObj.position.equals(currentObj.position)) return false;
+    if (!stateObj.rotation.equals(currentObj.rotation)) return false;
+    if (!stateObj.scale.equals(currentObj.scale)) return false;
+
+    // Material comparison
+    // @ts-ignore
+    if (stateObj.material && currentObj.material) {
+      // @ts-ignore
+      if (!stateObj.material.color.equals(currentObj.material.color)) return false;
+      // @ts-ignore
+      if (stateObj.material.emissive && currentObj.material.emissive) {
+         // @ts-ignore
+         if (!stateObj.material.emissive.equals(currentObj.material.emissive)) return false;
+      }
+    } else if (!!stateObj.material !== !!currentObj.material) {
+      return false;
+    }
+
+    // Geometry params comparison
+    const currentParams = (currentObj.userData && currentObj.userData.primitiveOptions) ? currentObj.userData.primitiveOptions : (currentObj.userData ? currentObj.userData.geometryParams : null);
+    if (JSON.stringify(stateObj.geometryParams) !== JSON.stringify(currentParams)) return false;
+
+    return true;
+  }
+
   initRemaining() {
     // Satisfy tests that expect this method to exist
     // Setup scene graph UI
@@ -721,24 +789,50 @@ export class App {
   }
 
   saveState(description = 'Action') {
+    // Structural sharing implementation
+    const lastState = this.history[this.historyIndex];
+
+    // Create map for faster lookup if history grows large, but linear scan for current objects is fine
+    // However, objects array order might change? Usually append only.
+    // We can map UUID to last state object.
+    const lastStateMap = new Map();
+    if (lastState && lastState.objects) {
+        lastState.objects.forEach(obj => lastStateMap.set(obj.uuid, obj));
+    }
+
+    const stateObjects = this.objects.map(obj => {
+        const lastObjState = lastStateMap.get(obj.uuid);
+
+        // If object hasn't changed, reuse the state object (Structural Sharing)
+        if (lastObjState && this._areObjectsEqual(lastObjState, obj)) {
+            return lastObjState;
+        }
+
+        // Create new state object
+        return {
+            uuid: obj.uuid,
+            name: obj.name,
+            visible: obj.visible !== undefined ? obj.visible : true,
+            // Use primitiveType if available (from userData), otherwise fallback to geometry type
+            type: (obj.userData && obj.userData.primitiveType) ? obj.userData.primitiveType : (obj.geometry ? obj.geometry.type : obj.type),
+            position: obj.position.clone(),
+            rotation: obj.rotation.clone(),
+            scale: obj.scale.clone(),
+            material: obj.material ? {
+                // @ts-ignore
+                color: obj.material.color ? obj.material.color.clone() : new THREE.Color(0xffffff),
+                // @ts-ignore
+                emissive: obj.material.emissive ? obj.material.emissive.clone() : new THREE.Color(0x000000)
+            } : null,
+            // Use primitiveOptions if available, otherwise geometryParams
+            geometryParams: (obj.userData && obj.userData.primitiveOptions) ? obj.userData.primitiveOptions : (obj.userData ? obj.userData.geometryParams : null)
+        };
+    });
+
     const state = {
       description,
       timestamp: Date.now(),
-      objects: this.objects.map(obj => ({
-        uuid: obj.uuid,
-        name: obj.name,
-        type: obj.geometry ? obj.geometry.type : obj.type,
-        position: obj.position.clone(),
-        rotation: obj.rotation.clone(),
-        scale: obj.scale.clone(),
-        material: obj.material ? {
-          // @ts-ignore
-          color: obj.material.color ? obj.material.color.clone() : new THREE.Color(0xffffff),
-          // @ts-ignore
-          emissive: obj.material.emissive ? obj.material.emissive.clone() : new THREE.Color(0x000000)
-        } : null,
-        geometryParams: obj.userData ? obj.userData.geometryParams : null
-      })),
+      objects: stateObjects,
       selectedUuid: this.selectedObject ? this.selectedObject.uuid : null
     };
 
@@ -754,43 +848,101 @@ export class App {
     }
   }
 
-  undo() {
+  async undo() {
     if (this.historyIndex > 0) {
       this.historyIndex--;
-      this.restoreState(this.history[this.historyIndex]);
+      await this.restoreState(this.history[this.historyIndex]);
     }
   }
 
-  redo() {
+  async redo() {
     if (this.historyIndex < this.history.length - 1) {
       this.historyIndex++;
-      this.restoreState(this.history[this.historyIndex]);
+      await this.restoreState(this.history[this.historyIndex]);
     }
   }
 
   async restoreState(state) {
-    this.objects.forEach(obj => this.scene.remove(obj));
-    this.objects = [];
+    const currentObjectsMap = new Map();
+    this.objects.forEach(obj => currentObjectsMap.set(obj.uuid, obj));
 
-    const promises = state.objects.map(async data => {
-      const mesh = await this.objectManager.addPrimitive(data.type, data.geometryParams);
-      if (mesh) {
-        mesh.uuid = data.uuid;
-        mesh.name = data.name;
-        mesh.position.copy(data.position);
-        mesh.rotation.copy(data.rotation);
-        mesh.scale.copy(data.scale);
-        // @ts-ignore
-        if (mesh.material) {
-          if (mesh.material.color) mesh.material.color.copy(data.material.color);
-          if (mesh.material.emissive) mesh.material.emissive.copy(data.material.emissive);
+    // Set of UUIDs that are in the new state
+    const newStateUuids = new Set();
+    const newObjects = [];
+    const promises = [];
+
+    // Update existing objects or create new ones
+    for (const data of state.objects) {
+        newStateUuids.add(data.uuid);
+        const existingObj = currentObjectsMap.get(data.uuid);
+
+        if (existingObj) {
+            // Check if geometry needs update (primitiveType or params changed)
+            const currentType = existingObj.userData && existingObj.userData.primitiveType
+                ? existingObj.userData.primitiveType
+                : (existingObj.geometry ? existingObj.geometry.type : existingObj.type);
+
+            const currentParams = (existingObj.userData && existingObj.userData.primitiveOptions)
+                ? existingObj.userData.primitiveOptions
+                : (existingObj.userData ? existingObj.userData.geometryParams : null);
+
+            const typeChanged = data.type !== currentType;
+            const paramsChanged = JSON.stringify(data.geometryParams) !== JSON.stringify(currentParams);
+
+            if (typeChanged || paramsChanged) {
+                 // Recreate object
+                 // Remove old
+                 this.scene.remove(existingObj);
+                 this.objectManager.deleteObject(existingObj);
+
+                 // Create new
+                 promises.push((async () => {
+                     const mesh = await this.objectManager.addPrimitive(data.type, data.geometryParams);
+                     if (mesh) {
+                        this._applyStateToMesh(mesh, data);
+                        // scene.add is handled by objectManager usually, but let's ensure it's in our list
+                        if (!newObjects.includes(mesh)) newObjects.push(mesh);
+                     }
+                     return mesh;
+                 })());
+            } else {
+                // Update existing object properties
+                this._applyStateToMesh(existingObj, data);
+                newObjects.push(existingObj);
+            }
+        } else {
+            // Create new object
+            promises.push((async () => {
+                const mesh = await this.objectManager.addPrimitive(data.type, data.geometryParams);
+                if (mesh) {
+                    this._applyStateToMesh(mesh, data);
+                    // scene.add is handled by objectManager usually, but let's ensure it's in our list
+                    if (!newObjects.includes(mesh)) newObjects.push(mesh);
+                }
+                return mesh;
+            })());
         }
-        this.scene.add(mesh);
-        this.objects.push(mesh);
-      }
+    }
+
+    // Remove objects not in new state
+    this.objects.forEach(obj => {
+        if (!newStateUuids.has(obj.uuid)) {
+            // We use deleteObject but we need to be careful not to trigger history save or recursive issues
+            // objectManager.deleteObject handles scene removal and disposal
+            this.objectManager.deleteObject(obj);
+        }
     });
 
     await Promise.all(promises);
+
+    // Update objects array
+    this.objects = newObjects;
+    // Sort objects to match state order? state.objects order is preserved in loop
+    // But async creation might mess order if we just push.
+    // We should re-sort based on state order.
+    const objMap = new Map();
+    this.objects.forEach(o => objMap.set(o.uuid, o));
+    this.objects = state.objects.map(d => objMap.get(d.uuid)).filter(o => o);
 
     if (state.selectedUuid) {
       const selected = this.objects.find(o => o.uuid === state.selectedUuid);

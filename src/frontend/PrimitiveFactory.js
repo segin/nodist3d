@@ -48,7 +48,10 @@ export class PrimitiveFactory {
             bevelSegments: options.bevelSegments || 5,
           });
           geometry.center();
-          resolve(this._createMesh(geometry, options.color || 0x00bfff));
+          const mesh = this._createMesh(geometry, options.color || 0x00bfff);
+          mesh.userData.primitiveType = type;
+          mesh.userData.primitiveOptions = options;
+          resolve(mesh);
         } else {
           log.error('Font not loaded. Cannot create text.');
           resolve(null);
@@ -189,7 +192,8 @@ export class PrimitiveFactory {
         knob.position.set(0, 0.45, 0);
         teapot.add(knob);
         
-        return teapot;
+        mesh = teapot;
+        break;
       case 'Lathe':
         const pointsLathe = [];
         for (let i = 0; i < 10; i++) {
@@ -249,11 +253,24 @@ export class PrimitiveFactory {
         const meshLow = new THREE.Mesh(geoLow, lodMaterial);
         lod.addLevel(meshLow, 10);
 
-        return lod;
+        mesh = lod;
+        break;
       default:
         log.error(`Unknown primitive type: ${type}`);
         return null;
     }
+
+    if (mesh) {
+        if (!mesh.userData) mesh.userData = {};
+        mesh.userData.primitiveType = type;
+        mesh.userData.primitiveOptions = options;
+
+        // Ensure children also have userData if it's a group like Teapot or LOD
+        if (mesh.children && mesh.children.length > 0) {
+           // We might not need to set it on children if we save/restore the root
+        }
+    }
+
     return mesh;
   }
 }
