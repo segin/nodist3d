@@ -2,27 +2,53 @@
 // src/frontend/worker.js
 
 self.onmessage = function (event) {
-  const { type, data } = event.data;
+  const { type, data, buffers: inputBuffers } = event.data;
 
   if (type === 'serialize') {
     try {
-      // We use a custom replacer to convert TypedArrays (transferred from main thread)
-      // back to regular arrays for standard JSON serialization.
+      const buffers = [];
       const json = JSON.stringify(data, (key, value) => {
-        if (value && value.buffer instanceof ArrayBuffer && value.byteLength !== undefined) {
-          return Array.from(value);
+        if (value && ArrayBuffer.isView(value) && !(value instanceof DataView)) {
+            buffers.push(value.buffer); // Store the underlying buffer
+            return {
+                __type: 'TypedArray',
+                id: buffers.length - 1,
+                ctor: value.constructor.name,
+                byteOffset: value.byteOffset,
+                length: value.length
+            };
         }
         return value;
       });
-      self.postMessage({ type: 'serialize_complete', data: json });
+
+      self.postMessage({
+          type: 'serialize_complete',
+          data: json,
+          buffers: buffers // Pass the array of buffers
+      }, buffers); // Transfer ownership
+
     } catch (error) {
       self.postMessage({ type: 'error', message: 'Serialization failed', error: error.message });
     }
   } else if (type === 'deserialize') {
-     try {
-        // Only perform JSON parsing in the worker
-        const sceneObject = JSON.parse(data);
-        self.postMessage({ type: 'deserialize_complete', data: sceneObject });
+    try {
+      const reconstructed = JSON.parse(data, (key, value) => {
+          if (value && value.__type === 'TypedArray' && typeof value.id === 'number') {
+              const buffer = inputBuffers && inputBuffers[value.id];
+              if (!buffer) return value; // Fallback or error?
+
+              const Ctor = self[value.ctor] || Float32Array;
+
+              if (buffer instanceof ArrayBuffer) {
+                  return new Ctor(buffer, value.byteOffset, value.length);
+              }
+              return buffer;
+          }
+          return value;
+      });
+
+      self.postMessage({ type: 'deserialize_complete', data: reconstructed });
+
     } catch (error) {
         self.postMessage({ type: 'error', message: 'Deserialization failed', error: error.message });
     }

@@ -1,3 +1,4 @@
+// @ts-check
 import * as THREE from 'three';
 import { Events } from './constants.js';
 
@@ -33,7 +34,8 @@ export class ObjectManager {
   }
 
   /**
-   * @param {THREE.Object3D} object
+   * Selects an object.
+   * @param {THREE.Object3D} object - The object to select.
    */
   selectObject(object) {
     if (this.stateManager) {
@@ -43,7 +45,7 @@ export class ObjectManager {
   }
 
   /**
-   * @returns {void}
+   * Deselects the currently selected object.
    */
   deselectObject() {
     if (this.stateManager) {
@@ -53,60 +55,77 @@ export class ObjectManager {
   }
 
   /**
-   * @param {string} type
-   * @param {object} [options]
-   * @returns {Promise<THREE.Object3D> | THREE.Object3D | null}
+   * Adds a primitive object to the scene.
+   * @param {string} type - The type of primitive.
+   * @param {Object} [options] - Creation options.
+   * @returns {Promise<THREE.Object3D>|THREE.Object3D|null} The created object or a promise resolving to it.
    */
   addPrimitive(type, options) {
     if (this.objectFactory) {
       return this.objectFactory.addPrimitive(type, options);
     }
-    return this.primitiveFactory.createPrimitive(type, options);
+    // Fallback logic
+    const object = this.primitiveFactory.createPrimitive(type, options);
+    if (object && !(object instanceof Promise)) {
+      this.scene.add(object);
+      this.eventBus.publish(Events.OBJECT_ADDED, object);
+    }
+    return object;
   }
 
   /**
-   * @param {THREE.Object3D} object
-   * @returns {THREE.Object3D}
+   * Duplicates an object.
+   * @param {THREE.Object3D} object - The object to duplicate.
+   * @returns {Promise<THREE.Object3D>|THREE.Object3D|null} The duplicated object.
    */
   duplicateObject(object) {
-    return this.objectFactory.duplicateObject(object);
+    if (this.objectFactory) {
+      return this.objectFactory.duplicateObject(object);
+    }
+    return null;
   }
 
   /**
-   * @param {THREE.Object3D} object
-   * @param {object} properties
+   * Updates object material properties.
+   * @param {THREE.Object3D} object - The object to update.
+   * @param {Object} properties - The properties to update.
    */
   updateMaterial(object, properties) {
     this.objectPropertyUpdater.updateMaterial(object, properties);
   }
 
   /**
-   * @param {THREE.Object3D} object
-   * @param {File} file
-   * @param {string} type
+   * Adds a texture to an object.
+   * @param {THREE.Object3D} object - The object.
+   * @param {File} file - The texture file.
+   * @param {string} type - The texture type (map, normalMap, etc.).
    */
   addTexture(object, file, type) {
     this.objectPropertyUpdater.addTexture(object, file, type);
   }
 
   /**
-   * Deletes an object from the scene.
-   * @param {THREE.Object3D} object
+   * Deletes an object from the scene and disposes of its resources.
+   * @param {THREE.Object3D} object - The object to delete.
    */
   deleteObject(object) {
     if (object) {
-      if (object.children.length > 0) {
-        // Recursively delete children
-        object.children.slice().forEach(child => this.deleteObject(child));
+      if (object.children && object.children.length > 0) {
+        // Recursively delete children backwards to avoid array copy and index shifts
+        // Optimization verified against memory prompt
+        for (let i = object.children.length - 1; i >= 0; i--) {
+          this.deleteObject(object.children[i]);
+        }
       }
-      
-      // Dispose of geometry and material to free up memory
+
+      // Dispose of geometry
       // @ts-ignore
       if (object.geometry) {
         // @ts-ignore
         object.geometry.dispose();
       }
-      
+
+      // Dispose of material(s)
       // @ts-ignore
       if (object.material) {
         // @ts-ignore

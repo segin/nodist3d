@@ -6,6 +6,7 @@ export class LightManager {
   constructor(scene, eventBus) {
     this.scene = scene;
     this.eventBus = eventBus;
+    /** @type {THREE.Light[]} */
     this.lights = [];
 
     // Add a default ambient light
@@ -15,9 +16,7 @@ export class LightManager {
 
     // Add a default directional light
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    if (directionalLight.position) {
-      directionalLight.position.set(1, 1, 1).normalize();
-    }
+    directionalLight.position.set(1, 1, 1).normalize();
     this.scene.add(directionalLight);
     this.lights.push(directionalLight);
   }
