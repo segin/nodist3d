@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import crypto from 'crypto';
 import fs from 'fs';
+import rateLimit from 'express-rate-limit';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,9 +14,15 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3000;
 
-// TODO: AUDIT-SEC-002: Implement rate limiting to prevent abuse.
-// const rateLimit = require('express-rate-limit');
-// app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+// AUDIT-SEC-002: Implement rate limiting to prevent abuse.
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: 'draft-7', // combined `RateLimit` header
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+app.use(limiter);
 
 // Generate nonce for each request
 app.use((req, res, next) => {
@@ -23,21 +30,23 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(helmet({
+app.use(
+  helmet({
     contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
-            styleSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`], // Removed 'unsafe-inline', added nonce
-            imgSrc: ["'self'", "data:"],
-            connectSrc: ["'self'"],
-            fontSrc: ["'self'", "data:"],
-            objectSrc: ["'none'"],
-            mediaSrc: ["'self'"],
-            frameSrc: ["'none'"]
-        }
-    }
-}));
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
+        styleSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`], // Removed 'unsafe-inline', added nonce
+        imgSrc: ["'self'", 'data:'],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'", 'data:'],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'none'"],
+      },
+    },
+  }),
+);
 
 app.use(cors());
 

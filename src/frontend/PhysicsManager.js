@@ -7,6 +7,7 @@ export class PhysicsManager {
     this.world.gravity.set(0, -9.82, 0); // m/s^2
     this.scene = scene;
     this.bodies = [];
+    // Map to store body -> index for O(1) removal
     this.bodyToIndexMap = new Map();
   }
 
@@ -57,9 +58,12 @@ export class PhysicsManager {
       shape: shape,
     });
     this.world.addBody(body);
+
+    // Store body and mesh linkage
     const index = this.bodies.length;
     this.bodies.push({ mesh, body });
     this.bodyToIndexMap.set(body, index);
+
     return body;
   }
 
@@ -69,9 +73,12 @@ export class PhysicsManager {
 
     if (index !== undefined) {
       const lastIndex = this.bodies.length - 1;
-      const lastItem = this.bodies[lastIndex];
 
+      // Optimization: Swap-Pop strategy (O(1))
+      // Instead of splicing (O(N)), we swap the removed element with the last one
+      // and then pop the last one.
       if (index !== lastIndex) {
+        const lastItem = this.bodies[lastIndex];
         // Swap with the last element
         this.bodies[index] = lastItem;
         // Update the index of the swapped element in the map
