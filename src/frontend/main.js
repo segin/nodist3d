@@ -612,7 +612,8 @@ export class App {
 
   updateSceneGraph() {
     if (!this.objectsList) return;
-    this.objectsList.innerHTML = '';
+
+    const fragment = document.createDocumentFragment();
     
     if (this.objects.length === 0) {
       const li = document.createElement('li');
@@ -622,55 +623,58 @@ export class App {
       li.style.fontStyle = 'italic';
       li.style.textAlign = 'center';
       li.style.padding = '10px';
-      this.objectsList.appendChild(li);
+      fragment.appendChild(li);
+    } else {
+      this.objects.forEach((obj, idx) => {
+        const li = document.createElement('li');
+        li.setAttribute('role', 'listitem');
+        li.style.cssText = `
+          padding: 5px;
+          margin: 2px 0;
+          background: ${this.selectedObject === obj ? '#444' : '#222'};
+          border-radius: 3px;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+        `;
+
+        const name = document.createElement('span');
+        name.className = 'object-name';
+        name.textContent = obj.name || `Object ${idx + 1}`;
+        li.appendChild(name);
+
+        const controls = document.createElement('div');
+
+        const visibilityBtn = document.createElement('button');
+        visibilityBtn.className = 'visibility-btn';
+        visibilityBtn.setAttribute('aria-label', obj.visible ? 'Hide object' : 'Show object');
+        visibilityBtn.textContent = obj.visible ? '👁️' : '🚫';
+        visibilityBtn.onclick = (e) => {
+          e.stopPropagation();
+          obj.visible = !obj.visible;
+          this.updateSceneGraph();
+        };
+        controls.appendChild(visibilityBtn);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.setAttribute('aria-label', 'Delete object');
+        deleteBtn.textContent = '🗑️';
+        deleteBtn.onclick = (e) => {
+          e.stopPropagation();
+          this.deleteObject(obj);
+        };
+        controls.appendChild(deleteBtn);
+
+        li.appendChild(controls);
+
+        li.onclick = () => this.selectObject(obj);
+        fragment.appendChild(li);
+      });
     }
 
-    this.objects.forEach((obj, idx) => {
-      const li = document.createElement('li');
-      li.setAttribute('role', 'listitem');
-      li.style.cssText = `
-        padding: 5px;
-        margin: 2px 0;
-        background: ${this.selectedObject === obj ? '#444' : '#222'};
-        border-radius: 3px;
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-      `;
-      
-      const name = document.createElement('span');
-      name.className = 'object-name';
-      name.textContent = obj.name || `Object ${idx + 1}`;
-      li.appendChild(name);
-
-      const controls = document.createElement('div');
-      
-      const visibilityBtn = document.createElement('button');
-      visibilityBtn.className = 'visibility-btn';
-      visibilityBtn.setAttribute('aria-label', obj.visible ? 'Hide object' : 'Show object');
-      visibilityBtn.textContent = obj.visible ? '👁️' : '🚫';
-      visibilityBtn.onclick = (e) => {
-        e.stopPropagation();
-        obj.visible = !obj.visible;
-        this.updateSceneGraph();
-      };
-      controls.appendChild(visibilityBtn);
-
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'delete-btn';
-      deleteBtn.setAttribute('aria-label', 'Delete object');
-      deleteBtn.textContent = '🗑️';
-      deleteBtn.onclick = (e) => {
-        e.stopPropagation();
-        this.deleteObject(obj);
-      };
-      controls.appendChild(deleteBtn);
-      
-      li.appendChild(controls);
-
-      li.onclick = () => this.selectObject(obj);
-      this.objectsList.appendChild(li);
-    });
+    this.objectsList.innerHTML = '';
+    this.objectsList.appendChild(fragment);
   }
 
   toggleFullscreen() {

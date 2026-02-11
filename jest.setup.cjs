@@ -1,4 +1,3 @@
-const { JSDOM } = require('jsdom');
 const fetch = require('node-fetch');
 const { TextEncoder, TextDecoder } = require('util');
 
@@ -9,30 +8,40 @@ global.fetch = fetch;
 global.Request = fetch.Request;
 global.Response = fetch.Response;
 global.Headers = fetch.Headers;
-global.URL.createObjectURL = jest.fn((blob) => 'mock-url');
-global.URL.revokeObjectURL = jest.fn();
 
-const dom = new JSDOM('<!DOCTYPE html><html><head></head><body><div id="objects-list"></div></body></html>', {
-  url: 'http://localhost',
-});
+// Setup initial DOM state matching the previous JSDOM constructor
+// The testEnvironment: 'jsdom' in jest.config.cjs ensures window/document exist
+if (typeof document !== 'undefined') {
+    document.body.innerHTML = '<div id="objects-list"></div>';
+}
 
-global.document = dom.window.document;
-global.window = dom.window;
-global.navigator = dom.window.navigator;
-global.self = global.window;
-global.HTMLElement = dom.window.HTMLElement;
-global.HTMLCanvasElement = dom.window.HTMLCanvasElement;
-global.Node = dom.window.Node;
+// Mock URL methods
+if (typeof global.URL.createObjectURL === 'undefined') {
+    global.URL.createObjectURL = jest.fn((blob) => 'mock-url');
+    global.URL.revokeObjectURL = jest.fn();
+} else {
+    jest.spyOn(global.URL, 'createObjectURL').mockImplementation((blob) => 'mock-url');
+    jest.spyOn(global.URL, 'revokeObjectURL').mockImplementation(() => {});
+}
+
 
 // Mock loglevel
-global.window.log = {
-    setLevel: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
-    debug: jest.fn(),
-    trace: jest.fn(),
-};
+if (typeof global.window !== 'undefined') {
+    global.window.log = {
+        setLevel: jest.fn(),
+        info: jest.fn(),
+        warn: jest.fn(),
+        error: jest.fn(),
+        debug: jest.fn(),
+        trace: jest.fn(),
+    };
+
+    // Polyfill types that might be missing or different
+    global.HTMLElement = global.window.HTMLElement;
+    global.HTMLCanvasElement = global.window.HTMLCanvasElement;
+    global.Node = global.window.Node;
+    global.self = global.window;
+}
 
 // Mock console
 global.console.error = jest.fn();
