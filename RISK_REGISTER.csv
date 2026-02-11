@@ -1,6 +1,5 @@
 ID,Title,Severity,Estimated Effort,Status
 
-
 MAINT-001,Refactor Monolithic App Class,High,High,Open
 TEST-002,Fix Unit Test Mocking Infrastructure,High,Medium,Open
 MAINT-002,Reduce Complexity in main.js,High,High,Open
