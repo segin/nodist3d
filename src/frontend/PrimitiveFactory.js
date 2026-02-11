@@ -8,6 +8,7 @@ export class PrimitiveFactory {
   constructor() {
     this.font = null;
     this.materialCache = {};
+    this.geometryCache = {};
     const loader = new FontLoader();
     // Use local path for fonts
     loader.load('./assets/fonts/helvetiker_regular.typeface.json', (font) => {
@@ -32,14 +33,108 @@ export class PrimitiveFactory {
     return mesh;
   }
 
+  _getCachedGeometry(type, options) {
+    const key = `${type}_${JSON.stringify(options)}`;
+    if (this.geometryCache[key]) {
+      return this.geometryCache[key];
+    }
+
+    let geometry;
+    switch (type) {
+      case 'Box':
+        geometry = new THREE.BoxGeometry(
+          options.width || 1,
+          options.height || 1,
+          options.depth || 1,
+        );
+        break;
+      case 'Sphere':
+        geometry = new THREE.SphereGeometry(
+          options.radius || 0.5,
+          options.widthSegments || 32,
+          options.heightSegments || 32,
+        );
+        break;
+      case 'Cylinder':
+        geometry = new THREE.CylinderGeometry(
+          options.radiusTop || 0.5,
+          options.radiusBottom || 0.5,
+          options.height || 1,
+          options.radialSegments || 32,
+        );
+        break;
+      case 'Cone':
+        geometry = new THREE.ConeGeometry(
+          options.radius || 0.5,
+          options.height || 1,
+          options.radialSegments || 32,
+        );
+        break;
+      case 'Torus':
+        geometry = new THREE.TorusGeometry(
+          options.radius || 0.4,
+          options.tube || 0.2,
+          options.radialSegments || 16,
+          options.tubularSegments || 100,
+        );
+        break;
+      case 'TorusKnot':
+        geometry = new THREE.TorusKnotGeometry(
+          options.radius || 0.4,
+          options.tube || 0.15,
+          options.tubularSegments || 100,
+          options.radialSegments || 16
+        );
+        break;
+      case 'Tetrahedron':
+        geometry = new THREE.TetrahedronGeometry(options.radius || 0.6);
+        break;
+      case 'Icosahedron':
+        geometry = new THREE.IcosahedronGeometry(options.radius || 0.6);
+        break;
+      case 'Dodecahedron':
+        geometry = new THREE.DodecahedronGeometry(options.radius || 0.6);
+        break;
+      case 'Octahedron':
+        geometry = new THREE.OctahedronGeometry(options.radius || 0.6);
+        break;
+      case 'Plane':
+        geometry = new THREE.PlaneGeometry(options.width || 2, options.height || 2);
+        break;
+      case 'Lathe':
+        const pointsLathe = [];
+        for (let i = 0; i < 10; i++) {
+          pointsLathe.push(new THREE.Vector2(Math.sin(i * 0.2) * 0.5 + 0.5, (i - 5) * 0.2));
+        }
+        geometry = new THREE.LatheGeometry(pointsLathe, 12);
+        break;
+      default:
+        return null;
+    }
+
+    if (geometry) {
+      this.geometryCache[key] = geometry;
+    }
+    return geometry;
+  }
+
   createPrimitive(type, options = {}) {
     if (type === 'Text') {
       return new Promise((resolve) => {
         if (this.font) {
+          const cacheKey = `Text_${JSON.stringify(options)}`;
+          if (this.geometryCache[cacheKey]) {
+              const mesh = this._createMesh(this.geometryCache[cacheKey], options.color || 0x00bfff);
+              mesh.userData.primitiveType = type;
+              mesh.userData.primitiveOptions = options;
+              resolve(mesh);
+              return;
+          }
+
           const geometry = new TextGeometry(options.text || 'nodist3d', {
             font: this.font,
             size: options.size || 0.5,
-            height: options.height || 0.2,
+            depth: options.height || 0.2, // TextGeometry uses depth instead of height in newer Three.js
             curveSegments: options.curveSegments || 12,
             bevelEnabled: options.bevelEnabled || true,
             bevelThickness: options.bevelThickness || 0.03,
@@ -48,6 +143,7 @@ export class PrimitiveFactory {
             bevelSegments: options.bevelSegments || 5,
           });
           geometry.center();
+          this.geometryCache[cacheKey] = geometry;
           const mesh = this._createMesh(geometry, options.color || 0x00bfff);
           mesh.userData.primitiveType = type;
           mesh.userData.primitiveOptions = options;
@@ -59,205 +155,96 @@ export class PrimitiveFactory {
       });
     }
 
-    let geometry;
+    let geometry = this._getCachedGeometry(type, options);
     let color = options.color || 0x00ff00;
     let mesh;
 
-    switch (type) {
-      case 'Box':
-        geometry = new THREE.BoxGeometry(
-          options.width || 1,
-          options.height || 1,
-          options.depth || 1,
-        );
-        mesh = this._createMesh(geometry, color);
-        break;
-      case 'Sphere':
-        geometry = new THREE.SphereGeometry(
-          options.radius || 0.5,
-          options.widthSegments || 32,
-          options.heightSegments || 32,
-        );
-        color = options.color || 0xff0000;
-        mesh = this._createMesh(geometry, color);
-        break;
-      case 'Cylinder':
-        geometry = new THREE.CylinderGeometry(
-          options.radiusTop || 0.5,
-          options.radiusBottom || 0.5,
-          options.height || 1,
-          options.radialSegments || 32,
-        );
-        color = options.color || 0x0000ff;
-        mesh = this._createMesh(geometry, color);
-        break;
-      case 'Cone':
-        geometry = new THREE.ConeGeometry(
-          options.radius || 0.5,
-          options.height || 1,
-          options.radialSegments || 32,
-        );
-        color = options.color || 0xffff00;
-        mesh = this._createMesh(geometry, color);
-        break;
-      case 'Torus':
-        geometry = new THREE.TorusGeometry(
-          options.radius || 0.4,
-          options.tube || 0.2,
-          options.radialSegments || 16,
-          options.tubularSegments || 100,
-        );
-        color = options.color || 0x800080;
-        mesh = this._createMesh(geometry, color);
-        break;
-      case 'TorusKnot':
-        geometry = new THREE.TorusKnotGeometry(
-          options.radius || 0.4,
-          options.tube || 0.15,
-          options.tubularSegments || 100,
-          options.radialSegments || 16
-        );
-        color = options.color || 0xffa500;
-        mesh = this._createMesh(geometry, color);
-        break;
-      case 'Tetrahedron':
-        geometry = new THREE.TetrahedronGeometry(options.radius || 0.6);
-        color = options.color || 0x00ff00;
-        mesh = this._createMesh(geometry, color);
-        break;
-      case 'Icosahedron':
-        geometry = new THREE.IcosahedronGeometry(options.radius || 0.6);
-        color = options.color || 0x00ffff;
-        mesh = this._createMesh(geometry, color);
-        break;
-      case 'Dodecahedron':
-        geometry = new THREE.DodecahedronGeometry(options.radius || 0.6);
-        color = options.color || 0xff00ff;
-        mesh = this._createMesh(geometry, color);
-        break;
-      case 'Octahedron':
-        geometry = new THREE.OctahedronGeometry(options.radius || 0.6);
-        color = options.color || 0x008080;
-        mesh = this._createMesh(geometry, color);
-        break;
-      case 'Plane':
-        geometry = new THREE.PlaneGeometry(options.width || 2, options.height || 2);
-        color = options.color || 0x00ffff;
-        mesh = this._createMesh(geometry, color, THREE.DoubleSide);
-        break;
-      case 'Tube':
-        const tubePath = options.path || new THREE.CatmullRomCurve3([
-          new THREE.Vector3(-0.5, 0, 0),
-          new THREE.Vector3(0, 0.5, 0),
-          new THREE.Vector3(0.5, 0, 0),
-          new THREE.Vector3(0, -0.5, 0),
-        ]);
-        geometry = new THREE.TubeGeometry(
-          tubePath,
-          options.tubularSegments || 20,
-          options.radius || 0.2,
-          options.radialSegments || 8,
-          options.closed || false,
-        );
-        color = options.color || 0xffc0cb;
-        mesh = this._createMesh(geometry, color);
-        break;
-      case 'Teapot':
-        // The test expects Teapot to be a Group with body, spout, handle, lid, knob
-        const teapot = new THREE.Group();
-        teapot.name = 'Teapot';
-        const teapotColor = options.color || 0x800000;
-        
-        const body = this._createMesh(new THREE.SphereGeometry(0.4, 32, 32), teapotColor);
-        body.name = 'Body';
-        teapot.add(body);
-        
-        const spout = this._createMesh(new THREE.CylinderGeometry(0.05, 0.08, 0.3, 8), teapotColor);
-        spout.name = 'Spout';
-        spout.position.set(0.4, 0, 0);
-        teapot.add(spout);
-        
-        const handle = this._createMesh(new THREE.TorusGeometry(0.15, 0.03, 8, 16), teapotColor);
-        handle.name = 'Handle';
-        handle.position.set(-0.4, 0, 0);
-        teapot.add(handle);
-        
-        const lid = this._createMesh(new THREE.CylinderGeometry(0.35, 0.4, 0.05, 32), teapotColor);
-        lid.name = 'Lid';
-        lid.position.set(0, 0.4, 0);
-        teapot.add(lid);
-        
-        const knob = this._createMesh(new THREE.SphereGeometry(0.08, 16, 16), teapotColor);
-        knob.name = 'Knob';
-        knob.position.set(0, 0.45, 0);
-        teapot.add(knob);
-        
-        mesh = teapot;
-        break;
-      case 'Lathe':
-        const pointsLathe = [];
-        for (let i = 0; i < 10; i++) {
-          pointsLathe.push(new THREE.Vector2(Math.sin(i * 0.2) * 0.5 + 0.5, (i - 5) * 0.2));
+    if (geometry) {
+        mesh = this._createMesh(geometry, color, type === 'Plane' ? THREE.DoubleSide : THREE.FrontSide);
+    } else {
+        // Handle specialized cases like Teapot, Tube, Extrude, LOD which might not be trivially cacheable or need special geometry
+        switch (type) {
+          case 'Tube':
+            const tubePath = options.path || new THREE.CatmullRomCurve3([
+              new THREE.Vector3(-0.5, 0, 0),
+              new THREE.Vector3(0, 0.5, 0),
+              new THREE.Vector3(0.5, 0, 0),
+              new THREE.Vector3(0, -0.5, 0),
+            ]);
+            geometry = new THREE.TubeGeometry(
+              tubePath,
+              options.tubularSegments || 20,
+              options.radius || 0.2,
+              options.radialSegments || 8,
+              options.closed || false,
+            );
+            color = options.color || 0xffc0cb;
+            mesh = this._createMesh(geometry, color);
+            break;
+          case 'Teapot':
+            const teapot = new THREE.Group();
+            teapot.name = 'Teapot';
+            const teapotColor = options.color || 0x800000;
+            
+            teapot.add(this._createMesh(this._getCachedGeometry('Sphere', { radius: 0.4, widthSegments: 32, heightSegments: 32 }), teapotColor));
+            
+            const spout = this._createMesh(this._getCachedGeometry('Cylinder', { radiusTop: 0.05, radiusBottom: 0.08, height: 0.3, radialSegments: 8 }), teapotColor);
+            spout.position.set(0.4, 0, 0);
+            teapot.add(spout);
+            
+            const handle = this._createMesh(this._getCachedGeometry('Torus', { radius: 0.15, tube: 0.03, radialSegments: 8, tubularSegments: 16 }), teapotColor);
+            handle.position.set(-0.4, 0, 0);
+            teapot.add(handle);
+            
+            const lid = this._createMesh(this._getCachedGeometry('Cylinder', { radiusTop: 0.35, radiusBottom: 0.4, height: 0.05, radialSegments: 32 }), teapotColor);
+            lid.position.set(0, 0.4, 0);
+            teapot.add(lid);
+            
+            const knob = this._createMesh(this._getCachedGeometry('Sphere', { radius: 0.08, widthSegments: 16, heightSegments: 16 }), teapotColor);
+            knob.position.set(0, 0.45, 0);
+            teapot.add(knob);
+            
+            mesh = teapot;
+            break;
+          case 'Extrude':
+            const extrudeSettings = {
+              steps: 2,
+              depth: 0.2,
+              bevelEnabled: true,
+              bevelThickness: 0.1,
+              bevelSize: 0.1,
+              bevelOffset: 0,
+              bevelSegments: 1,
+            };
+            const shape = new THREE.Shape();
+            shape.moveTo(0, 0);
+            shape.lineTo(0, 1);
+            shape.lineTo(1, 1);
+            shape.lineTo(1, 0);
+            shape.lineTo(0, 0);
+            const hole = new THREE.Path();
+            hole.moveTo(0.2, 0.2);
+            hole.lineTo(0.8, 0.2);
+            hole.lineTo(0.8, 0.8);
+            hole.lineTo(0.2, 0.8);
+            hole.lineTo(0.2, 0.2);
+            shape.holes.push(hole);
+            geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            color = options.color || 0xff6347;
+            mesh = this._createMesh(geometry, color);
+            break;
+          case 'LODCube':
+            const lod = new THREE.LOD();
+            const lodMaterial = new THREE.MeshPhongMaterial({ color: options.color || 0x00ff00 });
+            lod.addLevel(new THREE.Mesh(this._getCachedGeometry('Box', { width: 1, height: 1, depth: 1 }), lodMaterial), 0);
+            lod.addLevel(new THREE.Mesh(this._getCachedGeometry('Box', { width: 1, height: 1, depth: 1 }), lodMaterial), 5);
+            lod.addLevel(new THREE.Mesh(this._getCachedGeometry('Box', { width: 1, height: 1, depth: 1 }), lodMaterial), 10);
+            mesh = lod;
+            break;
+          default:
+            log.error(`Unknown primitive type: ${type}`);
+            return null;
         }
-        geometry = new THREE.LatheGeometry(pointsLathe, 12);
-        color = options.color || 0x00ff80;
-        mesh = this._createMesh(geometry, color);
-        break;
-      case 'Extrude':
-        const extrudeSettings = {
-          steps: 2,
-          depth: 0.2,
-          bevelEnabled: true,
-          bevelThickness: 0.1,
-          bevelSize: 0.1,
-          bevelOffset: 0,
-          bevelSegments: 1,
-        };
-
-        // Use the complex shape from reference_grok.html
-        const shape = new THREE.Shape();
-        shape.moveTo(0, 0);
-        shape.lineTo(0, 1);
-        shape.lineTo(1, 1);
-        shape.lineTo(1, 0);
-        shape.lineTo(0, 0);
-
-        const hole = new THREE.Path();
-        hole.moveTo(0.2, 0.2);
-        hole.lineTo(0.8, 0.2);
-        hole.lineTo(0.8, 0.8);
-        hole.lineTo(0.2, 0.8);
-        hole.lineTo(0.2, 0.2);
-        shape.holes.push(hole);
-
-        geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-        color = options.color || 0xff6347;
-        mesh = this._createMesh(geometry, color);
-        break;
-      case 'LODCube':
-        const lod = new THREE.LOD();
-        const lodMaterial = new THREE.MeshPhongMaterial({ color: options.color || 0x00ff00 });
-
-        // High detail
-        const geoHigh = new THREE.BoxGeometry(1, 1, 1, 10, 10, 10);
-        const meshHigh = new THREE.Mesh(geoHigh, lodMaterial);
-        lod.addLevel(meshHigh, 0);
-
-        // Medium detail
-        const geoMedium = new THREE.BoxGeometry(1, 1, 1, 2, 2, 2);
-        const meshMedium = new THREE.Mesh(geoMedium, lodMaterial);
-        lod.addLevel(meshMedium, 5);
-
-        // Low detail
-        const geoLow = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
-        const meshLow = new THREE.Mesh(geoLow, lodMaterial);
-        lod.addLevel(meshLow, 10);
-
-        mesh = lod;
-        break;
-      default:
-        log.error(`Unknown primitive type: ${type}`);
-        return null;
     }
 
     if (mesh) {
