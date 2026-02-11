@@ -104,6 +104,7 @@ describe('SceneStorage', () => {
     let sceneStorage;
     let objectManager;
     let eventBus;
+    let mockJSZipInstance;
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -111,7 +112,7 @@ describe('SceneStorage', () => {
         scene = new MockScene();
         eventBus = EventBus;
 
-        global.JSZip = jest.fn().mockImplementation(() => ({
+        mockJSZipInstance = {
             file: jest.fn((name, content) => {
                 if (content) return;
                 if (name === 'scene.json') {
@@ -140,7 +141,9 @@ describe('SceneStorage', () => {
                     return null;
                 })
             })
-        }));
+        };
+
+        global.JSZip = jest.fn(() => mockJSZipInstance);
         
         // Ensure window.JSZip matches global.JSZip for the test
         if (typeof window !== 'undefined') {
@@ -167,10 +170,9 @@ describe('SceneStorage', () => {
         expect(global.URL.createObjectURL).toHaveBeenCalled();
         expect(publishSpy).toHaveBeenCalledWith('scene_saved', expect.any(Object));
         
-        // Verify JSZip usage from HEAD's test logic
-        const zipInstance = global.JSZip.mock.instances[0];
-        expect(zipInstance.file).toHaveBeenCalledWith('scene.json', expect.any(String));
-        expect(zipInstance.file).toHaveBeenCalledWith('buffers.json', expect.any(String));
+        // Verify JSZip usage
+        expect(mockJSZipInstance.file).toHaveBeenCalledWith('scene.json', expect.any(String));
+        expect(mockJSZipInstance.file).toHaveBeenCalledWith('buffers.json', expect.any(String));
     });
 
     it('should load the scene', async () => {
