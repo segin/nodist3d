@@ -1,20 +1,28 @@
 import * as THREE from 'three';
 import './__mocks__/three-dat.gui.js';
-import { JSDOM } from 'jsdom';
 
 describe('Scene Graph/Outliner Functionality', () => {
-  let dom, app;
+  let app;
 
   beforeEach(() => {
-    dom = new JSDOM('<!DOCTYPE html><html><body><div id="outliner"></div></body></html>');
-    global.document = dom.window.document;
-    global.window = dom.window;
-    global.requestAnimationFrame = jest.fn();
-    global.console.log = jest.fn(); // Suppress console.log
+    document.body.innerHTML = '<div id="outliner"></div>';
+
+    jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => cb());
+    jest.spyOn(console, 'log').mockImplementation(); // Suppress console.log
 
     // Mock document methods
     jest.spyOn(document.body, 'appendChild').mockImplementation();
     jest.spyOn(window, 'addEventListener').mockImplementation();
+
+    // Mock createDocumentFragment
+    jest.spyOn(document, 'createDocumentFragment').mockImplementation(() => ({
+        children: [],
+        appendChild: jest.fn(function(child) {
+            this.children.push(child);
+            return child;
+        }),
+        nodeType: 11 // DocumentFragment
+    }));
 
     // Mock createElement to return proper elements
     jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
@@ -23,7 +31,14 @@ describe('Scene Graph/Outliner Functionality', () => {
         style: {},
         appendChild: jest.fn(function(child) {
             if (!this.children) this.children = [];
-            this.children.push(child);
+
+            // Handle DocumentFragment append
+            if (child.nodeType === 11) {
+                child.children.forEach(c => this.children.push(c));
+                child.children = []; // clear fragment
+            } else {
+                this.children.push(child);
+            }
             return child;
         }),
         children: [],
@@ -98,80 +113,85 @@ describe('Scene Graph/Outliner Functionality', () => {
       }
 
       updateSceneGraph() {
-        this.objectsList.innerHTML = '';
+        if (!this.objectsList) return;
 
-        this.objects.forEach((object, index) => {
-          const listItem = document.createElement('li');
-          listItem.setAttribute('role', 'button');
-          listItem.setAttribute('tabindex', '0');
-          listItem.setAttribute('aria-label', `Select ${object.name || `Object_${index + 1}`}`);
-
-          const objectInfo = document.createElement('div');
-          const objectName = document.createElement('span');
-          const objectType = document.createElement('span');
-          const visibilityBtn = document.createElement('button');
-          const deleteBtn = document.createElement('button');
-          const positionInfo = document.createElement('div');
-
-          objectName.textContent = object.name || `Object_${index + 1}`;
-          objectType.textContent = object.geometry.type.replace('Geometry', '');
-
-          visibilityBtn.textContent = object.visible ? '👁' : '🚫';
-          const visLabel = object.visible ? `Hide ${object.name}` : `Show ${object.name}`;
-          visibilityBtn.setAttribute('aria-label', visLabel);
-          visibilityBtn.title = visLabel;
-
-          deleteBtn.textContent = '🗑';
-          const delLabel = `Delete ${object.name}`;
-          deleteBtn.setAttribute('aria-label', delLabel);
-          deleteBtn.title = delLabel;
-
-          positionInfo.textContent = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
-
-          // Mock event handlers
-          visibilityBtn.onclick = (e) => {
-            e.stopPropagation();
-            object.visible = !object.visible;
-            visibilityBtn.textContent = object.visible ? '👁' : '🚫';
-            const newLabel = object.visible ? `Hide ${object.name}` : `Show ${object.name}`;
-            visibilityBtn.setAttribute('aria-label', newLabel);
-            visibilityBtn.title = newLabel;
-          };
-
-          deleteBtn.onclick = (e) => {
-            e.stopPropagation();
-            this.deleteObject(object);
-          };
-
-          listItem.onclick = () => {
-            this.selectObject(object);
-          };
-
-          listItem.addEventListener('keydown', (e) => {
-             if (e.key === 'Enter' || e.key === ' ') {
-                 e.preventDefault();
-                 this.selectObject(object);
-             }
-          });
-
-          const buttonContainer = document.createElement('div');
-          buttonContainer.appendChild(visibilityBtn);
-          buttonContainer.appendChild(deleteBtn);
-
-          objectInfo.appendChild(objectName);
-          objectInfo.appendChild(objectType);
-          objectInfo.appendChild(buttonContainer);
-
-          listItem.appendChild(objectInfo);
-          listItem.appendChild(positionInfo);
-          this.objectsList.appendChild(listItem);
-        });
+        const fragment = document.createDocumentFragment();
 
         if (this.objects.length === 0) {
           const emptyMessage = document.createElement('li');
           emptyMessage.textContent = 'No objects in scene';
-          this.objectsList.appendChild(emptyMessage);
+          fragment.appendChild(emptyMessage);
+        } else {
+            this.objects.forEach((object, index) => {
+              const listItem = document.createElement('li');
+              listItem.setAttribute('role', 'button');
+              listItem.setAttribute('tabindex', '0');
+              listItem.setAttribute('aria-label', `Select ${object.name || `Object_${index + 1}`}`);
+
+              const objectInfo = document.createElement('div');
+              const objectName = document.createElement('span');
+              const objectType = document.createElement('span');
+              const visibilityBtn = document.createElement('button');
+              const deleteBtn = document.createElement('button');
+              const positionInfo = document.createElement('div');
+
+              objectName.textContent = object.name || `Object_${index + 1}`;
+              objectType.textContent = object.geometry.type.replace('Geometry', '');
+
+              visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+              const visLabel = object.visible ? `Hide ${object.name}` : `Show ${object.name}`;
+              visibilityBtn.setAttribute('aria-label', visLabel);
+              visibilityBtn.title = visLabel;
+
+              deleteBtn.textContent = '🗑';
+              const delLabel = `Delete ${object.name}`;
+              deleteBtn.setAttribute('aria-label', delLabel);
+              deleteBtn.title = delLabel;
+
+              positionInfo.textContent = `x: ${object.position.x.toFixed(2)}, y: ${object.position.y.toFixed(2)}, z: ${object.position.z.toFixed(2)}`;
+
+              // Mock event handlers
+              visibilityBtn.onclick = (e) => {
+                e.stopPropagation();
+                object.visible = !object.visible;
+                visibilityBtn.textContent = object.visible ? '👁' : '🚫';
+                const newLabel = object.visible ? `Hide ${object.name}` : `Show ${object.name}`;
+                visibilityBtn.setAttribute('aria-label', newLabel);
+                visibilityBtn.title = newLabel;
+              };
+
+              deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                this.deleteObject(object);
+              };
+
+              listItem.onclick = () => {
+                this.selectObject(object);
+              };
+
+              listItem.addEventListener('keydown', (e) => {
+                 if (e.key === 'Enter' || e.key === ' ') {
+                     e.preventDefault();
+                     this.selectObject(object);
+                 }
+              });
+
+              const buttonContainer = document.createElement('div');
+              buttonContainer.appendChild(visibilityBtn);
+              buttonContainer.appendChild(deleteBtn);
+
+              objectInfo.appendChild(objectName);
+              objectInfo.appendChild(objectType);
+              objectInfo.appendChild(buttonContainer);
+
+              listItem.appendChild(objectInfo);
+              listItem.appendChild(positionInfo);
+              fragment.appendChild(listItem);
+            });
         }
+
+        this.objectsList.innerHTML = '';
+        this.objectsList.appendChild(fragment);
       }
 
       selectObject(object) {
@@ -216,7 +236,7 @@ describe('Scene Graph/Outliner Functionality', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
-    dom.window.close();
+    document.body.innerHTML = '';
   });
 
   describe('Scene Graph Setup', () => {
