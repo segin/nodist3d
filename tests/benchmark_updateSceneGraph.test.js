@@ -11,8 +11,20 @@ jest.mock('three', () => {
             setPixelRatio: jest.fn(),
             shadowMap: { enabled: false, type: null }
         })),
-        Vector2: jest.fn(),
-        Vector3: jest.fn(),
+        Clock: jest.fn(() => ({
+            getDelta: jest.fn(() => 0.016),
+            getElapsedTime: jest.fn(() => 0),
+            start: jest.fn(),
+            stop: jest.fn()
+        })),
+        Vector2: jest.fn(() => ({ x: 0, y: 0, set: jest.fn() })),
+        Vector3: jest.fn(() => ({
+            x: 0, y: 0, z: 0,
+            set: jest.fn(function(x,y,z) { this.x=x; this.y=y; this.z=z; return this; }),
+            normalize: jest.fn(function() { return this; }),
+            copy: jest.fn(function(v) { this.x=v.x; this.y=v.y; this.z=v.z; return this; }),
+            clone: jest.fn(function() { return { ...this }; })
+        })),
         Raycaster: jest.fn(),
         AmbientLight: jest.fn(),
         DirectionalLight: jest.fn(() => ({ shadow: { mapSize: {} } })),
@@ -77,6 +89,7 @@ describe('Benchmark updateSceneGraph', () => {
         jest.spyOn(App.prototype, 'setupGUI').mockImplementation(() => {});
         jest.spyOn(App.prototype, 'setupLighting').mockImplementation(() => {});
         jest.spyOn(App.prototype, 'setupHelpers').mockImplementation(() => {});
+        jest.spyOn(App.prototype, 'setupMobileOptimizations').mockImplementation(() => {});
         jest.spyOn(App.prototype, 'animate').mockImplementation(() => {});
         jest.spyOn(App.prototype, 'saveState').mockImplementation(() => {});
 

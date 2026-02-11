@@ -5,7 +5,7 @@ function runBenchmark() {
     console.log(`Running benchmark with ${ITERATIONS} iterations...`);
 
     // Mock RAF queue
-    let queue = [];
+    const queue = [];
     function mockRAF(cb) {
         queue.push(cb);
     }

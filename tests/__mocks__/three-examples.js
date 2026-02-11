@@ -1,4 +1,3 @@
-// Mock for three/examples/jsm/* modules
 
 export class OrbitControls {
     constructor() {

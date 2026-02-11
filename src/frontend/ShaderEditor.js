@@ -52,6 +52,7 @@ export class ShaderEditor {
             this.scene.remove(this.shaderMesh);
             if (this.shaderMesh.geometry) this.shaderMesh.geometry.dispose();
         }
+
         if (this.uniformsFolder && this.editorFolder) {
             try {
                 this.editorFolder.removeFolder(this.uniformsFolder);
@@ -81,59 +82,46 @@ export class ShaderEditor {
             uniforms: this.uniforms,
         });
 
-        this.shaderMesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.shaderMaterial);
-        this.shaderMesh.name = 'ShaderMesh';
-        this.scene.add(this.shaderMesh);
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.shaderMaterial);
+        mesh.name = 'ShaderMesh';
+        this.shaderMesh = mesh;
+        this.scene.add(mesh);
 
         if (this.eventBus) {
-            this.eventBus.publish('objectAdded', this.shaderMesh);
+            this.eventBus.publish('objectAdded', mesh);
         }
 
         this.addShaderControls();
 
-        return this.shaderMesh;
+        return mesh;
     }
 
     addShaderControls() {
         if (!this.editorFolder || !this.shaderMaterial) return;
 
+        if (this.uniformsFolder) {
+            try {
+                this.editorFolder.removeFolder(this.uniformsFolder);
+            } catch (e) {
+                // ignore
+            }
+        }
         this.uniformsFolder = this.editorFolder.addFolder('Uniforms');
 
         // Example: Add a color uniform
         this.uniforms.myColor = { value: new THREE.Color(0xff0000) };
-        // @ts-ignore
         this.uniformsFolder.addColor(this.uniforms.myColor, 'value').name('Color').onChange(() => {
+            // @ts-ignore
             if (this.shaderMaterial) this.shaderMaterial.needsUpdate = true;
         });
 
         // Example: Add a float uniform
-        // @ts-ignore
         this.uniforms.myFloat = { value: 0.5 };
-        // @ts-ignore
         this.uniformsFolder.add(this.uniforms.myFloat, 'value', 0, 1).name('Float').onChange(() => {
+            // @ts-ignore
             if (this.shaderMaterial) this.shaderMaterial.needsUpdate = true;
         });
 
         this.uniformsFolder.open();
-
-        // Add text areas for editing shaders
-        const shaderCode = {
-            vertex: this.shaderMaterial.vertexShader,
-            fragment: this.shaderMaterial.fragmentShader,
-        };
-
-        this.editorFolder.add(shaderCode, 'vertex').name('Vertex Shader').listen().onChange((value) => {
-            if (this.shaderMaterial) {
-                this.shaderMaterial.vertexShader = value;
-                this.shaderMaterial.needsUpdate = true;
-            }
-        });
-
-        this.editorFolder.add(shaderCode, 'fragment').name('Fragment Shader').listen().onChange((value) => {
-            if (this.shaderMaterial) {
-                this.shaderMaterial.fragmentShader = value;
-                this.shaderMaterial.needsUpdate = true;
-            }
-        });
     }
 }

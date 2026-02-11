@@ -137,6 +137,11 @@ export class ObjectManager {
                 });
             }
 
+            // Remove from physics if manager exists
+            if (this.physicsManager && this.physicsManager.removeObject) {
+                this.physicsManager.removeObject(object);
+            }
+
             // Remove the object from its parent (scene or group)
             if (object.parent) {
                 object.parent.remove(object);

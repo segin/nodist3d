@@ -9,8 +9,10 @@ jest.mock('three', () => {
     x: 0,
     y: 0,
     z: 0,
-    clone: jest.fn(() => ({ x: 0, y: 0, z: 0 })),
-    copy: jest.fn(),
+    set: jest.fn(function() { return this; }),
+    normalize: jest.fn(function() { return this; }),
+    clone: jest.fn(() => ({ x: 0, y: 0, z: 0, set: () => {}, normalize: () => {} })),
+    copy: jest.fn(function() { return this; }),
   };
 
   const mockColor = {
@@ -30,6 +32,7 @@ jest.mock('three', () => {
       visible: true,
       geometry: { type: 'BoxGeometry', dispose: jest.fn() },
       material: { color: mockColor, emissive: mockColor, dispose: jest.fn(), copy: jest.fn() },
+      userData: {},
     })),
     BoxGeometry: jest.fn(),
     SphereGeometry: jest.fn(),
@@ -294,10 +297,32 @@ describe('Undo/Redo History Functionality', () => {
       const historyLengthAfterUndo = app.history.length;
       expect(app.historyIndex).toBe(historyLengthAfterUndo - 2);
 
-      // Add new object (should remove future states)
       app.addTestObject('Object3');
 
-      expect(app.history.length).toBe(historyLengthAfterUndo);
+      expect(app.history.length).toBe(3);
+      expect(app.historyIndex).toBe(2);
+      expect(app.history[2].description).toBe('Add Object3');
+    });
+
+    it('should restore correct state after multiple undo/redo operations', () => {
+        // Initial state: 0 objects
+        app.addTestObject('Redo1'); // Index 1, 1 object
+        app.addTestObject('Redo2'); // Index 2, 2 objects
+
+        expect(app.objects.length).toBe(2);
+
+        // Undo twice
+        app.undo(); // Index 1, 1 object
+        app.undo(); // Index 0, 0 objects
+        expect(app.objects.length).toBe(0);
+
+        // Redo once
+        app.redo(); // Index 1, 1 object
+        expect(app.objects.length).toBe(1);
+
+        // Redo again
+        app.redo(); // Index 2, 2 objects
+        expect(app.objects.length).toBe(2);
     });
 
     it('should not undo when at initial state', () => {
@@ -311,6 +336,14 @@ describe('Undo/Redo History Functionality', () => {
     it('should restore object selection state', () => {
       const obj = app.addTestObject('SelectionTest');
       expect(app.selectedObject).toBe(obj);
+
+      // Clear selection and save state
+      app.selectedObject = null;
+      app.saveState('Clear selection');
+
+      // Undo should restore selection
+      app.undo();
+      expect(app.selectedObject.uuid).toBe(obj.uuid);
     });
   });
 });

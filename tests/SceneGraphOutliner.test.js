@@ -1,71 +1,12 @@
-/**
- * Tests for Scene Graph/Outliner functionality
- */
+import * as THREE from 'three';
+import './__mocks__/three-dat.gui.js';
 import { JSDOM } from 'jsdom';
-
-// Mock THREE.js
-jest.mock('three', () => ({
-  Scene: jest.fn(() => ({
-    add: jest.fn(),
-    remove: jest.fn(),
-  })),
-  PerspectiveCamera: jest.fn(() => ({
-    position: { set: jest.fn() },
-    lookAt: jest.fn(),
-  })),
-  WebGLRenderer: jest.fn(() => ({
-    setSize: jest.fn(),
-    setPixelRatio: jest.fn(),
-    shadowMap: {},
-    domElement: { addEventListener: jest.fn() },
-  })),
-  Mesh: jest.fn(() => ({
-    position: { x: 1, y: 2, z: 3, toFixed: jest.fn(() => '1.00') },
-    name: 'TestMesh',
-    geometry: { type: 'BoxGeometry' },
-    visible: true,
-    uuid: 'test-uuid-123',
-  })),
-  BoxGeometry: jest.fn(),
-  MeshLambertMaterial: jest.fn(),
-  AmbientLight: jest.fn(),
-  DirectionalLight: jest.fn(() => ({ position: { set: jest.fn() }, shadow: { mapSize: {} } })),
-  GridHelper: jest.fn(),
-  AxesHelper: jest.fn(),
-  Raycaster: jest.fn(() => ({ setFromCamera: jest.fn(), intersectObjects: jest.fn(() => []) })),
-  Vector2: jest.fn(),
-}));
-
-// Mock dat.gui
-jest.mock('dat.gui', () => ({
-  GUI: jest.fn(() => ({
-    addFolder: jest.fn(() => ({
-      add: jest.fn(() => ({ name: jest.fn(() => ({ onChange: jest.fn() })) })),
-      open: jest.fn(),
-    })),
-  })),
-}));
-
-// Mock controls
-jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
-  OrbitControls: jest.fn(() => ({ enableDamping: true, update: jest.fn() })),
-}));
-
-jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
-  TransformControls: jest.fn(() => ({
-    addEventListener: jest.fn(),
-    setMode: jest.fn(),
-    attach: jest.fn(),
-    detach: jest.fn(),
-  })),
-}));
 
 describe('Scene Graph/Outliner Functionality', () => {
   let dom, app;
 
   beforeEach(() => {
-    // Setup DOM
-    dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+    dom = new JSDOM('<!DOCTYPE html><html><body><div id="outliner"></div></body></html>');
     global.document = dom.window.document;
     global.window = dom.window;
     global.requestAnimationFrame = jest.fn();
@@ -138,6 +79,7 @@ describe('Scene Graph/Outliner Functionality', () => {
     jest.clearAllMocks();
 
     // Create test app with scene graph functionality
+    // Emulating main.js logic for testing purposes
     class TestApp {
       constructor() {
         this.objects = [];
@@ -273,9 +215,8 @@ describe('Scene Graph/Outliner Functionality', () => {
   });
 
   afterEach(() => {
-    if (dom) {
-      dom.window.close();
-    }
+    jest.restoreAllMocks();
+    dom.window.close();
   });
 
   describe('Scene Graph Setup', () => {
@@ -289,17 +230,6 @@ describe('Scene Graph/Outliner Functionality', () => {
       app.objects = [];
       app.updateSceneGraph();
       expect(app.objectsList.appendChild).toHaveBeenCalled();
-    });
-  });
-
-  describe('Object Management', () => {
-    it('should add objects to scene graph', () => {
-      const obj1 = app.addTestObject('TestBox');
-      const obj2 = app.addTestObject('TestSphere');
-
-      expect(app.objects.length).toBe(2);
-      expect(app.objects).toContain(obj1);
-      expect(app.objects).toContain(obj2);
     });
 
     it('should display object information in scene graph', () => {

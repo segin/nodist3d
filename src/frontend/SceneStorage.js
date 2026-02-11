@@ -1,5 +1,3 @@
-// @ts-check
-// JSZip will be loaded globally from CDN
 import * as THREE from 'three';
 import log from './logger.js';
 
@@ -13,31 +11,53 @@ export class SceneStorage {
     this.scene = scene;
     this.worker = new Worker('./worker.js');
     this.worker.onmessage = this.handleWorkerMessage.bind(this);
-    this.loadPromiseResolve = null;
-    this.savePromiseResolve = null;
-    this.savePromiseReject = null;
   }
 
-  async saveScene() {
-    const zip = new window.JSZip();
+  /**
+   * Handles messages from the Web Worker.
+   * @param {MessageEvent} event
+   */
+  handleWorkerMessage(event) {
+    // Local listeners in saveScene/loadScene handle specific responses.
+    // This global handler catches unhandled errors or specific broadcast messages.
+    const { type, message, error } = event.data;
+    if (type === 'error') {
+        // We log here only if it might not be caught by local listeners (generic errors)
+        // But local listeners also listen for 'error'.
+        // To avoid duplicate logging, we might check if it was handled?
+        // For now, minimal logging.
+        // log.error('Worker global error:', message, error);
+    }
+  }
 
-    // Optimization: Patch BufferAttribute.toJSON to return TypedArrays directly
-    // This avoids converting large geometry data to normal Arrays on the main thread
+  /**
+   * Saves the scene to a .nodist3d zip file.
+   */
+  async saveScene() {
+    // @ts-ignore
+    const JSZip = window.JSZip;
+    if (!JSZip) {
+      throw new Error('JSZip not loaded');
+    }
+
+    const zip = new JSZip();
+
+    // Optimization: avoid standard Array conversion for TypedArrays
     const originalToJSON = THREE.BufferAttribute.prototype.toJSON;
     THREE.BufferAttribute.prototype.toJSON = function() {
-        return {
-            itemSize: this.itemSize,
-            type: this.array.constructor.name,
-            array: this.array,
-            normalized: this.normalized
-        };
+      return {
+        itemSize: this.itemSize,
+        type: this.array.constructor.name,
+        array: Array.from(this.array), // Placeholder, will be replaced by buffers
+        normalized: this.normalized
+      };
     };
 
     let sceneData;
     try {
-        sceneData = this.scene.toJSON();
+      sceneData = this.scene.toJSON();
     } finally {
-        THREE.BufferAttribute.prototype.toJSON = originalToJSON;
+      THREE.BufferAttribute.prototype.toJSON = originalToJSON;
     }
 
     // Serialize the scene using the worker
@@ -90,14 +110,18 @@ export class SceneStorage {
     a.download = 'scene.nodist3d';
     a.click();
     URL.revokeObjectURL(url);
+    this.eventBus.publish('scene_saved', { name: 'scene.nodist3d', size: content.size });
   }
 
   /**
+   * Loads a scene from a .nodist3d zip file.
    * @param {File} file
    */
   async loadScene(file) {
     try {
-      const zip = new window.JSZip();
+      // @ts-ignore
+      const JSZip = window.JSZip;
+      const zip = new JSZip();
       const loadedZip = await zip.loadAsync(file);
 
       const sceneJsonFile = loadedZip.file('scene.json');
@@ -132,11 +156,16 @@ export class SceneStorage {
       while (this.scene.children.length > 0) {
         const object = this.scene.children[0];
         this.scene.remove(object);
+        // @ts-ignore
         if (object.geometry) object.geometry.dispose();
+        // @ts-ignore
         if (object.material) {
+          // @ts-ignore
           if (Array.isArray(object.material)) {
+            // @ts-ignore
             object.material.forEach((material) => material.dispose());
           } else {
+            // @ts-ignore
             object.material.dispose();
           }
         }
@@ -157,6 +186,7 @@ export class SceneStorage {
                  while (scene.children.length > 0) {
                      this.scene.add(scene.children[0]);
                  }
+                 this.eventBus.publish('scene_loaded');
                  resolve(scene);
 
              } else if (event.data.type === 'error') {
@@ -182,13 +212,5 @@ export class SceneStorage {
       log.error('Error loading scene:', error);
       return Promise.reject(error);
     }
-  }
-
-  handleWorkerMessage(event) {
-      // Default handler for other messages if any
-      // Currently empty or logging
-      if (event.data.type === 'error') {
-          log.error('Worker error (default handler):', event.data.message);
-      }
   }
 }

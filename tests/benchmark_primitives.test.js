@@ -1,4 +1,3 @@
-
 import { App } from '../src/frontend/main.js';
 import * as THREE from 'three';
 
@@ -36,7 +35,7 @@ jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
         enableDamping: true,
         dampingFactor: 0.05,
         update: jest.fn(),
-        target: { clone: jest.fn() },
+        target: { clone: jest.fn(() => ({ copy: jest.fn() })) },
         touches: { ONE: 1, TWO: 2 }
     }))
 }));
@@ -58,29 +57,24 @@ describe('Primitive Creation Benchmark', () => {
         // Clear mocks and reset DOM
         jest.clearAllMocks();
         document.body.innerHTML = '';
-
-        // Setup renderer mock return value that might be missing from __mocks__/three.js if not picked up correctly
-        // But assuming tests/__mocks__/three.js is used, it should be fine.
-
         app = new App();
     });
 
-    test('Benchmark: addBox 1000 times', () => {
+    test('Benchmark: addBox 1000 times', async () => {
         const ITERATIONS = 1000;
 
         // Mock saveState to isolate material/geometry creation performance
         app.saveState = jest.fn();
         // Mock updateSceneGraph to isolate DOM operations
         app.updateSceneGraph = jest.fn();
-
-        // Force garbage collection if possible (requires node --expose-gc, which we might not have)
-        // So we just rely on the diff.
+        // Mock setupMobileOptimizations to avoid OrbitControls errors
+        app.setupMobileOptimizations = jest.fn();
 
         const startHeap = process.memoryUsage().heapUsed;
         const startTime = performance.now();
 
         for (let i = 0; i < ITERATIONS; i++) {
-            app.addBox();
+            await app.addBox();
         }
 
         const endTime = performance.now();

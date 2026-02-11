@@ -2,7 +2,7 @@
 import { BufferAttribute, BufferGeometry, Matrix3, Matrix4, Mesh, Vector3 as Vector32 } from "three";
 
 // node_modules/.pnpm/three-csg-ts@3.2.0_@types+three@0.164.1_three@0.164.1/node_modules/three-csg-ts/lib/esm/NBuf.js
-var NBuf3 = class {
+const NBuf3 = class {
   constructor(ct) {
     this.top = 0;
     this.array = new Float32Array(ct);
@@ -13,7 +13,7 @@ var NBuf3 = class {
     this.array[this.top++] = v.z;
   }
 };
-var NBuf2 = class {
+const NBuf2 = class {
   constructor(ct) {
     this.top = 0;
     this.array = new Float32Array(ct);
@@ -25,7 +25,7 @@ var NBuf2 = class {
 };
 
 // node_modules/.pnpm/three-csg-ts@3.2.0_@types+three@0.164.1_three@0.164.1/node_modules/three-csg-ts/lib/esm/Node.js
-var Node = class _Node {
+const Node = class _Node {
   constructor(polygons) {
     this.plane = null;
     this.front = null;
@@ -113,7 +113,7 @@ var Node = class _Node {
 
 // node_modules/.pnpm/three-csg-ts@3.2.0_@types+three@0.164.1_three@0.164.1/node_modules/three-csg-ts/lib/esm/Vector.js
 import { Vector3 } from "three";
-var Vector = class _Vector {
+const Vector = class _Vector {
   constructor(x = 0, y = 0, z = 0) {
     this.x = x;
     this.y = y;
@@ -188,7 +188,7 @@ var Vector = class _Vector {
 };
 
 // node_modules/.pnpm/three-csg-ts@3.2.0_@types+three@0.164.1_three@0.164.1/node_modules/three-csg-ts/lib/esm/Plane.js
-var Plane = class _Plane {
+const Plane = class _Plane {
   constructor(normal, w) {
     this.normal = normal;
     this.w = w;
@@ -279,7 +279,7 @@ var Polygon = class _Polygon {
 };
 
 // node_modules/.pnpm/three-csg-ts@3.2.0_@types+three@0.164.1_three@0.164.1/node_modules/three-csg-ts/lib/esm/Vertex.js
-var Vertex = class _Vertex {
+const Vertex = class _Vertex {
   constructor(pos, normal, uv, color) {
     this.pos = new Vector().copy(pos);
     this.normal = new Vector().copy(normal);
@@ -304,7 +304,7 @@ var Vertex = class _Vertex {
 };
 
 // node_modules/.pnpm/three-csg-ts@3.2.0_@types+three@0.164.1_three@0.164.1/node_modules/three-csg-ts/lib/esm/CSG.js
-var CSG = class _CSG {
+const CSG = class _CSG {
   constructor() {
     this.polygons = [];
   }
