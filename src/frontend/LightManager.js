@@ -51,6 +51,9 @@ export class LightManager {
 
   removeLight(light) {
     this.scene.remove(light);
+    if (light.dispose) {
+      light.dispose();
+    }
     this.lights = this.lights.filter((l) => l !== light);
     this.eventBus.publish(Events.LIGHT_REMOVED, light); // Emit event
   }
