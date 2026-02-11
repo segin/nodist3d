@@ -10,11 +10,21 @@ export class Pointer {
     this.renderer = renderer;
     this.eventBus = eventBus; // Inject EventBus
     this.outline = null; // To store the outline mesh
+    this.selectedObject = null;
     this.isDragging = false;
 
     this.renderer.domElement.addEventListener('pointerdown', this.onPointerDown.bind(this));
     this.renderer.domElement.addEventListener('pointermove', this.onPointerMove.bind(this));
     this.renderer.domElement.addEventListener('pointerup', this.onPointerUp.bind(this));
+
+    this.eventBus.subscribe(Events.SELECTION_CHANGE, (object) => {
+      this.selectedObject = object;
+      if (object) {
+        this.addOutline(object);
+      } else {
+        this.removeOutline();
+      }
+    });
   }
 
   onPointerDown(event) {
@@ -26,9 +36,10 @@ export class Pointer {
     const intersects = this.raycaster.intersectObjects(this.scene.children);
 
     if (intersects.length > 0) {
-      const newSelectedObject = intersects[0].object;
-      this.eventBus.publish(Events.SELECTION_CHANGE, newSelectedObject);
+      this.selectedObject = intersects[0].object;
+      this.eventBus.publish(Events.SELECTION_CHANGE, this.selectedObject);
     } else {
+      this.selectedObject = null;
       this.eventBus.publish(Events.SELECTION_CHANGE, null);
     }
   }

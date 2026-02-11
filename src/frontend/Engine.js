@@ -1,40 +1,7 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-// @ts-check
-import * as THREE from 'three';
-=======
-<<<<<<< HEAD
-// @ts-check
-import * as THREE from 'three';
->>>>>>> master
-=======
->>>>>>> master
->>>>>>> master
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Clock } from 'three';
 
 export class Engine {
-<<<<<<< HEAD
-=======
-=======
->>>>>>> master
-<<<<<<< HEAD
-    /**
-     * @param {HTMLCanvasElement} canvas
-     * @param {any} physicsManager
-     * @param {any} transformControls
-     */
-    constructor(canvas, physicsManager, transformControls) {
-        this.canvas = canvas;
-        this.physicsManager = physicsManager;
-        this.transformControls = transformControls;
-        this.scene = new THREE.Scene();
-        this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, powerPreference: "high-performance" });
-        this.camera = new THREE.PerspectiveCamera(75, 2, 0.1, 5);
-        this.camera.position.z = 2;
-<<<<<<< HEAD
-=======
   constructor(canvas, physicsManager, transformControls) {
     this.canvas = canvas;
     this.physicsManager = physicsManager;
@@ -46,10 +13,6 @@ export class Engine {
     });
     this.camera = new global.THREE.PerspectiveCamera(75, 2, 0.1, 5);
     this.camera.position.z = 2;
->>>>>>> master
-=======
->>>>>>> master
->>>>>>> master
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true; // an animation loop is required when damping is enabled
@@ -102,52 +65,6 @@ export class Engine {
     requestAnimationFrame(this.animate.bind(this));
   }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-        const gridHelper = new THREE.GridHelper(10, 10);
-        this.scene.add(gridHelper);
-
-        const axesHelper = new THREE.AxesHelper(5);
-        this.scene.add(axesHelper);
->>>>>>> master
-
-    this.clock = new Clock();
-
-    window.addEventListener('resize', this.onWindowResize.bind(this), false);
-    this.onWindowResize();
-  }
-
-  resetCamera() {
-    this.camera.position.copy(this.initialCameraPosition);
-    this.controls.target.copy(this.initialControlsTarget);
-    this.controls.update();
-  }
-
-  onWindowResize() {
-    const width = this.canvas.clientWidth;
-    const height = this.canvas.clientHeight;
-    this.renderer.setSize(width, height, false);
-    this.camera.aspect = width / height;
-    this.camera.updateProjectionMatrix();
-  }
-
-  render() {
-    this.renderer.render(this.scene, this.camera);
-  }
-
-  animate() {
-    const deltaTime = this.clock.getDelta();
-    this.physicsManager.update(deltaTime);
-    this.transformControls.update();
-    this.controls.update();
-    this.render();
-    requestAnimationFrame(this.animate.bind(this));
-  }
-
->>>>>>> master
-=======
->>>>>>> master
   start() {
     this.animate();
   }

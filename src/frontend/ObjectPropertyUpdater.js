@@ -1,136 +1,68 @@
 // @ts-check
 import * as THREE from 'three';
 
+/**
+ * Handles updating of object properties like materials, textures, and geometry.
+ */
 export class ObjectPropertyUpdater {
+  /**
+   * @param {any} primitiveFactory
+   */
   constructor(primitiveFactory) {
     this.primitiveFactory = primitiveFactory;
   }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-    /**
-     * @param {import('./PrimitiveFactory.js').PrimitiveFactory} primitiveFactory
-     */
-    constructor(primitiveFactory) {
-        this.primitiveFactory = primitiveFactory;
-    }
-
-    /**
-     * Updates material properties.
-     * @param {THREE.Object3D} object
-     * @param {any} newMaterialProperties
-     */
-    updateMaterial(object, newMaterialProperties) {
-        // @ts-ignore - material existence
-        if (object && object.material) {
-            // @ts-ignore
-            const materials = Array.isArray(object.material) ? object.material : [object.material];
-            materials.forEach(material => {
-                for (const prop in newMaterialProperties) {
-                    if (material[prop] !== undefined) {
-                        if (prop === 'color') {
-                            material.color.set(newMaterialProperties[prop]);
-                        } else {
-                            material[prop] = newMaterialProperties[prop];
-                        }
-=======
+  /**
+   * Updates the material properties of an object.
+   * @param {THREE.Object3D} object
+   * @param {object} properties
+   */
   updateMaterial(object, properties) {
+    // @ts-ignore
     if (object && object.material) {
-        const materials = Array.isArray(object.material) ? object.material : [object.material];
-        materials.forEach(material => {
-            for (const key in properties) {
-                if (Object.prototype.hasOwnProperty.call(properties, key)) {
-                    if (key === 'color') {
-                        material.color.setHex(properties[key]);
-                    } else {
-                        material[key] = properties[key];
->>>>>>> master
-                    }
-                }
-            }
-<<<<<<< HEAD
-        );
-    }
-
-    /**
-     * Updates primitive parameters.
-     * @param {THREE.Object3D} object
-     * @param {any} parameters
-     */
-    updatePrimitive(object, parameters) {
-        // @ts-ignore
-        if (object && object.geometry) {
-            // @ts-ignore
-            const newGeometry = this.primitiveFactory.createPrimitive(object.geometry.type, parameters);
-            if (newGeometry) {
-                // @ts-ignore
-                object.geometry.dispose();
-                // @ts-ignore
-                object.geometry = newGeometry;
->>>>>>> master
-  updateMaterial(object, newMaterialProperties) {
-    if (object && object.material) {
+      // @ts-ignore
       const materials = Array.isArray(object.material) ? object.material : [object.material];
       materials.forEach((material) => {
-        for (const prop in newMaterialProperties) {
-          if (material[prop] !== undefined) {
-            if (prop === 'color') {
-              material.color.set(newMaterialProperties[prop]);
-            } else {
-              material[prop] = newMaterialProperties[prop];
-<<<<<<< HEAD
-=======
->>>>>>> master
->>>>>>> master
+        for (const key in properties) {
+          if (Object.prototype.hasOwnProperty.call(properties, key)) {
+            if (key === 'color') {
+              if (typeof properties[key] === 'string') {
+                material.color.set(properties[key]);
+              } else {
+                material.color.setHex(properties[key]);
+              }
+            } else if (material[key] !== undefined) {
+              material[key] = properties[key];
             }
           }
         }
         material.needsUpdate = true;
       });
-=======
-            material.needsUpdate = true;
-        });
->>>>>>> master
     }
   }
 
+  /**
+   * Adds a texture to an object.
+   * @param {THREE.Object3D} object
+   * @param {File} file
+   * @param {string} [type='map']
+   */
   addTexture(object, file, type = 'map') {
+    // @ts-ignore
     if (!object.material) return;
 
-<<<<<<< HEAD
-=======
-    // Use window.THREE if available (browser), otherwise global.THREE (test)
-    const THREE = window.THREE || global.THREE;
->>>>>>> master
     const loader = new THREE.TextureLoader();
     const url = URL.createObjectURL(file);
     loader.load(
       url,
       (texture) => {
-<<<<<<< HEAD
-        if (type === 'map') {
-          object.material.map = texture;
-        } else if (type === 'normalMap') {
-          object.material.normalMap = texture;
-        } else if (type === 'roughnessMap') {
-          object.material.roughnessMap = texture;
-        }
-        object.material.needsUpdate = true;
-=======
+        // @ts-ignore
         const materials = Array.isArray(object.material) ? object.material : [object.material];
         materials.forEach(material => {
-            if (type === 'map') {
-              material.map = texture;
-            } else if (type === 'normalMap') {
-              material.normalMap = texture;
-            } else if (type === 'roughnessMap') {
-              material.roughnessMap = texture;
-            }
-            material.needsUpdate = true;
+          material[type] = texture;
+          material.needsUpdate = true;
         });
->>>>>>> master
-        URL.revokeObjectURL(url); // Clean up the object URL
+        URL.revokeObjectURL(url);
       },
       undefined,
       (error) => {
@@ -140,22 +72,30 @@ export class ObjectPropertyUpdater {
     );
   }
 
+  /**
+   * Updates the primitive geometry of an object.
+   * @param {THREE.Object3D} object
+   * @param {object} parameters
+   */
   updatePrimitive(object, parameters) {
+    // @ts-ignore
     if (object && object.geometry) {
-      // Assuming createPrimitive returns a Mesh or Geometry.
-      // If it returns a Mesh, we need .geometry.
-      // But primitiveFactory.createPrimitive returns a Mesh usually.
-      // Let's assume it handles geometry creation.
-      // Wait, PrimitiveFactory.createPrimitive usually creates a Mesh.
-      // We want to update the geometry.
+      const type = object.geometry.type.replace('Geometry', '');
+      const tempMeshOrPromise = this.primitiveFactory.createPrimitive(type, parameters);
 
-      // Let's check PrimitiveFactory usage.
-      // It returns a Mesh.
+      const updateGeo = (tempMesh) => {
+        if (tempMesh && tempMesh.geometry) {
+          // @ts-ignore
+          object.geometry.dispose();
+          // @ts-ignore
+          object.geometry = tempMesh.geometry;
+        }
+      };
 
-      const tempMesh = this.primitiveFactory.createPrimitive(object.geometry.type.replace('Geometry', ''), parameters);
-      if (tempMesh && tempMesh.geometry) {
-        object.geometry.dispose();
-        object.geometry = tempMesh.geometry;
+      if (tempMeshOrPromise instanceof Promise) {
+        tempMeshOrPromise.then(updateGeo);
+      } else {
+        updateGeo(tempMeshOrPromise);
       }
     }
   }
