@@ -1,4 +1,3 @@
-const { JSDOM } = require('jsdom');
 const fetch = require('node-fetch');
 const { TextEncoder, TextDecoder } = require('util');
 
@@ -9,30 +8,35 @@ global.fetch = fetch;
 global.Request = fetch.Request;
 global.Response = fetch.Response;
 global.Headers = fetch.Headers;
-global.URL.createObjectURL = jest.fn((blob) => 'mock-url');
-global.URL.revokeObjectURL = jest.fn();
 
-const dom = new JSDOM('<!DOCTYPE html><html><head></head><body><div id="objects-list"></div></body></html>', {
-  url: 'http://localhost',
-});
+// Setup DOM if not already present (though testEnvironment: 'jsdom' should provide it)
+if (typeof window !== 'undefined') {
+    // Set URL if possible (JSDOM environment usually allows configuring this via config, but we can try to mock location)
+    // For now, let's assume default is fine or we patch it if tests fail.
 
-global.document = dom.window.document;
-global.window = dom.window;
-global.navigator = dom.window.navigator;
-global.self = global.window;
-global.HTMLElement = dom.window.HTMLElement;
-global.HTMLCanvasElement = dom.window.HTMLCanvasElement;
-global.Node = dom.window.Node;
+    // Setup initial DOM body
+    document.body.innerHTML = '<div id="objects-list"></div>';
+
+    // Mock URL.createObjectURL
+    if (!global.URL) global.URL = window.URL;
+    global.URL.createObjectURL = jest.fn((blob) => 'mock-url');
+    global.URL.revokeObjectURL = jest.fn();
+
+    global.self = window;
+    // HTMLElement, HTMLCanvasElement, Node are already global in JSDOM environment
+}
 
 // Mock loglevel
-global.window.log = {
-    setLevel: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
-    debug: jest.fn(),
-    trace: jest.fn(),
-};
+if (typeof window !== 'undefined') {
+    window.log = {
+        setLevel: jest.fn(),
+        info: jest.fn(),
+        warn: jest.fn(),
+        error: jest.fn(),
+        debug: jest.fn(),
+        trace: jest.fn(),
+    };
+}
 
 // Mock console
 global.console.error = jest.fn();
@@ -358,12 +362,11 @@ const THREE = {
   BufferGeometry: class BufferGeometry {
     constructor() { Object.assign(this, createMockGeometry('BufferGeometry')); }
   },
-  Loader: class Loader {
-    constructor() { this.load = jest.fn(); }
-  },
-  FileLoader: class FileLoader {
-    constructor() { this.load = jest.fn(); }
-  },
+  Loader: class Loader { },
+  FileLoader: class FileLoader { },
+  FontLoader: class FontLoader { },
+  TextureLoader: class TextureLoader { },
+  ObjectLoader: class ObjectLoader { },
   CatmullRomCurve3: jest.fn().mockImplementation(() => ({
     getPoints: jest.fn(() => [new Vector3(), new Vector3()]),
   })),
@@ -523,19 +526,6 @@ const THREE = {
     setFromCamera: jest.fn(),
     intersectObjects: jest.fn(() => []),
   })),
-  ObjectLoader: jest.fn().mockImplementation(() => ({
-    parse: jest.fn((json) => {
-        const scene = new Object3D('Scene');
-        if (json && json.children) {
-            json.children.forEach(() => scene.add(new Object3D()));
-        }
-        return scene;
-    })
-  })),
-  TextureLoader: class TextureLoader {
-      constructor() {  }
-      load(u, cb) { if (cb) cb({ dispose: jest.fn() }); }
-  },
   FrontSide: 0,
   BackSide: 1,
   DoubleSide: 2,
@@ -557,6 +547,19 @@ const THREE = {
   MultiplyBlending: 4,
   CustomBlending: 5,
 };
+
+THREE.Loader.prototype.load = jest.fn();
+THREE.FileLoader.prototype.load = jest.fn();
+THREE.FontLoader.prototype.load = jest.fn();
+THREE.TextureLoader.prototype.load = jest.fn();
+THREE.ObjectLoader.prototype.load = jest.fn();
+THREE.ObjectLoader.prototype.parse = jest.fn((json) => {
+    const scene = new Object3D('Scene');
+    if (json && json.children) {
+        json.children.forEach(() => scene.add(new Object3D()));
+    }
+    return scene;
+});
 
 THREE.TextureLoader.prototype.load = jest.fn((u,cb) => cb && cb({ dispose: jest.fn() }));
 
@@ -622,7 +625,9 @@ global.JSZip = jest.fn(() => ({
 }));
 
 // Populate window.JSZip
-global.window.JSZip = global.JSZip;
+if (typeof window !== 'undefined') {
+    global.window.JSZip = global.JSZip;
+}
 
 global.Worker = class {
   constructor(url) { this.onmessage = () => {}; }
