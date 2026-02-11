@@ -14,7 +14,8 @@ import { PhysicsManager } from './PhysicsManager.js';
 import { PrimitiveFactory } from './PrimitiveFactory.js';
 import { ObjectFactory } from './ObjectFactory.js';
 import { ObjectPropertyUpdater } from './ObjectPropertyUpdater.js';
-import { toast, ToastManager } from './logger.js';
+import log from './logger.js';
+import { ToastManager } from './ToastManager.js';
 import { LightManager } from './LightManager.js';
 
 /**
@@ -271,15 +272,54 @@ export class App {
 
     const saveButton = document.getElementById('save-scene');
     if (saveButton) {
-      saveButton.addEventListener('click', () => this.saveScene());
+      saveButton.addEventListener('click', async () => {
+        const originalText = saveButton.textContent;
+        saveButton.textContent = 'Saving...';
+        // @ts-ignore
+        saveButton.disabled = true;
+        try {
+          await this.saveScene();
+        } finally {
+          saveButton.textContent = originalText;
+          // @ts-ignore
+          saveButton.disabled = false;
+        }
+      });
     }
     
-    const loadInput = document.getElementById('load-scene-input');
+    const loadButton = document.getElementById('load-scene');
+    const loadInput = document.getElementById('file-input');
+
     if (loadInput) {
-      loadInput.addEventListener('change', (e) => {
+      if (loadButton) {
+          loadButton.addEventListener('click', () => {
+              loadInput.click();
+          });
+      }
+
+      loadInput.addEventListener('change', async (e) => {
         // @ts-ignore
         const file = e.target.files[0];
-        if (file) this.loadScene(file);
+        if (file) {
+            if (loadButton) {
+                const originalText = loadButton.textContent;
+                loadButton.textContent = 'Loading...';
+                // @ts-ignore
+                loadButton.disabled = true;
+                try {
+                  await this.loadScene(file);
+                } finally {
+                  loadButton.textContent = originalText;
+                  // @ts-ignore
+                  loadButton.disabled = false;
+                }
+            } else {
+                await this.loadScene(file);
+            }
+        }
+        // Reset input value so same file can be loaded again if needed
+        // @ts-ignore
+        e.target.value = '';
       });
     }
   }

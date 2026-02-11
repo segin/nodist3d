@@ -131,9 +131,6 @@ body {
     border-radius: 2px;
 }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 #scene-graph-panel li:focus-visible,
 #scene-graph li:focus-visible {
     outline: 2px solid white;
@@ -147,11 +144,6 @@ body {
     border-radius: 2px;
 }
 
->>>>>>> master
->>>>>>> master
->>>>>>> master
-=======
->>>>>>> master
 /* Mobile optimizations */
 @media (max-width: 768px) {
   #ui {
@@ -303,15 +295,13 @@ body {
   #scene-graph::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
   }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
+}
+
 /* Accessibility focus state */
 .scene-graph-item:focus {
     outline: 2px solid #007bff;
     outline-offset: -2px;
 }
-=======
 
 
 /* Toast Notifications */
@@ -369,6 +359,4 @@ body {
     transform: none;
     align-items: flex-end;
   }
->>>>>>> master
->>>>>>> master
 }
