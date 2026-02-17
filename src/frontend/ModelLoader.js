@@ -58,6 +58,7 @@ export class ModelLoader {
 
       const onError = (e) => {
         log.error('Error loading model:', e);
+        URL.revokeObjectURL(url);
         reject(e);
       };
 
@@ -66,6 +67,7 @@ export class ModelLoader {
       } else if (ext === 'glb' || ext === 'gltf') {
         this.gltfLoader.load(url, (gltf) => onLoad(gltf.scene), undefined, onError);
       } else {
+        URL.revokeObjectURL(url);
         reject(new Error('Unsupported file format. Please use .obj, .glb, or .gltf'));
       }
     });

@@ -46,8 +46,14 @@ export class TextGeometry {
 }
 
 export class GLTFLoader {
-    load(url, onLoad) {
-        if (onLoad) onLoad({ scene: { children: [] } });
+    load(url, onLoad, _onProgress, _onError) {
+        if (onLoad) onLoad({ scene: { children: [], traverse: jest.fn(), scale: { setScalar: jest.fn() }, position: {} } });
+    }
+}
+
+export class OBJLoader {
+    load(url, onLoad, _onProgress, _onError) {
+        if (onLoad) onLoad({ children: [], traverse: jest.fn(), scale: { setScalar: jest.fn() }, position: {} });
     }
 }
 
