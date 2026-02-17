@@ -1,6 +1,11 @@
 const fetch = require('node-fetch');
 const { TextEncoder, TextDecoder } = require('util');
+const { ReadableStream } = require('stream/web');
+const { MessageChannel, MessagePort } = require('worker_threads');
 
+global.ReadableStream = ReadableStream;
+global.MessageChannel = MessageChannel;
+global.MessagePort = MessagePort;
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 
@@ -573,25 +578,6 @@ jest.mock('three', () => THREE);
 
 global.THREE = THREE;
 
-// Mock OrbitControls
-jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
-  OrbitControls: jest.fn().mockImplementation(() => ({
-    update: jest.fn(),
-    target: new Vector3(),
-  })),
-}));
-
-// Mock TransformControls
-jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
-  TransformControls: jest.fn().mockImplementation(() => {
-      const tc = new Object3D('TransformControls');
-      tc.setMode = jest.fn();
-      tc.attach = jest.fn();
-      tc.detach = jest.fn();
-      tc.addEventListener = jest.fn();
-      return tc;
-  }),
-}));
 
 // Mock dat.gui
 const createChainableMock = () => {
