@@ -1,5 +1,4 @@
 import { App } from '../src/frontend/main.js';
-import { JSDOM } from 'jsdom';
 
 // Mock THREE.js
 jest.mock('three', () => {
@@ -114,45 +113,6 @@ jest.mock('dat.gui', () => ({
     })),
 }));
 
-// Mock OrbitControls
-jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
-    OrbitControls: jest.fn(() => ({
-        enableDamping: true,
-        dampingFactor: 0.05,
-        enabled: true,
-        update: jest.fn(),
-        touches: {},
-        target: { clone: jest.fn(() => ({ copy: jest.fn() })), copy: jest.fn() }
-    })),
-}));
-
-// Mock TransformControls
-jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
-    TransformControls: jest.fn(() => ({
-        addEventListener: jest.fn(),
-        setMode: jest.fn(),
-        attach: jest.fn(),
-        detach: jest.fn(),
-        dragging: false,
-    })),
-}));
-
-// Mock TeapotGeometry
-jest.mock('three/examples/jsm/geometries/TeapotGeometry.js', () => ({
-    TeapotGeometry: jest.fn()
-}), { virtual: true });
-
-// Mock FontLoader
-jest.mock('three/examples/jsm/loaders/FontLoader.js', () => ({
-    FontLoader: jest.fn(() => ({
-        load: jest.fn()
-    }))
-}), { virtual: true });
-
-// Mock TextGeometry
-jest.mock('three/examples/jsm/geometries/TextGeometry.js', () => ({
-    TextGeometry: jest.fn()
-}), { virtual: true });
 
 // Mock cannon-es
 jest.mock('cannon-es', () => ({
@@ -175,13 +135,10 @@ global.JSZip = jest.fn();
 
 describe('App', () => {
     let app;
-    let dom;
 
     beforeEach(() => {
         // Setup DOM
-        dom = new JSDOM('<!DOCTYPE html><html><body><div id="scene-graph"></div><button id="fullscreen"></button><button id="save-scene"></button><button id="load-scene"></button><input type="file" id="file-input"></body></html>');
-        global.document = dom.window.document;
-        global.window = dom.window;
+        document.body.innerHTML = '<div id="scene-graph"></div><button id="fullscreen"></button><button id="save-scene"></button><button id="load-scene"></button><input type="file" id="file-input"></body>';
         global.requestAnimationFrame = jest.fn();
         global.URL = { createObjectURL: jest.fn(), revokeObjectURL: jest.fn() };
         global.Worker = jest.fn(() => ({
@@ -192,6 +149,12 @@ describe('App', () => {
         // Mock document.body.appendChild
         jest.spyOn(document.body, 'appendChild').mockImplementation();
         jest.spyOn(window, 'addEventListener').mockImplementation();
+
+        // Mock document.createDocumentFragment
+        jest.spyOn(document, 'createDocumentFragment').mockImplementation(() => ({
+            appendChild: jest.fn(),
+            children: []
+        }));
 
         // Mock document.createElement to return proper elements
         jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
@@ -238,9 +201,6 @@ describe('App', () => {
     });
 
     afterEach(() => {
-        if (dom) {
-            dom.window.close();
-        }
         jest.restoreAllMocks();
     });
 

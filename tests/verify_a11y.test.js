@@ -1,8 +1,6 @@
 /**
  * Verification test for Accessibility
  */
-import { JSDOM } from 'jsdom';
-
 jest.mock('cannon-es', () => ({
   World: jest.fn().mockImplementation(() => ({
     gravity: { set: jest.fn(), x: 0, y: -9.82, z: 0 },
@@ -22,25 +20,16 @@ jest.mock('cannon-es', () => ({
 let appInstance;
 
 describe('Accessibility Verification', () => {
-    let dom;
-
     beforeEach(() => {
-        // Setup JSDOM
-        dom = new JSDOM('<!DOCTYPE html><html><body><div id="scene-graph-panel"><ul id="objects-list"></ul></div></body></html>');
-        global.document = dom.window.document;
-        global.window = dom.window;
-        global.navigator = dom.window.navigator;
+        // Setup DOM
+        document.body.innerHTML = '<div id="scene-graph-panel"><ul id="objects-list"></ul></div>';
         global.requestAnimationFrame = jest.fn();
-        global.HTMLElement = dom.window.HTMLElement;
 
         appInstance = null;
         jest.clearAllMocks();
     });
 
     afterEach(() => {
-        if (dom) {
-            dom.window.close();
-        }
     });
 
     it('should create scene graph buttons with accessibility attributes', async () => {

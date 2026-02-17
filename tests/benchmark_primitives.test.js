@@ -29,26 +29,6 @@ jest.mock('dat.gui', () => ({
     }))
 }));
 
-// Mock controls
-jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
-    OrbitControls: jest.fn(() => ({
-        enableDamping: true,
-        dampingFactor: 0.05,
-        update: jest.fn(),
-        target: { clone: jest.fn(() => ({ copy: jest.fn() })) },
-        touches: { ONE: 1, TWO: 2 }
-    }))
-}));
-
-jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
-    TransformControls: jest.fn(() => ({
-        addEventListener: jest.fn(),
-        setMode: jest.fn(),
-        attach: jest.fn(),
-        detach: jest.fn(),
-        dragging: false
-    }))
-}));
 
 describe('Primitive Creation Benchmark', () => {
     let app;
