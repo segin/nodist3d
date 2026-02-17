@@ -681,9 +681,15 @@ export class App {
   updateSceneGraph() {
     if (!this.objectsList) return;
 
-    const fragment = document.createDocumentFragment();
+    if (!this.sceneGraphItemMap) {
+      this.sceneGraphItemMap = new Map();
+    }
     
+    // Handle empty state
     if (this.objects.length === 0) {
+      this.objectsList.innerHTML = '';
+      this.sceneGraphItemMap.clear();
+
       const li = document.createElement('li');
       li.setAttribute('role', 'listitem');
       li.textContent = 'No objects in scene';
@@ -691,57 +697,117 @@ export class App {
       li.style.fontStyle = 'italic';
       li.style.textAlign = 'center';
       li.style.padding = '10px';
-      fragment.appendChild(li);
-    } else {
-      this.objects.forEach((obj, idx) => {
-        const li = document.createElement('li');
-        li.setAttribute('role', 'listitem');
+      this.objectsList.appendChild(li);
+      return;
+    }
+
+    // If coming from empty state, clear the "No objects" message
+    if (this.sceneGraphItemMap.size === 0) {
+        this.objectsList.innerHTML = '';
+    }
+
+    const fragment = document.createDocumentFragment();
+    const currentUuids = new Set();
+
+    this.objects.forEach((obj, idx) => {
+        currentUuids.add(obj.uuid);
+        let li = this.sceneGraphItemMap.get(obj.uuid);
+
+        // References to child elements
+        let nameSpan, visibilityBtn, deleteBtn;
+
+        if (!li) {
+            li = document.createElement('li');
+            li.setAttribute('role', 'listitem');
+
+            nameSpan = document.createElement('span');
+            nameSpan.className = 'object-name';
+            li.appendChild(nameSpan);
+
+            const controls = document.createElement('div');
+
+            visibilityBtn = document.createElement('button');
+            visibilityBtn.className = 'visibility-btn';
+            controls.appendChild(visibilityBtn);
+
+            deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.setAttribute('aria-label', 'Delete object');
+            deleteBtn.textContent = '🗑️';
+            controls.appendChild(deleteBtn);
+
+            li.appendChild(controls);
+
+            // Cache references on the element to avoid querySelector in future updates
+            // @ts-ignore
+            li._nameSpan = nameSpan;
+            // @ts-ignore
+            li._visibilityBtn = visibilityBtn;
+            // @ts-ignore
+            li._deleteBtn = deleteBtn;
+
+            this.sceneGraphItemMap.set(obj.uuid, li);
+        } else {
+             // @ts-ignore
+             nameSpan = li._nameSpan;
+             // @ts-ignore
+             visibilityBtn = li._visibilityBtn;
+             // @ts-ignore
+             deleteBtn = li._deleteBtn;
+        }
+
+        // Apply styles
+        const isSelected = this.selectedObject === obj;
+        const bg = isSelected ? '#444' : '#222';
+
         li.style.cssText = `
           padding: 5px;
           margin: 2px 0;
-          background: ${this.selectedObject === obj ? '#444' : '#222'};
+          background: ${bg};
           border-radius: 3px;
           cursor: pointer;
           display: flex;
           justify-content: space-between;
         `;
 
-        const name = document.createElement('span');
-        name.className = 'object-name';
-        name.textContent = obj.name || `Object ${idx + 1}`;
-        li.appendChild(name);
+        // Update Content
+        const nameText = obj.name || `Object ${idx + 1}`;
+        if (nameSpan.textContent !== nameText) nameSpan.textContent = nameText;
 
-        const controls = document.createElement('div');
+        const visText = obj.visible ? '👁️' : '🚫';
+        const visLabel = obj.visible ? 'Hide object' : 'Show object';
 
-        const visibilityBtn = document.createElement('button');
-        visibilityBtn.className = 'visibility-btn';
-        visibilityBtn.setAttribute('aria-label', obj.visible ? 'Hide object' : 'Show object');
-        visibilityBtn.textContent = obj.visible ? '👁️' : '🚫';
+        if (visibilityBtn.textContent !== visText) {
+            visibilityBtn.textContent = visText;
+            visibilityBtn.setAttribute('aria-label', visLabel);
+        }
+
+        // Update Event Listeners (closures capture current `obj` instance)
+        li.onclick = () => this.selectObject(obj);
+
         visibilityBtn.onclick = (e) => {
           e.stopPropagation();
           obj.visible = !obj.visible;
           this.updateSceneGraph();
         };
-        controls.appendChild(visibilityBtn);
 
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-btn';
-        deleteBtn.setAttribute('aria-label', 'Delete object');
-        deleteBtn.textContent = '🗑️';
         deleteBtn.onclick = (e) => {
           e.stopPropagation();
           this.deleteObject(obj);
         };
-        controls.appendChild(deleteBtn);
 
-        li.appendChild(controls);
-
-        li.onclick = () => this.selectObject(obj);
         fragment.appendChild(li);
-      });
+    });
+
+    // Remove deleted items from DOM and Map
+    for (const [uuid, li] of this.sceneGraphItemMap) {
+        if (!currentUuids.has(uuid)) {
+            if (li.parentNode) li.parentNode.removeChild(li);
+            this.sceneGraphItemMap.delete(uuid);
+        }
     }
 
-    this.objectsList.innerHTML = '';
+    // Append fragment (this moves all valid lis to the list end, effectively sorting them)
     this.objectsList.appendChild(fragment);
   }
 
