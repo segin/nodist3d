@@ -1,9 +1,100 @@
-const fetch = require('node-fetch');
 const { TextEncoder, TextDecoder } = require('util');
+const { ReadableStream, TransformStream } = require('node:stream/web');
+const { MessageChannel, MessagePort } = require('worker_threads');
 
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
+global.ReadableStream = ReadableStream;
+global.TransformStream = TransformStream;
+global.MessageChannel = MessageChannel;
+global.MessagePort = MessagePort;
 
+// Mock the three-examples module specifically for named imports
+jest.mock('three/examples/jsm/loaders/FontLoader.js', () => ({
+    FontLoader: class FontLoader {
+        load(url, onLoad) {
+            if (onLoad) onLoad({ type: 'Font' });
+        }
+    }
+}), { virtual: true });
+
+jest.mock('three/examples/jsm/geometries/TextGeometry.js', () => ({
+    TextGeometry: class TextGeometry {
+        constructor() {
+            this.type = 'TextGeometry';
+            this.parameters = {};
+            this.dispose = jest.fn();
+            this.center = jest.fn();
+        }
+    }
+}), { virtual: true });
+
+jest.mock('three/examples/jsm/geometries/TeapotGeometry.js', () => ({
+    TeapotGeometry: class TeapotGeometry {
+        constructor() {
+            this.type = 'TeapotGeometry';
+            this.parameters = {};
+            this.dispose = jest.fn();
+        }
+    }
+}), { virtual: true });
+
+jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
+    OrbitControls: class OrbitControls {
+        constructor() {
+            this.enabled = true;
+            this.target = { copy: jest.fn(), clone: jest.fn(() => ({ copy: jest.fn() })) };
+            this.update = jest.fn();
+            this.dispose = jest.fn();
+            this.addEventListener = jest.fn();
+            this.removeEventListener = jest.fn();
+        }
+    }
+}), { virtual: true });
+
+jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
+    TransformControls: class TransformControls {
+        constructor() {
+            this.enabled = true;
+            this.attach = jest.fn();
+            this.detach = jest.fn();
+            this.setMode = jest.fn();
+            this.addEventListener = jest.fn();
+            this.removeEventListener = jest.fn();
+            this.dispose = jest.fn();
+        }
+    }
+}), { virtual: true });
+
+jest.mock('three/examples/jsm/loaders/GLTFLoader.js', () => ({
+    GLTFLoader: class GLTFLoader {
+        load(url, onLoad) {
+            if (onLoad) onLoad({ scene: { children: [] } });
+        }
+    }
+}), { virtual: true });
+
+jest.mock('three/examples/jsm/loaders/OBJLoader.js', () => ({
+    OBJLoader: class OBJLoader {
+        load(url, onLoad) {
+            if (onLoad) onLoad({ children: [] });
+        }
+    }
+}), { virtual: true });
+
+jest.mock('three/examples/jsm/exporters/OBJExporter.js', () => ({
+    OBJExporter: class OBJExporter {
+        parse() { return ''; }
+    }
+}), { virtual: true });
+
+jest.mock('three/examples/jsm/exporters/STLExporter.js', () => ({
+    STLExporter: class STLExporter {
+        parse() { return ''; }
+    }
+}), { virtual: true });
+
+const fetch = require('node-fetch');
 global.fetch = fetch;
 global.Request = fetch.Request;
 global.Response = fetch.Response;
@@ -339,6 +430,7 @@ const createMockMaterial = (type = 'MeshPhongMaterial') => ({
 });
 
 const THREE = {
+  __esModule: true,
   Vector2: jest.fn().mockImplementation((x, y) => new Vector2(x, y)),
   Vector3: jest.fn().mockImplementation((x, y, z) => new Vector3(x, y, z)),
   Vector4: jest.fn().mockImplementation((x, y, z, w) => new Vector4(x, y, z, w)),
@@ -425,11 +517,11 @@ const THREE = {
       const s = new Object3D('Scene');
       return s;
   }),
-  Group: class Group extends Object3D {
-      constructor() {
-          super('Group');
-      }
-  },
+  Group: jest.fn().mockImplementation(function() {
+      const group = new Object3D('Group');
+      group.isGroup = true;
+      return group;
+  }),
   Mesh: jest.fn().mockImplementation((geo, mat) => {
       const m = new Object3D('Mesh');
       m.geometry = geo || createMockGeometry();
@@ -572,26 +664,6 @@ THREE.TextureLoader.prototype.load = jest.fn((u,cb) => cb && cb({ dispose: jest.
 jest.mock('three', () => THREE);
 
 global.THREE = THREE;
-
-// Mock OrbitControls
-jest.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
-  OrbitControls: jest.fn().mockImplementation(() => ({
-    update: jest.fn(),
-    target: new Vector3(),
-  })),
-}));
-
-// Mock TransformControls
-jest.mock('three/examples/jsm/controls/TransformControls.js', () => ({
-  TransformControls: jest.fn().mockImplementation(() => {
-      const tc = new Object3D('TransformControls');
-      tc.setMode = jest.fn();
-      tc.attach = jest.fn();
-      tc.detach = jest.fn();
-      tc.addEventListener = jest.fn();
-      return tc;
-  }),
-}));
 
 // Mock dat.gui
 const createChainableMock = () => {

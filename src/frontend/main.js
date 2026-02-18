@@ -596,8 +596,8 @@ export class App {
   }
 
   async addBox() { return await this.addPrimitive('Box'); }
-  async addSphere() { return await this.addPrimitive('Sphere'); }
-  async addCylinder() { return await this.addPrimitive('Cylinder'); }
+  async addSphere() { return await this.addPrimitive('Sphere', { color: 0xff0000 }); }
+  async addCylinder() { return await this.addPrimitive('Cylinder', { color: 0x0000ff }); }
   async addCone() { return await this.addPrimitive('Cone'); }
   async addTorus() { return await this.addPrimitive('Torus'); }
   async addTorusKnot() { return await this.addPrimitive('TorusKnot'); }
@@ -605,7 +605,7 @@ export class App {
   async addIcosahedron() { return await this.addPrimitive('Icosahedron'); }
   async addDodecahedron() { return await this.addPrimitive('Dodecahedron'); }
   async addOctahedron() { return await this.addPrimitive('Octahedron'); }
-  async addPlane() { return await this.addPrimitive('Plane'); }
+  async addPlane() { return await this.addPrimitive('Plane', { color: 0x00ffff }); }
   async addTube() { return await this.addPrimitive('Tube'); }
   async addTeapot() { return await this.addPrimitive('Teapot'); }
   async addLathe() { return await this.addPrimitive('Lathe'); }
@@ -716,6 +716,7 @@ export class App {
         const visibilityBtn = document.createElement('button');
         visibilityBtn.className = 'visibility-btn';
         visibilityBtn.setAttribute('aria-label', obj.visible ? 'Hide object' : 'Show object');
+        visibilityBtn.setAttribute('title', obj.visible ? 'Hide object' : 'Show object');
         visibilityBtn.textContent = obj.visible ? '👁️' : '🚫';
         visibilityBtn.onclick = (e) => {
           e.stopPropagation();
@@ -727,6 +728,7 @@ export class App {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-btn';
         deleteBtn.setAttribute('aria-label', 'Delete object');
+        deleteBtn.setAttribute('title', 'Delete object');
         deleteBtn.textContent = '🗑️';
         deleteBtn.onclick = (e) => {
           e.stopPropagation();
