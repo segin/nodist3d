@@ -1,5 +1,4 @@
 import { App } from '../src/frontend/main.js';
-import { JSDOM } from 'jsdom';
 
 // Mock THREE.js
 jest.mock('three', () => {
@@ -175,13 +174,11 @@ global.JSZip = jest.fn();
 
 describe('App', () => {
     let app;
-    let dom;
 
     beforeEach(() => {
         // Setup DOM
-        dom = new JSDOM('<!DOCTYPE html><html><body><div id="scene-graph"></div><button id="fullscreen"></button><button id="save-scene"></button><button id="load-scene"></button><input type="file" id="file-input"></body></html>');
-        global.document = dom.window.document;
-        global.window = dom.window;
+        document.body.innerHTML = '<div id="scene-graph"></div><button id="fullscreen"></button><button id="save-scene"></button><button id="load-scene"></button><input type="file" id="file-input">';
+
         global.requestAnimationFrame = jest.fn();
         global.URL = { createObjectURL: jest.fn(), revokeObjectURL: jest.fn() };
         global.Worker = jest.fn(() => ({
@@ -192,6 +189,13 @@ describe('App', () => {
         // Mock document.body.appendChild
         jest.spyOn(document.body, 'appendChild').mockImplementation();
         jest.spyOn(window, 'addEventListener').mockImplementation();
+
+        // Mock document.createDocumentFragment - IMPORTANT: Must mock this if createElement is mocked
+        // to avoid JSDOM validation errors when mixing mocked elements with real fragments
+        jest.spyOn(document, 'createDocumentFragment').mockImplementation(() => ({
+            appendChild: jest.fn(),
+            children: []
+        }));
 
         // Mock document.createElement to return proper elements
         jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
@@ -218,8 +222,7 @@ describe('App', () => {
         });
         
         // Mock getElementById
-        const originalGetElementById = document.getElementById.bind(document);
-        document.getElementById = jest.fn((id) => {
+        jest.spyOn(document, 'getElementById').mockImplementation((id) => {
              if (['save-scene', 'load-scene', 'file-input', 'scene-graph'].includes(id)) {
                  return {
                      addEventListener: jest.fn(),
@@ -227,7 +230,7 @@ describe('App', () => {
                      appendChild: jest.fn()
                  };
              }
-             return originalGetElementById(id);
+             return document.querySelector(`#${id}`);
         });
 
         // Clear mocks
@@ -238,9 +241,7 @@ describe('App', () => {
     });
 
     afterEach(() => {
-        if (dom) {
-            dom.window.close();
-        }
+        document.body.innerHTML = '';
         jest.restoreAllMocks();
     });
 

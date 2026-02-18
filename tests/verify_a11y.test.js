@@ -1,7 +1,7 @@
 /**
  * Verification test for Accessibility
  */
-import { JSDOM } from 'jsdom';
+import { App } from '../src/frontend/main.js';
 
 jest.mock('cannon-es', () => ({
   World: jest.fn().mockImplementation(() => ({
@@ -22,49 +22,23 @@ jest.mock('cannon-es', () => ({
 let appInstance;
 
 describe('Accessibility Verification', () => {
-    let dom;
-
     beforeEach(() => {
         // Setup JSDOM
-        dom = new JSDOM('<!DOCTYPE html><html><body><div id="scene-graph-panel"><ul id="objects-list"></ul></div></body></html>');
-        global.document = dom.window.document;
-        global.window = dom.window;
-        global.navigator = dom.window.navigator;
+        document.body.innerHTML = '<div id="scene-graph-panel"><ul id="objects-list"></ul></div>';
+
         global.requestAnimationFrame = jest.fn();
-        global.HTMLElement = dom.window.HTMLElement;
 
         appInstance = null;
         jest.clearAllMocks();
     });
 
     afterEach(() => {
-        if (dom) {
-            dom.window.close();
-        }
+        document.body.innerHTML = '';
+        jest.restoreAllMocks();
     });
 
     it('should create scene graph buttons with accessibility attributes', async () => {
-        // Simulate DOM loaded
-        const domContentLoadedCallbacks = [];
-        const originalAddEventListener = document.addEventListener.bind(document);
-        document.addEventListener = jest.fn((event, callback) => {
-            if (event === 'DOMContentLoaded') {
-                domContentLoadedCallbacks.push(callback);
-            } else {
-                originalAddEventListener(event, callback);
-            }
-        });
-
-        // Import and execute the module
-        delete require.cache[require.resolve('../src/frontend/main.js')];
-        const { App } = require('../src/frontend/main.js');
-
-        // Execute the callback
-        domContentLoadedCallbacks.forEach(callback => callback());
-
-        if (!appInstance) {
-            appInstance = new App();
-        }
+        appInstance = new App();
 
         // Add a box to populate scene graph
         await appInstance.addBox();
