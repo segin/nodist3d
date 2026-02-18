@@ -681,9 +681,10 @@ export class App {
   updateSceneGraph() {
     if (!this.objectsList) return;
 
-    const fragment = document.createDocumentFragment();
-    
+    // Handle empty state
     if (this.objects.length === 0) {
+      this.objectsList.innerHTML = '';
+      this.sceneGraphItemMap.clear();
       const li = document.createElement('li');
       li.setAttribute('role', 'listitem');
       li.textContent = 'No objects in scene';
@@ -691,15 +692,34 @@ export class App {
       li.style.fontStyle = 'italic';
       li.style.textAlign = 'center';
       li.style.padding = '10px';
-      fragment.appendChild(li);
-    } else {
-      this.objects.forEach((obj, idx) => {
-        const li = document.createElement('li');
+      this.objectsList.appendChild(li);
+      return;
+    }
+
+    // Sync if map is empty but list is not (e.g. first run or external modification)
+    if (this.sceneGraphItemMap.size === 0 && this.objectsList.children.length > 0) {
+        this.objectsList.innerHTML = '';
+    }
+
+    // Remove empty message if present
+    if (this.objectsList.children.length === 1 && this.objectsList.firstChild.textContent === 'No objects in scene') {
+      this.objectsList.innerHTML = '';
+    }
+
+    const currentUuids = new Set();
+
+    // Update existing or create new items
+    this.objects.forEach((obj, idx) => {
+      currentUuids.add(obj.uuid);
+      let li = this.sceneGraphItemMap.get(obj.uuid);
+
+      // 1. Create new item if needed
+      if (!li) {
+        li = document.createElement('li');
         li.setAttribute('role', 'listitem');
         li.style.cssText = `
           padding: 5px;
           margin: 2px 0;
-          background: ${this.selectedObject === obj ? '#444' : '#222'};
           border-radius: 3px;
           cursor: pointer;
           display: flex;
@@ -708,41 +728,79 @@ export class App {
 
         const name = document.createElement('span');
         name.className = 'object-name';
-        name.textContent = obj.name || `Object ${idx + 1}`;
         li.appendChild(name);
+        // @ts-ignore
+        li._nameSpan = name;
 
         const controls = document.createElement('div');
 
         const visibilityBtn = document.createElement('button');
         visibilityBtn.className = 'visibility-btn';
-        visibilityBtn.setAttribute('aria-label', obj.visible ? 'Hide object' : 'Show object');
-        visibilityBtn.textContent = obj.visible ? '👁️' : '🚫';
-        visibilityBtn.onclick = (e) => {
-          e.stopPropagation();
-          obj.visible = !obj.visible;
-          this.updateSceneGraph();
-        };
+        // @ts-ignore
+        li._visibilityBtn = visibilityBtn;
         controls.appendChild(visibilityBtn);
 
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-btn';
         deleteBtn.setAttribute('aria-label', 'Delete object');
         deleteBtn.textContent = '🗑️';
-        deleteBtn.onclick = (e) => {
-          e.stopPropagation();
-          this.deleteObject(obj);
-        };
+        // @ts-ignore
+        li._deleteBtn = deleteBtn;
         controls.appendChild(deleteBtn);
 
         li.appendChild(controls);
 
-        li.onclick = () => this.selectObject(obj);
-        fragment.appendChild(li);
-      });
-    }
+        this.sceneGraphItemMap.set(obj.uuid, li);
+      }
 
-    this.objectsList.innerHTML = '';
-    this.objectsList.appendChild(fragment);
+      // 2. Update Item Content
+      const isSelected = this.selectedObject === obj;
+      li.style.background = isSelected ? '#444' : '#222';
+      li.onclick = () => this.selectObject(obj);
+
+      // @ts-ignore
+      if (li._nameSpan) li._nameSpan.textContent = obj.name || `Object ${idx + 1}`;
+
+      // @ts-ignore
+      if (li._visibilityBtn) {
+          // @ts-ignore
+          const btn = li._visibilityBtn;
+          btn.setAttribute('aria-label', obj.visible ? 'Hide object' : 'Show object');
+          btn.textContent = obj.visible ? '👁️' : '🚫';
+          btn.onclick = (e) => {
+              e.stopPropagation();
+              obj.visible = !obj.visible;
+              this.updateSceneGraph();
+          };
+      }
+
+      // @ts-ignore
+      if (li._deleteBtn) {
+          // @ts-ignore
+          li._deleteBtn.onclick = (e) => {
+              e.stopPropagation();
+              this.deleteObject(obj);
+          };
+      }
+
+      // 3. Ensure Order
+      const currentChild = this.objectsList.children[idx];
+      if (currentChild !== li) {
+          if (currentChild) {
+              this.objectsList.insertBefore(li, currentChild);
+          } else {
+              this.objectsList.appendChild(li);
+          }
+      }
+    });
+
+    // 4. Remove stale items
+    for (const [uuid, li] of this.sceneGraphItemMap.entries()) {
+      if (!currentUuids.has(uuid)) {
+        if (li.parentNode) li.parentNode.removeChild(li);
+        this.sceneGraphItemMap.delete(uuid);
+      }
+    }
   }
 
   toggleFullscreen() {
