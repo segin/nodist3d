@@ -573,7 +573,9 @@ export class UIManager {
 
   createSceneGraphItem(obj, callbacks) {
     const li = document.createElement('li');
-    li.setAttribute('role', 'listitem');
+    li.setAttribute('role', 'button');
+    li.tabIndex = 0;
+    li.setAttribute('aria-label', `Select ${obj.name || 'Object'}`);
     li.style.cssText = `
       padding: 5px;
       margin: 2px 0;
@@ -595,8 +597,8 @@ export class UIManager {
 
     const visibilityBtn = document.createElement('button');
     visibilityBtn.className = 'visibility-btn';
-    visibilityBtn.setAttribute('aria-label', obj.visible ? 'Hide object' : 'Show object');
-    visibilityBtn.setAttribute('title', obj.visible ? 'Hide object' : 'Show object');
+    visibilityBtn.setAttribute('aria-label', `Toggle visibility for ${obj.name || 'Object'}`);
+    visibilityBtn.setAttribute('title', `Toggle visibility for ${obj.name || 'Object'}`);
     visibilityBtn.onclick = (e) => {
       e.stopPropagation();
       obj.visible = !obj.visible;
@@ -608,18 +610,26 @@ export class UIManager {
 
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'delete-btn';
-    deleteBtn.setAttribute('aria-label', 'Delete object');
-    deleteBtn.setAttribute('title', 'Delete object');
+    deleteBtn.setAttribute('aria-label', `Delete ${obj.name || 'Object'}`);
+    deleteBtn.setAttribute('title', `Delete ${obj.name || 'Object'}`);
     deleteBtn.textContent = '🗑️';
     deleteBtn.onclick = (e) => {
       e.stopPropagation();
       callbacks.deleteObject(obj);
     };
     controls.appendChild(deleteBtn);
+    // @ts-ignore
+    li._deleteBtn = deleteBtn;
 
     li.appendChild(controls);
 
     li.onclick = () => callbacks.selectObject(obj);
+    li.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        callbacks.selectObject(obj);
+      }
+    });
 
     // Drag and Drop
     li.draggable = true;
@@ -695,7 +705,7 @@ export class UIManager {
 
     // @ts-ignore
     const visibilityBtn = li._visibilityBtn;
-    const expectedVisLabel = obj.visible ? 'Hide object' : 'Show object';
+    const expectedVisLabel = `Toggle visibility for ${expectedName}`;
     const expectedVisIcon = obj.visible ? '👁️' : '🚫';
 
     if (visibilityBtn.getAttribute('aria-label') !== expectedVisLabel) {
@@ -706,6 +716,23 @@ export class UIManager {
     }
     if (visibilityBtn.textContent !== expectedVisIcon) {
         visibilityBtn.textContent = expectedVisIcon;
+    }
+
+    // @ts-ignore
+    const deleteBtn = li._deleteBtn;
+    if (deleteBtn) {
+        const expectedDelLabel = `Delete ${expectedName}`;
+        if (deleteBtn.getAttribute('aria-label') !== expectedDelLabel) {
+            deleteBtn.setAttribute('aria-label', expectedDelLabel);
+        }
+        if (deleteBtn.getAttribute('title') !== expectedDelLabel) {
+            deleteBtn.setAttribute('title', expectedDelLabel);
+        }
+    }
+
+    const expectedLiLabel = `Select ${expectedName}`;
+    if (li.getAttribute('aria-label') !== expectedLiLabel) {
+        li.setAttribute('aria-label', expectedLiLabel);
     }
   }
 }
