@@ -114,7 +114,9 @@ export class App {
 
     // App State
     this.selectedObject = null;
-    this.objects = [];
+    this.objects = new Set();
+    this._objectsArray = [];
+    this._objectsArrayNeedsUpdate = false;
     this.primitiveCounter = 0;
     
     // Continue initialization
@@ -298,7 +300,7 @@ export class App {
       this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
       this.raycaster.setFromCamera(this.mouse, this.camera);
-      const intersects = this.raycaster.intersectObjects(this.objects);
+      const intersects = this.raycaster.intersectObjects(this.objectsArray);
 
       if (intersects.length > 0) {
         this.selectObject(intersects[0].object);
@@ -365,22 +367,34 @@ export class App {
     }
   }
 
+  get objectsArray() {
+    if (this._objectsArrayNeedsUpdate) {
+      this._objectsArray = [...this.objects];
+      this._objectsArrayNeedsUpdate = false;
+    }
+    return this._objectsArray;
+  }
+
   newScene() {
     this.objects.forEach(obj => this.scene.remove(obj));
-    this.objects = [];
+    this.objects = new Set();
+    this._objectsArrayNeedsUpdate = true;
     this.deselectObject();
     this.updateSceneGraph();
     this.saveState('New Scene');
   }
 
   saveState(description = 'Action') {
-    this.historyManager.saveState(this.objects, this.selectedObject, description);
+    this.historyManager.saveState(this.objectsArray, this.selectedObject, description);
   }
 
   async undo() {
     await this.historyManager.undo({
-        getObjects: () => this.objects,
-        setObjects: (objs) => { this.objects = objs; },
+        getObjects: () => this.objectsArray,
+        setObjects: (objs) => {
+          this.objects = new Set(objs);
+          this._objectsArrayNeedsUpdate = true;
+        },
         selectObject: (obj) => this.selectObject(obj),
         deselectObject: () => this.deselectObject(),
         updateSceneGraph: () => this.updateSceneGraph()
@@ -389,8 +403,11 @@ export class App {
 
   async redo() {
     await this.historyManager.redo({
-        getObjects: () => this.objects,
-        setObjects: (objs) => { this.objects = objs; },
+        getObjects: () => this.objectsArray,
+        setObjects: (objs) => {
+          this.objects = new Set(objs);
+          this._objectsArrayNeedsUpdate = true;
+        },
         selectObject: (obj) => this.selectObject(obj),
         deselectObject: () => this.deselectObject(),
         updateSceneGraph: () => this.updateSceneGraph()
@@ -399,8 +416,11 @@ export class App {
 
   async restoreState(state) {
     await this.historyManager.restoreState(state, {
-        getObjects: () => this.objects,
-        setObjects: (objs) => { this.objects = objs; },
+        getObjects: () => this.objectsArray,
+        setObjects: (objs) => {
+          this.objects = new Set(objs);
+          this._objectsArrayNeedsUpdate = true;
+        },
         selectObject: (obj) => this.selectObject(obj),
         deselectObject: () => this.deselectObject(),
         updateSceneGraph: () => this.updateSceneGraph()
@@ -432,9 +452,10 @@ export class App {
   deleteObject(object) {
     if (object) {
       this.objectManager.deleteObject(object);
-      const index = this.objects.indexOf(object);
-      if (index > -1) this.objects.splice(index, 1);
-      this.saveState('Delete object');
+      if (this.objects.delete(object)) {
+        this._objectsArrayNeedsUpdate = true;
+        this.saveState('Delete object');
+      }
     }
   }
 
@@ -448,7 +469,8 @@ export class App {
       if (mesh) {
         mesh.position.x += 1;
         this.scene.add(mesh);
-        this.objects.push(mesh);
+        this.objects.add(mesh);
+        this._objectsArrayNeedsUpdate = true;
         this.selectObject(mesh);
         this.saveState('Duplicate object');
       }
@@ -457,7 +479,7 @@ export class App {
 
   performCSG(baseObject, targetUuid, operation) {
     if (!baseObject || !targetUuid) return;
-    const targetObject = this.objects.find(o => o.uuid === targetUuid);
+    const targetObject = this.objectsArray.find(o => o.uuid === targetUuid);
     if (!targetObject) {
       Logger.warn('CSG Target not found');
       return;
@@ -486,7 +508,8 @@ export class App {
         this.deleteObject(targetObject);
         
         this.scene.add(resultMesh);
-        this.objects.push(resultMesh);
+        this.objects.add(resultMesh);
+        this._objectsArrayNeedsUpdate = true;
         this.selectObject(resultMesh);
         
         this.updateSceneGraph();
@@ -532,7 +555,8 @@ export class App {
       if (mesh) {
         this.primitiveCounter++;
         mesh.name = `${type}_${this.primitiveCounter}`;
-        this.objects.push(mesh);
+        this.objects.add(mesh);
+        this._objectsArrayNeedsUpdate = true;
         this.selectObject(mesh);
         this.updateSceneGraph();
         this.saveState(`Add ${type}`);
@@ -550,7 +574,8 @@ export class App {
   async importModel(file) {
       try {
           const object = await this.modelLoader.loadModel(file);
-          this.objects.push(object);
+          this.objects.add(object);
+          this._objectsArrayNeedsUpdate = true;
           this.selectObject(object);
           this.updateSceneGraph();
           this.saveState('Import Model');
@@ -575,12 +600,13 @@ export class App {
     try {
       const loadedScene = await this.sceneStorage.loadScene(file);
       this.objects.forEach(obj => this.scene.remove(obj));
-      this.objects = [];
+      this.objects = new Set();
+      this._objectsArrayNeedsUpdate = true;
       
       loadedScene.traverse(child => {
         // @ts-ignore
         if (child.isMesh) {
-          this.objects.push(child);
+          this.objects.add(child);
           this.scene.add(child);
         }
       });
@@ -615,7 +641,7 @@ export class App {
   }
 
   updateSceneGraph() {
-    this.uiManager.updateSceneGraph(this.objects, this.selectedObject, {
+    this.uiManager.updateSceneGraph(this.objectsArray, this.selectedObject, {
         updateSceneGraph: () => this.updateSceneGraph(),
         deleteObject: (obj) => this.deleteObject(obj),
         selectObject: (obj) => this.selectObject(obj),
@@ -624,14 +650,17 @@ export class App {
   }
 
   reorderObjects(draggedUuid, targetUuid, isAfter) {
-    const draggedIdx = this.objects.findIndex(o => o.uuid === draggedUuid);
-    let targetIdx = this.objects.findIndex(o => o.uuid === targetUuid);
+    const objectsArray = [...this.objects];
+    const draggedIdx = objectsArray.findIndex(o => o.uuid === draggedUuid);
+    let targetIdx = objectsArray.findIndex(o => o.uuid === targetUuid);
 
     if (draggedIdx !== -1 && targetIdx !== -1) {
-      const [draggedObj] = this.objects.splice(draggedIdx, 1);
-      targetIdx = this.objects.findIndex(o => o.uuid === targetUuid);
+      const [draggedObj] = objectsArray.splice(draggedIdx, 1);
+      targetIdx = objectsArray.findIndex(o => o.uuid === targetUuid);
       const insertIdx = isAfter ? targetIdx + 1 : targetIdx;
-      this.objects.splice(insertIdx, 0, draggedObj);
+      objectsArray.splice(insertIdx, 0, draggedObj);
+      this.objects = new Set(objectsArray);
+      this._objectsArrayNeedsUpdate = true;
       this.updateSceneGraph();
       this.saveState('Reorder objects');
       this.toastManager.show('Hierarchy reordered', 'success');
