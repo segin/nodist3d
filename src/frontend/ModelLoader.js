@@ -33,18 +33,31 @@ export class ModelLoader {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
+
             // Ensure standard material for lighting interactions if needed
             // But respect existing materials if they are good
-            if (
-              !(child.material instanceof THREE.MeshStandardMaterial) &&
-              !(child.material instanceof THREE.MeshPhysicalMaterial)
-            ) {
-              // Clone incompatible material props to Standard
-              const newMat = new THREE.MeshStandardMaterial({
-                color: child.material.color || 0xffffff,
-                map: child.material.map || null,
-              });
-              child.material = newMat;
+            const fixMaterial = (material) => {
+              if (
+                !(material instanceof THREE.MeshStandardMaterial) &&
+                !(material instanceof THREE.MeshPhysicalMaterial)
+              ) {
+                // Clone incompatible material props to Standard
+                const newMat = new THREE.MeshStandardMaterial({
+                  color: material.color || 0xffffff,
+                  map: material.map || null,
+                  roughness: 0.5,
+                  metalness: 0.1,
+                });
+                material.dispose();
+                return newMat;
+              }
+              return material;
+            };
+
+            if (Array.isArray(child.material)) {
+              child.material = child.material.map(fixMaterial);
+            } else {
+              child.material = fixMaterial(child.material);
             }
           }
         });
