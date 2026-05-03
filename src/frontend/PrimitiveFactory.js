@@ -148,9 +148,65 @@ export class PrimitiveFactory {
     }
   }
 
+  _generateCacheKey(type, params) {
+    switch (type) {
+      case 'Box':
+        return `Box_${params.width}_${params.height}_${params.depth}_${params.widthSegments}_${params.heightSegments}_${params.depthSegments}`;
+      case 'Sphere':
+        return `Sphere_${params.radius}_${params.widthSegments}_${params.heightSegments}`;
+      case 'Cylinder':
+        return `Cylinder_${params.radiusTop}_${params.radiusBottom}_${params.height}_${params.radialSegments}`;
+      case 'Cone':
+        return `Cone_${params.radius}_${params.height}_${params.radialSegments}`;
+      case 'Torus':
+        return `Torus_${params.radius}_${params.tube}_${params.radialSegments}_${params.tubularSegments}`;
+      case 'TorusKnot':
+        return `TorusKnot_${params.radius}_${params.tube}_${params.tubularSegments}_${params.radialSegments}`;
+      case 'Tetrahedron':
+      case 'Icosahedron':
+      case 'Dodecahedron':
+      case 'Octahedron':
+        return `${type}_${params.radius}`;
+      case 'Plane':
+        return `Plane_${params.width}_${params.height}_${params.widthSegments}_${params.heightSegments}`;
+      case 'Lathe':
+        let lathePoints = '';
+        if (params.points) {
+          for (let i = 0; i < params.points.length; i++) {
+            lathePoints += `${params.points[i].x},${params.points[i].y};`;
+          }
+        }
+        return `Lathe_${params.segments}_${lathePoints}`;
+      case 'Teapot':
+        return `Teapot_${params.size}_${params.segments}_${params.bottom}_${params.lid}_${params.body}_${params.fitLid}_${params.blinn}`;
+      case 'Tube':
+        let tubePoints = '';
+        if (Array.isArray(params.path)) {
+          for (let i = 0; i < params.path.length; i++) {
+            tubePoints += `${params.path[i].x},${params.path[i].y},${params.path[i].z};`;
+          }
+        } else {
+          tubePoints = params.path;
+        }
+        return `Tube_${tubePoints}_${params.tubularSegments}_${params.radius}_${params.radialSegments}_${params.closed}`;
+      case 'Text':
+        return `Text_${params.text}_${params.size}_${params.height}_${params.curveSegments}_${params.bevelEnabled}_${params.bevelThickness}_${params.bevelSize}_${params.bevelOffset}_${params.bevelSegments}`;
+      case 'Extrude':
+        let extrudePoints = '';
+        if (params.shapePoints) {
+          for (let i = 0; i < params.shapePoints.length; i++) {
+            extrudePoints += `${params.shapePoints[i].x},${params.shapePoints[i].y};`;
+          }
+        }
+        return `Extrude_${params.steps}_${params.depth}_${params.bevelEnabled}_${params.bevelThickness}_${params.bevelSize}_${params.bevelOffset}_${params.bevelSegments}_${extrudePoints}`;
+      default:
+        return `${type}_${JSON.stringify(params)}`;
+    }
+  }
+
   _getCachedGeometry(type, options) {
     const params = this._getNormalizedParameters(type, options);
-    const key = `${type}_${JSON.stringify(params)}`;
+    const key = this._generateCacheKey(type, params);
     if (this.geometryCache[key]) {
       return this.geometryCache[key];
     }
@@ -299,7 +355,7 @@ export class PrimitiveFactory {
       return new Promise((resolve) => {
         if (this.font) {
           const params = this._getNormalizedParameters('Text', options);
-          const cacheKey = `Text_${JSON.stringify(params)}`;
+          const cacheKey = this._generateCacheKey('Text', params);
           if (this.geometryCache[cacheKey]) {
               const mesh = this._createMesh(this.geometryCache[cacheKey], options.color || 0x00bfff);
               mesh.userData.primitiveType = type;
