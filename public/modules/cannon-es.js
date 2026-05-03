@@ -12392,12 +12392,12 @@ class World extends EventTarget {
     const idx = bodies.indexOf(body);
 
     if (idx !== -1) {
-      bodies.splice(idx, 1); // Todo: should use a garbage free method
-      // Recompute index
-
-      for (let i = 0; i !== bodies.length; i++) {
-        bodies[i].index = i;
+      if (idx < n) {
+        bodies[idx] = bodies[n];
+        bodies[idx].index = idx;
       }
+
+      bodies.pop();
 
       this.collisionMatrix.setNumObjects(n);
       this.removeBodyEvent.body = body;
