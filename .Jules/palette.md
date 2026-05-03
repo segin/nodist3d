@@ -6,3 +6,7 @@
 **Learning:** System alerts (`alert()`) are blocking and disruptive. `console.log` is invisible to end-users.
 **Action:** Replaced critical user feedback (save/load status) with a non-blocking `ToastManager` system.
 **Accessibility:** Implemented `role="status"` for info/success and `role="alert"` with `aria-live="assertive"` for errors to ensure screen readers announce critical issues immediately.
+
+## 2024-04-17 - Keyboard Accessibility in Lists
+**Learning:** List items (`<li>`) acting as buttons need `tabindex="0"`, `role="button"`, and a `keydown` handler for "Enter" and " " (Space) keys to ensure they are accessible via keyboard navigation.
+**Action:** When converting non-interactive elements into clickable items, always include these three requirements for full accessibility.
