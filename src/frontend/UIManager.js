@@ -573,7 +573,14 @@ export class UIManager {
 
   createSceneGraphItem(obj, callbacks) {
     const li = document.createElement('li');
-    li.setAttribute('role', 'listitem');
+    li.setAttribute('role', 'button');
+    li.tabIndex = 0;
+    li.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        callbacks.selectObject(obj);
+      }
+    });
     li.style.cssText = `
       padding: 5px;
       margin: 2px 0;
@@ -695,7 +702,7 @@ export class UIManager {
 
     // @ts-ignore
     const visibilityBtn = li._visibilityBtn;
-    const expectedVisLabel = obj.visible ? 'Hide object' : 'Show object';
+    const expectedVisLabel = obj.visible ? `Hide ${expectedName}` : `Show ${expectedName}`;
     const expectedVisIcon = obj.visible ? '👁️' : '🚫';
 
     if (visibilityBtn.getAttribute('aria-label') !== expectedVisLabel) {
@@ -706,6 +713,22 @@ export class UIManager {
     }
     if (visibilityBtn.textContent !== expectedVisIcon) {
         visibilityBtn.textContent = expectedVisIcon;
+    }
+
+    const deleteBtn = li.querySelector('.delete-btn');
+    if (deleteBtn) {
+        const expectedDelLabel = `Delete ${expectedName}`;
+        if (deleteBtn.getAttribute('aria-label') !== expectedDelLabel) {
+            deleteBtn.setAttribute('aria-label', expectedDelLabel);
+        }
+        if (deleteBtn.getAttribute('title') !== expectedDelLabel) {
+            deleteBtn.setAttribute('title', expectedDelLabel);
+        }
+    }
+
+    const expectedSelectLabel = `Select ${expectedName}`;
+    if (li.getAttribute('aria-label') !== expectedSelectLabel) {
+        li.setAttribute('aria-label', expectedSelectLabel);
     }
   }
 }
