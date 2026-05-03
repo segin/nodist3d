@@ -142,10 +142,12 @@ export class ShaderEditor {
         
         const fragTab = document.createElement('button');
         fragTab.innerText = 'Fragment Shader';
+        fragTab.setAttribute('aria-label', 'Switch to Fragment Shader');
         fragTab.className = 'active';
         
         const vertTab = document.createElement('button');
         vertTab.innerText = 'Vertex Shader';
+        vertTab.setAttribute('aria-label', 'Switch to Vertex Shader');
 
         const switchTab = (type) => {
             if (this.activeTab === type) return;
@@ -187,12 +189,14 @@ export class ShaderEditor {
         
         const closeBtn = document.createElement('button');
         closeBtn.innerText = 'Close';
+        closeBtn.setAttribute('aria-label', 'Close Shader Editor');
         closeBtn.onclick = () => {
             this.uiContainer.style.display = 'none';
         };
 
         const applyBtn = document.createElement('button');
         applyBtn.innerText = 'Apply & Compile';
+        applyBtn.setAttribute('aria-label', 'Apply and Compile Shader');
         applyBtn.className = 'primary';
         applyBtn.onclick = () => this.compileShader();
 

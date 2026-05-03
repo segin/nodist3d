@@ -28,11 +28,13 @@ export class TimelineUI {
     this.playPauseBtn = document.createElement('button');
     this.playPauseBtn.className = 'play-pause-btn';
     this.playPauseBtn.textContent = 'Play';
+    this.playPauseBtn.setAttribute('aria-label', 'Play or Pause Animation');
     this.playPauseBtn.style.padding = '5px 15px';
     this.playPauseBtn.addEventListener('click', () => this.togglePlay());
 
     this.slider = document.createElement('input');
     this.slider.type = 'range';
+    this.slider.setAttribute('aria-label', 'Timeline Slider');
     this.slider.min = '0';
     this.slider.max = '10';
     this.slider.step = '0.01';
@@ -46,12 +48,14 @@ export class TimelineUI {
     this.addKeyframeBtn.className = 'add-keyframe-btn';
     this.addKeyframeBtn.textContent = 'Key+';
     this.addKeyframeBtn.title = 'Add Keyframe';
+    this.addKeyframeBtn.setAttribute('aria-label', 'Add Keyframe');
     this.addKeyframeBtn.style.padding = '5px 10px';
     this.addKeyframeBtn.addEventListener('click', () => this.addKeyframe());
 
     this.recordBtn = document.createElement('button');
     this.recordBtn.className = 'record-btn';
     this.recordBtn.textContent = 'REC';
+    this.recordBtn.setAttribute('aria-label', 'Toggle Recording');
     this.recordBtn.style.padding = '5px 15px';
     this.recordBtn.style.backgroundColor = '#440000';
     this.recordBtn.style.color = 'white';

@@ -13,6 +13,7 @@ export class UIRenderer {
     scene.children.forEach((object) => {
       if (object.isMesh || object.isLight) {
         const li = document.createElement('li');
+        li.setAttribute('role', 'listitem');
         const nameSpan = document.createElement('span');
         nameSpan.textContent = object.name;
         nameSpan.style.cursor = 'pointer';
@@ -23,6 +24,7 @@ export class UIRenderer {
 
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete';
+        deleteButton.setAttribute('aria-label', `Delete ${object.name}`);
         deleteButton.onclick = () => {
           this.eventBus.publish(Events.DELETE_OBJECT, object);
         };
