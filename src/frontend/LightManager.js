@@ -59,7 +59,10 @@ export class LightManager {
   }
 
   updateLight(light, properties) {
-    for (const prop in properties) {
+    if (!properties) return;
+    const keys = Object.keys(properties);
+    for (let i = 0; i < keys.length; i++) {
+      const prop = keys[i];
       if (light[prop] !== undefined) {
         if (prop === 'color') {
           light.color.set(properties[prop]);
