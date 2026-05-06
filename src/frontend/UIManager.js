@@ -573,7 +573,8 @@ export class UIManager {
 
   createSceneGraphItem(obj, callbacks) {
     const li = document.createElement('li');
-    li.setAttribute('role', 'listitem');
+    li.setAttribute('role', 'button');
+    li.setAttribute('tabindex', '0');
     li.style.cssText = `
       padding: 5px;
       margin: 2px 0;
@@ -620,6 +621,12 @@ export class UIManager {
     li.appendChild(controls);
 
     li.onclick = () => callbacks.selectObject(obj);
+    li.onkeydown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        callbacks.selectObject(obj);
+      }
+    };
 
     // Drag and Drop
     li.draggable = true;

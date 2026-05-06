@@ -28,10 +28,12 @@ export class TimelineUI {
     this.playPauseBtn = document.createElement('button');
     this.playPauseBtn.className = 'play-pause-btn';
     this.playPauseBtn.textContent = 'Play';
+    this.playPauseBtn.setAttribute('aria-label', 'Play animation');
     this.playPauseBtn.style.padding = '5px 15px';
     this.playPauseBtn.addEventListener('click', () => this.togglePlay());
 
     this.slider = document.createElement('input');
+    this.slider.setAttribute('aria-label', 'Animation timeline');
     this.slider.type = 'range';
     this.slider.min = '0';
     this.slider.max = '10';
@@ -52,6 +54,7 @@ export class TimelineUI {
     this.recordBtn = document.createElement('button');
     this.recordBtn.className = 'record-btn';
     this.recordBtn.textContent = 'REC';
+    this.recordBtn.setAttribute('aria-label', 'Record animation');
     this.recordBtn.style.padding = '5px 15px';
     this.recordBtn.style.backgroundColor = '#440000';
     this.recordBtn.style.color = 'white';
