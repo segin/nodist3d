@@ -28,6 +28,7 @@ export class TimelineUI {
     this.playPauseBtn = document.createElement('button');
     this.playPauseBtn.className = 'play-pause-btn';
     this.playPauseBtn.textContent = 'Play';
+    this.playPauseBtn.setAttribute('aria-label', 'Play Animation');
     this.playPauseBtn.style.padding = '5px 15px';
     this.playPauseBtn.addEventListener('click', () => this.togglePlay());
 
@@ -37,6 +38,7 @@ export class TimelineUI {
     this.slider.max = '10';
     this.slider.step = '0.01';
     this.slider.value = '0';
+    this.slider.setAttribute('aria-label', 'Timeline position');
     this.slider.style.flex = '1';
     this.slider.addEventListener('input', () => {
       this.animationManager.seek(parseFloat(this.slider.value));
@@ -46,12 +48,14 @@ export class TimelineUI {
     this.addKeyframeBtn.className = 'add-keyframe-btn';
     this.addKeyframeBtn.textContent = 'Key+';
     this.addKeyframeBtn.title = 'Add Keyframe';
+    this.addKeyframeBtn.setAttribute('aria-label', 'Add Keyframe');
     this.addKeyframeBtn.style.padding = '5px 10px';
     this.addKeyframeBtn.addEventListener('click', () => this.addKeyframe());
 
     this.recordBtn = document.createElement('button');
     this.recordBtn.className = 'record-btn';
     this.recordBtn.textContent = 'REC';
+    this.recordBtn.setAttribute('aria-label', 'Start Recording');
     this.recordBtn.style.padding = '5px 15px';
     this.recordBtn.style.backgroundColor = '#440000';
     this.recordBtn.style.color = 'white';
@@ -71,9 +75,11 @@ export class TimelineUI {
     if (this.animationManager.isPlaying) {
       this.animationManager.pause();
       this.playPauseBtn.textContent = 'Play';
+      this.playPauseBtn.setAttribute('aria-label', 'Play Animation');
     } else {
       this.animationManager.play();
       this.playPauseBtn.textContent = 'Pause';
+      this.playPauseBtn.setAttribute('aria-label', 'Pause Animation');
     }
   }
 
@@ -83,11 +89,13 @@ export class TimelineUI {
     if (this.exportManager.isRecording) {
       this.exportManager.stopRecording();
       this.recordBtn.textContent = 'REC';
+      this.recordBtn.setAttribute('aria-label', 'Start Recording');
       this.recordBtn.style.backgroundColor = '#440000';
     } else {
       this.exportManager.startRecording();
       if (this.exportManager.isRecording) {
         this.recordBtn.textContent = 'STOP';
+        this.recordBtn.setAttribute('aria-label', 'Stop Recording');
         this.recordBtn.style.backgroundColor = '#ff0000';
       }
     }
