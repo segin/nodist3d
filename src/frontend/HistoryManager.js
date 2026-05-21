@@ -177,7 +177,7 @@ export class HistoryManager {
     callbacks.setObjects(sortedObjects);
 
     if (state.selectedUuid) {
-      const selected = sortedObjects.find(o => o.uuid === state.selectedUuid);
+      const selected = objMap.get(state.selectedUuid);
       if (selected) callbacks.selectObject(selected);
     } else {
       callbacks.deselectObject();
