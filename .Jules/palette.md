@@ -6,3 +6,7 @@
 **Learning:** System alerts (`alert()`) are blocking and disruptive. `console.log` is invisible to end-users.
 **Action:** Replaced critical user feedback (save/load status) with a non-blocking `ToastManager` system.
 **Accessibility:** Implemented `role="status"` for info/success and `role="alert"` with `aria-live="assertive"` for errors to ensure screen readers announce critical issues immediately.
+
+## 2026-05-07 - Global Keyboard Focus
+**Learning:** This app didn't have a clear focus ring for keyboard users globally. Applying global focus outlines helps all keyboard users instantly know where their focus is.
+**Action:** Added global CSS focus ring instead of component-specific CSS for better coverage across all buttons, inputs, and links.

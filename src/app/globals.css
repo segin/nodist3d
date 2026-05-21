@@ -382,3 +382,19 @@ body {
   background: var(--accent);
   color: #fff;
 }
+
+/* Keyboard Focus Visualization */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
