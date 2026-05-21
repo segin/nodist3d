@@ -37,6 +37,8 @@ export class TimelineUI {
     this.slider.max = '10';
     this.slider.step = '0.01';
     this.slider.value = '0';
+    this.slider.setAttribute('aria-label', 'Timeline scrubber');
+    this.slider.title = 'Timeline scrubber';
     this.slider.style.flex = '1';
     this.slider.addEventListener('input', () => {
       this.animationManager.seek(parseFloat(this.slider.value));
@@ -52,6 +54,8 @@ export class TimelineUI {
     this.recordBtn = document.createElement('button');
     this.recordBtn.className = 'record-btn';
     this.recordBtn.textContent = 'REC';
+    this.recordBtn.title = 'Record animation';
+    this.recordBtn.setAttribute('aria-label', 'Record animation');
     this.recordBtn.style.padding = '5px 15px';
     this.recordBtn.style.backgroundColor = '#440000';
     this.recordBtn.style.color = 'white';
