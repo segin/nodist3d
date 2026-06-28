@@ -139,13 +139,18 @@ export class ShaderEditor {
         
         const tabs = document.createElement('div');
         tabs.className = 'shader-tabs';
+        tabs.setAttribute('role', 'tablist');
         
         const fragTab = document.createElement('button');
         fragTab.innerText = 'Fragment Shader';
         fragTab.className = 'active';
+        fragTab.setAttribute('role', 'tab');
+        fragTab.setAttribute('aria-selected', 'true');
         
         const vertTab = document.createElement('button');
         vertTab.innerText = 'Vertex Shader';
+        vertTab.setAttribute('role', 'tab');
+        vertTab.setAttribute('aria-selected', 'false');
 
         const switchTab = (type) => {
             if (this.activeTab === type) return;
@@ -161,6 +166,9 @@ export class ShaderEditor {
             fragTab.className = type === 'fragment' ? 'active' : '';
             vertTab.className = type === 'vertex' ? 'active' : '';
             
+            fragTab.setAttribute('aria-selected', type === 'fragment' ? 'true' : 'false');
+            vertTab.setAttribute('aria-selected', type === 'vertex' ? 'true' : 'false');
+
             // Inject new code into editor
             const newState = EditorState.create({
                 doc: type === 'fragment' ? this.fragmentShaderCode : this.vertexShaderCode,
