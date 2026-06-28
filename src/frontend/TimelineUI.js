@@ -10,54 +10,60 @@ export class TimelineUI {
   }
 
   init() {
-    const timelineContainer = document.createElement('div');
-    timelineContainer.className = 'timeline-ui';
-    timelineContainer.style.position = 'fixed';
-    timelineContainer.style.bottom = '20px';
-    timelineContainer.style.left = '20px';
-    timelineContainer.style.right = '20px';
-    timelineContainer.style.zIndex = '1000';
-    timelineContainer.style.backgroundColor = 'rgba(0,0,0,0.7)';
-    timelineContainer.style.padding = '10px';
-    timelineContainer.style.borderRadius = '8px';
-    timelineContainer.style.display = 'flex';
-    timelineContainer.style.alignItems = 'center';
-    timelineContainer.style.gap = '10px';
-    timelineContainer.style.color = 'white';
+    const timelineContainer = document.createElement("div");
+    timelineContainer.className = "timeline-ui";
+    timelineContainer.style.position = "fixed";
+    timelineContainer.style.bottom = "20px";
+    timelineContainer.style.left = "20px";
+    timelineContainer.style.right = "20px";
+    timelineContainer.style.zIndex = "1000";
+    timelineContainer.style.backgroundColor = "rgba(0,0,0,0.7)";
+    timelineContainer.style.padding = "10px";
+    timelineContainer.style.borderRadius = "8px";
+    timelineContainer.style.display = "flex";
+    timelineContainer.style.alignItems = "center";
+    timelineContainer.style.gap = "10px";
+    timelineContainer.style.color = "white";
 
-    this.playPauseBtn = document.createElement('button');
-    this.playPauseBtn.className = 'play-pause-btn';
-    this.playPauseBtn.textContent = 'Play';
-    this.playPauseBtn.style.padding = '5px 15px';
-    this.playPauseBtn.addEventListener('click', () => this.togglePlay());
+    this.playPauseBtn = document.createElement("button");
+    this.playPauseBtn.className = "play-pause-btn";
+    this.playPauseBtn.textContent = "Play";
+    this.playPauseBtn.setAttribute("aria-label", "Play animation");
+    this.playPauseBtn.setAttribute("aria-pressed", "false");
+    this.playPauseBtn.style.padding = "5px 15px";
+    this.playPauseBtn.addEventListener("click", () => this.togglePlay());
 
-    this.slider = document.createElement('input');
-    this.slider.type = 'range';
-    this.slider.min = '0';
-    this.slider.max = '10';
-    this.slider.step = '0.01';
-    this.slider.value = '0';
-    this.slider.style.flex = '1';
-    this.slider.addEventListener('input', () => {
+    this.slider = document.createElement("input");
+    this.slider.type = "range";
+    this.slider.min = "0";
+    this.slider.max = "10";
+    this.slider.step = "0.01";
+    this.slider.value = "0";
+    this.slider.style.flex = "1";
+    this.slider.setAttribute("aria-label", "Timeline position");
+    this.slider.addEventListener("input", () => {
       this.animationManager.seek(parseFloat(this.slider.value));
     });
 
-    this.addKeyframeBtn = document.createElement('button');
-    this.addKeyframeBtn.className = 'add-keyframe-btn';
-    this.addKeyframeBtn.textContent = 'Key+';
-    this.addKeyframeBtn.title = 'Add Keyframe';
-    this.addKeyframeBtn.style.padding = '5px 10px';
-    this.addKeyframeBtn.addEventListener('click', () => this.addKeyframe());
+    this.addKeyframeBtn = document.createElement("button");
+    this.addKeyframeBtn.className = "add-keyframe-btn";
+    this.addKeyframeBtn.textContent = "Key+";
+    this.addKeyframeBtn.title = "Add Keyframe";
+    this.addKeyframeBtn.setAttribute("aria-label", "Add keyframe");
+    this.addKeyframeBtn.style.padding = "5px 10px";
+    this.addKeyframeBtn.addEventListener("click", () => this.addKeyframe());
 
-    this.recordBtn = document.createElement('button');
-    this.recordBtn.className = 'record-btn';
-    this.recordBtn.textContent = 'REC';
-    this.recordBtn.style.padding = '5px 15px';
-    this.recordBtn.style.backgroundColor = '#440000';
-    this.recordBtn.style.color = 'white';
-    this.recordBtn.style.borderRadius = '50%';
-    this.recordBtn.style.border = '2px solid white';
-    this.recordBtn.addEventListener('click', () => this.toggleRecord());
+    this.recordBtn = document.createElement("button");
+    this.recordBtn.className = "record-btn";
+    this.recordBtn.textContent = "REC";
+    this.recordBtn.setAttribute("aria-label", "Record animation");
+    this.recordBtn.setAttribute("aria-pressed", "false");
+    this.recordBtn.style.padding = "5px 15px";
+    this.recordBtn.style.backgroundColor = "#440000";
+    this.recordBtn.style.color = "white";
+    this.recordBtn.style.borderRadius = "50%";
+    this.recordBtn.style.border = "2px solid white";
+    this.recordBtn.addEventListener("click", () => this.toggleRecord());
 
     timelineContainer.appendChild(this.playPauseBtn);
     timelineContainer.appendChild(this.slider);
@@ -70,10 +76,14 @@ export class TimelineUI {
   togglePlay() {
     if (this.animationManager.isPlaying) {
       this.animationManager.pause();
-      this.playPauseBtn.textContent = 'Play';
+      this.playPauseBtn.textContent = "Play";
+      this.playPauseBtn.setAttribute("aria-label", "Play animation");
+      this.playPauseBtn.setAttribute("aria-pressed", "false");
     } else {
       this.animationManager.play();
-      this.playPauseBtn.textContent = 'Pause';
+      this.playPauseBtn.textContent = "Pause";
+      this.playPauseBtn.setAttribute("aria-label", "Pause animation");
+      this.playPauseBtn.setAttribute("aria-pressed", "true");
     }
   }
 
@@ -82,13 +92,17 @@ export class TimelineUI {
 
     if (this.exportManager.isRecording) {
       this.exportManager.stopRecording();
-      this.recordBtn.textContent = 'REC';
-      this.recordBtn.style.backgroundColor = '#440000';
+      this.recordBtn.textContent = "REC";
+      this.recordBtn.setAttribute("aria-label", "Record animation");
+      this.recordBtn.setAttribute("aria-pressed", "false");
+      this.recordBtn.style.backgroundColor = "#440000";
     } else {
       this.exportManager.startRecording();
       if (this.exportManager.isRecording) {
-        this.recordBtn.textContent = 'STOP';
-        this.recordBtn.style.backgroundColor = '#ff0000';
+        this.recordBtn.textContent = "STOP";
+        this.recordBtn.setAttribute("aria-label", "Stop recording");
+        this.recordBtn.setAttribute("aria-pressed", "true");
+        this.recordBtn.style.backgroundColor = "#ff0000";
       }
     }
   }
@@ -103,21 +117,51 @@ export class TimelineUI {
 
     // Support position, rotation, scale
     if (obj.position) {
-      this.animationManager.addKeyframe(obj.uuid, 'position.x', time, obj.position.x);
-      this.animationManager.addKeyframe(obj.uuid, 'position.y', time, obj.position.y);
-      this.animationManager.addKeyframe(obj.uuid, 'position.z', time, obj.position.z);
+      this.animationManager.addKeyframe(
+        obj.uuid,
+        "position.x",
+        time,
+        obj.position.x,
+      );
+      this.animationManager.addKeyframe(
+        obj.uuid,
+        "position.y",
+        time,
+        obj.position.y,
+      );
+      this.animationManager.addKeyframe(
+        obj.uuid,
+        "position.z",
+        time,
+        obj.position.z,
+      );
     }
 
     if (obj.rotation) {
-      this.animationManager.addKeyframe(obj.uuid, 'rotation.x', time, obj.rotation.x);
-      this.animationManager.addKeyframe(obj.uuid, 'rotation.y', time, obj.rotation.y);
-      this.animationManager.addKeyframe(obj.uuid, 'rotation.z', time, obj.rotation.z);
+      this.animationManager.addKeyframe(
+        obj.uuid,
+        "rotation.x",
+        time,
+        obj.rotation.x,
+      );
+      this.animationManager.addKeyframe(
+        obj.uuid,
+        "rotation.y",
+        time,
+        obj.rotation.y,
+      );
+      this.animationManager.addKeyframe(
+        obj.uuid,
+        "rotation.z",
+        time,
+        obj.rotation.z,
+      );
     }
 
     if (obj.scale) {
-      this.animationManager.addKeyframe(obj.uuid, 'scale.x', time, obj.scale.x);
-      this.animationManager.addKeyframe(obj.uuid, 'scale.y', time, obj.scale.y);
-      this.animationManager.addKeyframe(obj.uuid, 'scale.z', time, obj.scale.z);
+      this.animationManager.addKeyframe(obj.uuid, "scale.x", time, obj.scale.x);
+      this.animationManager.addKeyframe(obj.uuid, "scale.y", time, obj.scale.y);
+      this.animationManager.addKeyframe(obj.uuid, "scale.z", time, obj.scale.z);
     }
   }
 
@@ -128,10 +172,10 @@ export class TimelineUI {
   update() {
     if (this.animationManager.isPlaying) {
       this.slider.value = this.animationManager.currentTime.toString();
-      
+
       // Handle loop or end of playback
       if (this.animationManager.currentTime >= parseFloat(this.slider.max)) {
-          this.animationManager.seek(0);
+        this.animationManager.seek(0);
       }
     }
   }
