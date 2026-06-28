@@ -145,6 +145,11 @@ body {
   background: var(--bg-hover);
 }
 
+#toolbar button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
 #toolbar button.active {
   background: var(--bg-active);
   color: #fff;
@@ -220,9 +225,19 @@ body {
   background: var(--bg-hover);
 }
 
+#objects-list li:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
 #objects-list li.selected {
   background: var(--bg-active);
   color: #fff;
+}
+
+.visibility-btn:focus-visible, .delete-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 #properties-panel {
