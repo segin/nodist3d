@@ -4,7 +4,7 @@ export default function Menubar() {
   return (
     <div id="menubar">
       <div className="menu-brand">Polyhedra</div>
-      <div className="menu-item">
+      <div className="menu-item" tabIndex={0}>
         File
         <div className="menu-dropdown">
           <a href="#" id="menu-file-load" title="Open scene">Open Scene</a>
@@ -12,7 +12,7 @@ export default function Menubar() {
           <a href="#" id="menu-file-import">Import Model (OBJ/GLTF)</a>
         </div>
       </div>
-      <div className="menu-item">
+      <div className="menu-item" tabIndex={0}>
         Edit
         <div className="menu-dropdown">
           <a href="#" id="menu-edit-undo">Undo</a>
@@ -22,7 +22,7 @@ export default function Menubar() {
           <a href="#" id="menu-edit-duplicate">Duplicate Selected</a>
         </div>
       </div>
-      <div className="menu-item">
+      <div className="menu-item" tabIndex={0}>
         Add
         <div className="menu-dropdown">
           <a href="#" id="menu-add-box">Box</a>
@@ -35,7 +35,7 @@ export default function Menubar() {
           <a href="#" id="menu-add-teapot">Teapot</a>
         </div>
       </div>
-      <div className="menu-item">
+      <div className="menu-item" tabIndex={0}>
         View
         <div className="menu-dropdown">
           <a href="#" id="menu-view-fullscreen" title="Toggle Fullscreen">Fullscreen</a>
